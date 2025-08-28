@@ -1,0 +1,39 @@
+{
+  "name": "@bluxcc/core",
+  "version": "0.1.0",
+  "description": "Core vanilla JS package for Blux",
+  "main": "dist/index.cjs",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "rollup -c rollup.config.dev.mjs -w",
+    "build": "rollup -c rollup.config.prod.mjs"
+  },
+  "homepage": "https://blux.cc",
+  "keywords": [
+    "blux",
+    "core",
+    "vanilla",
+    "stellar",
+    "kit",
+    "wallet"
+  ],
+  "author": "blux.cc",
+  "license": "ISC",
+  "dependencies": {
+    "@stellar/stellar-sdk": "^14.1.0",
+    "htm": "^3.1.1",
+    "preact": "^10.27.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "rollup": "^4.46.3",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2"
+  }
+}
