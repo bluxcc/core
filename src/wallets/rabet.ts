@@ -1,12 +1,7 @@
-import {
-  GetNetworkResult,
-  SupportedWallets,
-  WalletInterface,
-  WalletNetwork,
-} from "../../types";
+import { StellarNetwork, SupportedWallet, IWallet } from "../types";
 
-export const rabetConfig: WalletInterface = {
-  name: SupportedWallets.Rabet,
+export const rabetConfig: IWallet = {
+  name: SupportedWallet.Rabet,
   website: "https://rabet.io",
 
   isAvailable: () =>
@@ -35,7 +30,7 @@ export const rabetConfig: WalletInterface = {
 
       const result = await window.rabet.sign(
         xdr,
-        options.networkPassphrase === WalletNetwork.PUBLIC
+        options.networkPassphrase === StellarNetwork.PUBLIC
           ? "mainnet"
           : "testnet",
       );
@@ -55,11 +50,11 @@ export const rabetConfig: WalletInterface = {
       throw new Error("Failed to disconnect from Rabet.");
     }
   },
-  getNetwork: async (): Promise<GetNetworkResult> => {
+  getNetwork: async () => {
     try {
       if (!window.rabet) throw new Error("Rabet Wallet is not installed.");
 
-      const network = (await window.rabet.getNetwork()) as GetNetworkResult;
+      const network = await window.rabet.getNetwork();
 
       return network;
     } catch (error) {

@@ -3,26 +3,34 @@ import { h } from "preact";
 
 import { Emitter } from "./events";
 import { showModal } from "./modal";
+import { IWallet } from "./types";
 
 const emitter = new Emitter();
 
 const html = htm.bind(h);
 
-export function login() {
+const handleClick = () => {
+  console.log("i was clicked");
+};
+
+export function loginModal(wallets: IWallet[]) {
   emitter.emit("login", null);
 
   showModal({
     title: "Login",
-    content: html`
-      <div>
-        <input
-          type="text"
-          placeholder="Username"
-          style="width:100%; margin-bottom:0.5rem;"
-        />
-        <input type="password" placeholder="Password" style="width:100%;" />
-      </div>
-    `,
+    content: html` <div>
+      ${wallets.map(
+        (w) =>
+          html` <button
+            type="button"
+            onClick=${() => {
+              handleClick();
+            }}
+          >
+            ${w.name}
+          </button>`,
+      )}
+    </div>`,
   });
 }
 

@@ -1,21 +1,16 @@
 import { Horizon, rpc } from "@stellar/stellar-sdk";
-import { HorizonApi } from "@stellar/stellar-sdk/lib/horizon";
 
-// import { Url } from "../utils/network/url";
-// import { UseAccountResult } from "../useStellar/useAccount";
-// import { LanguageKey } from "../constants/locales";
-
-export enum ISupportedWallet {
+export enum SupportedWallet {
   Rabet = "Rabet",
   Albedo = "Albedo",
   Freighter = "Freighter",
   Xbull = "xBull",
   Lobstr = "LOBSTR",
   Hana = "Hana",
-  Hot = "Hot",
+  // Hot = "Hot",
 }
 
-export enum IStellarNetwork {
+export enum StellarNetwork {
   PUBLIC = "Public Global Stellar Network ; September 2015",
   TESTNET = "Test SDF Network ; September 2015",
   FUTURENET = "Test SDF Future Network ; October 2022",
@@ -23,29 +18,12 @@ export enum IStellarNetwork {
   STANDALONE = "Standalone Network ; February 2017",
 }
 
-export interface IAccountData {
-  id: string;
-  sequence: string;
-  xlmBalance: string;
-  subentry_count: number;
-  balances: Horizon.HorizonApi.BalanceLine[];
-  thresholds: Horizon.HorizonApi.AccountThresholds;
-  transactions?: Horizon.ServerApi.TransactionRecord[];
+interface IServers {
+  horizon: string;
+  soroban: string;
 }
 
-export interface IAsset {
-  logo?: string;
-  balance: string;
-  assetCode: string;
-  assetType: string;
-  assetIssuer: string;
-}
-
-// interface IServers {
-//   horizon: Url;
-//   soroban: Url;
-// }
-// export type ITransports = Record<string, IServers>;
+export type ITransports = Record<string, IServers>;
 
 export type IExplorer =
   | "steexp"
@@ -56,37 +34,50 @@ export type IExplorer =
 export type ILoginMethods = Array<"wallet" | "sms" | "email" | "passkey">;
 
 export interface IConfig {
-  appName: string; // Application name
-  networks: string[]; // Supported network passphrases
-  defaultNetwork: string; // The default network passphrase
+  appId: string;
+  appName: string;
+  networks: string[];
+  defaultNetwork?: string;
   appearance?: Partial<IAppearance>;
-  // transports?: ITransports;
   explorer?: IExplorer;
-  // lang?: LanguageKey;
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
+  transports?: ITransports;
 }
 
 export interface IInternalConfig extends IConfig {
   explorer: IExplorer;
   appearance: IAppearance;
   showWalletUIs: boolean;
+  defaultNetwork: string;
 }
-
-export type CheckedWallet = {
-  wallet: IWalletInterface;
-  isAvailable: boolean;
-  isRecent?: boolean;
-};
 
 /**
  * Information about the connected wallet.
  */
 export interface WalletInfo {
   passphrase: string;
-  name: ISupportedWallets; // Wallet name, if connected
+  name: SupportedWallet; // Wallet name, if connected
   address: string | null; // Wallet public address, if connected
 }
+
+// export interface IAccountData {
+//   id: string;
+//   sequence: string;
+//   xlmBalance: string;
+//   subentry_count: number;
+//   balances: Horizon.HorizonApi.BalanceLine[];
+//   thresholds: Horizon.HorizonApi.AccountThresholds;
+//   transactions?: Horizon.ServerApi.TransactionRecord[];
+// }
+//
+// export interface IAsset {
+//   logo?: string;
+//   balance: string;
+//   assetCode: string;
+//   assetType: string;
+//   assetIssuer: string;
+// }
 
 /**
  * User-related information within the context.
@@ -111,12 +102,12 @@ export interface IUser {
  * Appearance customization options.
  */
 export interface IAppearance {
-  theme: "light" | "dark"; // Light or dark mode
   background: string; // Background color or image
   fieldBackground: string; // Background color for input fields or similar UI areas
   accentColor: string; // Primary accent color
   textColor: string; // Main text color
   font: string; // Selected font family or style
+  outlineWidth: string;
   borderRadius: string; // Border radius for UI elements
   borderColor: string; // Border color for elements
   borderWidth: string; // Width of borders (e.g., '1px', '0', etc.)
@@ -133,7 +124,7 @@ export interface IStore {
   isReady: boolean; // Indicates if the system is ready
   isDemo: boolean; // Specifies if in demo mode
   isAuthenticated: boolean; // User authentication status
-  availableWallets: CheckedWallet[]; // List of available wallets
+  availableWallets: IWallet[]; // List of available wallets
   waitingStatus: "connecting" | "signing";
   showAllWallets: boolean; // Flag to show all wallets in the onboarding process
   activeNetwork: string;
@@ -148,7 +139,7 @@ export interface IStore {
 /**
  * Enum defining different modal views.
  */
-export enum Routes {
+export enum Route {
   ONBOARDING = "ONBOARDING", // View for selecting a wallet
   WRONG_NETWORK = "WRONG_NETWORK", // View for selecting a wallet
   WAITING = "WAITING", // View for connection process
@@ -164,7 +155,7 @@ export enum Routes {
  * Modal state management interface.
  */
 export interface ModalRoute {
-  route: Routes; // Current modal view
+  route: Route; // Current modal view
   showAllWallets: boolean; // Whether to display all available wallets
 }
 
@@ -172,14 +163,14 @@ export interface ModalRoute {
  * Defines the heights for different modal views.
  */
 export interface ModalHeight {
-  [Routes.PROFILE]: number;
-  [Routes.WAITING]: number;
-  [Routes.ONBOARDING]: number;
-  [Routes.SUCCESSFUL]: number;
-  [Routes.SIGN_TRANSACTION]: number;
-  [Routes.SEND]: number;
-  [Routes.ACTIVITY]: number;
-  [Routes.OTP]: number;
+  [Route.PROFILE]: number;
+  [Route.WAITING]: number;
+  [Route.ONBOARDING]: number;
+  [Route.SUCCESSFUL]: number;
+  [Route.SIGN_TRANSACTION]: number;
+  [Route.SEND]: number;
+  [Route.ACTIVITY]: number;
+  [Route.OTP]: number;
 }
 
 // /**
@@ -228,11 +219,11 @@ export interface ModalHeight {
  * Defines the available actions for interacting with a wallet.
  */
 export interface IWallet {
-  name: ISupportedWallet; // Name of the wallet
-  website: string; // Official wallet website or documentation URL
-  isAvailable: () => Promise<boolean> | boolean; // Checks wallet availability
-  connect: () => Promise<{ publicKey: string }>; // Initiates wallet connection
-  getAddress?: (options?: { path?: string }) => Promise<{ address: string }>; // Retrieves wallet address with optional path
+  name: SupportedWallet;
+  website: string;
+  isAvailable: () => Promise<boolean> | boolean;
+  connect: () => Promise<{ publicKey: string }>;
+  getAddress?: (options?: { path?: string }) => Promise<{ address: string }>;
   signTransaction?: (
     xdr: string,
     options?: {
@@ -240,12 +231,12 @@ export interface IWallet {
       address?: string;
       submit?: boolean;
     },
-  ) => Promise<string>; // Signs a transaction with optional parameters
-  disconnect?: () => Promise<void>; // Disconnects the wallet session
+  ) => Promise<string>;
+  disconnect?: () => Promise<void>;
   getNetwork: () => Promise<{
     network: string;
     passphrase: string;
-  }>; // Retrieves network information from the wallet
+  }>;
   signMessage?: (
     message: string,
     options?: {
@@ -253,7 +244,7 @@ export interface IWallet {
       address?: string;
       path?: string;
     },
-  ) => Promise<{ signedMessage: string; signerPublicKey?: string }>; // Signs a message with optional parameters
+  ) => Promise<{ signedMessage: string; signerPublicKey?: string }>;
   signAuthEntry?: (
     authorizationEntry: string,
     options?: {
@@ -261,5 +252,5 @@ export interface IWallet {
       address?: string;
       path?: string;
     },
-  ) => Promise<{ signedAuthorizationEntry: string; signerPublicKey?: string }>; // Signs an authorization entry with optional parameters
+  ) => Promise<{ signedAuthorizationEntry: string; signerPublicKey?: string }>;
 }

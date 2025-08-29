@@ -1,4 +1,5 @@
-export * from "./wallet";
+export * from "./Blux";
+
 // export * from "./events.js";
 // export * from "./state.js";
 //

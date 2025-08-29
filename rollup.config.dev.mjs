@@ -1,3 +1,6 @@
+import json from "@rollup/plugin-json";
+import inject from "@rollup/plugin-inject";
+import replace from "@rollup/plugin-replace";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import nodeResolve from "@rollup/plugin-node-resolve";
@@ -18,13 +21,23 @@ export default {
     {
       file: "dist/index.iife.js",
       format: "iife",
-      name: "blux", // global variable
+      name: "blux",
       sourcemap: true,
     },
   ],
   plugins: [
-    nodeResolve(),
-    commonjs(),
+    json(),
+    // nodePolyfills({ include: ["buffer"] }),
+    nodeResolve({
+      browser: true,
+      preferBuiltins: true,
+    }),
+    // inject({
+    //   Buffer: ["buffer", "Buffer"],
+    //   process: "process/browser",
+    // }),
+    commonjs({}),
     typescript({ tsconfig: "./tsconfig.json" }),
   ],
+  // external: ["buffer", "process"],
 };
