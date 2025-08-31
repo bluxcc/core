@@ -71,13 +71,13 @@ export interface WalletInfo {
 //   transactions?: Horizon.ServerApi.TransactionRecord[];
 // }
 //
-// export interface IAsset {
-//   logo?: string;
-//   balance: string;
-//   assetCode: string;
-//   assetType: string;
-//   assetIssuer: string;
-// }
+export interface IAsset {
+  logo?: string;
+  balance: string;
+  assetCode: string;
+  assetType: string;
+  assetIssuer: string;
+}
 
 /**
  * User-related information within the context.
@@ -197,10 +197,10 @@ export interface ModalHeight {
 //   isSoroban?: boolean;
 // }
 
-// export type ISendTransactionOptionsInternal = {
-//   network: string;
-//   isSoroban: boolean;
-// };
+export type ISendTransactionOptionsInternal = {
+  network: string;
+  isSoroban: boolean;
+};
 
 // export type TransactionResponseType<T extends boolean> = T extends true
 //   ? rpc.Api.GetSuccessfulTransactionResponse
@@ -230,7 +230,7 @@ export interface IWallet {
       networkPassphrase?: string;
       address?: string;
       submit?: boolean;
-    },
+    }
   ) => Promise<string>;
   disconnect?: () => Promise<void>;
   getNetwork: () => Promise<{
@@ -243,7 +243,7 @@ export interface IWallet {
       networkPassphrase?: string;
       address?: string;
       path?: string;
-    },
+    }
   ) => Promise<{ signedMessage: string; signerPublicKey?: string }>;
   signAuthEntry?: (
     authorizationEntry: string,
@@ -251,6 +251,6 @@ export interface IWallet {
       networkPassphrase?: string;
       address?: string;
       path?: string;
-    },
+    }
   ) => Promise<{ signedAuthorizationEntry: string; signerPublicKey?: string }>;
 }

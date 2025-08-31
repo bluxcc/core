@@ -32,7 +32,7 @@ export class Blux {
     validateNetworkOptions(
       config.networks,
       config.defaultNetwork,
-      config.transports,
+      config.transports
     );
 
     conf.defaultNetwork = config.defaultNetwork ?? config.networks[0];

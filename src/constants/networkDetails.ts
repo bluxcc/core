@@ -1,9 +1,10 @@
 import { Networks } from "@stellar/stellar-sdk";
 
+// todo fix any type below
 export interface INetworkTransports {
   name: string;
-  horizon: string;
-  soroban: string;
+  horizon: string | any;
+  soroban: string | any;
 }
 
 export const networks = {

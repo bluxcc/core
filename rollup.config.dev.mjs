@@ -1,6 +1,9 @@
 import json from "@rollup/plugin-json";
 import inject from "@rollup/plugin-inject";
 import replace from "@rollup/plugin-replace";
+import postcss from "rollup-plugin-postcss";
+import tailwindcss from "@tailwindcss/postcss";
+
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import nodeResolve from "@rollup/plugin-node-resolve";
@@ -36,6 +39,13 @@ export default {
     //   Buffer: ["buffer", "Buffer"],
     //   process: "process/browser",
     // }),
+    postcss({
+      extract: false,
+      inject: true,
+      minimize: false,
+      sourceMap: true,
+      plugins: [tailwindcss],
+    }),
     commonjs({}),
     typescript({ tsconfig: "./tsconfig.json" }),
   ],
