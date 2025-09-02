@@ -1,0 +1,1 @@
+export const BLUX_EVENT_NAME = "BLUX_MODAL_OPEN";
