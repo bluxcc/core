@@ -9,6 +9,7 @@ import { defaultLightTheme } from "./constants/themes";
 import { handleLoadWallets, validateNetworkOptions } from "./utils/helpers";
 
 import "./tailwind.css";
+import getTransactionDetails from "./stellar/getTransactionDetails";
 
 let root: any = null;
 let isInitiated = false;
@@ -62,7 +63,7 @@ export function createConfig(config: IConfig) {
   });
 }
 
-export const login = async () => {
+const login = async () => {
   const { authState, openModal } = getState();
   const { isReady, isAuthenticated } = authState;
 
@@ -77,13 +78,14 @@ export const login = async () => {
   openModal(Route.ONBOARDING);
 };
 
-export const logout = () => {
+const logout = () => {
   const { logoutAction } = getState();
 
   logoutAction();
 };
 
-export const profile = () => {
+const profile = () => {
+  // const { isReady, isAuthenticated } = authState;
   // if (!isAuthenticated) {
   //   throw new Error("User is not authenticated.");
   // }
@@ -91,6 +93,83 @@ export const profile = () => {
   // setValue((prev) => ({ ...prev, isModalOpen: true }));
 };
 
-// export const
+const sendTransaction = (xdr: string, options: { network: string }) =>
+  new Promise((resolve, reject) => {
+    // const { authState, wallets, config, user } = getState();
+    //
+    // let network = value.activeNetwork;
+    //
+    // if (options && options.network) {
+    //   network = options.network;
+    // }
+    //
+    // if (!authState.isAuthenticated) {
+    //   reject(new Error("User is not authenticated."));
+    // }
+    //
+    // if (!getTransactionDetails(xdr, network)) {
+    //   reject("Invalid XDR");
+    //
+    //   return;
+    // }
+    //
+    // const transactionObject = {
+    //   xdr,
+    //   result: null,
+    //   rejecter: reject,
+    //   resolver: resolve,
+    // };
+    //
+    // const foundWallet = wallets.find((w) => w.name === user.authValue);
+    //
+    // if (!foundWallet) {
+    //   throw new Error("Could not find the connected wallet.");
+    // }
+    //
+    // if (!config.showWalletUIs) {
+    //   handleTransactionSigning(
+    //     foundWallet,
+    //     xdr,
+    //     user.address as string,
+    //     config.transports || {},
+    //   )
+    //     .then((result) => {
+    //       resolve(result);
+    //     })
+    //     .catch((err) => {
+    //       reject(err);
+    //     });
+    //
+    //   return;
+    // }
+    //
+    // setRoute(Route.SIGN_TRANSACTION);
+    //
+    // setValue((prev) => ({
+    //   ...prev,
+    //   isModalOpen: true,
+    //   signTransaction: transactionObject,
+    // }));
+  });
 
-// export const { isReady, user, isAuthenticated } = value;
+export const Blux = {
+  login,
+  logout,
+  profile,
+  sendTransaction,
+  get isReady() {
+    const { authState } = getState();
+
+    return authState.isReady;
+  },
+  get isAuthenticated() {
+    const { authState } = getState();
+
+    return authState.isAuthenticated;
+  },
+  get user() {
+    const { user } = getState();
+
+    return user;
+  },
+};
