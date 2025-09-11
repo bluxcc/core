@@ -1,64 +1,89 @@
-import React from "react";
+import React, { useRef } from "react";
 
-import { ModalState, ModalActions } from "../../types";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { defaultLightTheme } from "../../constants/themes";
+import { useDynamicHeight } from "../../hooks/useDynamicHeight";
+import { useModalAnimation } from "../../hooks/useModalAnimation";
 
-interface ModalProps extends ModalState, ModalActions {}
+interface ModalProps {
+  isOpen: boolean;
+  isSticky?: boolean;
+  onClose?: () => void;
+  children: React.ReactNode;
+}
 
-const Modal: React.FC<ModalProps> = ({
+const Modal = ({
   isOpen,
-  title,
-  content,
-  closeModal,
-}) => {
+  onClose = () => { },
+  children,
+  isSticky = false,
+}: ModalProps) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const isMobile = useIsMobile();
+  const { isOpening, isClosing, handleClose } = useModalAnimation(isOpen);
+  const { height, ready: heightReady } = useDynamicHeight(contentRef, [
+    isOpen,
+    children,
+  ]);
+
+  const appearance = defaultLightTheme;
+
+  // const { appearance } = context.value.config;
+
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-      onClick={closeModal}
-    >
+    <>
       <div
-        style={{
-          background: "white",
-          padding: "20px",
-          borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-          maxWidth: "500px",
-          width: "90%",
-        }}
-        onClick={(e) => e.stopPropagation()}
+        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && "bluxcc:animate-fadeOut"
+          }`}
+        onClick={(e) => e.target === e.currentTarget && handleClose(onClose)}
       >
-        <h2>{title || "Hello World"}</h2>
-        <p>
-          {content ||
-            "This modal is powered by React, but you don't need to know that!"}
-        </p>
-        <button
-          onClick={closeModal}
+        <div
+          className={`bluxcc:box-border bluxcc:!shadow-[0px_4px_80px_0px_#00000008] ${isMobile
+              ? "bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:max-h-[90vh] bluxcc:w-full bluxcc:!rounded-b-none"
+              : "bluxcc:relative bluxcc:!w-[360px]"
+            }`}
           style={{
-            padding: "8px 16px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
+            height:
+              typeof height === "number"
+                ? `${isMobile ? height + 20 : height}px`
+                : height,
+            transition: heightReady
+              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${isMobile ? ", transform 250ms ease-out" : ""
+              }`
+              : `border-radius 250ms, opacity 250ms ease-out${isMobile ? ", transform 250ms ease-out" : ""
+              }`,
+            transform:
+              isMobile && (isOpening || isClosing)
+                ? "translateY(100%)"
+                : "translateY(0%)",
+            backgroundColor: appearance.background,
+            opacity: isClosing && !isSticky ? "0" : "1",
+            color: appearance.textColor,
+            fontFamily: appearance.font,
+            letterSpacing: "-0.04px",
+            outlineStyle: "solid",
+            outlineColor: appearance.borderColor,
+            outlineWidth: appearance.borderWidth,
+            borderRadius: appearance.borderRadius,
+            overflow: "hidden",
           }}
         >
-          Close
-        </button>
+          <div
+            ref={contentRef}
+            className={`bluxcc:px-6 bluxcc:pt-5 bluxcc:pb-4`}
+            style={{
+              opacity: heightReady ? 1 : 0,
+              transition: "opacity 250ms ease-in-out",
+            }}
+          >
+            {children}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

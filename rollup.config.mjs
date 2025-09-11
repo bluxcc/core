@@ -1,8 +1,10 @@
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import typescript from "@rollup/plugin-typescript";
-import { terser } from "rollup-plugin-terser";
+import postcss from "rollup-plugin-postcss";
 import replace from "@rollup/plugin-replace";
+import { terser } from "rollup-plugin-terser";
+import tailwindcss from "@tailwindcss/postcss";
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import typescript from "@rollup/plugin-typescript";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 import pkg from "./package.json" with { type: "json" };
@@ -34,8 +36,15 @@ const config = [
         preferBuiltins: false,
       }),
       commonjs(),
+      postcss({
+        extract: false,
+        inject: true,
+        minimize: false,
+        sourceMap: true,
+        plugins: [tailwindcss],
+      }),
       typescript({ tsconfig: "./tsconfig.json" }),
-      terser(),
+      // terser(),
     ],
   },
   {
@@ -57,14 +66,22 @@ const config = [
         "process.env.NODE_ENV": JSON.stringify("production"),
         preventAssignment: true,
       }),
-      // nodePolyfills({ include: ["proces"] }),
+      // nodePolyfills({ include: ["buffer", "crypto"] }),
       resolve({
         browser: true,
         preferBuiltins: false,
+        // exportConditions: ["browser", "module", "default"], // Explicitly set conditions
       }),
       commonjs(),
+      postcss({
+        extract: false,
+        inject: true,
+        minimize: false,
+        sourceMap: true,
+        plugins: [tailwindcss],
+      }),
       typescript({ tsconfig: "./tsconfig.json" }),
-      terser(),
+      // terser(),
     ],
   },
 ];
