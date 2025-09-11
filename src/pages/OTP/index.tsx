@@ -15,7 +15,7 @@ const OTP = () => {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [error, setError] = useState(false);
 
-  const handleResendCode = () => { };
+  const handleResendCode = () => {};
 
   const verifyOTPRequest = async (otp: string): Promise<void> => {
     setError(false);
@@ -43,9 +43,7 @@ const OTP = () => {
       <div
         style={{
           borderColor: appearance.borderColor,
-          // borderWidth: appearance.includeBorders
-          //   ? appearance.borderWidth
-          //   : "1px",
+          borderWidth: appearance.borderWidth,
         }}
         className="bluxcc:mb-6 bluxcc:flex bluxcc:h-20 bluxcc:w-20 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full bluxcc:border-2"
       >
@@ -76,9 +74,7 @@ const OTP = () => {
         <div
           className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
           style={{
-            // borderTopWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderTopWidth: appearance.borderWidth,
             borderTopColor: appearance.borderColor,
           }}
         />

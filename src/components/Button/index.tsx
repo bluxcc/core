@@ -54,7 +54,7 @@ const Button = ({
       border: `1px solid ${appearance.borderColor}`,
       color: appearance.accentColor,
       backgroundColor: appearance.background,
-      // borderWidth: appearance.includeBorders ? appearance.borderWidth : "1px",
+      borderWidth: appearance.borderWidth,
     });
   } else if (variant === "fill") {
     Object.assign(baseStyle, {
@@ -77,8 +77,9 @@ const Button = ({
     <button
       onClick={onClick}
       disabled={state === "disabled"}
-      className={`${buttonBase} ${sizeClasses[size]} ${className ?? ""
-        } bluxcc:transition-all bluxcc:duration-300`}
+      className={`${buttonBase} ${sizeClasses[size]} ${
+        className ?? ""
+      } bluxcc:transition-all bluxcc:duration-300`}
       style={baseStyle}
     >
       {startIcon && <span>{startIcon}</span>}

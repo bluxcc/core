@@ -2,7 +2,7 @@ import { JSX } from "react";
 
 import { Route } from "../enums";
 import Waiting from "../pages/Waiting";
-import { LanguageKey } from "./locales";
+import { LanguageKey } from "../types";
 import Successful from "../pages/Successful";
 import Onboarding from "../pages/Onboarding";
 import { translate } from "../utils/helpers";

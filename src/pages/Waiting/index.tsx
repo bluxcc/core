@@ -114,14 +114,12 @@ const Waiting = () => {
           className={`bluxcc:mb-6 bluxcc:flex bluxcc:size-20 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full bluxcc:border`}
           style={{
             borderColor: appearance.borderColor,
-            // borderWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderWidth: appearance.borderWidth,
           }}
         >
           {handleLogos(
             user.authValue ?? "",
-            isBackgroundDark(appearance.background),
+            isBackgroundDark(appearance.background)
           )}
         </div>
       )}
@@ -132,11 +130,11 @@ const Waiting = () => {
             ? waitingStatus === "login"
               ? t("loginFailed")
               : t("signingFailed", {
-                walletName: user.authValue ?? "wallet",
-              })
+                  walletName: user.authValue ?? "wallet",
+                })
             : waitingStatus === "login"
-              ? t("waitingFor", { walletName: user.authValue ?? "wallet" })
-              : t("signingWith", {
+            ? t("waitingFor", { walletName: user.authValue ?? "wallet" })
+            : t("signingWith", {
                 walletName: user.authValue ?? "wallet",
               })}
         </p>
@@ -146,8 +144,8 @@ const Waiting = () => {
               ? t("loginRetryMessage")
               : t("signingRetryMessage")
             : waitingStatus === "login"
-              ? t("acceptConnection")
-              : t("signRequestInWallet")}
+            ? t("acceptConnection")
+            : t("signRequestInWallet")}
         </p>
       </div>
 
@@ -155,9 +153,7 @@ const Waiting = () => {
         <div
           className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
           style={{
-            // borderTopWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderTopWidth: appearance.borderWidth,
             borderTopColor: appearance.borderColor,
           }}
         />

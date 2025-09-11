@@ -125,9 +125,7 @@ const SignTransaction = () => {
         <div
           className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
           style={{
-            // borderTopWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderTopWidth: appearance.borderWidth,
             borderTopColor: appearance.borderColor,
           }}
         />

@@ -38,7 +38,7 @@ const CustomButton = ({
         color: appearance.textColor,
         borderColor: appearance.borderColor,
         backgroundColor: appearance.background,
-        // borderWidth: appearance.includeBorders ? appearance.borderWidth : "1px",
+        borderWidth: appearance.borderWidth,
       }}
       className="bluxcc:border bluxcc:!px-3 bluxcc:!py-1 bluxcc:!text-sm bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"
     >
@@ -109,9 +109,7 @@ const InputField = ({
             borderRadius: appearance.borderRadius,
             borderColor: getBorderAndRingColor(),
             backgroundColor: appearance.fieldBackground,
-            // borderWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderWidth: appearance.borderWidth,
           } as React.CSSProperties
         }
       >

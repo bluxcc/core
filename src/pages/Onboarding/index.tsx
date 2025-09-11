@@ -38,8 +38,8 @@ const Onboarding = () => {
     return wallets.length <= 3
       ? wallets
       : showAllWallets
-        ? wallets.slice(2, wallets.length)
-        : wallets.slice(0, 2);
+      ? wallets.slice(2, wallets.length)
+      : wallets.slice(0, 2);
   }, [wallets, showAllWallets]);
 
   const handleConnect = (wallet: IWallet) => {
@@ -55,9 +55,7 @@ const Onboarding = () => {
       <div
         className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:z-10"
         style={{
-          // borderTopWidth: appearance.includeBorders
-          //   ? appearance.borderWidth
-          //   : "1px",
+          borderTopWidth: appearance.borderWidth,
           borderTopStyle: "dashed",
           borderTopColor: appearance.borderColor,
         }}
@@ -116,7 +114,7 @@ const Onboarding = () => {
                     isRecent={checkedWallet.isRecent || false}
                     startIcon={handleLogos(
                       checkedWallet.name,
-                      isBackgroundDark(appearance.background),
+                      isBackgroundDark(appearance.background)
                     )}
                     onClick={() => handleConnect(checkedWallet)}
                   />
@@ -189,6 +187,7 @@ const Onboarding = () => {
           href="https://blux.cc"
           target="_blank"
           rel="noreferrer"
+          className="bluxcc:no-underline"
           style={{
             color: appearance.textColor,
           }}
