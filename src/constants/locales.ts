@@ -1,4 +1,4 @@
-export type LanguageKey = "en" | "es";
+import { LanguageKey } from "../types";
 
 export type Translations = {
   [key: string]: {

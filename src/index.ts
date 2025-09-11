@@ -37,10 +37,11 @@ export function createConfig(config: IConfig) {
       ...defaultLightTheme,
       ...config?.appearance,
     },
-    loginMethods: config.loginMethods || ["wallet"],
+    lang: config.lang || "en",
+    defaultNetwork: "",
     showWalletUIs: !!config.showWalletUIs,
     explorer: config.explorer || "stellarchain",
-    defaultNetwork: "",
+    loginMethods: config.loginMethods || ["wallet"],
   };
 
   validateNetworkOptions(
@@ -76,4 +77,20 @@ export const login = async () => {
   openModal(Route.ONBOARDING);
 };
 
-export const logout = () => { };
+export const logout = () => {
+  const { logoutAction } = getState();
+
+  logoutAction();
+};
+
+export const profile = () => {
+  // if (!isAuthenticated) {
+  //   throw new Error("User is not authenticated.");
+  // }
+  // setRoute(Routes.PROFILE);
+  // setValue((prev) => ({ ...prev, isModalOpen: true }));
+};
+
+// export const
+
+// export const { isReady, user, isAuthenticated } = value;

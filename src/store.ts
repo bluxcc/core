@@ -3,12 +3,12 @@ import { createStore } from "zustand/vanilla";
 
 import { Route } from "./enums";
 import { defaultLightTheme } from "./constants/themes";
-import { IInternalConfig, IStore, IWallet, WaitingStatus } from "./types";
-import { walletsConfig } from "./wallets";
+import { IInternalConfig, IStore, IWallet } from "./types";
 
 export const store = createStore<IStore>((set) => ({
   config: {
     appId: "",
+    lang: "en",
     appName: "",
     networks: [],
     defaultNetwork: "",
@@ -63,6 +63,10 @@ export const store = createStore<IStore>((set) => ({
   connectWalletSuccessful: (publicKey: string, passphrase: string) =>
     set((state) => ({
       ...state,
+      authState: {
+        ...state.authState,
+        isAuthenticated: true,
+      },
       user: {
         ...state.user,
         address: publicKey,
@@ -86,6 +90,17 @@ export const store = createStore<IStore>((set) => ({
         isOpen: true,
         route: Route.OTP,
       },
+    })),
+  logoutAction: () =>
+    set((state) => ({
+      ...state,
+      user: undefined,
+      waitingStatus: "login",
+      authState: {
+        ...state.authState,
+        isAuthenticated: false,
+      },
+      modal: { ...state.modal, isOpen: false },
     })),
 }));
 

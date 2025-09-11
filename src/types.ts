@@ -1,6 +1,9 @@
 import { Horizon, rpc } from "@stellar/stellar-sdk";
 
 import { Route, SupportedWallet } from "./enums";
+import { HorizonApi } from "@stellar/stellar-sdk/lib/horizon";
+
+export type LanguageKey = "en" | "es";
 
 export type WaitingStatus = "login" | "signTransaction" | "signMessage";
 
@@ -25,6 +28,7 @@ export interface IConfig {
   networks: string[];
   defaultNetwork?: string;
   appearance?: Partial<IAppearance>;
+  lang?: LanguageKey;
   explorer?: IExplorer;
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
@@ -36,6 +40,7 @@ export interface IInternalConfig extends IConfig {
   appearance: IAppearance;
   showWalletUIs: boolean;
   defaultNetwork: string;
+  lang: LanguageKey;
 }
 
 export interface IUser {
@@ -78,8 +83,8 @@ export interface IStoreProperties {
       soroban: rpc.Server;
     };
   };
-  // account: UseAccountResult;
-  // signTransaction: ISignTransaction<boolean>;
+  // account?: GetAccountResult;
+  signTransaction?: ISignTransaction<boolean>;
 }
 
 export interface IStoreMethods {
@@ -92,35 +97,11 @@ export interface IStoreMethods {
   connectEmail: (email: string) => void;
   setRoute: (route: Route) => void;
   connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
+  logoutAction: () => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
 
-// /**
-//  * Modal state management interface.
-//  */
-// export interface ModalRoute {
-//   route: Route; // Current modal view
-//   showAllWallets: boolean; // Whether to display all available wallets
-// }
-
-// /**
-//  * Defines the heights for different modal views.
-//  */
-// export interface ModalHeight {
-//   [Route.PROFILE]: number;
-//   [Route.WAITING]: number;
-//   [Route.ONBOARDING]: number;
-//   [Route.SUCCESSFUL]: number;
-//   [Route.SIGN_TRANSACTION]: number;
-//   [Route.SEND]: number;
-//   [Route.ACTIVITY]: number;
-//   [Route.OTP]: number;
-// }
-
-/**
- * Defines the available actions for interacting with a wallet.
- */
 export interface IWallet {
   name: SupportedWallet;
   website: string;
@@ -158,72 +139,43 @@ export interface IWallet {
   ) => Promise<{ signedAuthorizationEntry: string; signerPublicKey?: string }>;
 }
 
-// export interface IAccountData {
-//   id: string;
-//   sequence: string;
-//   xlmBalance: string;
-//   subentry_count: number;
-//   balances: Horizon.HorizonApi.BalanceLine[];
-//   thresholds: Horizon.HorizonApi.AccountThresholds;
-//   transactions?: Horizon.ServerApi.TransactionRecord[];
-// }
-//
-// export interface IAsset {
-//   logo?: string;
-//   balance: string;
-//   assetCode: string;
-//   assetType: string;
-//   assetIssuer: string;
-// }
-//
-// /**
-//  * Context state management interface.
-//  */
-// export interface ContextState {
-//   value: ContextInterface; // Current context values
-//   setValue: React.Dispatch<React.SetStateAction<ContextInterface>>; // Function to update context values
-//   route: Routes;
-//   setRoute: React.Dispatch<React.SetStateAction<Routes>>;
-// }
-//
-// /**
-//  * Represents the result of a successful wallet connection.
-//  */
-// export interface ConnectResult {
-//   publicKey: string; // Public key obtained after connection
-// }
-//
-// /**
-//  * Represents the result of a signed transaction.
-//  */
-// export interface SignResult {
-//   signedXdr: string; // Signed XDR transaction string
-// }
-//
-// export interface GetNetworkResult {
-//   network: string;
-//   passphrase: string;
-// }
-//
-// export interface ISendTransactionOptions {
-//   network?: string;
-//   isSoroban?: boolean;
-// }
+export interface IAccountData {
+  id: string;
+  sequence: string;
+  xlmBalance: string;
+  subentry_count: number;
+  balances: Horizon.HorizonApi.BalanceLine[];
+  thresholds: Horizon.HorizonApi.AccountThresholds;
+  transactions?: Horizon.ServerApi.TransactionRecord[];
+}
 
-// export type ISendTransactionOptionsInternal = {
-//   network: string;
-//   isSoroban: boolean;
-// };
+export interface IAsset {
+  logo?: string;
+  balance: string;
+  assetCode: string;
+  assetType: string;
+  assetIssuer: string;
+}
 
-// export type TransactionResponseType<T extends boolean> = T extends true
-//   ? rpc.Api.GetSuccessfulTransactionResponse
-//   : HorizonApi.SubmitTransactionResponse;
-//
-// // Use the generic type parameter to ensure consistency
-// export interface ISignTransaction<IsSoroban extends boolean> {
-//   options: ISendTransactionOptionsInternal;
-//   xdr: string; // Transaction details for signing
-//   rejecter: ((reason: any) => void) | null; // Transaction signing rejecter
-//   result: TransactionResponseType<IsSoroban> | null; // Conditional response type
-//   resolver: ((value: TransactionResponseType<IsSoroban>) => void) | null; // Resolver with matching type
-// }
+export interface ISendTransactionOptions {
+  network?: string;
+  isSoroban?: boolean;
+}
+
+export type ISendTransactionOptionsInternal = {
+  network: string;
+  isSoroban: boolean;
+};
+
+export type TransactionResponseType<T extends boolean> = T extends true
+  ? rpc.Api.GetSuccessfulTransactionResponse
+  : HorizonApi.SubmitTransactionResponse;
+
+// Use the generic type parameter to ensure consistency
+export interface ISignTransaction<IsSoroban extends boolean> {
+  options: ISendTransactionOptionsInternal;
+  xdr: string; // Transaction details for signing
+  rejecter: ((reason: any) => void) | null; // Transaction signing rejecter
+  result: TransactionResponseType<IsSoroban> | null; // Conditional response type
+  resolver: ((value: TransactionResponseType<IsSoroban>) => void) | null; // Resolver with matching type
+}

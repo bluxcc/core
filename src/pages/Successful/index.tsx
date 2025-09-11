@@ -24,16 +24,11 @@ const Successful = () => {
     : null;
 
   useEffect(() => {
-    // if (waitingStatus === "connecting") {
-    //   setTimeout(() => {
-    //     context.setValue((prev) => ({
-    //       ...prev,
-    //       isModalOpen: false,
-    //       showAllWallets: false,
-    //       isAuthenticated: true,
-    //     }));
-    //   }, 1000);
-    // }
+    if (waitingStatus === "connecting") {
+      setTimeout(() => {
+        closeModal();
+      }, 1000);
+    }
   }, []);
 
   const handleGoToExplorer = () => {

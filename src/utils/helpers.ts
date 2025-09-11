@@ -1,13 +1,44 @@
 import { walletsConfig } from "../wallets";
 import EXPLORERS from "../constants/explorers";
-import { ITransports, IWallet, IExplorer } from "../types";
+import translations from "../constants/locales";
 import { StellarNetwork, SupportedWallet } from "../enums";
 import { RECENT_CONNECTION_METHODS } from "../constants/consts";
-import translations, { LanguageKey } from "../constants/locales";
-import { DEFAULT_NETWORKS_TRANSPORTS } from "../constants/networkDetails";
+import { ITransports, IWallet, IExplorer, LanguageKey } from "../types";
+import {
+  networks,
+  DEFAULT_NETWORKS_TRANSPORTS,
+} from "../constants/networkDetails";
 
 export const capitalizeFirstLetter = (str: string): string => {
   return `${str[0]?.toUpperCase()}${str.slice(1)}`;
+};
+
+export const copyText = (text: string) => {
+  return navigator.clipboard.writeText(text);
+};
+
+export const formatDate = (isoString: string) => {
+  const date = new Date(isoString);
+
+  const day = date.getUTCDate();
+  const month = date.toLocaleString("en-US", { month: "long" });
+
+  return `${day} ${month}`;
+};
+
+export const getActiveNetworkTitle = (activeNetwork: string): string => {
+  const networksArray = Object.entries(networks);
+  const selectedNetwork = networksArray.find((n) => n[1] === activeNetwork);
+
+  let networkName = "";
+
+  if (!selectedNetwork) {
+    networkName = "MAINNET";
+  } else {
+    networkName = selectedNetwork[0].toUpperCase();
+  }
+
+  return networkName;
 };
 
 export const getContrastColor = (bgColor: string): string => {
@@ -151,6 +182,23 @@ export const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+export const humanizeAmount = (
+  amount: number | string,
+  big: boolean = false,
+): string => {
+  const num = typeof amount === "number" ? amount : parseFloat(amount);
+
+  if (isNaN(num) || num === 0) return "0";
+  if (num < 0.000001) return amount.toString();
+
+  if (big) {
+    if (num >= 1e6) return `${(num / 1e6).toFixed(2)}m`;
+    if (num >= 1e3) return `${(num / 1e3).toFixed(2)}k`;
+  }
+
+  return formatNumberWithCommas(sevenDigit(num));
+};
+
 export const initializeRabetMobile = () => {
   const handleMessage = (event: MessageEvent) => {
     if (
@@ -199,6 +247,13 @@ export const setRecentConnectionMethod = (walletName: SupportedWallet) => {
   localStorage.setItem(RECENT_CONNECTION_METHODS, JSON.stringify(newRecent));
 };
 
+export const shortenAddress = (address: string, numChars = 8) => {
+  const shortenedAddress =
+    address.slice(0, numChars) + "..." + address.slice(-numChars);
+
+  return shortenedAddress;
+};
+
 export const timeout = (waiter: number) =>
   new Promise((resolve) => setTimeout(resolve, waiter));
 
@@ -237,4 +292,38 @@ export const validateNetworkOptions = (
 
 const interpolate = (template: string, vars: Record<string, string> = {}) => {
   return template.replace(/\$\{(\w+)\}/g, (_, key) => vars[key] || "");
+};
+
+const sevenDigit = (number: number | string): string => {
+  const numStr = number.toString();
+  const [integer, decimal = ""] = numStr.split(".");
+
+  if (!decimal) return integer;
+
+  const precisionMap: Record<number, number> = {
+    0: 8,
+    1: 7,
+    2: 6,
+    3: 5,
+    4: 4,
+    5: 3,
+    6: 2,
+  };
+
+  const precision = precisionMap[integer.length] ?? 0;
+
+  if (precision > 0) {
+    const sliced = `${integer}.${decimal.slice(0, precision)}`;
+    const num = parseFloat(sliced);
+    return Number.isInteger(num) ? integer : num.toFixed(2);
+  }
+
+  return integer;
+};
+
+const formatNumberWithCommas = (number: string): string => {
+  const [integer, decimal] = number.split(".");
+  return decimal
+    ? `${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${decimal}`
+    : integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
