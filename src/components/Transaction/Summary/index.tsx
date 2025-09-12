@@ -68,12 +68,10 @@ const Summary = ({
               index === details.length - 1
                 ? {}
                 : {
-                  borderBottomColor: appearance.borderColor,
-                  borderBottomStyle: "dashed",
-                  // borderBottomWidth: appearance.includeBorders
-                  //   ? appearance.borderWidth
-                  //   : "1px",
-                }
+                    borderBottomColor: appearance.borderColor,
+                    borderBottomStyle: "dashed",
+                    borderBottomWidth: appearance.borderWidth,
+                  }
             }
           >
             <span style={{ color: appearance.textColor }}>{label}</span>
@@ -89,7 +87,7 @@ const Summary = ({
               {value}
             </span>
           </div>
-        ),
+        )
       )}
     </div>
   );

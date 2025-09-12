@@ -72,8 +72,9 @@ const CardItem = ({
   return (
     <div
       onClick={variant === "input" ? undefined : onClick}
-      className={`bluxcc:flex bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:border bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px] ${variant === "input" ? "bluxcc:cursor-text" : "bluxcc:cursor-pointer"
-        }`}
+      className={`bluxcc:flex bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:border bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px] ${
+        variant === "input" ? "bluxcc:cursor-text" : "bluxcc:cursor-pointer"
+      }`}
       style={{
         borderRadius: appearance.borderRadius,
         color: appearance.textColor,
@@ -81,7 +82,7 @@ const CardItem = ({
           ? appearance.accentColor
           : appearance.borderColor,
         backgroundColor: appearance.fieldBackground,
-        // borderWidth: appearance.includeBorders ? appearance.borderWidth : "1px",
+        borderWidth: appearance.borderWidth,
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -91,9 +92,7 @@ const CardItem = ({
           backgroundColor: appearance.background,
           borderRadius: appearance.borderRadius,
           borderColor: appearance.borderColor,
-          // borderWidth: appearance.includeBorders
-          //   ? appearance.borderWidth
-          //   : "1px",
+          borderWidth: appearance.borderWidth,
         }}
         className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:border bluxcc:transition-[border-radius] bluxcc:duration-300"
       >
@@ -132,9 +131,7 @@ const CardItem = ({
                     ? appearance.accentColor
                     : appearance.borderColor,
                   color: isValid ? appearance.accentColor : "#999999",
-                  // borderWidth: appearance.includeBorders
-                  //   ? appearance.borderWidth
-                  //   : "1px",
+                  borderWidth: appearance.borderWidth,
                 }}
               >
                 {t("submit")}

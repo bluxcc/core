@@ -67,8 +67,8 @@ const Successful = () => {
         <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5">
           {waitingStatus === "login"
             ? t("connectionSuccessfulMessage", {
-              appName: capitalizeFirstLetter(config.appName),
-            })
+                appName: capitalizeFirstLetter(config.appName),
+              })
             : t("transactionSuccessfulMessage")}
         </p>
       </div>
@@ -92,9 +92,7 @@ const Successful = () => {
         <div
           className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
           style={{
-            // borderTopWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderTopWidth: appearance.borderWidth,
             borderTopColor: appearance.borderColor,
           }}
         />

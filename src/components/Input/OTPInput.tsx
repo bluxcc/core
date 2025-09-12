@@ -27,7 +27,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
 
   const handleChange = (
     index: number,
-    e: ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement>
   ): void => {
     const value = e.target.value.replace(/\D/g, "");
     if (!value) return;
@@ -59,7 +59,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
 
   const handleKeyDown = (
     index: number,
-    e: KeyboardEvent<HTMLInputElement>,
+    e: KeyboardEvent<HTMLInputElement>
   ): void => {
     if (e.key === "Backspace") {
       const newOtp = [...otp];
@@ -83,10 +83,10 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
       borderColor: error
         ? "#FF6666"
         : digit
-          ? appearance.accentColor
-          : appearance.borderColor,
-      // borderWidth: appearance.includeBorders ? appearance.borderWidth : "1px",
-    }) as React.CSSProperties;
+        ? appearance.accentColor
+        : appearance.borderColor,
+      borderWidth: appearance.borderWidth,
+    } as React.CSSProperties);
 
   return (
     <div className="bluxcc:flex bluxcc:gap-1">
