@@ -1,11 +1,10 @@
 import { Horizon, rpc } from "@stellar/stellar-sdk";
 
 import { Route, SupportedWallet } from "./enums";
-import { HorizonApi } from "@stellar/stellar-sdk/lib/horizon";
 
 export type LanguageKey = "en" | "es";
 
-export type WaitingStatus = "login" | "signTransaction" | "signMessage";
+export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
 
 export type ITransports = Record<string, IServers>;
 
@@ -63,6 +62,14 @@ export interface IAppearance {
   logo: string; // Optional application logo URL
 }
 
+export interface IStellarConfig {
+  activeNetwork: string;
+  servers: {
+    horizon: Horizon.Server;
+    soroban: rpc.Server;
+  };
+}
+
 export interface IStoreProperties {
   config: IInternalConfig;
   user?: IUser;
@@ -76,28 +83,24 @@ export interface IStoreProperties {
   };
   waitingStatus: WaitingStatus;
   wallets: IWallet[];
-  stellar?: {
-    activeNetwork: string;
-    servers: {
-      horizon: Horizon.Server;
-      soroban: rpc.Server;
-    };
-  };
+  stellar?: IStellarConfig;
   // account?: GetAccountResult;
-  signTransaction?: ISignTransaction<boolean>;
+  sendTransaction?: ISendTransaction;
 }
 
 export interface IStoreMethods {
-  openModal: (route: Route) => void;
-  closeModal: () => void;
-  setConfig: (config: IInternalConfig) => void;
-  setWallets: (wallets: IWallet[]) => void;
-  setIsReady: (isReady: boolean) => void;
-  connectWallet: (walletName: string) => void;
   connectEmail: (email: string) => void;
-  setRoute: (route: Route) => void;
+  connectWallet: (walletName: string) => void;
   connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
+  closeModal: () => void;
   logoutAction: () => void;
+  openModal: (route: Route) => void;
+  setConfig: (config: IInternalConfig) => void;
+  setIsReady: (isReady: boolean) => void;
+  setRoute: (route: Route) => void;
+  setSendTransaction: (sendTransaction: ISendTransaction) => void;
+  setStellar: (stellar: IStellarConfig) => void;
+  setWallets: (wallets: IWallet[]) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
@@ -158,24 +161,17 @@ export interface IAsset {
 }
 
 export interface ISendTransactionOptions {
-  network?: string;
-  isSoroban?: boolean;
+  network: string;
 }
 
-export type ISendTransactionOptionsInternal = {
-  network: string;
-  isSoroban: boolean;
-};
+export type TransactionResponseType =
+  // ? rpc.Api.GetSuccessfulTransactionResponse
+  Horizon.HorizonApi.SubmitTransactionResponse;
 
-export type TransactionResponseType<T extends boolean> = T extends true
-  ? rpc.Api.GetSuccessfulTransactionResponse
-  : HorizonApi.SubmitTransactionResponse;
-
-// Use the generic type parameter to ensure consistency
-export interface ISignTransaction<IsSoroban extends boolean> {
-  options: ISendTransactionOptionsInternal;
-  xdr: string; // Transaction details for signing
-  rejecter: ((reason: any) => void) | null; // Transaction signing rejecter
-  result: TransactionResponseType<IsSoroban> | null; // Conditional response type
-  resolver: ((value: TransactionResponseType<IsSoroban>) => void) | null; // Resolver with matching type
+export interface ISendTransaction {
+  xdr: string;
+  options: ISendTransactionOptions;
+  rejecter: (reason: any) => void;
+  result?: TransactionResponseType;
+  resolver: (value: TransactionResponseType) => void;
 }

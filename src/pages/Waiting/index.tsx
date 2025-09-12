@@ -7,6 +7,7 @@ import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
 import handleLogos from "../../utils/walletLogos";
 import { Loading, RedExclamation } from "../../assets/Icons";
+import handleTransactionSigning from "../../stellar/handleTransactionSigning";
 import {
   getWalletNetwork,
   isBackgroundDark,
@@ -25,7 +26,6 @@ const Waiting = () => {
 
   const waitingStatus = store.waitingStatus;
   const appearance = store.config.appearance;
-  // const { xdr, options } = store.signTransaction;
 
   useEffect(() => {
     if (!user || !user.authValue) return;
@@ -44,25 +44,33 @@ const Waiting = () => {
   }, [matchedWallet]);
 
   const handleAssignment = async (wallet: IWallet) => {
-    if (waitingStatus === "signTransaction") {
+    if (waitingStatus === "sendTransaction") {
       try {
-        // const result = await handleTransactionSigning(
-        //   wallet,
-        //   xdr,
-        //   context.value.user.wallet?.address as string,
-        //   options,
-        //   config.transports || {},
-        // );
-        //
-        // context.setValue((prev) => ({
-        //   ...prev,
-        //   signTransaction: {
-        //     ...prev.signTransaction,
-        //     result,
-        //   },
-        // }));
-        //
-        // context.setRoute(Routes.SUCCESSFUL);
+        const { sendTransaction, user } = store;
+
+        if (!sendTransaction) {
+          return;
+        }
+
+        if (!user) {
+          return;
+        }
+
+        const result = await handleTransactionSigning(
+          wallet,
+          sendTransaction.xdr,
+          user.address,
+          sendTransaction.options,
+          store.config.transports || {},
+        );
+
+        sendTransactionSuccessful({
+          result,
+          xdr: sendTransaction.xdr,
+          options: sendTransaction.options,
+          rejecter: sendTransaction.rejecter,
+          resolver: sendTransaction.resolver,
+        });
       } catch (error) {
         setError(true);
 

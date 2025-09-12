@@ -1,9 +1,16 @@
 import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
+import { Horizon } from "@stellar/stellar-sdk";
 
 import { Route } from "./enums";
 import { defaultLightTheme } from "./constants/themes";
-import { IInternalConfig, IStore, IWallet } from "./types";
+import {
+  IStore,
+  IWallet,
+  IStellarConfig,
+  IInternalConfig,
+  ISendTransaction,
+} from "./types";
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -17,6 +24,7 @@ export const store = createStore<IStore>((set) => ({
     appearance: defaultLightTheme,
   },
   stellar: undefined,
+  sendTransaction: undefined,
   wallets: [],
   waitingStatus: "login",
   modal: {
@@ -34,6 +42,30 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, authState: { ...state.authState, isReady } })),
   setRoute: (route: Route) =>
     set((state) => ({ ...state, modal: { ...state.modal, route } })),
+  setSendTransaction: (sendTransaction: ISendTransaction) =>
+    set((state) => ({
+      ...state,
+      sendTransaction,
+      modal: { ...state.modal, isOpen: true, route: Route.SEND_TRANSACTION },
+    })),
+  setStellar: (stellar: IStellarConfig) =>
+    set((state) => ({ ...state, stellar })),
+  approveSendTransaction: () =>
+    set((state) => ({
+      ...state,
+      modal: { ...state.modal, isOpen: true, route: Route.WAITING },
+      waitingStatus: "sendTransaction",
+    })),
+  sendTransactionSuccessful: (sendTransaction: ISendTransaction) =>
+    set((state) => ({
+      ...state,
+      sendTransaction,
+      modal: {
+        ...state.modal,
+        isOpen: true,
+        route: Route.SUCCESSFUL,
+      },
+    })),
   openModal: (route: Route) =>
     set((state) => ({
       ...state,

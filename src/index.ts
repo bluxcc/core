@@ -6,10 +6,15 @@ import { getState } from "./store";
 import { Provider } from "./components/provider";
 import { IConfig, IInternalConfig } from "./types";
 import { defaultLightTheme } from "./constants/themes";
-import { handleLoadWallets, validateNetworkOptions } from "./utils/helpers";
+import {
+  getNetworkRpc,
+  handleLoadWallets,
+  validateNetworkOptions,
+} from "./utils/helpers";
 
 import "./tailwind.css";
 import getTransactionDetails from "./stellar/getTransactionDetails";
+import handleTransactionSigning from "./stellar/handleTransactionSigning";
 
 let root: any = null;
 let isInitiated = false;
@@ -53,7 +58,20 @@ export function createConfig(config: IConfig) {
 
   conf.defaultNetwork = config.defaultNetwork ?? config.networks[0];
 
-  const { setConfig, setWallets, setIsReady } = getState();
+  const { horizon, soroban } = getNetworkRpc(
+    conf.defaultNetwork,
+    config.transports ?? {},
+  );
+
+  const { setConfig, setWallets, setIsReady, setStellar } = getState();
+
+  setStellar({
+    activeNetwork: conf.defaultNetwork,
+    servers: {
+      horizon,
+      soroban,
+    },
+  });
 
   setConfig(conf);
 
@@ -95,61 +113,60 @@ const profile = () => {
 
 const sendTransaction = (xdr: string, options: { network: string }) =>
   new Promise((resolve, reject) => {
-    // const { authState, wallets, config, user } = getState();
-    //
-    // let network = value.activeNetwork;
-    //
-    // if (options && options.network) {
-    //   network = options.network;
-    // }
-    //
-    // if (!authState.isAuthenticated) {
-    //   reject(new Error("User is not authenticated."));
-    // }
-    //
-    // if (!getTransactionDetails(xdr, network)) {
-    //   reject("Invalid XDR");
-    //
-    //   return;
-    // }
-    //
-    // const transactionObject = {
-    //   xdr,
-    //   result: null,
-    //   rejecter: reject,
-    //   resolver: resolve,
-    // };
-    //
-    // const foundWallet = wallets.find((w) => w.name === user.authValue);
-    //
-    // if (!foundWallet) {
-    //   throw new Error("Could not find the connected wallet.");
-    // }
-    //
-    // if (!config.showWalletUIs) {
-    //   handleTransactionSigning(
-    //     foundWallet,
-    //     xdr,
-    //     user.address as string,
-    //     config.transports || {},
-    //   )
-    //     .then((result) => {
-    //       resolve(result);
-    //     })
-    //     .catch((err) => {
-    //       reject(err);
-    //     });
-    //
-    //   return;
-    // }
-    //
-    // setRoute(Route.SIGN_TRANSACTION);
-    //
-    // setValue((prev) => ({
-    //   ...prev,
-    //   isModalOpen: true,
-    //   signTransaction: transactionObject,
-    // }));
+    const { authState, wallets, config, user, stellar, setSendTransaction } =
+      getState();
+
+    if (!authState.isAuthenticated || !stellar || !user) {
+      reject(new Error("User is not authenticated."));
+
+      return;
+    }
+
+    let network = stellar.activeNetwork;
+
+    if (options && options.network) {
+      network = options.network;
+    }
+
+    if (!getTransactionDetails(xdr, network)) {
+      reject("Invalid XDR");
+
+      return;
+    }
+
+    const transactionObject = {
+      xdr,
+      options,
+      rejecter: reject,
+      resolver: resolve,
+      result: undefined,
+    };
+
+    const foundWallet = wallets.find((w) => w.name === user.authValue);
+
+    if (!foundWallet) {
+      throw new Error("Could not find the connected wallet.");
+    }
+
+    if (!config.showWalletUIs) {
+      handleTransactionSigning(
+        foundWallet,
+        xdr,
+        user.address,
+        options,
+        config.transports || {},
+      )
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+
+      return;
+    }
+
+    setSendTransaction(transactionObject);
   });
 
 export const Blux = {

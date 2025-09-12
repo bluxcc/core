@@ -24,7 +24,7 @@ export enum Route {
   WAITING = "WAITING", // View for connection process
   SUCCESSFUL = "SUCCESSFUL", // View for connection success process
   PROFILE = "PROFILE", // User profile view
-  SIGN_TRANSACTION = "SIGN_TRANSACTION", // User sign transaction view
+  SEND_TRANSACTION = "SEND_TRANSACTION", // User sign transaction view
   SEND = "SEND", // User sign transaction view
   ACTIVITY = "ACTIVITY", // User sign transaction view
   OTP = "OTP", // User Login with Phone ot email

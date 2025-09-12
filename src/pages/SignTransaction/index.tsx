@@ -1,27 +1,25 @@
 import { useAppStore } from "../../store";
 import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
-import { useBalance } from "../../../useStellar";
 import { Route, SupportedWallet } from "../../enums";
+import Summary from "../../components/Transaction/Summary";
+import getTransactionDetails from "../../stellar/getTransactionDetails";
 import {
   hexToRgba,
   humanizeAmount,
-  getActiveNetworkTitle,
   shortenAddress,
+  getActiveNetworkTitle,
 } from "../../utils/helpers";
-import Summary from "../../components/Transaction/Summary";
-import getTransactionDetails from "../../stellar/getTransactionDetails";
 
 const SignTransaction = () => {
   const t = useLang();
-  const { balance } = useBalance({ asset: "native" });
 
   const store = useAppStore((store) => store);
 
   const appearance = store.config.appearance;
-  const { signTransaction } = store;
+  const { user, stellar, sendTransaction } = store;
 
-  if (!signTransaction) {
+  if (!sendTransaction || !user || !stellar) {
     return (
       <div>
         <p>{t("invalidXdr")}</p>
@@ -29,18 +27,12 @@ const SignTransaction = () => {
     );
   }
 
-  const { xdr, options } = signTransaction;
+  const { xdr, options } = sendTransaction;
 
   const txDetails = getTransactionDetails(xdr, options.network);
 
   const handleSignTx = async () => {
-    // context.setValue((prev) => ({
-    //   ...prev,
-    //   isModalOpen: true,
-    //   waitingStatus: "signing",
-    // }));
-    //
-    // context.setRoute(Routes.WAITING);
+    approveSendTransaction();
   };
 
   if (!txDetails) {
@@ -51,16 +43,9 @@ const SignTransaction = () => {
     );
   }
 
-  if (!store.user) {
-    return (
-      <div>
-        <p>{t("invalidXdr")}</p>
-      </div>
-    );
-  }
-
-  const networkTitle = getActiveNetworkTitle(store.stellar.activeNetwork);
-  const isLobstr = store.user.authValue === SupportedWallet.Lobstr;
+  const balance = 0;
+  const isLobstr = user.authValue === SupportedWallet.Lobstr;
+  const networkTitle = getActiveNetworkTitle(stellar.activeNetwork);
 
   return (
     <div className="bluxcc:w-full">
@@ -102,7 +87,7 @@ const SignTransaction = () => {
             className="bluxcc:mt-0.5 bluxcc:text-xs"
             style={{ color: `${hexToRgba(appearance.textColor, 0.8)}` }}
           >
-            {store.user.address
+            {user.address
               ? shortenAddress(store.user?.address as string, 5)
               : t("noAddressFound")}
           </p>

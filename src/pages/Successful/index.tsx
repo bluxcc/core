@@ -1,30 +1,29 @@
+import { useEffect } from "react";
+
 import { useAppStore } from "../../store";
 import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
 import { GreenCheck } from "../../assets/Icons";
-import { networks } from "../../constants/networkDetails";
 import { capitalizeFirstLetter, getExplorerUrl } from "../../utils/helpers";
-import { useEffect } from "react";
 
 const Successful = () => {
   const t = useLang();
-  const config = useAppStore((store) => store.config);
-  const closeModal = useAppStore((store) => store.closeModal);
+  const store = useAppStore((store) => store);
 
+  const { config, closeModal, waitingStatus } = store;
   const { appearance } = config;
 
-  // const { result, options } = context.value.signTransaction;
-  const result = "dfkdhfkfdkdfh";
-  const options = { isSoroban: false, network: networks.mainnet };
-  const waitingStatus = "connecting";
-  let hash = "fkdhfkdfkdhfkdfhkdfh";
+  const { sendTransaction } = store;
+
+  const hash = sendTransaction?.result?.hash;
+  const network = sendTransaction?.options?.network || "";
 
   const explorerUrl = hash
-    ? getExplorerUrl(options.network, config.explorer, "transactionUrl", hash)
+    ? getExplorerUrl(network, config.explorer, "transactionUrl", hash)
     : null;
 
   useEffect(() => {
-    if (waitingStatus === "connecting") {
+    if (waitingStatus === "login") {
       setTimeout(() => {
         closeModal();
       }, 1000);
@@ -40,13 +39,17 @@ const Successful = () => {
   const handleDone = () => {
     closeModal();
 
-    // if (waitingStatus === "signing") {
-    //   const { resolver, result } = context.value.signTransaction;
-    //
-    //   if (resolver && result) {
-    //     resolver(result);
-    //   }
-    // }
+    if (waitingStatus === "sendTransaction") {
+      if (!sendTransaction) {
+        return;
+      }
+
+      const { resolver, result } = sendTransaction;
+
+      if (resolver && result) {
+        resolver(result);
+      }
+    }
   };
 
   return (
@@ -57,12 +60,12 @@ const Successful = () => {
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
         <p className="bluxcc:text-xl">
-          {waitingStatus === "connecting"
+          {waitingStatus === "login"
             ? t("connectionSuccessfulTitle")
             : t("transactionSuccessfulTitle")}
         </p>
         <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5">
-          {waitingStatus === "connecting"
+          {waitingStatus === "login"
             ? t("connectionSuccessfulMessage", {
               appName: capitalizeFirstLetter(config.appName),
             })
@@ -70,7 +73,7 @@ const Successful = () => {
         </p>
       </div>
 
-      {waitingStatus === "signing" &&
+      {waitingStatus === "sendTransaction" &&
         hash &&
         typeof explorerUrl == "string" && (
           <Button
@@ -97,7 +100,7 @@ const Successful = () => {
         />
       </div>
 
-      {waitingStatus === "connecting" ? (
+      {waitingStatus === "login" ? (
         <Button
           state="enabled"
           variant="outline"

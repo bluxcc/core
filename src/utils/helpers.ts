@@ -7,6 +7,7 @@ import { ITransports, IWallet, IExplorer, LanguageKey } from "../types";
 import {
   networks,
   DEFAULT_NETWORKS_TRANSPORTS,
+  INetworkTransports,
 } from "../constants/networkDetails";
 
 export const capitalizeFirstLetter = (str: string): string => {
@@ -117,6 +118,37 @@ export const getNetworkByPassphrase = (passphrase: string) => {
   }
 
   return networkEntry[0].toLowerCase();
+};
+
+export const getNetworkRpc = (
+  network: string,
+  transports: ITransports,
+): INetworkTransports => {
+  let details = DEFAULT_NETWORKS_TRANSPORTS[network];
+
+  const transport = transports[network];
+
+  if (!details && !transport) {
+    throw new Error("Custom network has no transports.");
+  } else if (!details && transport) {
+    details = {
+      name: "Custom Network",
+      horizon: "",
+      soroban: "",
+    };
+  }
+
+  if (transport) {
+    if (transport.horizon) {
+      details.horizon = transport.horizon;
+    }
+
+    if (transport.soroban) {
+      details.soroban = transport.soroban;
+    }
+  }
+
+  return details;
 };
 
 export const getSortedCheckedWallets = (wallets: IWallet[]): IWallet[] => {
