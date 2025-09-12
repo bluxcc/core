@@ -15,7 +15,7 @@ const OTP = () => {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [error, setError] = useState(false);
 
-  const handleResendCode = () => {};
+  const handleResendCode = () => { };
 
   const verifyOTPRequest = async (otp: string): Promise<void> => {
     setError(false);

@@ -1,10 +1,10 @@
 import React from "react";
 
 import { useAppStore } from "../../store";
-import { getContrastColor } from "../../utils/helpers";
+import { getContrastColor, hexToRgba } from "../../utils/helpers";
 
 type ButtonSize = "small" | "medium" | "large";
-type ButtonVariant = "outline" | "text" | "fill";
+type ButtonVariant = "outline" | "text" | "fill" | "tonal";
 type ButtonState = "enabled" | "disabled" | "selected";
 
 interface ButtonProps {
@@ -39,7 +39,7 @@ const Button = ({
   style,
   className,
 }: ButtonProps) => {
-  const appearance = useAppStore((store) => store.config?.appearance);
+  const appearance = useAppStore((store) => store.config.appearance);
 
   const baseStyle: React.CSSProperties = {
     borderRadius: appearance.borderRadius,
@@ -54,7 +54,7 @@ const Button = ({
       border: `1px solid ${appearance.borderColor}`,
       color: appearance.accentColor,
       backgroundColor: appearance.background,
-      borderWidth: appearance.borderWidth,
+      // borderWidth: appearance.includeBorders ? appearance.borderWidth : "1px",
     });
   } else if (variant === "fill") {
     Object.assign(baseStyle, {
@@ -67,6 +67,11 @@ const Button = ({
       color: appearance.accentColor,
       backgroundColor: "transparent",
     });
+  } else if (variant === "tonal") {
+    Object.assign(baseStyle, {
+      color: appearance.accentColor,
+      backgroundColor: hexToRgba(appearance.accentColor, 0.1),
+    });
   }
 
   if (state === "selected") {
@@ -77,9 +82,8 @@ const Button = ({
     <button
       onClick={onClick}
       disabled={state === "disabled"}
-      className={`${buttonBase} ${sizeClasses[size]} ${
-        className ?? ""
-      } bluxcc:transition-all bluxcc:duration-300`}
+      className={`${buttonBase} ${sizeClasses[size]} ${className ?? ""
+        } bluxcc:transition-all bluxcc:duration-300`}
       style={baseStyle}
     >
       {startIcon && <span>{startIcon}</span>}

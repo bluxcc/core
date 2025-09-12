@@ -1,10 +1,8 @@
-import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { Horizon } from "@stellar/stellar-sdk";
 
-import { Route, SupportedWallet } from "./enums";
+import { SupportedWallet } from "./enums";
 
 export type LanguageKey = "en" | "es";
-
-export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
 
 export type ITransports = Record<string, IServers>;
 
@@ -42,13 +40,6 @@ export interface IInternalConfig extends IConfig {
   lang: LanguageKey;
 }
 
-export interface IUser {
-  address: string;
-  walletPassphrase: string;
-  authValue: string; // rabet, freigher, albedo, abcd@gmail.com, +1 555..., Gmail, Apple, etc..
-  authMethod: string; // wallet, email, sms, social, etc..
-}
-
 export interface IAppearance {
   background: string; // Background color or image
   fieldBackground: string; // Background color for input fields or similar UI areas
@@ -61,49 +52,6 @@ export interface IAppearance {
   borderWidth: string; // Width of borders (e.g., '1px', '0', etc.)
   logo: string; // Optional application logo URL
 }
-
-export interface IStellarConfig {
-  activeNetwork: string;
-  servers: {
-    horizon: Horizon.Server;
-    soroban: rpc.Server;
-  };
-}
-
-export interface IStoreProperties {
-  config: IInternalConfig;
-  user?: IUser;
-  authState: {
-    isReady: boolean;
-    isAuthenticated: boolean;
-  };
-  modal: {
-    route: Route;
-    isOpen: boolean;
-  };
-  waitingStatus: WaitingStatus;
-  wallets: IWallet[];
-  stellar?: IStellarConfig;
-  // account?: GetAccountResult;
-  sendTransaction?: ISendTransaction;
-}
-
-export interface IStoreMethods {
-  connectEmail: (email: string) => void;
-  connectWallet: (walletName: string) => void;
-  connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
-  closeModal: () => void;
-  logoutAction: () => void;
-  openModal: (route: Route) => void;
-  setConfig: (config: IInternalConfig) => void;
-  setIsReady: (isReady: boolean) => void;
-  setRoute: (route: Route) => void;
-  setSendTransaction: (sendTransaction: ISendTransaction) => void;
-  setStellar: (stellar: IStellarConfig) => void;
-  setWallets: (wallets: IWallet[]) => void;
-}
-
-export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export interface IWallet {
   name: SupportedWallet;

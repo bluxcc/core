@@ -7,6 +7,7 @@ import { hexToRgba } from "../../utils/helpers";
 
 type CardItemProps = {
   variant?: "social" | "default" | "input";
+  size?: "small" | "medium";
   startIcon: React.ReactNode;
   endArrow?: boolean;
   isRecent?: boolean;
@@ -20,6 +21,7 @@ type CardItemProps = {
 
 const CardItem = ({
   variant = "default",
+  size = "medium",
   startIcon,
   endArrow,
   isRecent,
@@ -30,7 +32,8 @@ const CardItem = ({
   onSubmit,
   inputType = "text",
 }: CardItemProps) => {
-  const appearance = useAppStore((store) => store.config.appearance);
+  const store = useAppStore((store) => store);
+  const { appearance } = store.config;
   const t = useLang();
 
   const [inputValue, setInputValue] = useState(label || "");
@@ -72,9 +75,11 @@ const CardItem = ({
   return (
     <div
       onClick={variant === "input" ? undefined : onClick}
-      className={`bluxcc:flex bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:border bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px] ${
-        variant === "input" ? "bluxcc:cursor-text" : "bluxcc:cursor-pointer"
-      }`}
+      className={`bluxcc:flex ${variant === "input" ? "bluxcc:cursor-text" : "bluxcc:cursor-pointer"
+        } ${size === "small"
+          ? "bluxcc:size-[96px] bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:py-4"
+          : "bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px]"
+        }`}
       style={{
         borderRadius: appearance.borderRadius,
         color: appearance.textColor,
@@ -82,7 +87,7 @@ const CardItem = ({
           ? appearance.accentColor
           : appearance.borderColor,
         backgroundColor: appearance.fieldBackground,
-        borderWidth: appearance.borderWidth,
+        // borderWidth: appearance.includeBorders ? appearance.borderWidth : "1px",
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -92,14 +97,19 @@ const CardItem = ({
           backgroundColor: appearance.background,
           borderRadius: appearance.borderRadius,
           borderColor: appearance.borderColor,
-          borderWidth: appearance.borderWidth,
+          // borderWidth: appearance.includeBorders
+          //   ? appearance.borderWidth
+          //   : "1px",
         }}
-        className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:border bluxcc:transition-[border-radius] bluxcc:duration-300"
+        className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
       >
         {startIcon}
       </span>
 
-      <div className="bluxcc:relative bluxcc:ml-4 bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center">
+      <div
+        className={`${size === "small" ? "bluxcc:mt-[3px]" : "bluxcc:ml-4"
+          } bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
+      >
         {variant === "input" ? (
           <>
             <input
@@ -131,7 +141,9 @@ const CardItem = ({
                     ? appearance.accentColor
                     : appearance.borderColor,
                   color: isValid ? appearance.accentColor : "#999999",
-                  borderWidth: appearance.borderWidth,
+                  // borderWidth: appearance.includeBorders
+                  //   ? appearance.borderWidth
+                  //   : "1px",
                 }}
               >
                 {t("submit")}
@@ -139,7 +151,12 @@ const CardItem = ({
             </div>
           </>
         ) : (
-          <span className="bluxcc:font-medium bluxcc:select-none">{label}</span>
+          <span
+            className={`${size === "small" ? "bluxcc:text-sm" : "bluxcc:text-base"
+              } bluxcc:font-medium bluxcc:select-none`}
+          >
+            {label}
+          </span>
         )}
       </div>
       {isRecent && (
@@ -155,7 +172,7 @@ const CardItem = ({
         </div>
       )}
 
-      {endArrow && (
+      {endArrow && size === "medium" && (
         <span className="bluxcc:ml-auto bluxcc:flex bluxcc:items-center">
           <ArrowRight fill={`${hexToRgba(appearance.textColor, 0.7)}`} />
         </span>

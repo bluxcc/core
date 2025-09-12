@@ -1,7 +1,7 @@
 import { useAppStore } from "../../store";
 import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
-import { Route, SupportedWallet } from "../../enums";
+import { SupportedWallet } from "../../enums";
 import Summary from "../../components/Transaction/Summary";
 import getTransactionDetails from "../../stellar/getTransactionDetails";
 import {
@@ -11,7 +11,7 @@ import {
   getActiveNetworkTitle,
 } from "../../utils/helpers";
 
-const SignTransaction = () => {
+const SendTransaction = () => {
   const t = useLang();
 
   const store = useAppStore((store) => store);
@@ -43,7 +43,8 @@ const SignTransaction = () => {
     );
   }
 
-  const balance = 0;
+  // todo
+  // const balance = 0;
   const isLobstr = user.authValue === SupportedWallet.Lobstr;
   const networkTitle = getActiveNetworkTitle(stellar.activeNetwork);
 
@@ -128,4 +129,4 @@ const SignTransaction = () => {
   );
 };
 
-export default SignTransaction;
+export default SendTransaction;

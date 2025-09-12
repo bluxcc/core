@@ -1,16 +1,63 @@
 import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { Horizon } from "@stellar/stellar-sdk";
+import { Horizon, rpc } from "@stellar/stellar-sdk";
 
 import { Route } from "./enums";
 import { defaultLightTheme } from "./constants/themes";
-import {
-  IStore,
-  IWallet,
-  IStellarConfig,
-  IInternalConfig,
-  ISendTransaction,
-} from "./types";
+import { IWallet, IInternalConfig, ISendTransaction } from "./types";
+
+export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
+
+export interface IUser {
+  address: string;
+  walletPassphrase: string;
+  authValue: string; // rabet, freigher, albedo, abcd@gmail.com, +1 555..., Gmail, Apple, etc..
+  authMethod: string; // wallet, email, sms, social, etc..
+}
+
+export interface IStellarConfig {
+  activeNetwork: string;
+  servers: {
+    horizon: Horizon.Server;
+    soroban: rpc.Server;
+  };
+}
+
+export interface IStoreProperties {
+  config: IInternalConfig;
+  user?: IUser;
+  authState: {
+    isReady: boolean;
+    isAuthenticated: boolean;
+  };
+  modal: {
+    route: Route;
+    isOpen: boolean;
+  };
+  waitingStatus: WaitingStatus;
+  wallets: IWallet[];
+  stellar?: IStellarConfig;
+  // account?: GetAccountResult;
+  sendTransaction?: ISendTransaction;
+}
+
+export interface IStoreMethods {
+  connectEmail: (email: string) => void;
+  connectWallet: (walletName: string) => void;
+  connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
+  closeModal: () => void;
+  logoutAction: () => void;
+  openModal: (route: Route) => void;
+  setConfig: (config: IInternalConfig) => void;
+  setIsReady: (isReady: boolean) => void;
+  setRoute: (route: Route) => void;
+  setSendTransaction: (sendTransaction: ISendTransaction) => void;
+  setStellar: (stellar: IStellarConfig) => void;
+  setWallets: (wallets: IWallet[]) => void;
+  sendTransactionSuccessful: (sendTransaction: ISendTransaction) => void;
+}
+
+export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
   config: {

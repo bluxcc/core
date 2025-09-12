@@ -46,7 +46,7 @@ const Waiting = () => {
   const handleAssignment = async (wallet: IWallet) => {
     if (waitingStatus === "sendTransaction") {
       try {
-        const { sendTransaction, user } = store;
+        const { sendTransaction, user, sendTransactionSuccessful } = store;
 
         if (!sendTransaction) {
           return;
@@ -127,7 +127,7 @@ const Waiting = () => {
         >
           {handleLogos(
             user.authValue ?? "",
-            isBackgroundDark(appearance.background)
+            isBackgroundDark(appearance.background),
           )}
         </div>
       )}
@@ -138,11 +138,11 @@ const Waiting = () => {
             ? waitingStatus === "login"
               ? t("loginFailed")
               : t("signingFailed", {
-                  walletName: user.authValue ?? "wallet",
-                })
+                walletName: user.authValue ?? "wallet",
+              })
             : waitingStatus === "login"
-            ? t("waitingFor", { walletName: user.authValue ?? "wallet" })
-            : t("signingWith", {
+              ? t("waitingFor", { walletName: user.authValue ?? "wallet" })
+              : t("signingWith", {
                 walletName: user.authValue ?? "wallet",
               })}
         </p>
@@ -152,8 +152,8 @@ const Waiting = () => {
               ? t("loginRetryMessage")
               : t("signingRetryMessage")
             : waitingStatus === "login"
-            ? t("acceptConnection")
-            : t("signRequestInWallet")}
+              ? t("acceptConnection")
+              : t("signRequestInWallet")}
         </p>
       </div>
 
