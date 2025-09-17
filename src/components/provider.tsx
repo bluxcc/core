@@ -1,4 +1,6 @@
 import Modal from "./Modal";
+import Header from "./Header";
+import { Route } from "../enums";
 import { useAppStore } from "../store";
 import { getModalContent } from "../constants/routes";
 
@@ -7,7 +9,47 @@ export const Provider = () => {
 
   const { modal, closeModal } = store;
 
-  const modalContent = getModalContent("en")[modal.route];
+  const { route } = modal;
+
+  const modalContent = getModalContent("en")[route];
+
+  const shouldShowBackButton =
+    (route === Route.WAITING && store.waitingStatus !== "sendTransaction") ||
+    // todo
+    route === Route.ONBOARDING || // (route === Routes.ONBOARDING && value.showAllWallets) ||
+    route === Route.ACTIVITY ||
+    route === Route.SEND ||
+    route === Route.OTP ||
+    route === Route.BALANCES ||
+    route === Route.RECEIVE ||
+    route === Route.SWAP;
+
+  let modalIcon: "back" | "info" | undefined;
+
+  if (shouldShowBackButton) {
+    modalIcon = "back";
+  } else if (route === Route.ONBOARDING) {
+    modalIcon = "info";
+  }
+
+  const handleBackNavigation = () => {
+    if (
+      route === Route.WAITING ||
+      (route === Route.OTP && !store.authState.isAuthenticated)
+    ) {
+      store.setRoute(Route.ONBOARDING);
+      // } else if (value.showAllWallets) {
+      // setValue((prev) => ({ ...prev, showAllWallets: false }));
+    } else if (
+      route === Route.SEND ||
+      route === Route.ACTIVITY ||
+      route === Route.BALANCES ||
+      route === Route.RECEIVE ||
+      route === Route.SWAP
+    ) {
+      store.setRoute(Route.PROFILE);
+    }
+  };
 
   const handleCloseModal = () => {
     closeModal();
@@ -25,8 +67,24 @@ export const Provider = () => {
     // }
   };
 
+  const showCloseModalIcon =
+    route === Route.WRONG_NETWORK ||
+    route === Route.WAITING ||
+    route === Route.SUCCESSFUL;
+
   return (
-    <Modal isOpen={modal.isOpen} onClose={handleCloseModal}>
+    <Modal
+      isOpen={modal.isOpen}
+      isSticky={modalContent.isSticky}
+      onClose={handleCloseModal}
+    >
+      <Header
+        onBack={handleBackNavigation}
+        onClose={modalContent.isSticky ? () => { } : handleCloseModal}
+        title={modalContent.title}
+        icon={modalIcon}
+        closeButton={!showCloseModalIcon}
+      />
       {modalContent.Component}
     </Modal>
   );
