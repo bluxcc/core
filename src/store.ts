@@ -11,7 +11,7 @@ export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
 export interface IUser {
   address: string;
   walletPassphrase: string;
-  authValue: string; // rabet, freigher, albedo, abcd@gmail.com, +1 555..., Gmail, Apple, etc..
+  authValue: string; // rabet, freighter, albedo, abcd@gmail.com, +1 555..., Gmail, Apple, etc..
   authMethod: string; // wallet, email, sms, social, etc..
 }
 
@@ -57,7 +57,7 @@ export interface IStoreMethods {
   sendTransactionSuccessful: (sendTransaction: ISendTransaction) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 export const store = createStore<IStore>((set) => ({
   config: {

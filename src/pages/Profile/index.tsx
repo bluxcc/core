@@ -42,7 +42,7 @@ const Profile = () => {
           setCopied(false);
         }, 2000);
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   // todo
@@ -130,10 +130,7 @@ const Profile = () => {
         <div
           className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
           style={{
-            borderTopWidth: appearance.includeBorders
-              ? appearance.borderWidth
-              : '1px',
-            borderTopColor: appearance.borderColor,
+            borderTopWidth: appearance.borderWidth,
           }}
         />
       </div>

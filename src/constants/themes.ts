@@ -7,10 +7,10 @@ export const defaultLightTheme: IAppearance = {
   accentColor: "#0c1083",
   background: "#ffffff",
   fieldBackground: "#ffffff",
-  borderRadius: "32px",
+  borderRadius: "0px",
   borderColor: "#cdceee",
   borderWidth: "1px",
-  outlineWidth: "2px",
+  outlineWidth: "1px",
 };
 
 export const defaultDarkTheme: IAppearance = {
@@ -20,8 +20,8 @@ export const defaultDarkTheme: IAppearance = {
   accentColor: "#ffffff",
   background: "#000000",
   fieldBackground: "#1a1a1a",
-  borderRadius: "24px",
+  borderRadius: "0px",
   borderColor: "#333333",
   borderWidth: "1px",
-  outlineWidth: "2px",
+  outlineWidth: "1px",
 };

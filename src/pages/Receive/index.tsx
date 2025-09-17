@@ -20,9 +20,7 @@ const Receive = () => {
           color: appearance.textColor,
           borderColor: appearance.borderColor,
           backgroundColor: appearance.fieldBackground,
-          // borderWidth: appearance.includeBorders
-          // ? appearance.borderWidth
-          // : "1px",
+          borderWidth: appearance.borderWidth,
         }}
       >
         <QRCode
@@ -58,9 +56,7 @@ const Receive = () => {
             color: appearance.textColor,
             borderColor: appearance.borderColor,
             backgroundColor: appearance.fieldBackground,
-            // borderWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderWidth: appearance.borderWidth,
           }}
         >
           <div
@@ -79,9 +75,7 @@ const Receive = () => {
         <div
           className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
           style={{
-            // borderTopWidth: appearance.includeBorders
-            //   ? appearance.borderWidth
-            //   : "1px",
+            borderTopWidth: appearance.borderWidth,
             borderTopColor: appearance.borderColor,
           }}
         />
