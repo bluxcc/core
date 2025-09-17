@@ -3,11 +3,12 @@ import Header from "./Header";
 import { Route } from "../enums";
 import { useAppStore } from "../store";
 import { getModalContent } from "../constants/routes";
+import { defaultLightTheme } from "../constants/themes";
 
 export const Provider = () => {
   const store = useAppStore((store) => store);
 
-  const { modal, closeModal } = store;
+  const { modal, closeModal, setShowAllWallets } = store;
 
   const { route } = modal;
 
@@ -15,8 +16,7 @@ export const Provider = () => {
 
   const shouldShowBackButton =
     (route === Route.WAITING && store.waitingStatus !== "sendTransaction") ||
-    // todo
-    route === Route.ONBOARDING || // (route === Routes.ONBOARDING && value.showAllWallets) ||
+    (route === Route.ONBOARDING && store.showAllWallets) ||
     route === Route.ACTIVITY ||
     route === Route.SEND ||
     route === Route.OTP ||
@@ -38,8 +38,8 @@ export const Provider = () => {
       (route === Route.OTP && !store.authState.isAuthenticated)
     ) {
       store.setRoute(Route.ONBOARDING);
-      // } else if (value.showAllWallets) {
-      // setValue((prev) => ({ ...prev, showAllWallets: false }));
+    } else if (store.showAllWallets) {
+      setShowAllWallets(false);
     } else if (
       route === Route.SEND ||
       route === Route.ACTIVITY ||
@@ -53,6 +53,7 @@ export const Provider = () => {
 
   const handleCloseModal = () => {
     closeModal();
+    setShowAllWallets(false);
 
     // const { resolver, rejecter, result } = value.signTransaction;
     //
@@ -77,10 +78,11 @@ export const Provider = () => {
       isOpen={modal.isOpen}
       isSticky={modalContent.isSticky}
       onClose={handleCloseModal}
+      appearance={defaultLightTheme}
     >
       <Header
         onBack={handleBackNavigation}
-        onClose={modalContent.isSticky ? () => { } : handleCloseModal}
+        onClose={modalContent.isSticky ? () => {} : handleCloseModal}
         title={modalContent.title}
         icon={modalIcon}
         closeButton={!showCloseModalIcon}

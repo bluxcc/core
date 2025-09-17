@@ -34,6 +34,7 @@ export interface IStoreProperties {
     route: Route;
     isOpen: boolean;
   };
+  showAllWallets: boolean;
   waitingStatus: WaitingStatus;
   wallets: IWallet[];
   stellar?: IStellarConfig;
@@ -50,6 +51,7 @@ export interface IStoreMethods {
   openModal: (route: Route) => void;
   setConfig: (config: IInternalConfig) => void;
   setIsReady: (isReady: boolean) => void;
+  setShowAllWallets: (showAllWallets: boolean) => void;
   setRoute: (route: Route) => void;
   setSendTransaction: (sendTransaction: ISendTransaction) => void;
   setStellar: (stellar: IStellarConfig) => void;
@@ -74,6 +76,7 @@ export const store = createStore<IStore>((set) => ({
   sendTransaction: undefined,
   wallets: [],
   waitingStatus: "login",
+  showAllWallets: false,
   modal: {
     isOpen: false,
     route: Route.ONBOARDING,
@@ -87,6 +90,8 @@ export const store = createStore<IStore>((set) => ({
   setWallets: (wallets: IWallet[]) => set((state) => ({ ...state, wallets })),
   setIsReady: (isReady: boolean) =>
     set((state) => ({ ...state, authState: { ...state.authState, isReady } })),
+  setShowAllWallets: (showAllWallets: boolean) =>
+    set((state) => ({ ...state, showAllWallets })),
   setRoute: (route: Route) =>
     set((state) => ({ ...state, modal: { ...state.modal, route } })),
   setSendTransaction: (sendTransaction: ISendTransaction) =>

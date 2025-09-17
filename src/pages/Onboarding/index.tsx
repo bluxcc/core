@@ -12,7 +12,8 @@ import { getContrastColor, isBackgroundDark } from "../../utils/helpers";
 const Onboarding = () => {
   const t = useLang();
   const [inputValue, setInputValue] = useState("");
-  const [showAllWallets, setShowAllWallets] = useState(false);
+  const store = useAppStore((store) => store);
+  const { setShowAllWallets } = store;
 
   const config = useAppStore((store) => store.config);
   const wallets = useAppStore((store) => store.wallets);
@@ -37,10 +38,10 @@ const Onboarding = () => {
   const visibleWallets = useMemo(() => {
     return wallets.length <= 3
       ? wallets
-      : showAllWallets
+      : store.showAllWallets
       ? wallets.slice(2, wallets.length)
       : wallets.slice(0, 2);
-  }, [wallets, showAllWallets]);
+  }, [wallets, store.showAllWallets]);
 
   const handleConnect = (wallet: IWallet) => {
     connectWallet(wallet.name);
@@ -98,7 +99,7 @@ const Onboarding = () => {
           const walletExists = orderedLoginMethods.includes("wallet");
           const shouldRenderDivider =
             (walletExists &&
-              !showAllWallets &&
+              !store.showAllWallets &&
               method === "wallet" &&
               nextMethod === "email") ||
             (walletExists && method === "email" && prevMethod !== "wallet");
@@ -111,7 +112,6 @@ const Onboarding = () => {
                     key={checkedWallet.name}
                     {...checkedWallet}
                     label={checkedWallet.name}
-                    isRecent={checkedWallet.isRecent || false}
                     startIcon={handleLogos(
                       checkedWallet.name,
                       isBackgroundDark(appearance.background)
@@ -120,11 +120,10 @@ const Onboarding = () => {
                   />
                 ))}
 
-                {hiddenWallets.length > 0 && !showAllWallets && (
+                {hiddenWallets.length > 0 && !store.showAllWallets && (
                   <CardItem
                     endArrow
                     label={t("allStellarWallets")}
-                    isRecent={false}
                     startIcon={
                       <StellarLogo
                         fill={getContrastColor(appearance.fieldBackground)}
@@ -141,7 +140,7 @@ const Onboarding = () => {
             );
           }
 
-          if (!showAllWallets && method === "email") {
+          if (!store.showAllWallets && method === "email") {
             return (
               <React.Fragment key="email">
                 {
@@ -149,7 +148,6 @@ const Onboarding = () => {
                     <CardItem
                       inputType="email"
                       variant="input"
-                      isRecent={false}
                       startIcon={<SmallEmailIcon fill={appearance.textColor} />}
                       onChange={(value: string) => setInputValue(value)}
                       onEnter={handleConnectEmail}
@@ -163,7 +161,7 @@ const Onboarding = () => {
             );
           }
 
-          if (!showAllWallets && method === "passkey") {
+          if (!store.showAllWallets && method === "passkey") {
             return (
               <div
                 key="passkey"

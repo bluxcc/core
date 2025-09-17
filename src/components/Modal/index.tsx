@@ -1,15 +1,17 @@
 import React, { useRef } from "react";
 
 import { useIsMobile } from "../../hooks/useIsMobile";
-import { defaultLightTheme } from "../../constants/themes";
 import { useDynamicHeight } from "../../hooks/useDynamicHeight";
 import { useModalAnimation } from "../../hooks/useModalAnimation";
+import { IAppearance } from "../../types";
+import ModalBackdrop from "./Backdrop";
 
 interface ModalProps {
   isOpen: boolean;
   isSticky?: boolean;
   onClose?: () => void;
   children: React.ReactNode;
+  appearance: IAppearance;
 }
 
 const Modal = ({
@@ -17,6 +19,7 @@ const Modal = ({
   onClose = () => {},
   children,
   isSticky = false,
+  appearance,
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -27,14 +30,15 @@ const Modal = ({
     children,
   ]);
 
-  const appearance = defaultLightTheme;
-
-  // const { appearance } = context.value.config;
-
   if (!isOpen) return null;
 
   return (
     <>
+      <ModalBackdrop
+        isClosing={isClosing}
+        isSticky={isSticky}
+        onClose={() => handleClose(onClose)}
+      />
       <div
         className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
           isClosing && !isSticky && "bluxcc:animate-fadeOut"

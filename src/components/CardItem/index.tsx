@@ -24,7 +24,7 @@ const CardItem = ({
   size = "medium",
   startIcon,
   endArrow,
-  isRecent,
+  isRecent = false,
   label,
   onClick,
   onChange,
@@ -34,7 +34,7 @@ const CardItem = ({
 }: CardItemProps) => {
   const store = useAppStore((store) => store);
   const { appearance } = store.config;
-  const t = useLang();
+  const t = useLang();  
 
   const [inputValue, setInputValue] = useState(label || "");
   const [isValid, setIsValid] = useState(false);
