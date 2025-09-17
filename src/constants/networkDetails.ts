@@ -2,8 +2,8 @@ import { Networks } from "@stellar/stellar-sdk";
 
 export interface INetworkTransports {
   name: string;
-  horizon: string | any;
-  soroban: string | any;
+  horizon: string;
+  soroban: string;
 }
 
 export const networks = {

@@ -15,6 +15,7 @@ import {
 import "./tailwind.css";
 import getTransactionDetails from "./stellar/getTransactionDetails";
 import handleTransactionSigning from "./stellar/handleTransactionSigning";
+import { Horizon, rpc } from "@stellar/stellar-sdk";
 
 let root: any = null;
 let isInitiated = false;
@@ -68,8 +69,8 @@ export function createConfig(config: IConfig) {
   setStellar({
     activeNetwork: conf.defaultNetwork,
     servers: {
-      horizon,
-      soroban,
+      horizon: new Horizon.Server(horizon),
+      soroban: new rpc.Server(soroban),
     },
   });
 

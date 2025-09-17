@@ -32,7 +32,7 @@ const SendTransaction = () => {
   const txDetails = getTransactionDetails(xdr, options.network);
 
   const handleSignTx = async () => {
-    approveSendTransaction();
+    // approveSendTransaction();
   };
 
   if (!txDetails) {
@@ -44,7 +44,7 @@ const SendTransaction = () => {
   }
 
   // todo
-  // const balance = 0;
+  const balance = "0";
   const isLobstr = user.authValue === SupportedWallet.Lobstr;
   const networkTitle = getActiveNetworkTitle(stellar.activeNetwork);
 

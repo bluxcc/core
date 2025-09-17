@@ -8,14 +8,14 @@ async function submitTransaction(
   options: { network: string },
   transports: ITransports,
 ): Promise<// | rpc.Api.GetSuccessfulTransactionResponse
-  Horizon.HorizonApi.SubmitTransactionResponse> {
+Horizon.HorizonApi.SubmitTransactionResponse> {
   const { horizon } = getNetworkRpc(options.network, transports);
 
   if (!horizon) {
     throw new Error("Horizon RPC was not found.");
   }
 
-  const server = new Horizon.Server(horizon.url);
+  const server = new Horizon.Server(horizon);
   const transaction = new Transaction(xdr, options.network);
 
   // if (options.isSoroban) {
