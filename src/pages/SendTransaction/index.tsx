@@ -10,6 +10,7 @@ import {
   shortenAddress,
   getActiveNetworkTitle,
 } from "../../utils/helpers";
+import Divider from "../../components/Divider";
 
 const SendTransaction = () => {
   const t = useLang();
@@ -107,15 +108,7 @@ const SendTransaction = () => {
         </div>
       </div>
 
-      <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
-        <div
-          className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-          style={{
-            borderTopWidth: appearance.borderWidth,
-            borderTopColor: appearance.borderColor,
-          }}
-        />
-      </div>
+      <Divider appearance={appearance} />
 
       <Button
         size="large"

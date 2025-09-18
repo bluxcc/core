@@ -10,6 +10,9 @@ import Onboarding from "../pages/Onboarding";
 import { translate } from "../utils/helpers";
 import WrongNetwork from "../pages/WrongNetwork";
 import SendTransaction from "../pages/SendTransaction";
+import Balances from "../pages/Balances";
+import Swap from "../pages/Swap";
+import Receive from "../pages/Receive";
 
 type IRoute = {
   title: string;
@@ -46,6 +49,19 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   //   title: translate('activity', lang),
   //   Component: <Activity />,
   // },
+
+  [Route.RECEIVE]: {
+    title: "Receive address",
+    Component: <Receive />,
+  },
+  [Route.SWAP]: {
+    title: "Swap",
+    Component: <Swap />,
+  },
+  [Route.BALANCES]: {
+    title: "Balances",
+    Component: <Balances />,
+  },
   [Route.OTP]: {
     title: "",
     Component: <OTP />,

@@ -1,3 +1,4 @@
+import React from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
 interface QRCodeCanvasProps {

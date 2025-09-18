@@ -34,7 +34,7 @@ const CardItem = ({
 }: CardItemProps) => {
   const store = useAppStore((store) => store);
   const { appearance } = store.config;
-  const t = useLang();  
+  const t = useLang();
 
   const [inputValue, setInputValue] = useState(label || "");
   const [isValid, setIsValid] = useState(false);
@@ -79,7 +79,7 @@ const CardItem = ({
         variant === "input" ? "bluxcc:cursor-text" : "bluxcc:cursor-pointer"
       } ${
         size === "small"
-          ? "bluxcc:size-[96px] bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:py-4"
+          ? "bluxcc:size-[96px] bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4"
           : "bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px]"
       }`}
       style={{
@@ -108,7 +108,7 @@ const CardItem = ({
 
       <div
         className={`${
-          size === "small" ? "bluxcc:mt-[3px]" : "bluxcc:ml-4"
+          size === "small" ? "bluxcc:mt-0" : "bluxcc:ml-4"
         } bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
       >
         {variant === "input" ? (
@@ -152,7 +152,9 @@ const CardItem = ({
         ) : (
           <span
             className={`${
-              size === "small" ? "bluxcc:text-sm" : "bluxcc:text-base"
+              size === "small"
+                ? "bluxcc:text-sm bluxcc:leading-[16px]"
+                : "bluxcc:text-base"
             } bluxcc:font-medium bluxcc:select-none`}
           >
             {label}

@@ -11,6 +11,7 @@ import {
   SwapIcon,
   ReceiveIcon,
   BalancesIcon,
+  LogOut,
 } from "../../assets/Icons";
 import {
   copyText,
@@ -18,6 +19,7 @@ import {
   humanizeAmount,
   shortenAddress,
 } from "../../utils/helpers";
+import Divider from "../../components/Divider";
 
 const Profile = () => {
   const t = useLang();
@@ -25,13 +27,13 @@ const Profile = () => {
 
   const store = useAppStore((store) => store);
 
-  const { setRoute } = store;
+  const { setRoute, logoutAction } = store;
   const appearance = store.config.appearance;
   const address = store.user?.address as string;
 
-  // const handleLogout = () => {
-  //   logout();
-  // };
+  const handleLogout = () => {
+    logoutAction();
+  };
 
   const handleCopyAddress = () => {
     copyText(address)
@@ -54,18 +56,18 @@ const Profile = () => {
   return (
     <div className="bluxcc:flex bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
       <div className="bluxcc:mt-4 bluxcc:mb-6 bluxcc:flex bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
-        <div
+        {/* <div
           className="bluxcc:size-[64px] bluxcc:rounded-full"
           style={{ background: appearance.accentColor }}
-        />
+        /> */}
         <p
-          className="bluxcc:mt-2 bluxcc:text-center bluxcc:text-2xl"
+          className="bluxcc:text-center bluxcc:text-2xl"
           style={{ color: appearance.accentColor }}
         >
           {balance ? `${humanizeAmount(balance)} XLM` : t("loading")}
         </p>
         <p
-          className="bluxcc:!mt-4 bluxcc:inline-flex bluxcc:cursor-pointer bluxcc:text-sm"
+          className="bluxcc:!mt-4 bluxcc:leading-[16px] bluxcc:inline-flex bluxcc:cursor-pointer bluxcc:text-sm"
           onClick={handleCopyAddress}
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
@@ -106,7 +108,7 @@ const Profile = () => {
           }}
         />
       </div>
-      <div className="bluxcc:mt-[16px] bluxcc:mb-2 bluxcc:w-full bluxcc:space-y-2">
+      <div className="bluxcc:mt-[16px] bluxcc:w-full bluxcc:space-y-2">
         <CardItem
           endArrow
           label={t("balances")}
@@ -126,14 +128,7 @@ const Profile = () => {
         />
       </div>
 
-      {/* <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
-        <div
-          className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-          style={{
-            borderTopWidth: appearance.borderWidth,
-          }}
-        />
-      </div>
+      <Divider appearance={appearance} />
 
       <div
         style={{ color: appearance.textColor }}
@@ -141,8 +136,8 @@ const Profile = () => {
         className="bluxcc:flex bluxcc:h-12 bluxcc:w-full bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
       >
         <LogOut fill={appearance.textColor} />
-        {t('logout')}
-      </div> */}
+        {t("logout")}
+      </div>
     </div>
   );
 };

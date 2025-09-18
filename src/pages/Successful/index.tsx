@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAppStore } from "../../store";
 import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
+import Divider from "../../components/Divider";
 import { GreenCheck } from "../../assets/Icons";
 import { capitalizeFirstLetter, getExplorerUrl } from "../../utils/helpers";
 
@@ -87,16 +88,7 @@ const Successful = () => {
           </Button>
         )}
 
-      {/* divider */}
-      <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
-        <div
-          className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-          style={{
-            borderTopWidth: appearance.borderWidth,
-            borderTopColor: appearance.borderColor,
-          }}
-        />
-      </div>
+      <Divider appearance={appearance} />
 
       {waitingStatus === "login" ? (
         <Button

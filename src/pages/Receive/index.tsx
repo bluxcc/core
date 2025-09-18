@@ -1,9 +1,11 @@
 import { useAppStore } from "../../store";
+
 import Button from "../../components/Button";
 import QRCode from "../../components/QRCode";
 import { LargeCopy } from "../../assets/Icons";
 import { hexToRgba } from "../../utils/helpers";
 import { SmallBlux } from "../../assets/bluxLogo";
+import Divider from "../../components/Divider";
 
 const Receive = () => {
   const store = useAppStore((store) => store);
@@ -70,16 +72,7 @@ const Receive = () => {
         </div>
       </div>
 
-      {/* divider */}
-      <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
-        <div
-          className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-          style={{
-            borderTopWidth: appearance.borderWidth,
-            borderTopColor: appearance.borderColor,
-          }}
-        />
-      </div>
+      <Divider appearance={appearance} />
 
       <Button
         size="large"

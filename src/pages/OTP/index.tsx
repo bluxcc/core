@@ -5,6 +5,7 @@ import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
 import { EmailIcon } from "../../assets/Icons";
 import OTPInput from "../../components/Input/OTPInput";
+import Divider from "../../components/Divider";
 
 const OTP = () => {
   const t = useLang();
@@ -15,7 +16,7 @@ const OTP = () => {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [error, setError] = useState(false);
 
-  const handleResendCode = () => { };
+  const handleResendCode = () => {};
 
   const verifyOTPRequest = async (otp: string): Promise<void> => {
     setError(false);
@@ -69,16 +70,7 @@ const OTP = () => {
         <OTPInput otp={otp} setOtp={setOtp} error={error} />
       </div>
 
-      {/* divider */}
-      <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
-        <div
-          className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-          style={{
-            borderTopWidth: appearance.borderWidth,
-            borderTopColor: appearance.borderColor,
-          }}
-        />
-      </div>
+      <Divider appearance={appearance} />
 
       <Button
         size="medium"

@@ -42,7 +42,10 @@ const translations: Translations = {
     en: "Wrong Network",
     es: "Red incorrecta",
   },
-
+  balances: {
+    en: "Balances",
+    es: "Saldos",
+  },
   // General / Shared
   loading: {
     en: "Loading",
