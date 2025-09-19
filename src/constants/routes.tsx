@@ -1,18 +1,18 @@
 import { JSX } from "react";
 
-import OTP from "../pages/OTP";
 import { Route } from "../enums";
 import Profile from "../pages/Profile";
 import Waiting from "../pages/Waiting";
 import { LanguageKey } from "../types";
+import Swap from "../pages/Profile/Swap";
+import OTP from "../pages/Onboarding/OTP";
 import Successful from "../pages/Successful";
 import Onboarding from "../pages/Onboarding";
 import { translate } from "../utils/helpers";
+import Receive from "../pages/Profile/Receive";
 import WrongNetwork from "../pages/WrongNetwork";
+import Balances from "../pages/Profile/Balances";
 import SendTransaction from "../pages/SendTransaction";
-import Balances from "../pages/Balances";
-import Swap from "../pages/Swap";
-import Receive from "../pages/Receive";
 
 type IRoute = {
   title: string;

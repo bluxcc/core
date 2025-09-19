@@ -1,11 +1,10 @@
-import { useAppStore } from "../../store";
-
-import Button from "../../components/Button";
-import QRCode from "../../components/QRCode";
-import { LargeCopy } from "../../assets/Icons";
-import { hexToRgba } from "../../utils/helpers";
-import { SmallBlux } from "../../assets/bluxLogo";
-import Divider from "../../components/Divider";
+import { useAppStore } from "../../../store";
+import Button from "../../../components/Button";
+import QRCode from "../../../components/QRCode";
+import { LargeCopy } from "../../../assets/Icons";
+import Divider from "../../../components/Divider";
+import { hexToRgba } from "../../../utils/helpers";
+import { SmallBlux } from "../../../assets/bluxLogo";
 
 const Receive = () => {
   const store = useAppStore((store) => store);

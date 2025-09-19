@@ -1,9 +1,8 @@
-import TabBox from "../../components/TabBox";
-import { TokenIcon } from "../../assets/Icons";
-
 import Assets from "./Assets";
-import { IAsset } from "../../types";
-import { StellarLogo } from "../../assets/Logos";
+import { IAsset } from "../../../types";
+import TabBox from "../../../components/TabBox";
+import { TokenIcon } from "../../../assets/Icons";
+import { StellarLogo } from "../../../assets/Logos";
 
 const Balances = () => {
   const mockAssets: IAsset[] = [

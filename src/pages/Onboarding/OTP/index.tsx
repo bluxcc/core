@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-import { useAppStore } from "../../store";
-import Button from "../../components/Button";
-import { useLang } from "../../hooks/useLang";
-import { EmailIcon } from "../../assets/Icons";
-import OTPInput from "../../components/Input/OTPInput";
-import Divider from "../../components/Divider";
+import { useAppStore } from "../../../store";
+import Button from "../../../components/Button";
+import { useLang } from "../../../hooks/useLang";
+import { EmailIcon } from "../../../assets/Icons";
+import Divider from "../../../components/Divider";
+import OTPInput from "../../../components/Input/OTPInput";
 
 const OTP = () => {
   const t = useLang();

@@ -1,15 +1,15 @@
 import { useState } from "react";
-import Button from "../../components/Button";
-import { hexToRgba } from "../../utils/helpers";
-import { ArrowDropUp, SwapIcon } from "../../assets/Icons";
 
-import { useLang } from "../../hooks/useLang";
-import { IAsset } from "../../types";
-import SelectAssets from "../SelectAsset";
 import AssetBox from "./AssetBox";
-import { useAppStore } from "../../store";
-import Divider from "../../components/Divider";
-import { StellarLogo } from "../../assets/Logos";
+import { IAsset } from "../../../types";
+import SelectAssets from "../SelectAsset";
+import { useAppStore } from "../../../store";
+import Button from "../../../components/Button";
+import { useLang } from "../../../hooks/useLang";
+import Divider from "../../../components/Divider";
+import { hexToRgba } from "../../../utils/helpers";
+import { StellarLogo } from "../../../assets/Logos";
+import { ArrowDropUp, SwapIcon } from "../../../assets/Icons";
 
 const mockAssets: IAsset[] = [
   {

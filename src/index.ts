@@ -54,14 +54,14 @@ export function createConfig(config: IConfig) {
   validateNetworkOptions(
     config.networks,
     config.defaultNetwork,
-    config.transports
+    config.transports,
   );
 
   conf.defaultNetwork = config.defaultNetwork ?? config.networks[0];
 
   const { horizon, soroban } = getNetworkRpc(
     conf.defaultNetwork,
-    config.transports ?? {}
+    config.transports ?? {},
   );
 
   const { setConfig, setWallets, setIsReady, setStellar } = getState();
@@ -102,15 +102,6 @@ const logout = () => {
 
   logoutAction();
 };
-
-// const profile = () => {
-// const { isReady, isAuthenticated } = authState;
-// if (!isAuthenticated) {
-//   throw new Error("User is not authenticated.");
-// }
-// setRoute(Routes.PROFILE);
-// setValue((prev) => ({ ...prev, isModalOpen: true }));
-// };
 
 const profile = () => {
   const { openModal, authState } = getState();
@@ -167,7 +158,7 @@ const sendTransaction = (xdr: string, options: { network: string }) =>
         xdr,
         user.address,
         options,
-        config.transports || {}
+        config.transports || {},
       )
         .then((result) => {
           resolve(result);

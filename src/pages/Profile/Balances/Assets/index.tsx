@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { IAsset } from "../../../types";
-import { useLang } from "../../../hooks/useLang";
-import { useAppStore } from "../../../store";
-import { hexToRgba, humanizeAmount } from "../../../utils/helpers";
+
+import { IAsset } from "../../../../types";
+import { useAppStore } from "../../../../store";
+import { useLang } from "../../../../hooks/useLang";
+import { hexToRgba, humanizeAmount } from "../../../../utils/helpers";
 
 type AssetsProps = {
   assets: IAsset[];

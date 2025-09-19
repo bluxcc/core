@@ -1,11 +1,10 @@
 import React, { useState, MouseEvent, ChangeEvent } from "react";
 
-import { IAsset } from "../../types";
-import { Search } from "../../assets/Icons";
-import { useLang } from "../../hooks/useLang";
-import { humanizeAmount } from "../../utils/helpers";
-
-import { useAppStore } from "../../store";
+import { IAsset } from "../../../types";
+import { useAppStore } from "../../../store";
+import { Search } from "../../../assets/Icons";
+import { useLang } from "../../../hooks/useLang";
+import { humanizeAmount } from "../../../utils/helpers";
 
 type SelectAssetsProps = {
   assets: IAsset[];

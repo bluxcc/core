@@ -1,8 +1,7 @@
-import { StellarLogo } from "../../../assets/Logos";
-import { ArrowDropDown } from "../../../assets/Icons";
-import { getContrastColor } from "../../../utils/helpers";
-
-import { useAppStore } from "../../../store";
+import { useAppStore } from "../../../../store";
+import { StellarLogo } from "../../../../assets/Logos";
+import { ArrowDropDown } from "../../../../assets/Icons";
+import { getContrastColor } from "../../../../utils/helpers";
 
 const AssetBox = ({ handleOpenAssets }: { handleOpenAssets: () => void }) => {
   const appearance = useAppStore((store) => store.config.appearance);
