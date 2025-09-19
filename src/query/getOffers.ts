@@ -4,18 +4,18 @@ import { OfferCallBuilder } from "@stellar/stellar-sdk/lib/horizon/offer_call_bu
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetOffersOptions extends CallBuilderOptions {
+type GetOffersOptions = CallBuilderOptions & {
   forAccount?: string;
   buying?: Asset;
   selling?: Asset;
   sponsor?: string;
   seller?: string;
-}
+};
 
-interface GetOffersResult {
+type GetOffersResult = {
   builder: OfferCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OfferRecord>;
-}
+};
 
 const getOffers = async (
   options: GetOffersOptions,

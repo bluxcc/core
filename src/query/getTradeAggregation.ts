@@ -3,6 +3,8 @@ import { Asset } from "@stellar/stellar-sdk";
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
+type GetTradeAggregationResult = any;
+
 const getTradeAggregation = async (
   args: [
     base: Asset,
@@ -13,7 +15,7 @@ const getTradeAggregation = async (
     offset: number,
   ],
   options: CallBuilderOptions,
-) => {
+): Promise<GetTradeAggregationResult> => {
   checkConfigCreated();
 
   let builder = callBuilder("tradeAggregation", args, options);

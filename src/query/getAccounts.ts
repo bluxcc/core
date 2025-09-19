@@ -4,17 +4,17 @@ import { AccountCallBuilder } from "@stellar/stellar-sdk/lib/horizon/account_cal
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetAccountsOptions extends CallBuilderOptions {
+type GetAccountsOptions = CallBuilderOptions & {
   forSigner?: string;
   forAsset?: Asset;
   sponsor?: string;
   forLiquidityPool?: string;
-}
+};
 
-interface GetAccountsResult {
+type GetAccountsResult = {
   builder: AccountCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.AccountRecord>;
-}
+};
 
 const getAccounts = async (
   options: GetAccountsOptions,

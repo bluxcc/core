@@ -4,18 +4,18 @@ import { EffectCallBuilder } from "@stellar/stellar-sdk/lib/horizon/effect_call_
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetEffectsOptions extends CallBuilderOptions {
+type GetEffectsOptions = CallBuilderOptions & {
   forAccount?: string;
   forLedger?: string | number;
   forTransaction?: string;
   forOperation?: string;
   forLiquidityPool?: string;
-}
+};
 
-interface GetEffectsResult {
+type GetEffectsResult = {
   builder: EffectCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.EffectRecord>;
-}
+};
 
 const getEffects = async (
   options: GetEffectsOptions,

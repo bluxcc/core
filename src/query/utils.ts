@@ -3,12 +3,12 @@ import { Horizon, rpc } from "@stellar/stellar-sdk";
 import { getState } from "../store";
 import { getNetworkRpc } from "../utils/helpers";
 
-export interface CallBuilderOptions {
+export type CallBuilderOptions = {
   cursor?: string;
   limit?: number;
   network?: string;
   order?: "asc" | "desc";
-}
+};
 
 export const checkConfigCreated = () => {
   const { stellar } = getState();

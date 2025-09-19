@@ -4,15 +4,15 @@ import { LiquidityPoolCallBuilder } from "@stellar/stellar-sdk/lib/horizon/liqui
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetLiquidityPoolsOptions extends CallBuilderOptions {
+type GetLiquidityPoolsOptions = CallBuilderOptions & {
   forAssets?: Array<Asset>;
   forAccount?: string;
-}
+};
 
-interface GetLiquidityPoolsResult {
+type GetLiquidityPoolsResult = {
   builder: LiquidityPoolCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.LiquidityPoolRecord>;
-}
+};
 
 const getLiquidityPools = async (
   options: GetLiquidityPoolsOptions,

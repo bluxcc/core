@@ -4,16 +4,16 @@ import { ClaimableBalanceCallBuilder } from "@stellar/stellar-sdk/lib/horizon/cl
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetClaimableBalancesOptions extends CallBuilderOptions {
+type GetClaimableBalancesOptions = CallBuilderOptions & {
   asset: Asset;
   sponsor?: string;
   claimant: string;
-}
+};
 
-interface GetClaimableBalancesResult {
+type GetClaimableBalancesResult = {
   builder: ClaimableBalanceCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.ClaimableBalanceRecord>;
-}
+};
 
 const getClaimableBalances = async (
   options: GetClaimableBalancesOptions,

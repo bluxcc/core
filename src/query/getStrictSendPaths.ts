@@ -4,10 +4,10 @@ import { PathCallBuilder } from "@stellar/stellar-sdk/lib/horizon/path_call_buil
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetPaymentPathResult {
+type GetPaymentPathResult = {
   builder: PathCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.PaymentPathRecord>;
-}
+};
 
 const getStrictSendPaths = async (
   args: [

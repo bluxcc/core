@@ -1,12 +1,12 @@
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetPaymentsOptions extends CallBuilderOptions {
+type GetPaymentsOptions = CallBuilderOptions & {
   forAccount?: string;
   forLedger?: string | number;
   forTransaction?: string;
   includeFailed?: boolean;
-}
+};
 
 const getPayments = async (options: GetPaymentsOptions) => {
   checkConfigCreated();

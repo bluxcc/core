@@ -4,18 +4,18 @@ import { TradesCallBuilder } from "@stellar/stellar-sdk/lib/horizon/trades_call_
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetTradesOptions extends CallBuilderOptions {
+type GetTradesOptions = CallBuilderOptions & {
   forAssetPair?: [base: Asset, counter: Asset];
   forOffer?: string;
   forType?: Horizon.ServerApi.TradeType;
   forAccount?: string;
   forLiquidityPool?: string;
-}
+};
 
-interface GetTradesResult {
+type GetTradesResult = {
   builder: TradesCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TradeRecord>;
-}
+};
 
 const getTrades = async (
   options: GetTradesOptions,

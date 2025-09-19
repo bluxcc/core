@@ -4,15 +4,15 @@ import { AssetsCallBuilder } from "@stellar/stellar-sdk/lib/horizon/assets_call_
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetAssetsOptions extends CallBuilderOptions {
+type GetAssetsOptions = CallBuilderOptions & {
   forCode?: string;
   forIssuer?: string;
-}
+};
 
-interface GetAssetsResult {
+type GetAssetsResult = {
   builder: AssetsCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.AssetRecord>;
-}
+};
 
 const getAssets = async (
   options: GetAssetsOptions,

@@ -4,18 +4,18 @@ import { TransactionCallBuilder } from "@stellar/stellar-sdk/lib/horizon/transac
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetTransactionsOptions extends CallBuilderOptions {
+type GetTransactionsOptions = CallBuilderOptions & {
   forAccount?: string;
   forClaimableBalance?: string;
   forLedger?: string | number;
   forLiquidityPool?: string;
   includeFailed?: boolean;
-}
+};
 
-interface GetTransactionsResult {
+type GetTransactionsResult = {
   builder: TransactionCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TransactionRecord>;
-}
+};
 
 const getTransactions = async (
   options: GetTransactionsOptions,

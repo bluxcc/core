@@ -4,10 +4,10 @@ import { OrderbookCallBuilder } from "@stellar/stellar-sdk/lib/horizon/orderbook
 import { callBuilder } from "./callBuilder";
 import { checkConfigCreated, CallBuilderOptions } from "./utils";
 
-interface GetOrderbookResult {
+type GetOrderbookResult = {
   builder: OrderbookCallBuilder;
   response: Horizon.ServerApi.OrderbookRecord;
-}
+};
 
 const getOrderbook = async (
   args: [selling: Asset, buying: Asset],
