@@ -289,6 +289,14 @@ export const shortenAddress = (address: string, numChars = 8) => {
 export const timeout = (waiter: number) =>
   new Promise((resolve) => setTimeout(resolve, waiter));
 
+export const toTitleFormat = (str: string) => {
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .replace(/_/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 export const translate = (
   key: keyof typeof translations,
   lang: LanguageKey,

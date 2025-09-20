@@ -25,8 +25,8 @@ const Receive = () => {
         }}
       >
         <QRCode
-          value="https://demo.blux.cc/"
           size={184}
+          value={address}
           bgColor={appearance.fieldBackground}
           fgColor={appearance.accentColor}
           level="Q"
