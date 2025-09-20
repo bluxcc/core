@@ -49,9 +49,9 @@ const Receive = () => {
       </div>
 
       <div className="bluxcc:mt-4 bluxcc:space-y-2 bluxcc:font-medium">
-        <p>Your Address</p>
+        <p className="bluxcc:text-lg">Your Address</p>
         <div
-          className="bluxcc:w-full bluxcc:px-3 bluxcc:py-2.5 bluxcc:whitespace-normal"
+          className="bluxcc:w-full bluxcc:px-2.5 bluxcc:py-3 bluxcc:h-14"
           style={{
             borderRadius: appearance.borderRadius,
             color: appearance.textColor,
@@ -60,14 +60,14 @@ const Receive = () => {
             borderWidth: appearance.borderWidth,
           }}
         >
-          <div
-            className="bluxcc:w-[292px] bluxcc:text-sm bluxcc:break-all"
+          <p
+            className="bluxcc:w-[292px] bluxcc:text-sm bluxcc:!leading-[16px] bluxcc:break-all"
             style={{
               color: hexToRgba(appearance.textColor, 0.7),
             }}
           >
             {address}
-          </div>
+          </p>
         </div>
       </div>
 

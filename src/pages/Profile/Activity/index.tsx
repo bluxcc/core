@@ -7,13 +7,14 @@ import { useLang } from "../../../hooks/useLang";
 import useTransactions from "../../../hooks/useTransactions";
 import {
   getExplorerUrl,
+  hexToRgba,
   humanizeAmount,
   toTitleFormat,
 } from "../../../utils/helpers";
 import History, { TxDetail } from "../../../components/Transaction/History";
 
 const handleAssetText = (
-  op: Horizon.ServerApi.PaymentOperationRecord | any,
+  op: Horizon.ServerApi.PaymentOperationRecord | any
 ) => {
   if (op.asset_type === "native") {
     return "XLM";
@@ -26,15 +27,15 @@ const Activity = () => {
   const store = useAppStore((store) => store);
   const { transactions, loading } = useTransactions();
   const [transactionsDetails, setTransactionsDetails] = useState<TxDetail[]>(
-    [],
+    []
   );
-
+  const appearance = store.config.appearance;
   const userAddress = store.user?.address as string;
   const explorerUrl = getExplorerUrl(
     store.stellar?.activeNetwork as string,
     store.config.explorer,
     "accountUrl",
-    userAddress,
+    userAddress
   );
 
   const handleGoToExplorer = () => {
@@ -70,7 +71,9 @@ const Activity = () => {
         }
 
         details.title = title;
-        details.description = `${humanizeAmount(op.amount)} ${handleAssetText(op)}`;
+        details.description = `${humanizeAmount(op.amount)} ${handleAssetText(
+          op
+        )}`;
       } else if (
         op.type ===
           Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
@@ -92,11 +95,17 @@ const Activity = () => {
   return (
     <div className="bluxcc:flex bluxcc:h-[355px] bluxcc:flex-col">
       {loading ? (
-        <div className="bluxcc:flex bluxcc:h-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:text-gray-700">
+        <div
+          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+          className="bluxcc:flex bluxcc:h-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center"
+        >
           {t("loadingActivity")}
         </div>
       ) : isEmpty ? (
-        <div className="bluxcc:flex bluxcc:h-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:text-gray-700">
+        <div
+          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+          className="bluxcc:flex bluxcc:h-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center"
+        >
           {t("noActivityFound")}
         </div>
       ) : (
@@ -105,13 +114,11 @@ const Activity = () => {
             key={index}
             style={{
               borderBottomStyle: "dashed",
-              // borderBottomWidth:
-              //   index < transactionsDetails.length - 1
-              //     ? store.config.appearance.includeBorders
-              //       ? store.config.appearance.borderWidth
-              //       : "1px"
-              //     : "0px",
-              borderBottomColor: store.config.appearance.borderColor,
+              borderBottomWidth:
+                index < transactionsDetails.length - 1
+                  ? appearance.borderWidth
+                  : "0px",
+              borderBottomColor: appearance.borderColor,
             }}
             className={`bluxcc:p-2`}
           >
