@@ -12,6 +12,8 @@ import {
   ReceiveIcon,
   BalancesIcon,
   LogOut,
+  OpenEye,
+  CloseEye,
 } from "../../assets/Icons";
 import {
   copyText,
@@ -24,6 +26,7 @@ import Divider from "../../components/Divider";
 const Profile = () => {
   const t = useLang();
   const [copied, setCopied] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   const store = useAppStore((store) => store);
 
@@ -60,14 +63,36 @@ const Profile = () => {
           className="bluxcc:size-[64px] bluxcc:rounded-full"
           style={{ background: appearance.accentColor }}
         /> */}
-        <p
-          className="bluxcc:text-center bluxcc:text-2xl"
+        <div
+          className="bluxcc:text-center bluxcc:text-2xl bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
           style={{ color: appearance.accentColor }}
         >
-          {balance ? `${humanizeAmount(balance)} XLM` : t("loading")}
-        </p>
+          <p className="bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
+            {balance
+              ? visible
+                ? `${humanizeAmount(balance)} XLM`
+                : "*****"
+              : t("loading")}
+          </p>
+
+          {visible ? (
+            <div
+              onClick={() => setVisible(false)}
+              className="bluxcc:cursor-pointer"
+            >
+              <OpenEye fill={appearance.accentColor} />
+            </div>
+          ) : (
+            <div
+              onClick={() => setVisible(true)}
+              className="bluxcc:cursor-pointer"
+            >
+              <CloseEye fill={appearance.accentColor} />
+            </div>
+          )}
+        </div>
         <p
-          className="bluxcc:!mt-4 bluxcc:leading-[16px] bluxcc:inline-flex bluxcc:cursor-pointer bluxcc:text-sm"
+          className="bluxcc:!mt-4 bluxcc:leading-[16px] bluxcc:inline-flex bluxcc:cursor-pointer bluxcc:text-sm bluxcc:select-none"
           onClick={handleCopyAddress}
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >

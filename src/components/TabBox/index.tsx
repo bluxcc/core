@@ -4,8 +4,9 @@ import { useAppStore } from "../../store";
 
 type Tab = {
   label: string;
-  icon: React.JSX.Element;
   content: React.ReactNode;
+  activeIcon: React.JSX.Element;
+  inActiveIcon: React.JSX.Element;
 };
 
 type TabsProps = {
@@ -17,7 +18,7 @@ const TabBox = ({ tabs }: TabsProps) => {
 
   return (
     <>
-      <div className="bluxcc:flex bluxcc:gap-2 bluxcc:py-3">
+      <div className="bluxcc:flex bluxcc:gap-3 bluxcc:py-3">
         {tabs.map((tab, index) => {
           const isActive = activeTab === index;
 
@@ -29,7 +30,7 @@ const TabBox = ({ tabs }: TabsProps) => {
               aria-label={tab.label}
               aria-selected={activeTab === index}
               tabIndex={activeTab === index ? 0 : -1}
-              className="bluxcc:flex bluxcc:gap-2 bluxcc:h-20 bluxcc:max-w-[96px] bluxcc:cursor-pointer bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:px-7 bluxcc:py-4 bluxcc:text-sm bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"
+              className="bluxcc:flex bluxcc:gap-2 bluxcc:h-20 bluxcc:w-[96px] bluxcc:cursor-pointer bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:px-7 bluxcc:py-4 bluxcc:text-sm bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"
               style={{
                 background: isActive
                   ? hexToRgba(appearance.accentColor, 0.1)
@@ -38,7 +39,7 @@ const TabBox = ({ tabs }: TabsProps) => {
                 borderRadius: appearance.borderRadius,
               }}
             >
-              <span>{tab.icon}</span>
+              <span>{isActive ? tab.activeIcon : tab.inActiveIcon}</span>
               <span>{tab.label}</span>
             </div>
           );

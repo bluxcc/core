@@ -3,7 +3,7 @@ import Button from "../../../components/Button";
 import QRCode from "../../../components/QRCode";
 import { LargeCopy } from "../../../assets/Icons";
 import Divider from "../../../components/Divider";
-import { hexToRgba } from "../../../utils/helpers";
+import { copyText, hexToRgba } from "../../../utils/helpers";
 import { SmallBlux } from "../../../assets/bluxLogo";
 
 const Receive = () => {
@@ -11,6 +11,11 @@ const Receive = () => {
   const appearance = store.config.appearance;
   const address = store.user?.address as string;
 
+  const handleCopyAddress = () => {
+    // todo
+    // add alert component
+    copyText(address);
+  };
   return (
     <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center">
       <div
@@ -80,6 +85,7 @@ const Receive = () => {
         style={{
           color: appearance.accentColor,
         }}
+        onClick={handleCopyAddress}
         endIcon={<LargeCopy fill={appearance.accentColor} />}
       >
         Copy address

@@ -68,8 +68,8 @@ const translations: Translations = {
     es: "o",
   },
   recent: {
-    en: "recent",
-    es: "reciente",
+    en: "Recent",
+    es: "Reciente",
   },
 
   // Onboarding Page

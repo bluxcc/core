@@ -52,15 +52,15 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   },
 
   [Route.RECEIVE]: {
-    title: "Receive address",
+    title: translate("receive", lang),
     Component: <Receive />,
   },
   [Route.SWAP]: {
-    title: "Swap",
+    title: translate("swap", lang),
     Component: <Swap />,
   },
   [Route.BALANCES]: {
-    title: "Balances",
+    title: translate("balances", lang),
     Component: <Balances />,
   },
   [Route.OTP]: {
@@ -69,7 +69,7 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   },
   [Route.WRONG_NETWORK]: {
     isSticky: true,
-    title: translate("wrongNetwork", lang),
+    title: "",
     Component: <WrongNetwork />,
   },
 });

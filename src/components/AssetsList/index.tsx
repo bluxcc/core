@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { IAsset } from "../../../../types";
-import { useAppStore } from "../../../../store";
-import { useLang } from "../../../../hooks/useLang";
-import { hexToRgba, humanizeAmount } from "../../../../utils/helpers";
+import { IAsset } from "../../types";
+import { useAppStore } from "../../store";
+import { useLang } from "../../hooks/useLang";
+import { hexToRgba, humanizeAmount } from "../../utils/helpers";
 
 type AssetsProps = {
   assets: IAsset[];
@@ -60,7 +60,7 @@ const Assets = ({ assets }: AssetsProps) => {
             </div>
           </div>
 
-          <div className="bluxcc:flex bluxcc:flex-col">
+          <div className="bluxcc:flex bluxcc:flex-col bluxcc:text-right">
             <span className="bluxcc:font-medium">
               {humanizeAmount(asset.assetBalance)}
             </span>
