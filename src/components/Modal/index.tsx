@@ -81,7 +81,7 @@ const Modal = ({
         >
           <div
             ref={contentRef}
-            className={`bluxcc:px-6 bluxcc:pt-5 bluxcc:pb-4`}
+            className={`bluxcc:px-6 bluxcc:pb-4`}
             style={{
               opacity: heightReady ? 1 : 0,
               transition: "opacity 250ms ease-in-out",

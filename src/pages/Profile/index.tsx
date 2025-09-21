@@ -25,12 +25,11 @@ import Divider from "../../components/Divider";
 
 const Profile = () => {
   const t = useLang();
-  const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(true);
 
   const store = useAppStore((store) => store);
 
-  const { setRoute, logoutAction } = store;
+  const { setRoute, logoutAction, setAlert } = store;
   const appearance = store.config.appearance;
   const address = store.user?.address as string;
 
@@ -41,11 +40,11 @@ const Profile = () => {
   const handleCopyAddress = () => {
     copyText(address)
       .then(() => {
-        setCopied(true);
-
+        copyText(address);
+        setAlert("info", "Address Copied");
         setTimeout(() => {
-          setCopied(false);
-        }, 2000);
+          setAlert("none", "");
+        }, 1000);
       })
       .catch(() => {});
   };
@@ -68,7 +67,7 @@ const Profile = () => {
           style={{ color: appearance.accentColor }}
         >
           <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
-            <p className="bluxcc:leading-none bluxcc:select-none bluxcc:align-middle">
+            <p className="bluxcc:leading-[32px] bluxcc:select-none bluxcc:align-middle">
               {balance
                 ? visible
                   ? `${humanizeAmount(balance)} XLM`
@@ -98,14 +97,10 @@ const Profile = () => {
           onClick={handleCopyAddress}
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
-          {copied ? (
-            t("copied")
-          ) : (
-            <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
-              {address ? shortenAddress(address, 5) : ""}
-              <Copy fill={hexToRgba(appearance.textColor, 0.7)} />
-            </span>
-          )}
+          <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
+            {address ? shortenAddress(address, 5) : ""}
+            <Copy fill={hexToRgba(appearance.textColor, 0.7)} />
+          </span>
         </p>
       </div>
 

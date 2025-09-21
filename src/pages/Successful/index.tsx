@@ -5,7 +5,11 @@ import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
 import Divider from "../../components/Divider";
 import { GreenCheck } from "../../assets/Icons";
-import { capitalizeFirstLetter, getExplorerUrl } from "../../utils/helpers";
+import {
+  capitalizeFirstLetter,
+  getExplorerUrl,
+  hexToRgba,
+} from "../../utils/helpers";
 
 const Successful = () => {
   const t = useLang();
@@ -55,8 +59,11 @@ const Successful = () => {
 
   return (
     <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
-      <div className="bluxcc:mb-6 bluxcc:flex bluxcc:size-[68px] bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden">
-        <GreenCheck />
+      <div
+        style={{ background: hexToRgba(appearance.accentColor, 0.1) }}
+        className="bluxcc:mb-6 bluxcc:flex bluxcc:size-[68px] bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full"
+      >
+        <GreenCheck fill={appearance.accentColor} />
       </div>
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">

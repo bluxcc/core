@@ -7,7 +7,7 @@ import { defaultLightTheme } from "./constants/themes";
 import { IWallet, IInternalConfig, ISendTransaction } from "./types";
 
 export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
-
+export type AlertType = "error" | "success" | "info" | "warn" | "none";
 export interface IUser {
   address: string;
   walletPassphrase: string;
@@ -33,6 +33,11 @@ export interface IStoreProperties {
   modal: {
     route: Route;
     isOpen: boolean;
+    dynamicTitle: string;
+    alert: {
+      type: AlertType;
+      message: string;
+    };
   };
   showAllWallets: boolean;
   waitingStatus: WaitingStatus;
@@ -56,6 +61,8 @@ export interface IStoreMethods {
   setSendTransaction: (sendTransaction: ISendTransaction) => void;
   setStellar: (stellar: IStellarConfig) => void;
   setWallets: (wallets: IWallet[]) => void;
+  setAlert: (alert: AlertType, message: string) => void;
+  setDynamicTitle: (title: string) => void;
   sendTransactionSuccessful: (sendTransaction: ISendTransaction) => void;
 }
 
@@ -80,6 +87,11 @@ export const store = createStore<IStore>((set) => ({
   modal: {
     isOpen: false,
     route: Route.ONBOARDING,
+    dynamicTitle: "",
+    alert: {
+      type: "none",
+      message: "",
+    },
   },
   authState: {
     isReady: false,
@@ -124,6 +136,30 @@ export const store = createStore<IStore>((set) => ({
       modal: {
         route,
         isOpen: true,
+        dynamicTitle: "",
+        alert: {
+          type: "none",
+          message: "",
+        },
+      },
+    })),
+  setDynamicTitle: (dynamicTitle: string) =>
+    set((state) => ({
+      ...state,
+      modal: {
+        ...state.modal,
+        dynamicTitle: dynamicTitle,
+      },
+    })),
+  setAlert: (alert: AlertType, message: string) =>
+    set((state) => ({
+      ...state,
+      modal: {
+        ...state.modal,
+        alert: {
+          type: alert,
+          message: message,
+        },
       },
     })),
   closeModal: () =>

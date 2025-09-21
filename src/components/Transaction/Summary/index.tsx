@@ -33,6 +33,16 @@ const Summary = ({
 }: SummaryProps) => {
   const appearance = useAppStore((store) => store.config.appearance);
 
+  const store = useAppStore((store) => store);
+  const { setAlert } = store;
+
+  const handleCopyText = (address: string) => {
+    copyText(address);
+    setAlert("info", "Address Copied");
+    setTimeout(() => {
+      setAlert("none", "");
+    }, 1000);
+  };
   const details: TransactionDetail[] = [
     { label: "Action", value: capitalizeFirstLetter(action) },
     { label: "Operations", value: operationsCount.toString() },
@@ -82,7 +92,9 @@ const Summary = ({
                   ? appearance.accentColor
                   : appearance.textColor,
               }}
-              onClick={() => isCopyable && copyValue && copyText(copyValue)}
+              onClick={() =>
+                isCopyable && copyValue && handleCopyText(copyValue)
+              }
             >
               {value}
             </span>

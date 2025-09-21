@@ -22,7 +22,8 @@ export const Provider = () => {
     route === Route.OTP ||
     route === Route.BALANCES ||
     route === Route.RECEIVE ||
-    route === Route.SWAP;
+    route === Route.SWAP ||
+    route === Route.BALANCE_DETAILS;
 
   let modalIcon: "back" | "info" | undefined;
 
@@ -48,6 +49,8 @@ export const Provider = () => {
       route === Route.SWAP
     ) {
       store.setRoute(Route.PROFILE);
+    } else if (route === Route.BALANCE_DETAILS) {
+      store.setRoute(Route.BALANCES);
     }
   };
 
@@ -83,7 +86,11 @@ export const Provider = () => {
       <Header
         onBack={handleBackNavigation}
         onClose={modalContent.isSticky ? () => {} : handleCloseModal}
-        title={modalContent.title}
+        title={
+          store.modal.dynamicTitle !== ""
+            ? store.modal.dynamicTitle
+            : modalContent.title
+        }
         icon={modalIcon}
         closeButton={!showCloseModalIcon}
       />

@@ -8,14 +8,18 @@ import { SmallBlux } from "../../../assets/bluxLogo";
 
 const Receive = () => {
   const store = useAppStore((store) => store);
+  const { setAlert } = useAppStore((store) => store);
   const appearance = store.config.appearance;
   const address = store.user?.address as string;
 
   const handleCopyAddress = () => {
-    // todo
-    // add alert component
     copyText(address);
+    setAlert("info", "Address Copied");
+    setTimeout(() => {
+      setAlert("none", "");
+    }, 1000);
   };
+
   return (
     <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center">
       <div

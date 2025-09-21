@@ -1,4 +1,3 @@
-import { IAsset } from "../../../types";
 import { useAppStore } from "../../../store";
 import { hexToRgba, humanizeAmount } from "../../../utils/helpers";
 import { Copy } from "../../../assets/Icons";
@@ -13,6 +12,8 @@ type DetailsProps = {
 
 const BalanceDetails = () => {
   const appearance = useAppStore((store) => store.config.appearance);
+  // const { setDynamicTitle } = useAppStore((store) => store);
+
   let asset = {
     logo: <StellarLogo />,
     assetBalance: 0.43332,
@@ -59,43 +60,47 @@ const BalanceDetails = () => {
 
       {/* Details list */}
       <div className="bluxcc:space-y-1">
-        {details.map((item, i) => (
-          <div
-            key={i}
-            className="bluxcc:flex bluxcc:font-medium bluxcc:items-center bluxcc:justify-between bluxcc:text-xs bluxcc:h-8 bluxcc:px-4"
-            style={{
-              borderBottom:
-                i < details.length - 1
-                  ? `${appearance.borderWidth} dashed ${appearance.borderColor}`
-                  : "none",
-            }}
-          >
-            <span>{item.label}</span>
-            <span
-              className="bluxcc:flex bluxcc:items-center bluxcc:gap-1 bluxcc:text-xs"
+        {details.map((item, i) => {
+          // setDynamicTitle(item.label);
+          return (
+            <div
+              key={i}
+              className="bluxcc:flex bluxcc:font-medium bluxcc:items-center bluxcc:justify-between bluxcc:text-xs bluxcc:h-8 bluxcc:px-4"
               style={{
-                color:
-                  item.copyable || item.link
-                    ? appearance.accentColor
-                    : hexToRgba(appearance.textColor, 0.7),
+                borderBottom:
+                  i < details.length - 1
+                    ? `${appearance.borderWidth} dashed ${appearance.borderColor}`
+                    : "none",
               }}
             >
-              {item.link ? (
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bluxcc:no-underline"
-                >
-                  {item.value}
-                </a>
-              ) : (
-                item.value
-              )}
-              {item.copyable && <Copy fill={appearance.accentColor} />}
-            </span>
-          </div>
-        ))}
+              <span>{item.label}</span>
+              <span
+                className="bluxcc:flex bluxcc:items-center bluxcc:gap-1 bluxcc:text-xs"
+                style={{
+                  color:
+                    item.copyable || item.link
+                      ? appearance.accentColor
+                      : hexToRgba(appearance.textColor, 0.7),
+                }}
+              >
+                {item.link ? (
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: appearance.accentColor }}
+                    className="bluxcc:no-underline"
+                  >
+                    {item.value}
+                  </a>
+                ) : (
+                  item.value
+                )}
+                {item.copyable && <Copy fill={appearance.accentColor} />}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
