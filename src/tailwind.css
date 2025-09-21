@@ -7,7 +7,7 @@
 
 [class^="bluxcc"],
 [class*=" bluxcc"] {
-  /* Target all prefixed Tailwind elements */
+  /* all prefixed Tailwind elements */
 }
 
 [class^="bluxcc"],
@@ -78,6 +78,27 @@
   height: auto;
 }
 
+#bluxcc-input[type="number"]::-webkit-outer-spin-button,
+#bluxcc-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+#bluxcc-input[type="number"] {
+  -moz-appearance: textfield !important;
+}
+
+#bluxcc-input:-webkit-autofill,
+#bluxcc-input:-webkit-autofill:hover,
+#bluxcc-input:-webkit-autofill:focus,
+#bluxcc-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+  color: inherit !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
 @theme {
   --color-primary-50: #e8e8fd;
   --color-primary-100: #cdceee;
@@ -144,23 +165,61 @@
   animation: fadeOut 0.5s ease-in-out;
 }
 
-#bluxcc-input[type="number"]::-webkit-outer-spin-button,
-#bluxcc-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none !important;
-  margin: 0;
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-#bluxcc-input[type="number"] {
-  -moz-appearance: textfield !important;
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-#bluxcc-input:-webkit-autofill,
-#bluxcc-input:-webkit-autofill:hover,
-#bluxcc-input:-webkit-autofill:focus,
-#bluxcc-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-  box-shadow: 0 0 0 1000px transparent inset !important;
-  -webkit-text-fill-color: inherit !important;
-  color: inherit !important;
-  transition: background-color 5000s ease-in-out 0s !important;
+@keyframes radius-grow {
+  0% {
+    border-radius: 0px;
+  }
+  20% {
+    border-radius: 16px;
+  }
+  40% {
+    border-radius: 24px;
+  }
+  60% {
+    border-radius: 16px;
+  }
+  100% {
+    border-radius: 4px;
+  }
+}
+
+.bluxcc\:marquee_track {
+  display: flex;
+  width: max-content;
+  animation: marquee 12s linear infinite;
+  will-change: transform;
+}
+
+.bluxcc\:animate-borderRadius {
+  animation: radius-grow 10s linear infinite;
+  will-change: transform;
+}
+
+.bluxcc\:marquee_track:hover {
+  animation-play-state: paused;
+}
+
+.bluxcc\:.animate-gradient {
+  animation: gradient 0.1ms ease infinite;
 }

@@ -32,4 +32,5 @@ export enum Route {
   BALANCES = "BALANCES", // View for balances
   SWAP = "SWAP", // View for swap assets
   BALANCE_DETAILS = "BALANCE_DETAILS", // View for asset details
+  ABOUT = "ABOUT", // View for what is blux
 }
