@@ -7,11 +7,9 @@ type GetBalanceOptions = {
   network?: string;
 };
 
-type GetBalanceResult = Horizon.HorizonApi.BalanceLine[];
-
 const getBalances = async (
   options: GetBalanceOptions,
-): Promise<GetBalanceResult> => {
+): Promise<Horizon.HorizonApi.BalanceLine[]> => {
   checkConfigCreated();
   const address = getAddress(options.address);
   const { horizon } = getNetwork(options.network);

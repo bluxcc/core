@@ -9,7 +9,7 @@ interface TransactionRecordWithOperations
   operations: Horizon.ServerApi.OperationRecord[];
 }
 
-type UseTransactionsResult = {
+export type UseTransactionsResult = {
   loading: boolean;
   error: Error | null;
   transactions: TransactionRecordWithOperations[];
