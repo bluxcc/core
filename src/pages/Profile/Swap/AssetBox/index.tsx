@@ -29,7 +29,7 @@ const AssetBox = ({ handleOpenAssets }: { handleOpenAssets: () => void }) => {
         <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
       </div>
       <span>XLM</span>
-      <ArrowDropDown />
+      <ArrowDropDown fill={appearance.accentColor} />
     </div>
   );
 };

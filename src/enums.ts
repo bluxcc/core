@@ -31,4 +31,5 @@ export enum Route {
   RECEIVE = "RECEIVE", // View for receive page
   BALANCES = "BALANCES", // View for balances
   SWAP = "SWAP", // View for swap assets
+  BALANCE_DETAILS = "BALANCE_DETAILS", // View for asset details
 }

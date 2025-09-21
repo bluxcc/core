@@ -1,9 +1,10 @@
 import { useState } from "react";
 
 import { IAsset } from "../../types";
-import { useAppStore } from "../../store";
+import { store, useAppStore } from "../../store";
 import { useLang } from "../../hooks/useLang";
 import { hexToRgba, humanizeAmount } from "../../utils/helpers";
+import { Route } from "../../enums";
 
 type AssetsProps = {
   assets: IAsset[];
@@ -11,13 +12,19 @@ type AssetsProps = {
 
 const Assets = ({ assets }: AssetsProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
+  const { setRoute } = useAppStore((store) => store);
+  const t = useLang();
+
+  const handleClickAsset = () => {
+    setRoute(Route.BALANCE_DETAILS);
+  };
 
   return (
     <div>
       {assets.map((asset, index) => (
         <div
+          onClick={handleClickAsset}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}

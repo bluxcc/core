@@ -14,6 +14,7 @@ import WrongNetwork from "../pages/WrongNetwork";
 import Balances from "../pages/Profile/Balances";
 import Activity from "../pages/Profile/Activity";
 import SendTransaction from "../pages/SendTransaction";
+import BalanceDetails from "../pages/Profile/BalanceDetaills";
 
 type IRoute = {
   title: string;
@@ -62,6 +63,10 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   [Route.BALANCES]: {
     title: translate("balances", lang),
     Component: <Balances />,
+  },
+  [Route.BALANCE_DETAILS]: {
+    title: "",
+    Component: <BalanceDetails />,
   },
   [Route.OTP]: {
     title: "",

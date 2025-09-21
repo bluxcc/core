@@ -67,13 +67,15 @@ const Profile = () => {
           className="bluxcc:text-center bluxcc:text-2xl bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
           style={{ color: appearance.accentColor }}
         >
-          <p className="bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
-            {balance
-              ? visible
-                ? `${humanizeAmount(balance)} XLM`
-                : "*****"
-              : t("loading")}
-          </p>
+          <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
+            <p className="bluxcc:leading-none bluxcc:select-none bluxcc:align-middle">
+              {balance
+                ? visible
+                  ? `${humanizeAmount(balance)} XLM`
+                  : "******"
+                : t("loading")}
+            </p>
+          </div>
 
           {visible ? (
             <div
