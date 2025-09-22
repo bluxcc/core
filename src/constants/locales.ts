@@ -393,5 +393,10 @@ const translations: Translations = {
     en: "NFTs",
     es: "NFTs",
   },
+
+  sign_permission: {
+    en: "wants your permission to sign the following message:",
+    es: "solicita tu permiso para firmar el siguiente mensaje:",
+  },
 };
 export default translations;

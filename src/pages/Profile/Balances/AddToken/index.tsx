@@ -49,7 +49,7 @@ const AddToken = () => {
         }
       />
       <div
-        className="h-[224px] bluxcc:my-4"
+        className="bluxcc:h-[224px] bluxcc:my-4"
         style={{
           borderRadius: appearance.borderRadius,
           border: `${appearance.borderWidth} solid ${appearance.borderColor}`,

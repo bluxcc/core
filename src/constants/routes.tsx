@@ -17,6 +17,7 @@ import SendTransaction from "../pages/SendTransaction";
 import BalanceDetails from "../pages/Profile/Balances/BalanceDetails";
 import About from "../pages/About";
 import AddToken from "../pages/Profile/Balances/AddToken";
+import SignMessage from "../pages/SignMessage";
 
 type IRoute = {
   title: string;
@@ -86,5 +87,9 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   [Route.ADD_TOKEN]: {
     title: "Add Token",
     Component: <AddToken />,
+  },
+  [Route.SIGN_MESSAGE]: {
+    title: "Sign Message",
+    Component: <SignMessage />,
   },
 });
