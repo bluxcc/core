@@ -5,8 +5,10 @@ import { LargeCopy } from "../../../assets/Icons";
 import Divider from "../../../components/Divider";
 import { copyText, hexToRgba } from "../../../utils/helpers";
 import { SmallBlux } from "../../../assets/bluxLogo";
+import { useLang } from "../../../hooks/useLang";
 
 const Receive = () => {
+  const t = useLang();
   const store = useAppStore((store) => store);
   const { setAlert } = useAppStore((store) => store);
   const appearance = store.config.appearance;
@@ -14,7 +16,7 @@ const Receive = () => {
 
   const handleCopyAddress = () => {
     copyText(address);
-    setAlert("info", "Address Copied");
+    setAlert("info", t("address_copied"));
     setTimeout(() => {
       setAlert("none", "");
     }, 1000);
@@ -80,7 +82,7 @@ const Receive = () => {
         </div>
       </div>
 
-      <Divider  />
+      <Divider />
 
       <Button
         size="large"
@@ -92,7 +94,7 @@ const Receive = () => {
         onClick={handleCopyAddress}
         endIcon={<LargeCopy fill={appearance.accentColor} />}
       >
-        Copy address
+        {t("copy_address")}
       </Button>
     </div>
   );

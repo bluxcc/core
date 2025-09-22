@@ -63,11 +63,17 @@ const Profile = () => {
           style={{ background: appearance.accentColor }}
         /> */}
         <div
-          className="bluxcc:text-center bluxcc:text-2xl bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
+          className="bluxcc:text-center bluxcc:text-2xl bluxcc:h-8 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
           style={{ color: appearance.accentColor }}
         >
           <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
-            <p className="bluxcc:leading-[32px] bluxcc:select-none bluxcc:align-middle">
+            <p
+              className="bluxcc:select-none"
+              style={{
+                verticalAlign: "middle",
+                paddingTop: !visible ? "8px" : "0px",
+              }}
+            >
               {balance
                 ? visible
                   ? `${humanizeAmount(balance)} XLM`
@@ -76,21 +82,23 @@ const Profile = () => {
             </p>
           </div>
 
-          {visible ? (
-            <div
-              onClick={() => setVisible(false)}
-              className="bluxcc:cursor-pointer"
-            >
-              <OpenEye fill={appearance.accentColor} />
-            </div>
-          ) : (
-            <div
-              onClick={() => setVisible(true)}
-              className="bluxcc:cursor-pointer"
-            >
-              <CloseEye fill={appearance.accentColor} />
-            </div>
-          )}
+          <div className="bluxcc:transition-all">
+            {visible ? (
+              <div
+                onClick={() => setVisible(false)}
+                className="bluxcc:cursor-pointer"
+              >
+                <OpenEye fill={appearance.accentColor} />
+              </div>
+            ) : (
+              <div
+                onClick={() => setVisible(true)}
+                className="bluxcc:cursor-pointer"
+              >
+                <CloseEye fill={appearance.accentColor} />
+              </div>
+            )}
+          </div>
         </div>
         <p
           className="bluxcc:!mt-4 bluxcc:leading-[16px] bluxcc:inline-flex bluxcc:cursor-pointer bluxcc:text-sm bluxcc:select-none"

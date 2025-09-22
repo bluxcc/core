@@ -152,10 +152,11 @@ const Swap = () => {
           }}
         >
           <span style={{ color: appearance.accentColor }}>%0.2</span>
+          {/* this should change color based on the impact if its positive its green if not red or yellow */}
           <span
             className="bluxcc:h-2 bluxcc:w-2"
             style={{ backgroundColor: "#32D74B" }}
-          ></span>
+          />
         </div>
       </div>
       <div

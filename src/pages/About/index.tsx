@@ -1,14 +1,16 @@
 import { ChipIcon, KeyIcon, ShieldIcon, WalletIcon } from "../../assets/Icons";
+import { useLang } from "../../hooks/useLang";
 import { useAppStore } from "../../store";
 import AnimatedGradient from "../../utils/animatedGradient";
 
 const About = () => {
+  const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
   const icons = [ShieldIcon, KeyIcon, WalletIcon, ChipIcon];
 
   return (
     <div
-      className="bluxcc:flex bluxcc:flex-col bluxcc:select-none bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:font-medium bluxcc:my-8"
+      className="bluxcc:flex bluxcc:flex-col bluxcc:select-none bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:font-medium bluxcc:mt-4 bluxcc:mb-8"
       style={{ color: appearance.textColor }}
     >
       <AnimatedGradient
@@ -21,7 +23,11 @@ const About = () => {
           {[...icons, ...icons].map((Icon, idx) => (
             <div
               key={idx}
-              className="bluxcc:size-[82px] bluxcc:flex bluxcc:items-center bluxcc:animate-borderRadius bluxcc:justify-center bluxcc:bg-primary-500"
+              style={{
+                borderRadius:
+                  appearance.borderRadius !== "0px" ? "16px" : "0px",
+              }}
+              className="bluxcc:size-[82px] bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:bg-primary-500"
             >
               <Icon fill="#ffffff" />
             </div>
@@ -29,12 +35,9 @@ const About = () => {
         </div>
       </AnimatedGradient>
       <p className="bluxcc:text-2xl bluxcc:mt-[26px] bluxcc:mb-2">
-        Wallet Infrastructure for Stellar dapps
+        {t("wallet_infra")}
       </p>
-      <p className="bluxcc:text-sm text-center">
-        Blux is your gateway to Stellar. Create a wallet, manage assets, and
-        sign transactions easily and securely.
-      </p>
+      <p className="bluxcc:text-sm text-center">{t("blux_gateway")}</p>
     </div>
   );
 };

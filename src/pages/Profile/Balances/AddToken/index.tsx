@@ -3,10 +3,12 @@ import InputField from "../../../../components/Input";
 import { useAppStore } from "../../../../store";
 import Divider from "../../../../components/Divider";
 import Button from "../../../../components/Button";
-import { hexToRgba, humanizeAmount } from "../../../../utils/helpers";
+import { humanizeAmount } from "../../../../utils/helpers";
 import { StellarLogo } from "../../../../assets/Logos";
+import { useLang } from "../../../../hooks/useLang";
 
 const AddToken = () => {
+  const t = useLang();
   const [form, setForm] = useState({
     address: "",
   });
@@ -32,8 +34,8 @@ const AddToken = () => {
       <InputField
         autoFocus
         type="text"
-        label={"Enter token address"}
-        placeholder="Enter address"
+        label={t("enter_token_address")}
+        placeholder={t("enter_address")}
         value={form.address}
         onChange={handleChange("address")}
         onButtonClick={handleButtonClick}
@@ -42,7 +44,7 @@ const AddToken = () => {
             style={{ color: appearance.accentColor }}
             className="bluxcc:flex bluxcc:justify-between"
           >
-            Check
+            {t("check")}
           </span>
         }
       />
@@ -81,11 +83,11 @@ const AddToken = () => {
           variant="outline"
           className="bluxcc:cursor-default!"
         >
-          Cancel
+          {t("cancel")}
         </Button>
 
         <Button state="enabled" variant="fill" size="large">
-          Add Token
+          {t("add_token")}
         </Button>
       </div>
     </div>

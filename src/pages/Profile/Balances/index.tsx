@@ -12,8 +12,10 @@ import { StellarLogo } from "../../../assets/Logos";
 
 import Button from "../../../components/Button";
 import { Route } from "../../../enums";
+import { useLang } from "../../../hooks/useLang";
 
 const Balances = () => {
+  const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
   const { setRoute } = useAppStore((store) => store);
 
@@ -41,13 +43,13 @@ const Balances = () => {
 
   const tabsContent = [
     {
-      label: "Assets",
+      label: t("assets"),
       activeIcon: <AssetsIcon fill={appearance.accentColor} />,
       inActiveIcon: <AssetsIcon fill={appearance.textColor} />,
       content: <Assets assets={mockAssets} />,
     },
     {
-      label: "Tokens",
+      label: t("tokens"),
       activeIcon: <TokenIcon fill={appearance.accentColor} />,
       inActiveIcon: <TokenIcon fill={appearance.textColor} />,
       content: (
@@ -64,7 +66,7 @@ const Balances = () => {
               }}
               startIcon={<PlusIcon fill={appearance.accentColor} />}
             >
-              Add new token
+              {t("add_new_token")}
             </Button>
           </div>
         </div>
@@ -72,7 +74,7 @@ const Balances = () => {
     },
 
     {
-      label: "NFTs",
+      label: t("nfts"),
       activeIcon: <NFTsIcon fill={appearance.accentColor} />,
       inActiveIcon: <NFTsIcon fill={appearance.textColor} />,
       content: "nfts",
