@@ -165,27 +165,6 @@
   animation: fadeOut 0.5s ease-in-out;
 }
 
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
 @keyframes radius-grow {
   0% {
     border-radius: 0px;
@@ -199,20 +178,37 @@
   60% {
     border-radius: 16px;
   }
-  100% {
-    border-radius: 4px;
+  90% {
+    border-radius: 6px;
   }
+  100% {
+    border-radius: 0px;
+  }
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(-35%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.bluxcc\:marquee_outer {
+  position: relative;
+  overflow: hidden; /* hide overflow */
+  width: 100%;
 }
 
 .bluxcc\:marquee_track {
   display: flex;
-  width: max-content;
-  animation: marquee 12s linear infinite;
+  width: fit-content;
+  animation: marquee 20s linear infinite; /* adjust speed */
   will-change: transform;
 }
 
 .bluxcc\:animate-borderRadius {
-  animation: radius-grow 10s linear infinite;
+  animation: radius-grow 12s linear infinite;
   will-change: transform;
 }
 
@@ -221,5 +217,5 @@
 }
 
 .bluxcc\:.animate-gradient {
-  animation: gradient 0.1ms ease infinite;
+  animation: gradient 2s ease infinite;
 }
