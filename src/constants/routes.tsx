@@ -14,8 +14,9 @@ import WrongNetwork from "../pages/WrongNetwork";
 import Balances from "../pages/Profile/Balances";
 import Activity from "../pages/Profile/Activity";
 import SendTransaction from "../pages/SendTransaction";
-import BalanceDetails from "../pages/Profile/BalanceDetails";
+import BalanceDetails from "../pages/Profile/Balances/BalanceDetails";
 import About from "../pages/About";
+import AddToken from "../pages/Profile/Balances/AddToken";
 
 type IRoute = {
   title: string;
@@ -81,5 +82,9 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   [Route.ABOUT]: {
     title: "What is Blux",
     Component: <About />,
+  },
+  [Route.ADD_TOKEN]: {
+    title: "Add Token",
+    Component: <AddToken />,
   },
 });

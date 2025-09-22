@@ -11,10 +11,15 @@ import { useAppStore } from "../../../store";
 import { StellarLogo } from "../../../assets/Logos";
 
 import Button from "../../../components/Button";
+import { Route } from "../../../enums";
 
 const Balances = () => {
   const appearance = useAppStore((store) => store.config.appearance);
+  const { setRoute } = useAppStore((store) => store);
 
+  const handleAddToken = () => {
+    setRoute(Route.ADD_TOKEN);
+  };
   const mockAssets: IAsset[] = [
     {
       assetCode: "XLM",
@@ -46,22 +51,23 @@ const Balances = () => {
       activeIcon: <TokenIcon fill={appearance.accentColor} />,
       inActiveIcon: <TokenIcon fill={appearance.textColor} />,
       content: (
-        <>
+        <div className="bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:flex-col bluxcc:w-full bluxcc:relative">
           <Assets assets={mockAssets} />
-          <div className="bluxcc:absolute bluxcc:bottom-3 bluxcc:flex bluxcc:items-center bluxcc:justify-center">
-            {/* <Button
+          <div className="bluxcc:absolute bluxcc:bottom-3">
+            <Button
               size="large"
               state="enabled"
               variant="tonal"
+              onClick={handleAddToken}
               style={{
                 color: appearance.accentColor,
               }}
-              endIcon={<PlusIcon fill={appearance.accentColor} />}
+              startIcon={<PlusIcon fill={appearance.accentColor} />}
             >
               Add new token
-            </Button> */}
+            </Button>
           </div>
-        </>
+        </div>
       ),
     },
 

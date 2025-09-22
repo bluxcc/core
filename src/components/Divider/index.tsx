@@ -1,6 +1,8 @@
-import { IAppearance } from "../../types";
+import { useAppStore } from "../../store";
 
-const Divider = ({ appearance }: { appearance: IAppearance }) => {
+const Divider = () => {
+  const appearance = useAppStore((store) => store.config.appearance);
+
   return (
     <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
       <div

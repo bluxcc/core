@@ -150,7 +150,7 @@ const Profile = () => {
         />
       </div>
 
-      <Divider appearance={appearance} />
+      <Divider />
 
       <div
         style={{ color: appearance.textColor }}

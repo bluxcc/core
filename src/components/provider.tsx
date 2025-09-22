@@ -24,7 +24,8 @@ export const Provider = () => {
     route === Route.RECEIVE ||
     route === Route.SWAP ||
     route === Route.BALANCE_DETAILS ||
-    route === Route.ABOUT;
+    route === Route.ABOUT ||
+    route === Route.ADD_TOKEN;
 
   let modalIcon: "back" | "info" | undefined;
 
@@ -51,7 +52,7 @@ export const Provider = () => {
       route === Route.SWAP
     ) {
       store.setRoute(Route.PROFILE);
-    } else if (route === Route.BALANCE_DETAILS) {
+    } else if (route === Route.BALANCE_DETAILS || route === Route.ADD_TOKEN) {
       store.setRoute(Route.BALANCES);
     }
   };

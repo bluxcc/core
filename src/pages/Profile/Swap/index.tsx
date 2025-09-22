@@ -171,7 +171,7 @@ const Swap = () => {
         </span>
       </div>
 
-      <Divider appearance={appearance} />
+      <Divider />
 
       {/* Swap Button */}
       <Button size="large" state="enabled" variant="outline">

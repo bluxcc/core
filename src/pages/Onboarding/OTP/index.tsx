@@ -70,7 +70,7 @@ const OTP = () => {
         <OTPInput otp={otp} setOtp={setOtp} error={error} />
       </div>
 
-      <Divider appearance={appearance} />
+      <Divider />
 
       <Button
         size="medium"

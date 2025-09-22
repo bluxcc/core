@@ -158,7 +158,7 @@ const Waiting = () => {
         </p>
       </div>
 
-      <Divider appearance={appearance} />
+      <Divider />
 
       {error ? (
         <Button onClick={handleRetry} state="enabled" variant="outline">

@@ -108,7 +108,7 @@ const SendTransaction = () => {
         </div>
       </div>
 
-      <Divider appearance={appearance} />
+      <Divider  />
 
       <Button
         size="large"

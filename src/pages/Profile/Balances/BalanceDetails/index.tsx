@@ -1,7 +1,7 @@
-import { useAppStore } from "../../../store";
-import { hexToRgba, humanizeAmount } from "../../../utils/helpers";
-import { Copy } from "../../../assets/Icons";
-import { StellarLogo } from "../../../assets/Logos";
+import { Copy } from "../../../../assets/Icons";
+import { StellarLogo } from "../../../../assets/Logos";
+import { useAppStore } from "../../../../store";
+import { hexToRgba, humanizeAmount } from "../../../../utils/helpers";
 
 type DetailsProps = {
   label: string;

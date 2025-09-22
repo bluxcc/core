@@ -91,7 +91,7 @@ const InputField = ({
       {label && (
         <label
           style={{ color: error ? "#ec2929" : appearance.textColor }}
-          className={`bluxcc:mb-1 bluxcc:ml-2 bluxcc:flex bluxcc:justify-between bluxcc:text-sm`}
+          className={`bluxcc:mb-1 bluxcc:ml-2 bluxcc:flex bluxcc:justify-between bluxcc:text-xs`}
         >
           <span>{label}</span>
           <span>{customLabel}</span>
@@ -122,7 +122,7 @@ const InputField = ({
           autoFocus={autoFocus}
           value={value}
           placeholder={placeholder}
-          className="bluxcc:!mr-2 bluxcc:bg-transparent bluxcc:outline-hidden"
+          className="bluxcc:!mr-2 bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:text-base bluxcc:font-medium"
           style={{
             color: appearance.textColor,
             width: !button ? "100%" : "90%",
