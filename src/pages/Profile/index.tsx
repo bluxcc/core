@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Route } from "../../enums";
 import { useAppStore } from "../../store";
 import { useLang } from "../../hooks/useLang";
+import Divider from "../../components/Divider";
 import CardItem from "../../components/CardItem";
 import {
   Copy,
@@ -21,7 +22,6 @@ import {
   humanizeAmount,
   shortenAddress,
 } from "../../utils/helpers";
-import Divider from "../../components/Divider";
 
 const Profile = () => {
   const t = useLang();
@@ -46,14 +46,13 @@ const Profile = () => {
           setAlert("none", "");
         }, 1000);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
-  // todo
-  const balance = "0";
-  // const balance = store.account
-  //   ? store.account.balances.find((b) => b.asset_type === "native")?.balance
-  //   : "0";
+  const balance =
+    store.balances.balances.length !== 0
+      ? store.balances.balances.find((b) => b.asset_type === "native")!.balance
+      : "0";
 
   return (
     <div className="bluxcc:flex bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
@@ -121,6 +120,7 @@ const Profile = () => {
             setRoute(Route.RECEIVE);
           }}
         />
+        {/*
         <CardItem
           size="small"
           label={t("swap")}
@@ -129,6 +129,7 @@ const Profile = () => {
             setRoute(Route.SWAP);
           }}
         />
+        */}
       </div>
       <div className="bluxcc:mt-[16px] bluxcc:w-full bluxcc:space-y-2">
         <CardItem

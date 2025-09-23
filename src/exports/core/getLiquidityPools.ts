@@ -2,7 +2,7 @@ import { Asset, Horizon } from "@stellar/stellar-sdk";
 import { LiquidityPoolCallBuilder } from "@stellar/stellar-sdk/lib/horizon/liquidity_pool_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetLiquidityPoolsOptions = CallBuilderOptions & {
   forAssets?: Array<Asset>;

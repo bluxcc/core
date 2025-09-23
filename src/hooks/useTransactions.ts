@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 
 import { useAppStore } from "../store";
-import getTransactions from "../query/getTransactions";
+import getTransactions from "../exports/core/getTransactions";
 
 interface TransactionRecordWithOperations
   extends Omit<Horizon.ServerApi.TransactionRecord, "operations"> {

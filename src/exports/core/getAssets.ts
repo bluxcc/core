@@ -2,7 +2,7 @@ import { Horizon } from "@stellar/stellar-sdk";
 import { AssetsCallBuilder } from "@stellar/stellar-sdk/lib/horizon/assets_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetAssetsOptions = CallBuilderOptions & {
   forCode?: string;

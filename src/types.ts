@@ -65,7 +65,7 @@ export interface IWallet {
       networkPassphrase?: string;
       address?: string;
       submit?: boolean;
-    }
+    },
   ) => Promise<string>;
   disconnect?: () => Promise<void>;
   getNetwork: () => Promise<{
@@ -78,7 +78,7 @@ export interface IWallet {
       networkPassphrase?: string;
       address?: string;
       path?: string;
-    }
+    },
   ) => Promise<{ signedMessage: string; signerPublicKey?: string }>;
   signAuthEntry?: (
     authorizationEntry: string,
@@ -86,7 +86,7 @@ export interface IWallet {
       networkPassphrase?: string;
       address?: string;
       path?: string;
-    }
+    },
   ) => Promise<{ signedAuthorizationEntry: string; signerPublicKey?: string }>;
 }
 
@@ -102,7 +102,7 @@ export interface IAccountData {
 
 export interface IAsset {
   logo?: string | React.ReactNode;
-  valueInCurrency: string;
+  valueInCurrency?: string;
   assetBalance: string;
   assetCode: string;
   assetType: string;

@@ -5,6 +5,7 @@ import Profile from "../pages/Profile";
 import Waiting from "../pages/Waiting";
 import { LanguageKey } from "../types";
 import Swap from "../pages/Profile/Swap";
+import Send from "../pages/Profile/Send";
 import OTP from "../pages/Onboarding/OTP";
 import Successful from "../pages/Successful";
 import Onboarding from "../pages/Onboarding";
@@ -43,10 +44,10 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
     title: translate("confirmation", lang),
     Component: <SendTransaction />,
   },
-  // [Route.SEND]: {
-  //   title: translate("send", lang),
-  //   Component: <Send />,
-  // },
+  [Route.SEND]: {
+    title: translate("send", lang),
+    Component: <Send />,
+  },
   [Route.ACTIVITY]: {
     title: translate("activity", lang),
     Component: <Activity />,

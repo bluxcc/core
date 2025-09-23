@@ -2,7 +2,7 @@ import { Asset, Horizon } from "@stellar/stellar-sdk";
 import { OrderbookCallBuilder } from "@stellar/stellar-sdk/lib/horizon/orderbook_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetOrderbookResult = {
   builder: OrderbookCallBuilder;

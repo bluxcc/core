@@ -1,10 +1,9 @@
 import { useState } from "react";
 
 import { IAsset } from "../../types";
-import { store, useAppStore } from "../../store";
+import { useAppStore } from "../../store";
 import { useLang } from "../../hooks/useLang";
 import { hexToRgba, humanizeAmount } from "../../utils/helpers";
-import { Route } from "../../enums";
 
 type AssetsProps = {
   assets: IAsset[];
@@ -13,18 +12,19 @@ type AssetsProps = {
 const Assets = ({ assets }: AssetsProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const appearance = useAppStore((store) => store.config.appearance);
-  const { setRoute } = useAppStore((store) => store);
   const t = useLang();
 
-  const handleClickAsset = () => {
-    setRoute(Route.BALANCE_DETAILS);
-  };
+  // TODO: Implement asset detail page
+  // const { setRoute } = useAppStore((store) => store);
+  // const handleClickAsset = () => {
+  //   setRoute(Route.BALANCE_DETAILS);
+  // };
 
   return (
     <div>
       {assets.map((asset, index) => (
         <div
-          onClick={handleClickAsset}
+          // onClick={handleClickAsset}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}
@@ -75,7 +75,7 @@ const Assets = ({ assets }: AssetsProps) => {
               className="bluxcc:font-semibold bluxcc:text-xs"
               style={{ color: hexToRgba(appearance.textColor, 0.7) }}
             >
-              {humanizeAmount(asset.valueInCurrency)}$
+              {humanizeAmount(asset.valueInCurrency || "0")}$
             </span>
           </div>
         </div>

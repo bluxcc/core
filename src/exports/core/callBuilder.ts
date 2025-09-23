@@ -14,7 +14,7 @@ import { EffectCallBuilder } from "@stellar/stellar-sdk/lib/horizon/effect_call_
 import { PaymentCallBuilder } from "@stellar/stellar-sdk/lib/horizon/payment_call_builder";
 import { AssetsCallBuilder } from "@stellar/stellar-sdk/lib/horizon/assets_call_builder";
 
-import { CallBuilderOptions, getNetwork } from "./utils";
+import { CallBuilderOptions, getNetwork } from "../utils";
 
 type CallBuilderMap = {
   accounts: [[], AccountCallBuilder];

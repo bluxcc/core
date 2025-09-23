@@ -1,5 +1,5 @@
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetPaymentsOptions = CallBuilderOptions & {
   forAccount?: string;

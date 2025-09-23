@@ -39,6 +39,7 @@ const Swap = () => {
   const handleOpenAssets = () => {
     setShowSelectAssetPage(true);
   };
+
   if (showSelectAssetPage) {
     return (
       <SelectAssets

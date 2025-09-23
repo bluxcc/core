@@ -1,28 +1,29 @@
 import { Horizon } from "@stellar/stellar-sdk";
-import { TransactionCallBuilder } from "@stellar/stellar-sdk/lib/horizon/transaction_call_builder";
+import { OperationCallBuilder } from "@stellar/stellar-sdk/lib/horizon/operation_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
-type GetTransactionsOptions = CallBuilderOptions & {
+type GetOperationsOptions = CallBuilderOptions & {
   forAccount?: string;
   forClaimableBalance?: string;
   forLedger?: string | number;
+  forTransaction?: string;
   forLiquidityPool?: string;
   includeFailed?: boolean;
 };
 
-type GetTransactionsResult = {
-  builder: TransactionCallBuilder;
-  response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TransactionRecord>;
+type GetOperationsResult = {
+  builder: OperationCallBuilder;
+  response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OperationRecord>;
 };
 
-const getTransactions = async (
-  options: GetTransactionsOptions,
-): Promise<GetTransactionsResult> => {
+const getOperations = async (
+  options: GetOperationsOptions,
+): Promise<GetOperationsResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("transactions", [], options);
+  let builder = callBuilder("operations", [], options);
 
   if (options.forAccount) {
     builder = builder.forAccount(options.forAccount);
@@ -36,6 +37,9 @@ const getTransactions = async (
     builder = builder.forLedger(options.forLedger);
   }
 
+  if (options.forTransaction) {
+    builder = builder.forTransaction(options.forTransaction);
+  }
   if (options.forLiquidityPool) {
     builder = builder.forLiquidityPool(options.forLiquidityPool);
   }
@@ -52,4 +56,4 @@ const getTransactions = async (
   };
 };
 
-export default getTransactions;
+export default getOperations;

@@ -1,11 +1,18 @@
+import { useEffect } from "react";
+import { Horizon, rpc } from "@stellar/stellar-sdk";
+
 import Modal from "./Modal";
 import Header from "./Header";
 import { Route } from "../enums";
 import { useAppStore } from "../store";
+import { getNetworkRpc } from "../utils/helpers";
 import { getModalContent } from "../constants/routes";
 import { defaultLightTheme } from "../constants/themes";
+import useUpdateAccount from "../hooks/useUpdateAccount";
 
 export const Provider = () => {
+  useUpdateAccount();
+
   const store = useAppStore((store) => store);
 
   const { modal, closeModal, setShowAllWallets } = store;
@@ -70,6 +77,25 @@ export const Provider = () => {
     //   }
     // }
   };
+
+  useEffect(() => {
+    const { horizon, soroban } = getNetworkRpc(
+      store.stellar?.activeNetwork || "",
+      store.config.transports ?? {},
+    );
+
+    store.setStellar({
+      activeNetwork: store.stellar?.activeNetwork || "",
+      servers: {
+        horizon: new Horizon.Server(horizon),
+        soroban: new rpc.Server(soroban),
+      },
+    });
+  }, [
+    store.config.transports,
+    store.config.networks,
+    store.stellar?.activeNetwork,
+  ]);
 
   const showCloseModalIcon =
     route === Route.WRONG_NETWORK ||

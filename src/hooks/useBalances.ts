@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 
 import { useAppStore } from "../store";
-import getBalances from "../query/getBalances";
+import getBalances from "../exports/core/getBalances";
 
 export type UseBalancesResult = {
   loading: boolean;

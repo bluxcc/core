@@ -1,11 +1,13 @@
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
+import { Horizon, rpc } from "@stellar/stellar-sdk";
 
-import { Route } from "./enums";
+import ex from "./exports";
 import { getState } from "./store";
-import { Provider } from "./components/provider";
+import { Provider } from "./components/Provider";
 import { IConfig, IInternalConfig } from "./types";
 import { defaultLightTheme } from "./constants/themes";
+
 import {
   getNetworkRpc,
   handleLoadWallets,
@@ -13,9 +15,6 @@ import {
 } from "./utils/helpers";
 
 import "./tailwind.css";
-import getTransactionDetails from "./stellar/getTransactionDetails";
-import handleTransactionSigning from "./stellar/handleTransactionSigning";
-import { Horizon, rpc } from "@stellar/stellar-sdk";
 
 let root: any = null;
 let isInitiated = false;
@@ -29,7 +28,7 @@ const init = () => {
   root.render(createElement(Provider));
 };
 
-export function createConfig(config: IConfig) {
+function createConfig(config: IConfig) {
   if (isInitiated) {
     throw new Error("Config has already been set");
   }
@@ -82,115 +81,10 @@ export function createConfig(config: IConfig) {
   });
 }
 
-const login = async () => {
-  const { authState, openModal } = getState();
-  const { isReady, isAuthenticated } = authState;
-
-  if (!isReady) {
-    throw new Error("Cannot connect when isReady is false.");
-  }
-
-  if (isAuthenticated) {
-    throw new Error("Already connected.");
-  }
-
-  openModal(Route.ONBOARDING);
+const exs = {
+  createConfig,
+  core: ex.core,
+  blux: ex.blux,
 };
 
-const logout = () => {
-  const { logoutAction } = getState();
-
-  logoutAction();
-};
-
-const profile = () => {
-  const { openModal, authState } = getState();
-
-  const { isAuthenticated } = authState;
-
-  if (!isAuthenticated) {
-    throw new Error("User is not authenticated.");
-  }
-
-  openModal(Route.PROFILE);
-};
-
-const sendTransaction = (xdr: string, options: { network: string }) =>
-  new Promise((resolve, reject) => {
-    const { authState, wallets, config, user, stellar, setSendTransaction } =
-      getState();
-
-    if (!authState.isAuthenticated || !stellar || !user) {
-      reject(new Error("User is not authenticated."));
-
-      return;
-    }
-
-    let network = stellar.activeNetwork;
-
-    if (options && options.network) {
-      network = options.network;
-    }
-
-    if (!getTransactionDetails(xdr, network)) {
-      reject("Invalid XDR");
-
-      return;
-    }
-
-    const transactionObject = {
-      xdr,
-      options,
-      rejecter: reject,
-      resolver: resolve,
-      result: undefined,
-    };
-
-    const foundWallet = wallets.find((w) => w.name === user.authValue);
-
-    if (!foundWallet) {
-      throw new Error("Could not find the connected wallet.");
-    }
-
-    if (!config.showWalletUIs) {
-      handleTransactionSigning(
-        foundWallet,
-        xdr,
-        user.address,
-        options,
-        config.transports || {},
-      )
-        .then((result) => {
-          resolve(result);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-
-      return;
-    }
-
-    setSendTransaction(transactionObject);
-  });
-
-export const Blux = {
-  login,
-  logout,
-  profile,
-  sendTransaction,
-  get isReady() {
-    const { authState } = getState();
-
-    return authState.isReady;
-  },
-  get isAuthenticated() {
-    const { authState } = getState();
-
-    return authState.isAuthenticated;
-  },
-  get user() {
-    const { user } = getState();
-
-    return user;
-  },
-};
+export default exs;

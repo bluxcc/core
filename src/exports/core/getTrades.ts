@@ -2,7 +2,7 @@ import { Asset, Horizon } from "@stellar/stellar-sdk";
 import { TradesCallBuilder } from "@stellar/stellar-sdk/lib/horizon/trades_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetTradesOptions = CallBuilderOptions & {
   forAssetPair?: [base: Asset, counter: Asset];

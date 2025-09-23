@@ -1,20 +1,19 @@
+import { useEffect, useState } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
-import React, { useEffect, useState } from "react";
 
 import { useAppStore } from "../../../store";
 import Button from "../../../components/Button";
 import { useLang } from "../../../hooks/useLang";
-import useTransactions from "../../../hooks/useTransactions";
-import {
-  getExplorerUrl,
-  hexToRgba,
-  humanizeAmount,
-  toTitleFormat,
-} from "../../../utils/helpers";
 import History, { TxDetail } from "../../../components/Transaction/History";
+import {
+  hexToRgba,
+  toTitleFormat,
+  getExplorerUrl,
+  humanizeAmount,
+} from "../../../utils/helpers";
 
 const handleAssetText = (
-  op: Horizon.ServerApi.PaymentOperationRecord | any
+  op: Horizon.ServerApi.PaymentOperationRecord | any,
 ) => {
   if (op.asset_type === "native") {
     return "XLM";
@@ -25,9 +24,9 @@ const handleAssetText = (
 const Activity = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
-  const { transactions, loading } = useTransactions();
+  const { loading, transactions } = useAppStore((store) => store.transactions);
   const [transactionsDetails, setTransactionsDetails] = useState<TxDetail[]>(
-    []
+    [],
   );
   const appearance = store.config.appearance;
   const userAddress = store.user?.address as string;
@@ -35,7 +34,7 @@ const Activity = () => {
     store.stellar?.activeNetwork as string,
     store.config.explorer,
     "accountUrl",
-    userAddress
+    userAddress,
   );
 
   const handleGoToExplorer = () => {
@@ -72,11 +71,11 @@ const Activity = () => {
 
         details.title = title;
         details.description = `${humanizeAmount(op.amount)} ${handleAssetText(
-          op
+          op,
         )}`;
       } else if (
         op.type ===
-          Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
+        Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
         op.type === Horizon.HorizonApi.OperationResponseType.pathPayment
       ) {
         console.log(op);

@@ -3,12 +3,54 @@ import EXPLORERS from "../constants/explorers";
 import translations from "../constants/locales";
 import { StellarNetwork, SupportedWallet } from "../enums";
 import { RECENT_CONNECTION_METHODS } from "../constants/consts";
-import { ITransports, IWallet, IExplorer, LanguageKey } from "../types";
+import { ITransports, IWallet, IExplorer, LanguageKey, IAsset } from "../types";
 import {
   networks,
   DEFAULT_NETWORKS_TRANSPORTS,
   INetworkTransports,
 } from "../constants/networkDetails";
+import { Horizon } from "@stellar/stellar-sdk";
+
+export const addXLMToBalances = (balances: IAsset[]) => {
+  if (balances.length !== 0) {
+    return balances;
+  }
+
+  return [
+    {
+      // TODO: Add XLM logo as string
+      // logo?:
+      assetBalance: "0",
+      assetCode: "XLM",
+      assetType: "native",
+      assetIssuer: "",
+    },
+  ];
+};
+
+export const balanceToAsset = (
+  balance: Horizon.HorizonApi.BalanceLine,
+): IAsset => {
+  // todo: set a real value in currency and also set the right logo for each asset.
+  const ast: Partial<IAsset> = {
+    valueInCurrency: "0",
+    assetBalance: balance.balance,
+    assetType: balance.asset_type,
+  };
+
+  if (balance.asset_type === "native") {
+    ast.assetCode = "XLM";
+    ast.assetIssuer = "";
+  } else if (balance.asset_type === "liquidity_pool_shares") {
+    ast.assetCode = "LiquidtyPool";
+    ast.assetIssuer = "";
+  } else {
+    ast.assetCode = balance.asset_code;
+    ast.assetIssuer = balance.asset_issuer;
+  }
+
+  return ast as IAsset;
+};
 
 export const capitalizeFirstLetter = (str: string): string => {
   return `${str[0]?.toUpperCase()}${str.slice(1)}`;

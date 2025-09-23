@@ -1,41 +1,27 @@
-import { IAsset } from "../../../types";
 import { useAppStore } from "../../../store";
 import TabBox from "../../../components/TabBox";
 import { AssetsIcon } from "../../../assets/Icons";
-import { StellarLogo } from "../../../assets/Logos";
 import Assets from "../../../components/AssetsList";
-import useBalances from "../../../hooks/useBalances";
+import { StellarLogo } from "../../../assets/Logos";
+import { balanceToAsset } from "../../../utils/helpers";
 
 const Balances = () => {
   const appearance = useAppStore((store) => store.config.appearance);
-  const { loading, error, balances } = useBalances();
+  const { loading, error, balances } = useAppStore((store) => store.balances);
 
-  const mockAssets: IAsset[] = [
-    {
-      assetCode: "XLM",
-      assetIssuer: "Stellar Foundation",
-      assetType: "native",
-      valueInCurrency: "10",
-      assetBalance: "1000.1234",
-      logo: <StellarLogo />,
-    },
-    {
-      assetCode: "USDC",
-      assetIssuer: "Centre Consortium",
-      assetType: "credit_alphanum4",
-      assetBalance: "500.5",
-      valueInCurrency: "10",
-      logo: <StellarLogo />,
-    },
-  ];
+  const assets = balances.map((b) => ({
+    ...balanceToAsset(b),
+    logo: <StellarLogo />,
+  }));
 
   const tabsContent = [
     {
       label: "Assets",
       activeIcon: <AssetsIcon fill={appearance.accentColor} />,
       inActiveIcon: <AssetsIcon fill={appearance.textColor} />,
-      content: <Assets assets={mockAssets} />,
+      content: <Assets assets={assets} />,
     },
+    // TODO: implement tokens and nft in the future
     // {
     //   label: "Tokens",
     //   activeIcon: <TokenIcon fill={appearance.accentColor} />,

@@ -2,7 +2,7 @@ import { Asset, Horizon } from "@stellar/stellar-sdk";
 import { PathCallBuilder } from "@stellar/stellar-sdk/lib/horizon/path_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetPaymentPathResult = {
   builder: PathCallBuilder;

@@ -54,16 +54,13 @@ const config = [
         file: "dist/index.iife.js",
         format: "iife",
         name: "Blux",
-        // globals: {
-        //   react: "React",
-        //   "react-dom": "ReactDOM",
-        // },
         sourcemap: true,
+        exports: "default",
       },
     ],
     plugins: [
       replace({
-        "process.env.NODE_ENV": JSON.stringify("production"),
+        "process.env.NODE_ENV": JSON.stringify("development"),
         preventAssignment: true,
       }),
       // nodePolyfills({ include: ["buffer", "crypto"] }),

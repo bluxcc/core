@@ -1,4 +1,4 @@
-import { networks } from "../networks";
+import { networks } from "./networkDetails";
 
 export type IExplorerDetail = {
   ledgerUrl: string;

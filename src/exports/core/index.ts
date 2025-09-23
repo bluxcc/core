@@ -6,6 +6,7 @@ import getClaimableBalances from "./getClaimableBalances";
 import getEffects from "./getEffects";
 import getLedgers from "./getLedgers";
 import getLiquidityPools from "./getLiquidityPools";
+import getNetwork from "./getNetwork";
 import getOffers from "./getOffers";
 import getOperations from "./getOperations";
 import getOrderbook from "./getOrderbook";
@@ -15,8 +16,10 @@ import getStrictSendPaths from "./getStrictSendPaths";
 import getTradeAggregation from "./getTradeAggregation";
 import getTrades from "./getTrades";
 import getTransactions from "./getTransactions";
+import networks from "./networks";
+import switchNetwork from "./switchNetwork";
 
-const query = {
+const core = {
   getAccount,
   getAccounts,
   getAssets,
@@ -25,6 +28,7 @@ const query = {
   getEffects,
   getLedgers,
   getLiquidityPools,
+  getNetwork,
   getOffers,
   getOperations,
   getOrderbook,
@@ -34,6 +38,8 @@ const query = {
   getTradeAggregation,
   getTrades,
   getTransactions,
+  networks,
+  switchNetwork,
 };
 
-export default query;
+export default core;

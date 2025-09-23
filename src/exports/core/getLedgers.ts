@@ -2,7 +2,7 @@ import { Horizon } from "@stellar/stellar-sdk";
 import { LedgerCallBuilder } from "@stellar/stellar-sdk/lib/horizon/ledger_call_builder";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetLedgersOptions = CallBuilderOptions & {
   ledger?: number | string;

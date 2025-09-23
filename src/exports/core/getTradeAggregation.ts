@@ -1,7 +1,7 @@
 import { Asset } from "@stellar/stellar-sdk";
 
 import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "./utils";
+import { checkConfigCreated, CallBuilderOptions } from "../utils";
 
 type GetTradeAggregationResult = any;
 

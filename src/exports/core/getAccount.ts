@@ -1,6 +1,6 @@
 import { Horizon, StrKey } from "@stellar/stellar-sdk";
 
-import { checkConfigCreated, getAddress, getNetwork } from "./utils";
+import { checkConfigCreated, getAddress, getNetwork } from "../utils";
 
 type GetAccountOptions = {
   address?: string;

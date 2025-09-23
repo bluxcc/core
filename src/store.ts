@@ -4,10 +4,13 @@ import { Horizon, rpc } from "@stellar/stellar-sdk";
 
 import { Route } from "./enums";
 import { defaultLightTheme } from "./constants/themes";
+import { UseBalancesResult } from "./hooks/useBalances";
+import { UseTransactionsResult } from "./hooks/useTransactions";
 import { IWallet, IInternalConfig, ISendTransaction } from "./types";
 
 export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
 export type AlertType = "error" | "success" | "info" | "warn" | "none";
+
 export interface IUser {
   address: string;
   walletPassphrase: string;
@@ -43,8 +46,9 @@ export interface IStoreProperties {
   waitingStatus: WaitingStatus;
   wallets: IWallet[];
   stellar?: IStellarConfig;
-  // account?: GetAccountResult;
   sendTransaction?: ISendTransaction;
+  balances: UseBalancesResult;
+  transactions: UseTransactionsResult;
 }
 
 export interface IStoreMethods {
@@ -64,9 +68,11 @@ export interface IStoreMethods {
   setAlert: (alert: AlertType, message: string) => void;
   setDynamicTitle: (title: string) => void;
   sendTransactionSuccessful: (sendTransaction: ISendTransaction) => void;
+  setBalances: (balances: UseBalancesResult) => void;
+  setTransactions: (transactions: UseTransactionsResult) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods {}
+export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -96,6 +102,16 @@ export const store = createStore<IStore>((set) => ({
   authState: {
     isReady: false,
     isAuthenticated: false,
+  },
+  balances: {
+    error: null,
+    loading: false,
+    balances: [],
+  },
+  transactions: {
+    error: null,
+    loading: false,
+    transactions: [],
   },
   setConfig: (config: IInternalConfig) =>
     set((state) => ({ ...state, config })),
@@ -222,6 +238,10 @@ export const store = createStore<IStore>((set) => ({
       },
       modal: { ...state.modal, isOpen: false },
     })),
+  setBalances: (balances: UseBalancesResult) =>
+    set((state) => ({ ...state, balances })),
+  setTransactions: (transactions: UseTransactionsResult) =>
+    set((state) => ({ ...state, transactions })),
 }));
 
 export const { getState, setState, subscribe, getInitialState } = store;
