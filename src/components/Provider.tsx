@@ -30,7 +30,9 @@ export const Provider = () => {
     route === Route.BALANCES ||
     route === Route.RECEIVE ||
     route === Route.SWAP ||
-    route === Route.BALANCE_DETAILS;
+    route === Route.BALANCE_DETAILS ||
+    route === Route.ABOUT ||
+    route === Route.ADD_TOKEN;
 
   let modalIcon: "back" | "info" | undefined;
 
@@ -43,7 +45,8 @@ export const Provider = () => {
   const handleBackNavigation = () => {
     if (
       route === Route.WAITING ||
-      (route === Route.OTP && !store.authState.isAuthenticated)
+      (route === Route.OTP && !store.authState.isAuthenticated) ||
+      route === Route.ABOUT
     ) {
       store.setRoute(Route.ONBOARDING);
     } else if (store.showAllWallets) {
@@ -56,7 +59,7 @@ export const Provider = () => {
       route === Route.SWAP
     ) {
       store.setRoute(Route.PROFILE);
-    } else if (route === Route.BALANCE_DETAILS) {
+    } else if (route === Route.BALANCE_DETAILS || route === Route.ADD_TOKEN) {
       store.setRoute(Route.BALANCES);
     }
   };
@@ -102,6 +105,10 @@ export const Provider = () => {
     route === Route.WAITING ||
     route === Route.SUCCESSFUL;
 
+  const handleGoToAbout = () => {
+    store.setRoute(Route.ABOUT);
+  };
+
   return (
     <Modal
       isOpen={modal.isOpen}
@@ -111,6 +118,7 @@ export const Provider = () => {
     >
       <Header
         onBack={handleBackNavigation}
+        onInfo={handleGoToAbout}
         onClose={modalContent.isSticky ? () => {} : handleCloseModal}
         title={
           store.modal.dynamicTitle !== ""

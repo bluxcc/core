@@ -1,11 +1,13 @@
 import { useAppStore } from "../../../store";
 import TabBox from "../../../components/TabBox";
+import { useLang } from "../../../hooks/useLang";
 import { AssetsIcon } from "../../../assets/Icons";
 import Assets from "../../../components/AssetsList";
 import { StellarLogo } from "../../../assets/Logos";
 import { balanceToAsset } from "../../../utils/helpers";
 
 const Balances = () => {
+  const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
   const { loading, error, balances } = useAppStore((store) => store.balances);
 
@@ -14,40 +16,44 @@ const Balances = () => {
     logo: <StellarLogo />,
   }));
 
+  // const { setRoute } = useAppStore((store) => store);
+  // const handleAddToken = () => {
+  //   setRoute(Route.ADD_TOKEN);
+  // };
+
   const tabsContent = [
     {
-      label: "Assets",
+      label: t("assets"),
       activeIcon: <AssetsIcon fill={appearance.accentColor} />,
       inActiveIcon: <AssetsIcon fill={appearance.textColor} />,
       content: <Assets assets={assets} />,
     },
-    // TODO: implement tokens and nft in the future
     // {
-    //   label: "Tokens",
+    //   label: t("tokens"),
     //   activeIcon: <TokenIcon fill={appearance.accentColor} />,
     //   inActiveIcon: <TokenIcon fill={appearance.textColor} />,
     //   content: (
-    //     <>
+    //     <div className="bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:flex-col bluxcc:w-full bluxcc:relative">
     //       <Assets assets={mockAssets} />
-    //       <div className="bluxcc:absolute bluxcc:bottom-3 bluxcc:flex bluxcc:items-center bluxcc:justify-center">
-    //         {/* <Button
+    //       <div className="bluxcc:absolute bluxcc:bottom-3">
+    //         <Button
     //           size="large"
     //           state="enabled"
     //           variant="tonal"
+    //           onClick={handleAddToken}
     //           style={{
     //             color: appearance.accentColor,
     //           }}
-    //           endIcon={<PlusIcon fill={appearance.accentColor} />}
+    //           startIcon={<PlusIcon fill={appearance.accentColor} />}
     //         >
-    //           Add new token
-    //         </Button> */}
+    //           {t("add_new_token")}
+    //         </Button>
     //       </div>
-    //     </>
+    //     </div>
     //   ),
     // },
-    //
     // {
-    //   label: "NFTs",
+    //   label: t("nfts"),
     //   activeIcon: <NFTsIcon fill={appearance.accentColor} />,
     //   inActiveIcon: <NFTsIcon fill={appearance.textColor} />,
     //   content: "nfts",

@@ -1,7 +1,8 @@
-import { useAppStore } from "../../../store";
-import { hexToRgba, humanizeAmount } from "../../../utils/helpers";
-import { Copy } from "../../../assets/Icons";
-import { StellarLogo } from "../../../assets/Logos";
+import { Copy } from "../../../../assets/Icons";
+import { StellarLogo } from "../../../../assets/Logos";
+import { useLang } from "../../../../hooks/useLang";
+import { useAppStore } from "../../../../store";
+import { hexToRgba, humanizeAmount } from "../../../../utils/helpers";
 
 type DetailsProps = {
   label: string;
@@ -11,6 +12,7 @@ type DetailsProps = {
 };
 
 const BalanceDetails = () => {
+  const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
   // const { setDynamicTitle } = useAppStore((store) => store);
 
@@ -21,17 +23,15 @@ const BalanceDetails = () => {
   };
 
   const details: DetailsProps[] = [
-    { label: "Network", value: "Stellar", link: true },
-    { label: "Address", value: "GFGE...MKLW", copyable: true },
-    { label: "Market cap", value: "2.45M" },
-    { label: "Total volume", value: 323 },
-    { label: "All time high", value: 323 },
-    { label: "title two", value: 3 },
+    { label: t("network"), value: "Stellar", link: true },
+    { label: t("address"), value: "GFGE...MKLW", copyable: true },
+    { label: t("market_cap"), value: "2.45M" },
+    { label: t("total_volume"), value: 323 },
+    { label: t("all_time_high"), value: 323 },
   ];
 
   return (
     <div>
-      {/* Price */}
       <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:my-4">
         <div
           className="bluxcc:size-14 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full bluxcc:border"
@@ -58,7 +58,6 @@ const BalanceDetails = () => {
         </div>
       </div>
 
-      {/* Details list */}
       <div className="bluxcc:space-y-1">
         {details.map((item, i) => {
           // setDynamicTitle(item.label);

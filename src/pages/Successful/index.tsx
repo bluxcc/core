@@ -95,7 +95,7 @@ const Successful = () => {
           </Button>
         )}
 
-      <Divider appearance={appearance} />
+      <Divider />
 
       {waitingStatus === "login" ? (
         <Button

@@ -303,5 +303,100 @@ const translations: Translations = {
     en: "You are on a wrong network.",
     es: "Estás en una red incorrecta.",
   },
+
+  wallet_infra: {
+    en: "Wallet Infrastructure for Stellar dapps",
+    es: "Infraestructura de billeteras para dapps en Stellar",
+  },
+
+  blux_gateway: {
+    en: "Blux is your gateway to Stellar. Create a wallet, manage assets, and sign transactions easily and securely.",
+    es: "Blux es tu puerta de entrada a Stellar. Crea una billetera, gestiona activos y firma transacciones de manera fácil y segura.",
+  },
+
+  enter_token_address: {
+    en: "Enter token address",
+    es: "Ingresar dirección del token",
+  },
+
+  enter_address: {
+    en: "enter address",
+    es: "ingresar dirección",
+  },
+
+  check: {
+    en: "Check",
+    es: "Verificar",
+  },
+
+  cancel: {
+    en: "Cancel",
+    es: "Cancelar",
+  },
+
+  add_token: {
+    en: "Add token",
+    es: "Agregar token",
+  },
+
+  network: {
+    en: "Network",
+    es: "Red",
+  },
+
+  address: {
+    en: "Address",
+    es: "Dirección",
+  },
+
+  market_cap: {
+    en: "Market cap",
+    es: "Capitalización de mercado",
+  },
+
+  total_volume: {
+    en: "Total volume",
+    es: "Volumen total",
+  },
+
+  all_time_high: {
+    en: "All time high",
+    es: "Máximo histórico",
+  },
+
+  copy_address: {
+    en: "Copy address",
+    es: "Copiar dirección",
+  },
+
+  address_copied: {
+    en: "Address copied",
+    es: "Dirección copiada",
+  },
+
+  add_new_token: {
+    en: "Add new token",
+    es: "Agregar nuevo token",
+  },
+
+  assets: {
+    en: "Assets",
+    es: "Activos",
+  },
+
+  tokens: {
+    en: "Tokens",
+    es: "Tokens",
+  },
+
+  nfts: {
+    en: "NFTs",
+    es: "NFTs",
+  },
+
+  sign_permission: {
+    en: "wants your permission to sign the following message:",
+    es: "solicita tu permiso para firmar el siguiente mensaje:",
+  },
 };
 export default translations;

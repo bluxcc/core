@@ -21,14 +21,14 @@ const Assets = ({ assets }: AssetsProps) => {
   // };
 
   return (
-    <div>
+    <div className="bluxcc:w-full">
       {assets.map((asset, index) => (
         <div
           // onClick={handleClickAsset}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}
-          className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-between bluxcc:py-2"
+          className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-between bluxcc:py-2 bluxcc:w-full"
           style={{
             background:
               hoveredIndex === index

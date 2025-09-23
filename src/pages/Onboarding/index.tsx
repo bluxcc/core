@@ -168,7 +168,7 @@ const Onboarding = () => {
                 className="bluxcc:mt-6! bluxcc:flex bluxcc:h-4 bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-[28px] bluxcc:font-medium"
                 style={{ color: appearance.accentColor }}
               >
-                {t("logInWithPasskey")}{" "}
+                {t("logInWithPasskey")}
               </div>
             );
           }
