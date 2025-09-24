@@ -68,7 +68,10 @@ export interface IStoreMethods {
   setIsReady: (isReady: boolean) => void;
   setShowAllWallets: (showAllWallets: boolean) => void;
   setRoute: (route: Route) => void;
-  setSendTransaction: (sendTransaction: ISendTransaction) => void;
+  setSendTransaction: (
+    sendTransaction: ISendTransaction,
+    route?: Route,
+  ) => void;
   setSignMessage: (messageDetails: ISignMessage, route?: Route) => void;
   setStellar: (stellar: IStellarConfig) => void;
   setWallets: (wallets: IWallet[]) => void;
@@ -129,11 +132,14 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, showAllWallets })),
   setRoute: (route: Route) =>
     set((state) => ({ ...state, modal: { ...state.modal, route } })),
-  setSendTransaction: (sendTransaction: ISendTransaction) =>
+  setSendTransaction: (
+    sendTransaction: ISendTransaction,
+    route: Route = Route.SEND_TRANSACTION,
+  ) =>
     set((state) => ({
       ...state,
       sendTransaction,
-      modal: { ...state.modal, isOpen: true, route: Route.SEND_TRANSACTION },
+      modal: { ...state.modal, isOpen: true, route },
       waitingStatus: "sendTransaction",
     })),
   setSignMessage: (

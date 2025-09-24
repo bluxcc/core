@@ -22,19 +22,18 @@ const sendTransactionProcess = async (store: IStore) => {
       store.config.transports || {},
     );
 
-    store.setSendTransaction({
-      ...sendTransaction,
-      result,
-    });
+    store.setSendTransaction(
+      {
+        ...sendTransaction,
+        result,
+      },
+      Route.WAITING,
+    );
 
     setTimeout(() => {
       store.setRoute(Route.SUCCESSFUL);
     }, 400);
   } catch {
-    store.setSendTransaction({
-      ...sendTransaction,
-    });
-
     setTimeout(() => {
       store.setRoute(Route.FAILED);
     }, 200);
