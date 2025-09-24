@@ -6,9 +6,9 @@ import { useLang } from "../../hooks/useLang";
 import Divider from "../../components/Divider";
 import { GreenCheck } from "../../assets/Icons";
 import {
-  capitalizeFirstLetter,
-  getExplorerUrl,
   hexToRgba,
+  getExplorerUrl,
+  capitalizeFirstLetter,
 } from "../../utils/helpers";
 
 const Successful = () => {
@@ -50,6 +50,16 @@ const Successful = () => {
       }
 
       const { resolver, result } = sendTransaction;
+
+      if (resolver && result) {
+        resolver(result);
+      }
+    } else if (waitingStatus === "signMessage") {
+      if (!store.signMessage) {
+        return;
+      }
+
+      const { resolver, result } = store.signMessage;
 
       if (resolver && result) {
         resolver(result);

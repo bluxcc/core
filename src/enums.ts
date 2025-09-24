@@ -23,6 +23,7 @@ export enum Route {
   WRONG_NETWORK = "WRONG_NETWORK", // View for selecting a wallet
   WAITING = "WAITING", // View for connection process
   SUCCESSFUL = "SUCCESSFUL", // View for connection success process
+  FAILED = "FAILED",
   PROFILE = "PROFILE", // User profile view
   SEND_TRANSACTION = "SEND_TRANSACTION", // User sign transaction view
   SEND = "SEND", // User sign transaction view

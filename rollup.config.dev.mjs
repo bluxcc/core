@@ -1,6 +1,5 @@
 import postcss from "rollup-plugin-postcss";
 import replace from "@rollup/plugin-replace";
-import { terser } from "rollup-plugin-terser";
 import tailwindcss from "@tailwindcss/postcss";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
@@ -44,7 +43,6 @@ const config = [
         plugins: [tailwindcss],
       }),
       typescript({ tsconfig: "./tsconfig.json" }),
-      // terser(),
     ],
   },
   {
@@ -55,7 +53,6 @@ const config = [
         format: "iife",
         name: "Blux",
         sourcemap: true,
-        exports: "default",
       },
     ],
     plugins: [
@@ -78,7 +75,6 @@ const config = [
         plugins: [tailwindcss],
       }),
       typescript({ tsconfig: "./tsconfig.json" }),
-      // terser(),
     ],
   },
 ];

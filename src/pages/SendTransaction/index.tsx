@@ -2,6 +2,7 @@ import { useAppStore } from "../../store";
 import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
 import { SupportedWallet } from "../../enums";
+import Divider from "../../components/Divider";
 import Summary from "../../components/Transaction/Summary";
 import getTransactionDetails from "../../stellar/getTransactionDetails";
 import {
@@ -10,7 +11,7 @@ import {
   shortenAddress,
   getActiveNetworkTitle,
 } from "../../utils/helpers";
-import Divider from "../../components/Divider";
+import sendTransactionProcess from "../../stellar/processes/sendTransactionProcess";
 
 const SendTransaction = () => {
   const t = useLang();
@@ -33,7 +34,7 @@ const SendTransaction = () => {
   const txDetails = getTransactionDetails(xdr, options.network);
 
   const handleSignTx = async () => {
-    // approveSendTransaction();
+    sendTransactionProcess(store);
   };
 
   if (!txDetails) {
@@ -44,8 +45,10 @@ const SendTransaction = () => {
     );
   }
 
-  // todo
-  const balance = "0";
+  const balance =
+    store.balances.balances.length === 0
+      ? "0"
+      : store.balances.balances.find((b) => b.asset_type === "native")!.balance;
   const isLobstr = user.authValue === SupportedWallet.Lobstr;
   const networkTitle = getActiveNetworkTitle(stellar.activeNetwork);
 
@@ -108,7 +111,7 @@ const SendTransaction = () => {
         </div>
       </div>
 
-      <Divider  />
+      <Divider />
 
       <Button
         size="large"

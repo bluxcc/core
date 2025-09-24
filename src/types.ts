@@ -14,6 +14,11 @@ export type IExplorer =
 
 export type ILoginMethods = Array<"wallet" | "sms" | "email" | "passkey">;
 
+export type SignMessageResult = {
+  signedMessage: string;
+  signerPublicKey?: string;
+};
+
 interface IServers {
   horizon: string;
   soroban: string;
@@ -74,12 +79,11 @@ export interface IWallet {
   }>;
   signMessage?: (
     message: string,
-    options?: {
-      networkPassphrase?: string;
-      address?: string;
-      path?: string;
+    options: {
+      address: string;
+      networkPassphrase: string;
     },
-  ) => Promise<{ signedMessage: string; signerPublicKey?: string }>;
+  ) => Promise<SignMessageResult>;
   signAuthEntry?: (
     authorizationEntry: string,
     options?: {
@@ -109,18 +113,27 @@ export interface IAsset {
   assetIssuer: string;
 }
 
-export interface ISendTransactionOptions {
+export interface ISignOptions {
   network: string;
 }
 
-export type TransactionResponseType =
-  // ? rpc.Api.GetSuccessfulTransactionResponse
+export type SendTransactionResult =
   Horizon.HorizonApi.SubmitTransactionResponse;
 
 export interface ISendTransaction {
   xdr: string;
-  options: ISendTransactionOptions;
+  wallet: IWallet;
+  options: ISignOptions;
+  result?: SendTransactionResult;
   rejecter: (reason: any) => void;
-  result?: TransactionResponseType;
-  resolver: (value: TransactionResponseType) => void;
+  resolver: (value: SendTransactionResult) => void;
+}
+
+export interface ISignMessage {
+  wallet: IWallet;
+  message: string;
+  options: ISignOptions;
+  result?: SignMessageResult;
+  rejecter: (reason: any) => void;
+  resolver: (value: SignMessageResult) => void;
 }

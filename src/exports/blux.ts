@@ -1,5 +1,7 @@
 import { Route } from "../enums";
 import { getState } from "../store";
+import { ISendTransaction, ISignMessage } from "../types";
+import handleSignMessage from "../stellar/handleSignMessage";
 import getTransactionDetails from "../stellar/getTransactionDetails";
 import handleTransactionSigning from "../stellar/handleTransactionSigning";
 
@@ -36,7 +38,7 @@ const profile = () => {
   openModal(Route.PROFILE);
 };
 
-export const sendTransaction = (xdr: string, options: { network: string }) =>
+export const sendTransaction = (xdr: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
     const { authState, wallets, config, user, stellar, setSendTransaction } =
       getState();
@@ -59,26 +61,27 @@ export const sendTransaction = (xdr: string, options: { network: string }) =>
       return;
     }
 
-    const transactionObject = {
-      xdr,
-      options,
-      rejecter: reject,
-      resolver: resolve,
-      result: undefined,
-    };
-
     const foundWallet = wallets.find((w) => w.name === user.authValue);
 
     if (!foundWallet) {
       throw new Error("Could not find the connected wallet.");
     }
 
+    const transactionObject: ISendTransaction = {
+      xdr,
+      wallet: foundWallet,
+      rejecter: reject,
+      resolver: resolve,
+      result: undefined,
+      options: options || { network },
+    };
+
     if (!config.showWalletUIs) {
       handleTransactionSigning(
         foundWallet,
         xdr,
         user.address,
-        options,
+        network,
         config.transports || {},
       )
         .then((result) => {
@@ -94,10 +97,58 @@ export const sendTransaction = (xdr: string, options: { network: string }) =>
     setSendTransaction(transactionObject);
   });
 
+export const signMessage = (message: string, options?: { network: string }) =>
+  new Promise((resolve, reject) => {
+    const { authState, wallets, config, user, stellar, setSignMessage } =
+      getState();
+
+    if (!authState.isAuthenticated || !stellar || !user) {
+      reject(new Error("User is not authenticated."));
+
+      return;
+    }
+
+    let network = stellar.activeNetwork;
+
+    if (options && options.network) {
+      network = options.network;
+    }
+
+    const foundWallet = wallets.find((w) => w.name === user.authValue);
+
+    if (!foundWallet) {
+      throw new Error("Could not find the connected wallet.");
+    }
+
+    const signMessageDetails: ISignMessage = {
+      message,
+      wallet: foundWallet,
+      options: options || { network },
+      rejecter: reject,
+      resolver: resolve,
+      result: undefined,
+    };
+
+    if (!config.showWalletUIs) {
+      handleSignMessage(foundWallet, message, user.address, network)
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+
+      return;
+    }
+
+    setSignMessage(signMessageDetails);
+  });
+
 export const blux = {
   login,
   logout,
   profile,
+  signMessage,
   sendTransaction,
   get isReady() {
     const { authState } = getState();

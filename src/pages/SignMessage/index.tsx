@@ -1,21 +1,23 @@
 import { useAppStore } from "../../store";
+import Button from "../../components/Button";
 import { useLang } from "../../hooks/useLang";
 import Divider from "../../components/Divider";
-import Button from "../../components/Button";
 import { hexToRgba, shortenAddress } from "../../utils/helpers";
+import signMessageProcess from "../../stellar/processes/signMessageProcess";
 
 const SignMessage = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
   const appearance = store.config.appearance;
+  const signMessage = store.signMessage;
 
-  const handleSignMessage = () => {
-    //   todo sign message logic
-    console.log("sign message req");
+  if (!signMessage) {
+    return null;
+  }
+
+  const signMessageClicked = async () => {
+    signMessageProcess(store);
   };
-
-  const message =
-    "Join the early access program, Authorize connection to the Blux dashboard.";
 
   return (
     <div>
@@ -32,7 +34,7 @@ const SignMessage = () => {
           borderRadius: appearance.borderRadius,
         }}
       >
-        {message}
+        {signMessage.message}
       </div>
       <div
         className="bluxcc:inline-flex bluxcc:mt-4 bluxcc:h-14 bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:border bluxcc:px-4"
@@ -71,7 +73,7 @@ const SignMessage = () => {
         size="large"
         state="enabled"
         variant="fill"
-        onClick={handleSignMessage}
+        onClick={signMessageClicked}
       >
         {t("approve")}
       </Button>

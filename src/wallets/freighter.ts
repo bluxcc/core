@@ -1,4 +1,7 @@
-import freighterApi, { signTransaction } from "@stellar/freighter-api";
+import freighterApi, {
+  signMessage,
+  signTransaction,
+} from "@stellar/freighter-api";
 
 import { IWallet } from "../types";
 import { SupportedWallet } from "../enums";
@@ -18,9 +21,21 @@ export const freighterConfig: IWallet = {
           freighterApi
             .isConnected()
             .then(({ isConnected, error }) => {
-              clearTimeout(timeout);
+              if (!isConnected) {
+                setTimeout(() => {
+                  freighterApi
+                    .isConnected()
+                    .then(({ isConnected: isCon, error: err }) => {
+                      clearTimeout(timeout);
 
-              resolve(!error && isConnected);
+                      resolve(!err && isCon);
+                    });
+                }, 250);
+              } else {
+                clearTimeout(timeout);
+
+                resolve(!error && isConnected);
+              }
             })
             .catch(() => {
               clearTimeout(timeout);
@@ -96,8 +111,33 @@ export const freighterConfig: IWallet = {
         network: network.network,
         passphrase: network.networkPassphrase,
       };
-    } catch (error) {
+    } catch {
       throw new Error("Failed to disconnect from Rabet.");
+    }
+  },
+  signMessage: async (message, options) => {
+    try {
+      const { signedMessage, signerAddress, error } = await signMessage(
+        message,
+        {
+          address: options.address,
+          networkPassphrase: options.networkPassphrase,
+        },
+      );
+
+      if (error || !signedMessage) {
+        throw new Error("Failed to sign message using Freighter");
+      }
+
+      return {
+        signedMessage:
+          typeof signedMessage === "string"
+            ? signedMessage
+            : Buffer.from(signedMessage).toString("base64"),
+        signerAddress: signerAddress,
+      };
+    } catch {
+      throw new Error("Failed to sign message using Freighter");
     }
   },
 };

@@ -5,18 +5,18 @@ import { getNetworkRpc } from "../utils/helpers";
 
 async function submitTransaction(
   xdr: string,
-  options: { network: string },
+  network: string,
   transports: ITransports,
 ): Promise<// | rpc.Api.GetSuccessfulTransactionResponse
 Horizon.HorizonApi.SubmitTransactionResponse> {
-  const { horizon } = getNetworkRpc(options.network, transports);
+  const { horizon } = getNetworkRpc(network, transports);
 
   if (!horizon) {
     throw new Error("Horizon RPC was not found.");
   }
 
   const server = new Horizon.Server(horizon);
-  const transaction = new Transaction(xdr, options.network);
+  const transaction = new Transaction(xdr, network);
 
   // if (options.isSoroban) {
   // const sorobanServer = new rpc.Server(soroban.url);

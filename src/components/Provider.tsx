@@ -68,17 +68,37 @@ export const Provider = () => {
     closeModal();
     setShowAllWallets(false);
 
-    // const { resolver, rejecter, result } = value.signTransaction;
-    //
-    // if (modal.route === Route.SUCCESSFUL && waitingStatus === "signing") {
-    //   if (resolver && result) {
-    //     resolver(result);
-    //   }
-    // } else if (modal.route === Route.SIGN_TRANSACTION) {
-    //   if (rejecter) {
-    //     rejecter({ code: 4001, message: "User rejected the transaction" });
-    //   }
-    // }
+    if (
+      store.waitingStatus === "signMessage" ||
+      store.waitingStatus === "sendTransaction"
+    ) {
+      const resolverObject =
+        store.waitingStatus === "signMessage"
+          ? store.signMessage
+          : store.sendTransaction;
+      const isFailed =
+        modal.route === Route.SIGN_MESSAGE ||
+        modal.route === Route.SEND_TRANSACTION ||
+        modal.route === Route.FAILED;
+      const isSuccessful = modal.route === Route.SUCCESSFUL;
+
+      if (!resolverObject) {
+        return;
+      }
+
+      const { resolver, rejecter, result } = resolverObject;
+
+      if (isSuccessful) {
+        if (resolver && result) {
+          // @ts-ignore
+          resolver(result);
+        }
+      } else if (isFailed) {
+        if (rejecter) {
+          rejecter({ code: 4001, message: "User rejected the transaction" });
+        }
+      }
+    }
   };
 
   useEffect(() => {

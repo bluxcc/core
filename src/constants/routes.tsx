@@ -19,6 +19,7 @@ import BalanceDetails from "../pages/Profile/Balances/BalanceDetails";
 import About from "../pages/About";
 import AddToken from "../pages/Profile/Balances/AddToken";
 import SignMessage from "../pages/SignMessage";
+import Failed from "../pages/Failed";
 
 type IRoute = {
   title: string;
@@ -42,6 +43,10 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   [Route.SUCCESSFUL]: {
     title: "",
     Component: <Successful />,
+  },
+  [Route.FAILED]: {
+    title: "",
+    Component: <Failed />,
   },
   [Route.SEND_TRANSACTION]: {
     title: translate("confirmation", lang),

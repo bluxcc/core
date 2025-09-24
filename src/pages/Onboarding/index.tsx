@@ -8,20 +8,15 @@ import CardItem from "../../components/CardItem";
 import handleLogos from "../../utils/walletLogos";
 import { SmallEmailIcon } from "../../assets/Icons";
 import { getContrastColor, isBackgroundDark } from "../../utils/helpers";
+import connectWalletProcess from "../../stellar/processes/connectWalletProcess";
 
 const Onboarding = () => {
   const t = useLang();
-  const [inputValue, setInputValue] = useState("");
   const store = useAppStore((store) => store);
-  const { setShowAllWallets } = store;
+  const [inputValue, setInputValue] = useState("");
 
-  const config = useAppStore((store) => store.config);
-  const wallets = useAppStore((store) => store.wallets);
-  const connectWallet = useAppStore((store) => store.connectWallet);
-  const connectEmail = useAppStore((store) => store.connectEmail);
-
+  const { config, wallets, connectEmail, setShowAllWallets } = store;
   const { appearance } = config;
-
   const loginMethods = config.loginMethods || [];
 
   const isPassKeyEnabled = loginMethods.includes("passkey");
@@ -39,12 +34,12 @@ const Onboarding = () => {
     return wallets.length <= 3
       ? wallets
       : store.showAllWallets
-      ? wallets.slice(2, wallets.length)
-      : wallets.slice(0, 2);
+        ? wallets.slice(2, wallets.length)
+        : wallets.slice(0, 2);
   }, [wallets, store.showAllWallets]);
 
-  const handleConnect = (wallet: IWallet) => {
-    connectWallet(wallet.name);
+  const handleConnect = async (wallet: IWallet) => {
+    connectWalletProcess(store, wallet);
   };
 
   const handleConnectEmail = () => {
@@ -114,7 +109,7 @@ const Onboarding = () => {
                     label={checkedWallet.name}
                     startIcon={handleLogos(
                       checkedWallet.name,
-                      isBackgroundDark(appearance.background)
+                      isBackgroundDark(appearance.background),
                     )}
                     onClick={() => handleConnect(checkedWallet)}
                   />

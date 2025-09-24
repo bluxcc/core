@@ -6,7 +6,12 @@ import { Route } from "./enums";
 import { defaultLightTheme } from "./constants/themes";
 import { UseBalancesResult } from "./hooks/useBalances";
 import { UseTransactionsResult } from "./hooks/useTransactions";
-import { IWallet, IInternalConfig, ISendTransaction } from "./types";
+import {
+  IWallet,
+  IInternalConfig,
+  ISendTransaction,
+  ISignMessage,
+} from "./types";
 
 export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
 export type AlertType = "error" | "success" | "info" | "warn" | "none";
@@ -47,6 +52,7 @@ export interface IStoreProperties {
   wallets: IWallet[];
   stellar?: IStellarConfig;
   sendTransaction?: ISendTransaction;
+  signMessage?: ISignMessage;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
 }
@@ -63,16 +69,16 @@ export interface IStoreMethods {
   setShowAllWallets: (showAllWallets: boolean) => void;
   setRoute: (route: Route) => void;
   setSendTransaction: (sendTransaction: ISendTransaction) => void;
+  setSignMessage: (messageDetails: ISignMessage, route?: Route) => void;
   setStellar: (stellar: IStellarConfig) => void;
   setWallets: (wallets: IWallet[]) => void;
   setAlert: (alert: AlertType, message: string) => void;
   setDynamicTitle: (title: string) => void;
-  sendTransactionSuccessful: (sendTransaction: ISendTransaction) => void;
   setBalances: (balances: UseBalancesResult) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -86,6 +92,7 @@ export const store = createStore<IStore>((set) => ({
     appearance: defaultLightTheme,
   },
   stellar: undefined,
+  signMessage: undefined,
   sendTransaction: undefined,
   wallets: [],
   waitingStatus: "login",
@@ -127,6 +134,17 @@ export const store = createStore<IStore>((set) => ({
       ...state,
       sendTransaction,
       modal: { ...state.modal, isOpen: true, route: Route.SEND_TRANSACTION },
+      waitingStatus: "sendTransaction",
+    })),
+  setSignMessage: (
+    signMessage: ISignMessage,
+    route: Route = Route.SIGN_MESSAGE,
+  ) =>
+    set((state) => ({
+      ...state,
+      signMessage,
+      modal: { ...state.modal, isOpen: true, route },
+      waitingStatus: "signMessage",
     })),
   setStellar: (stellar: IStellarConfig) =>
     set((state) => ({ ...state, stellar })),
@@ -135,16 +153,6 @@ export const store = createStore<IStore>((set) => ({
       ...state,
       modal: { ...state.modal, isOpen: true, route: Route.WAITING },
       waitingStatus: "sendTransaction",
-    })),
-  sendTransactionSuccessful: (sendTransaction: ISendTransaction) =>
-    set((state) => ({
-      ...state,
-      sendTransaction,
-      modal: {
-        ...state.modal,
-        isOpen: true,
-        route: Route.SUCCESSFUL,
-      },
     })),
   openModal: (route: Route) =>
     set((state) => ({
