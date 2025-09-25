@@ -51,7 +51,7 @@ const AnimatedGradient = ({
       gl.shaderSource(shader, src);
       gl.compileShader(shader);
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(shader));
+        //
       }
       return shader;
     };
@@ -66,7 +66,7 @@ const AnimatedGradient = ({
         gl_Position = vec4(aPos, 0.0, 1.0);
       }
       `,
-      gl.VERTEX_SHADER
+      gl.VERTEX_SHADER,
     );
 
     const fragmentShader = compile(
@@ -129,7 +129,7 @@ const AnimatedGradient = ({
         gl_FragColor=vec4(finalColor,1.0);
       }
       `,
-      gl.FRAGMENT_SHADER
+      gl.FRAGMENT_SHADER,
     );
 
     gl.attachShader(program, vertexShader);
@@ -143,7 +143,7 @@ const AnimatedGradient = ({
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      gl.STATIC_DRAW
+      gl.STATIC_DRAW,
     );
 
     const aPos = gl.getAttribLocation(program, "aPos");
