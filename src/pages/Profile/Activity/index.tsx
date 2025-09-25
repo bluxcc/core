@@ -75,10 +75,9 @@ const Activity = () => {
         )}`;
       } else if (
         op.type ===
-        Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
+          Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
         op.type === Horizon.HorizonApi.OperationResponseType.pathPayment
       ) {
-        console.log(op);
         details.title = t("swap");
         details.description = `Received ${op.amount} ${handleAssetText(op)}`;
       }

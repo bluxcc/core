@@ -55,7 +55,6 @@ const config = [
         format: "iife",
         name: "Blux",
         sourcemap: false,
-        exports: "default",
       },
     ],
     plugins: [
