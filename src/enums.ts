@@ -36,4 +36,5 @@ export enum Route {
   ABOUT = "ABOUT", // View for what is blux
   ADD_TOKEN = "ADD_TOKEN", // View for adding new token
   SIGN_MESSAGE = "SIGN_MESSAGE", // User sign message view
+  WALLET_CONNECT = "WALLET_CONNECT", // User sign message view
 }

@@ -52,14 +52,14 @@ export function createConfig(config: IConfig) {
   validateNetworkOptions(
     config.networks,
     config.defaultNetwork,
-    config.transports,
+    config.transports
   );
 
   conf.defaultNetwork = config.defaultNetwork ?? config.networks[0];
 
   const { horizon, soroban } = getNetworkRpc(
     conf.defaultNetwork,
-    config.transports ?? {},
+    config.transports ?? {}
   );
 
   const { setConfig, setWallets, setIsReady, setStellar } = getState();

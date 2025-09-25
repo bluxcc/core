@@ -3,19 +3,24 @@ import React, { useState, useMemo } from "react";
 import { IWallet } from "../../types";
 import { useAppStore } from "../../store";
 import { useLang } from "../../hooks/useLang";
-import { StellarLogo } from "../../assets/Logos";
+import {
+  SmallWalletConnectLogo,
+  StellarLogo,
+  WalletConnectLogo,
+} from "../../assets/Logos";
 import CardItem from "../../components/CardItem";
 import handleLogos from "../../utils/walletLogos";
 import { SmallEmailIcon } from "../../assets/Icons";
 import { getContrastColor, isBackgroundDark } from "../../utils/helpers";
 import connectWalletProcess from "../../stellar/processes/connectWalletProcess";
+import { Route } from "../../enums";
 
 const Onboarding = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
   const [inputValue, setInputValue] = useState("");
 
-  const { config, wallets, connectEmail, setShowAllWallets } = store;
+  const { config, wallets, connectEmail, setShowAllWallets, setRoute } = store;
   const { appearance } = config;
   const loginMethods = config.loginMethods || [];
 
@@ -34,8 +39,8 @@ const Onboarding = () => {
     return wallets.length <= 3
       ? wallets
       : store.showAllWallets
-        ? wallets.slice(2, wallets.length)
-        : wallets.slice(0, 2);
+      ? wallets.slice(2, wallets.length)
+      : wallets.slice(0, 2);
   }, [wallets, store.showAllWallets]);
 
   const handleConnect = async (wallet: IWallet) => {
@@ -109,12 +114,26 @@ const Onboarding = () => {
                     label={checkedWallet.name}
                     startIcon={handleLogos(
                       checkedWallet.name,
-                      isBackgroundDark(appearance.background),
+                      isBackgroundDark(appearance.background)
                     )}
                     onClick={() => handleConnect(checkedWallet)}
                   />
                 ))}
-
+                {store.showAllWallets && (
+                  <CardItem
+                    label="Wallet Connect"
+                    startIcon={
+                      <SmallWalletConnectLogo
+                        fill={
+                          isBackgroundDark(appearance.background)
+                            ? "#ffffff"
+                            : "#0988f1"
+                        }
+                      />
+                    }
+                    onClick={() => setRoute(Route.WALLET_CONNECT)}
+                  />
+                )}
                 {hiddenWallets.length > 0 && !store.showAllWallets && (
                   <CardItem
                     endArrow

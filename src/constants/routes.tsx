@@ -20,6 +20,7 @@ import About from "../pages/About";
 import AddToken from "../pages/Profile/Balances/AddToken";
 import SignMessage from "../pages/SignMessage";
 import Failed from "../pages/Failed";
+import WalletConnect from "../pages/WalletConnect";
 
 type IRoute = {
   title: string;
@@ -97,5 +98,9 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
   [Route.SIGN_MESSAGE]: {
     title: "Sign Message",
     Component: <SignMessage />,
+  },
+  [Route.WALLET_CONNECT]: {
+    title: "Wallet Connect",
+    Component: <WalletConnect />,
   },
 });
