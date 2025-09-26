@@ -7,10 +7,6 @@ export const lobstrConfig: IWallet = {
   name: SupportedWallet.Lobstr,
   website: "https://lobstr.co",
 
-  isAvailable: async () => {
-    return await lobstr.isConnected();
-  },
-
   connect: async () => {
     try {
       if (!(await lobstr.isConnected())) {
@@ -19,12 +15,24 @@ export const lobstrConfig: IWallet = {
 
       const publicKey = await lobstr.getPublicKey();
 
-      return { publicKey };
+      return publicKey;
     } catch {
       throw new Error("Failed to connect to LOBSTR.");
     }
   },
-
+  disconnect: async () => {},
+  getNetwork: async () => {
+    throw new Error("Failed to get network from LOBSTR");
+  },
+  isAvailable: async () => {
+    return await lobstr.isConnected();
+  },
+  signAuthEntry: async () => {
+    throw new Error("LOBSTR does not support the signAuthEntry function");
+  },
+  signMessage: async () => {
+    throw new Error("LOBSTR does not support the signMessage function");
+  },
   signTransaction: async (xdr: string): Promise<string> => {
     try {
       if (!lobstr.signTransaction) {
@@ -37,8 +45,5 @@ export const lobstrConfig: IWallet = {
     } catch {
       throw new Error("Failed to sign the transaction with LOBSTR.");
     }
-  },
-  getNetwork: async () => {
-    throw new Error("Failed to get network from LOBSTR");
   },
 };

@@ -11,7 +11,7 @@ const signTransaction = async (
   }
 
   const signedXdr = await wallet.signTransaction(xdr, {
-    networkPassphrase: network,
+    network,
     address,
   });
 

@@ -1,3 +1,4 @@
+import json from "@rollup/plugin-json";
 import postcss from "rollup-plugin-postcss";
 import replace from "@rollup/plugin-replace";
 import tailwindcss from "@tailwindcss/postcss";
@@ -25,6 +26,7 @@ const config = [
     ],
     external: [...Object.keys(pkg.peerDependencies || {})],
     plugins: [
+      json(),
       peerDepsExternal(),
       replace({
         "process.env.NODE_ENV": JSON.stringify("production"),
@@ -56,6 +58,7 @@ const config = [
       },
     ],
     plugins: [
+      json(),
       replace({
         "process.env.NODE_ENV": JSON.stringify("development"),
         preventAssignment: true,

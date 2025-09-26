@@ -7,7 +7,8 @@ export enum SupportedWallet {
   Xbull = "xBull",
   Lobstr = "LOBSTR",
   Hana = "Hana",
-  // Hot = "Hot",
+  Hot = "Hot",
+  Klever = "Klever",
 }
 
 export enum StellarNetwork {

@@ -12,7 +12,7 @@ const handleSignMessage = async (
 
   const signedMessage = await wallet.signMessage(message, {
     address,
-    networkPassphrase: network,
+    network: network,
   });
 
   return signedMessage;
