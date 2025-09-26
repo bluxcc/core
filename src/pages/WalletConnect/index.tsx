@@ -48,6 +48,7 @@ const WalletConnect = () => {
           bgColor={appearance.fieldBackground}
           fgColor={appearance.accentColor}
           level="Q"
+          imgSize={40}
         />
         <div
           className="bluxcc:z-20"

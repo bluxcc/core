@@ -25,7 +25,7 @@ export const AlbedoLogo = () => (
   </svg>
 );
 
-export const HanaLogo = ({ fill = "#221542" }: { fill?: string }) => (
+export const HanaLogo = ({ fill = '#221542' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -69,7 +69,7 @@ export const HotLogo = () => (
   </svg>
 );
 
-export const RabetLogo = ({ fill = "#B8BAC4" }: { fill?: string }) => (
+export const RabetLogo = ({ fill = '#B8BAC4' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -104,7 +104,7 @@ export const RabetLogo = ({ fill = "#B8BAC4" }: { fill?: string }) => (
   </svg>
 );
 
-export const FreighterLogo = ({ fill = "#310CCC" }: { fill?: string }) => (
+export const FreighterLogo = ({ fill = '#310CCC' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -127,7 +127,7 @@ export const FreighterLogo = ({ fill = "#310CCC" }: { fill?: string }) => (
   </svg>
 );
 
-export const XBullLogo = ({ fill = "#C19CFC" }: { fill?: string }) => (
+export const XBullLogo = ({ fill = '#C19CFC' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -175,7 +175,7 @@ export const XBullLogo = ({ fill = "#C19CFC" }: { fill?: string }) => (
   </svg>
 );
 
-export const LobstrLogo = ({ fill = "black" }: { fill?: string }) => (
+export const LobstrLogo = ({ fill = 'black' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -190,7 +190,7 @@ export const LobstrLogo = ({ fill = "black" }: { fill?: string }) => (
   </svg>
 );
 
-export const StellarLogo = ({ fill = "black" }: { fill?: string }) => (
+export const StellarLogo = ({ fill = 'black' }: { fill?: string }) => (
   <svg
     width="40"
     height="40"
@@ -220,7 +220,7 @@ export const StellarLogo = ({ fill = "black" }: { fill?: string }) => (
     </defs>
   </svg>
 );
-export const StellarSmallLogo = ({ fill = "black" }: { fill?: string }) => (
+export const StellarSmallLogo = ({ fill = 'black' }: { fill?: string }) => (
   <svg
     width="16"
     height="16"
@@ -267,7 +267,13 @@ export const GoogleLogo = () => (
     </defs>
   </svg>
 );
-export const SmallWalletConnectLogo = ({ fill = "black" }: { fill?: string }) => (
+export const WalletConnectLogo = ({
+  fill = 'black',
+  background = 'transparent',
+}: {
+  fill?: string;
+  background?: string;
+}) => (
   <svg
     width="40"
     height="40"
@@ -275,29 +281,9 @@ export const SmallWalletConnectLogo = ({ fill = "black" }: { fill?: string }) =>
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
+    <rect width="40" height="40" fill={background} />
     <path
       d="M12.3719 15.1652C16.6511 10.9449 23.5889 10.9449 27.8682 15.1652L28.3831 15.6731C28.5971 15.8841 28.5971 16.2262 28.3831 16.4373L26.6214 18.1747C26.5144 18.2803 26.341 18.2803 26.234 18.1747L25.5253 17.4758C22.54 14.5316 17.7 14.5316 14.7147 17.4758L13.9557 18.2243C13.8488 18.3298 13.6753 18.3298 13.5683 18.2243L11.8066 16.4868C11.5926 16.2758 11.5926 15.9337 11.8066 15.7227L12.3719 15.1652ZM31.5116 18.7585L33.0795 20.3048C33.2935 20.5159 33.2935 20.858 33.0795 21.069L26.0096 28.0418C25.7956 28.2527 25.4487 28.2527 25.2347 28.0418L20.2169 23.093C20.1634 23.0402 20.0767 23.0402 20.0232 23.093L15.0055 28.0418C14.7915 28.2527 14.4446 28.2527 14.2306 28.0418L7.16047 21.0689C6.94651 20.8579 6.94651 20.5158 7.16047 20.3048L8.72842 18.7584C8.94238 18.5474 9.28928 18.5474 9.50323 18.7584L14.5212 23.7072C14.5746 23.76 14.6613 23.76 14.7148 23.7072L19.7325 18.7584C19.9464 18.5474 20.2934 18.5474 20.5073 18.7584L25.5252 23.7072C25.5787 23.76 25.6654 23.76 25.7189 23.7072L30.7367 18.7585C30.9507 18.5475 31.2976 18.5475 31.5116 18.7585Z"
-      fill={fill}
-    />
-  </svg>
-);
-export const WalletConnectLogo = ({
-  fill = "black",
-  background = "transparent",
-}: {
-  fill?: string;
-  background?: string;
-}) => (
-  <svg
-    width="52"
-    height="52"
-    viewBox="0 0 52 52"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <rect width="52" height="52" fill={background} />
-    <path
-      d="M14.0067 18.7177C20.3847 12.4274 30.7253 12.4274 37.1035 18.7177L37.8709 19.4747C38.1899 19.7892 38.1899 20.2991 37.8709 20.6137L35.2452 23.2033C35.0857 23.3607 34.8272 23.3607 34.6678 23.2033L33.6115 22.1616C29.1619 17.7733 21.9481 17.7733 17.4985 22.1616L16.3673 23.2772C16.2079 23.4344 15.9494 23.4344 15.7899 23.2772L13.1641 20.6875C12.8451 20.373 12.8451 19.8631 13.1641 19.5486L14.0067 18.7177ZM42.5339 24.0734L44.8708 26.3781C45.1897 26.6928 45.1897 27.2026 44.8708 27.5171L34.3333 37.9099C34.0143 38.2242 33.4973 38.2242 33.1783 37.9099L25.6994 30.5339C25.6197 30.4552 25.4905 30.4552 25.4107 30.5339L17.932 37.9099C17.613 38.2242 17.096 38.2242 16.777 37.9099L6.23918 27.517C5.92027 27.2025 5.92027 26.6926 6.23918 26.3781L8.57616 24.0732C8.89506 23.7588 9.41211 23.7588 9.731 24.0732L17.2101 31.4493C17.2897 31.528 17.419 31.528 17.4987 31.4493L24.9774 24.0732C25.2963 23.7588 25.8134 23.7588 26.1323 24.0732L33.6113 31.4493C33.691 31.528 33.8203 31.528 33.9 31.4493L41.3789 24.0734C41.6979 23.7589 42.2149 23.7589 42.5339 24.0734Z"
       fill={fill}
     />
   </svg>
