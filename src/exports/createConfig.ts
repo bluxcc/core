@@ -14,6 +14,7 @@ import {
 } from '../utils/helpers';
 
 import '../tailwind.css';
+import initializeWalletConnect from '../utils/initializeWalletConnect';
 
 let root: any = null;
 let isInitiated = false;
@@ -79,4 +80,8 @@ export function createConfig(config: IConfig) {
     setWallets(wallets);
     setIsReady(true);
   });
+
+  if (config.walletConnect) {
+    initializeWalletConnect(config.walletConnect, config.appName);
+  }
 }

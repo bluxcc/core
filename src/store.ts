@@ -1,20 +1,21 @@
-import { useStore } from "zustand";
-import { createStore } from "zustand/vanilla";
-import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { useStore } from 'zustand';
+import { createStore } from 'zustand/vanilla';
+import { Horizon, rpc } from '@stellar/stellar-sdk';
+import { SignClient } from '@walletconnect/sign-client/dist/types/client';
 
-import { Route } from "./enums";
-import { defaultLightTheme } from "./constants/themes";
-import { UseBalancesResult } from "./hooks/useBalances";
-import { UseTransactionsResult } from "./hooks/useTransactions";
+import { Route } from './enums';
+import { defaultLightTheme } from './constants/themes';
+import { UseBalancesResult } from './hooks/useBalances';
+import { UseTransactionsResult } from './hooks/useTransactions';
 import {
   IWallet,
+  ISignMessage,
   IInternalConfig,
   ISendTransaction,
-  ISignMessage,
-} from "./types";
+} from './types';
 
-export type WaitingStatus = "login" | "sendTransaction" | "signMessage";
-export type AlertType = "error" | "success" | "info" | "warn" | "none";
+export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
+export type AlertType = 'error' | 'success' | 'info' | 'warn' | 'none';
 
 export interface IUser {
   address: string;
@@ -55,6 +56,10 @@ export interface IStoreProperties {
   signMessage?: ISignMessage;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
+  walletConnect?: {
+    connection: any;
+    client: SignClient;
+  };
 }
 
 export interface IStoreMethods {
@@ -79,40 +84,41 @@ export interface IStoreMethods {
   setDynamicTitle: (title: string) => void;
   setBalances: (balances: UseBalancesResult) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
+  setWalletConnectClient: (client: SignClient, connection: any) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods {}
+export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
   config: {
-    appId: "",
-    lang: "en",
-    appName: "",
+    appId: '',
+    lang: 'en',
+    appName: '',
     networks: [],
-    defaultNetwork: "",
+    defaultNetwork: '',
     showWalletUIs: true,
-    explorer: "stellarchain",
+    explorer: 'stellarchain',
     appearance: defaultLightTheme,
     walletConnect: {
-      icons:[],
-      url:"",
-      projectId:"",
-      description:""
-    }
+      icons: [],
+      url: '',
+      projectId: '',
+      description: '',
+    },
   },
   stellar: undefined,
   signMessage: undefined,
   sendTransaction: undefined,
   wallets: [],
-  waitingStatus: "login",
+  waitingStatus: 'login',
   showAllWallets: false,
   modal: {
     isOpen: false,
     route: Route.ONBOARDING,
-    dynamicTitle: "",
+    dynamicTitle: '',
     alert: {
-      type: "none",
-      message: "",
+      type: 'none',
+      message: '',
     },
   },
   authState: {
@@ -129,6 +135,7 @@ export const store = createStore<IStore>((set) => ({
     loading: false,
     transactions: [],
   },
+  walletConnectClient: undefined,
   setConfig: (config: IInternalConfig) =>
     set((state) => ({ ...state, config })),
   setWallets: (wallets: IWallet[]) => set((state) => ({ ...state, wallets })),
@@ -146,7 +153,7 @@ export const store = createStore<IStore>((set) => ({
       ...state,
       sendTransaction,
       modal: { ...state.modal, isOpen: true, route },
-      waitingStatus: "sendTransaction",
+      waitingStatus: 'sendTransaction',
     })),
   setSignMessage: (
     signMessage: ISignMessage,
@@ -156,7 +163,7 @@ export const store = createStore<IStore>((set) => ({
       ...state,
       signMessage,
       modal: { ...state.modal, isOpen: true, route },
-      waitingStatus: "signMessage",
+      waitingStatus: 'signMessage',
     })),
   setStellar: (stellar: IStellarConfig) =>
     set((state) => ({ ...state, stellar })),
@@ -164,7 +171,7 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({
       ...state,
       modal: { ...state.modal, isOpen: true, route: Route.WAITING },
-      waitingStatus: "sendTransaction",
+      waitingStatus: 'sendTransaction',
     })),
   openModal: (route: Route) =>
     set((state) => ({
@@ -172,10 +179,10 @@ export const store = createStore<IStore>((set) => ({
       modal: {
         route,
         isOpen: true,
-        dynamicTitle: "",
+        dynamicTitle: '',
         alert: {
-          type: "none",
-          message: "",
+          type: 'none',
+          message: '',
         },
       },
     })),
@@ -203,11 +210,11 @@ export const store = createStore<IStore>((set) => ({
   connectWallet: (walletName: string) =>
     set((state) => ({
       ...state,
-      waitingStatus: "login",
+      waitingStatus: 'login',
       user: {
-        address: "",
-        walletPassphrase: "",
-        authMethod: "wallet",
+        address: '',
+        walletPassphrase: '',
+        authMethod: 'wallet',
         authValue: walletName,
       },
       modal: {
@@ -227,19 +234,19 @@ export const store = createStore<IStore>((set) => ({
         ...state.user,
         address: publicKey,
         walletPassphrase: passphrase,
-        authValue: state.user?.authValue || "",
-        authMethod: state.user?.authMethod || "",
+        authValue: state.user?.authValue || '',
+        authMethod: state.user?.authMethod || '',
       },
     })),
   connectEmail: (email: string) =>
     set((state) => ({
       ...state,
-      waitingStatus: "login",
+      waitingStatus: 'login',
       user: {
-        address: "",
+        address: '',
         authValue: email,
-        authMethod: "email",
-        walletPassphrase: "",
+        authMethod: 'email',
+        walletPassphrase: '',
       },
       modal: {
         ...state.modal,
@@ -251,7 +258,7 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({
       ...state,
       user: undefined,
-      waitingStatus: "login",
+      waitingStatus: 'login',
       authState: {
         ...state.authState,
         isAuthenticated: false,
@@ -262,6 +269,8 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, balances })),
   setTransactions: (transactions: UseTransactionsResult) =>
     set((state) => ({ ...state, transactions })),
+  setWalletConnectClient: (client: SignClient, connection: any) =>
+    set((state) => ({ ...state, walletConnect: { client, connection } })),
 }));
 
 export const { getState, setState, subscribe, getInitialState } = store;

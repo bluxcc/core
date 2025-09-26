@@ -7,6 +7,7 @@ export enum SupportedWallet {
   Xbull = 'xBull',
   Lobstr = 'LOBSTR',
   Hana = 'Hana',
+  WalletConnect = 'WalletConnect',
   // Hot = 'Hot',
 }
 

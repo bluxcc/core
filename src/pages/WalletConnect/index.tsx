@@ -1,32 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useAppStore } from '../../store';
 import Button from '../../components/Button';
-import Divider from '../../components/Divider';
 import QRCode from '../../components/QRCode';
 import { useLang } from '../../hooks/useLang';
-import { store, useAppStore } from '../../store';
-
-import { Core } from '@walletconnect/core';
-
-import { WalletConnectLogo } from '../../assets/Logos';
+import Divider from '../../components/Divider';
 import { copyText } from '../../utils/helpers';
+import { WalletConnectLogo } from '../../assets/Logos';
 
 const WalletConnect = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
-  const { setAlert } = useAppStore((store) => store);
+
   const appearance = store.config.appearance;
-  const [uri, setUri] = useState('');
 
   const handleCopyURI = (uri: string) => {
     copyText(uri);
-    setAlert('info', t('address_copied'));
+
+    store.setAlert('info', t('address_copied'));
+
     setTimeout(() => {
-      setAlert('none', '');
+      store.setAlert('none', '');
     }, 1000);
   };
-  useEffect(() => {
-    const core = new Core({ projectId: store.config.walletConnect?.projectId });
-  }, []);
+
+  if (!store.walletConnect) {
+    // TODO: fix this
+    return null;
+  }
+
+  const uri = store.walletConnect.connection.uri;
 
   return (
     <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center">

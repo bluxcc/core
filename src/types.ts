@@ -1,18 +1,18 @@
-import { Horizon } from "@stellar/stellar-sdk";
+import { Horizon } from '@stellar/stellar-sdk';
 
-import { SupportedWallet } from "./enums";
+import { SupportedWallet } from './enums';
 
-export type LanguageKey = "en" | "es";
+export type LanguageKey = 'en' | 'es';
 
 export type ITransports = Record<string, IServers>;
 
 export type IExplorer =
-  | "steexp"
-  | "stellarchain"
-  | "stellarexpert"
-  | "lumenscan";
+  | 'steexp'
+  | 'stellarchain'
+  | 'stellarexpert'
+  | 'lumenscan';
 
-export type ILoginMethods = Array<"wallet" | "sms" | "email" | "passkey">;
+export type ILoginMethods = Array<'wallet' | 'sms' | 'email' | 'passkey'>;
 
 export type SignMessageResult = {
   signedMessage: string;
@@ -24,11 +24,11 @@ interface IServers {
   soroban: string;
 }
 
-interface IWalletConnectMetaData{
-  icons: [],
-  url:string,
-  projectId: string,
-  description: string
+export interface IWalletConnectMetaData {
+  icons: [];
+  url: string;
+  projectId: string;
+  description: string;
 }
 
 export interface IConfig {
@@ -42,7 +42,7 @@ export interface IConfig {
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
   transports?: ITransports;
-  walletConnect?: IWalletConnectMetaData
+  walletConnect?: IWalletConnectMetaData;
 }
 
 export interface IInternalConfig extends IConfig {

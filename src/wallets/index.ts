@@ -7,13 +7,15 @@ import { albedoConfig } from './albedo';
 import { lobstrConfig } from './lobstr';
 import { SupportedWallet } from '../enums';
 import { freighterConfig } from './freighter';
+import { walletConnectConfig } from './walletConnect';
 
 export const walletsConfig: Record<SupportedWallet, IWallet> = {
-  [SupportedWallet.Rabet]: rabetConfig,
-  [SupportedWallet.Freighter]: freighterConfig,
   [SupportedWallet.Hana]: hanaConfig,
+  [SupportedWallet.Xbull]: xBullConfig,
+  [SupportedWallet.Rabet]: rabetConfig,
   [SupportedWallet.Lobstr]: lobstrConfig,
   [SupportedWallet.Albedo]: albedoConfig,
-  [SupportedWallet.Xbull]: xBullConfig,
+  [SupportedWallet.Freighter]: freighterConfig,
+  [SupportedWallet.WalletConnect]: walletConnectConfig,
   // [SupportedWallet.Hot]: hotConfig,
 };
