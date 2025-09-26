@@ -1,13 +1,13 @@
-import { Networks } from "@stellar/stellar-sdk";
+import { Networks } from '@stellar/stellar-sdk';
 
 export enum SupportedWallet {
-  Rabet = "Rabet",
-  Albedo = "Albedo",
-  Freighter = "Freighter",
-  Xbull = "xBull",
-  Lobstr = "LOBSTR",
-  Hana = "Hana",
-  // Hot = "Hot",
+  Rabet = 'Rabet',
+  Albedo = 'Albedo',
+  Freighter = 'Freighter',
+  Xbull = 'xBull',
+  Lobstr = 'LOBSTR',
+  Hana = 'Hana',
+  // Hot = 'Hot',
 }
 
 export enum StellarNetwork {
@@ -19,22 +19,22 @@ export enum StellarNetwork {
 }
 
 export enum Route {
-  ONBOARDING = "ONBOARDING", // View for selecting a wallet
-  WRONG_NETWORK = "WRONG_NETWORK", // View for selecting a wallet
-  WAITING = "WAITING", // View for connection process
-  SUCCESSFUL = "SUCCESSFUL", // View for connection success process
-  FAILED = "FAILED",
-  PROFILE = "PROFILE", // User profile view
-  SEND_TRANSACTION = "SEND_TRANSACTION", // User sign transaction view
-  SEND = "SEND", // User sign transaction view
-  ACTIVITY = "ACTIVITY", // User sign transaction view
-  OTP = "OTP", // User Login with Phone ot email
-  RECEIVE = "RECEIVE", // View for receive page
-  BALANCES = "BALANCES", // View for balances
-  SWAP = "SWAP", // View for swap assets
-  BALANCE_DETAILS = "BALANCE_DETAILS", // View for asset details
-  ABOUT = "ABOUT", // View for what is blux
-  ADD_TOKEN = "ADD_TOKEN", // View for adding new token
-  SIGN_MESSAGE = "SIGN_MESSAGE", // User sign message view
-  WALLET_CONNECT = "WALLET_CONNECT", // User sign message view
+  ONBOARDING = 'ONBOARDING', // View for selecting a wallet
+  WRONG_NETWORK = 'WRONG_NETWORK', // View for selecting a wallet
+  WAITING = 'WAITING', // View for connection process
+  SUCCESSFUL = 'SUCCESSFUL', // View for connection success process
+  FAILED = 'FAILED',
+  PROFILE = 'PROFILE', // User profile view
+  SEND_TRANSACTION = 'SEND_TRANSACTION', // User sign transaction view
+  SEND = 'SEND', // User sign transaction view
+  ACTIVITY = 'ACTIVITY', // User sign transaction view
+  OTP = 'OTP', // User Login with Phone ot email
+  RECEIVE = 'RECEIVE', // View for receive page
+  BALANCES = 'BALANCES', // View for balances
+  SWAP = 'SWAP', // View for swap assets
+  BALANCE_DETAILS = 'BALANCE_DETAILS', // View for asset details
+  ABOUT = 'ABOUT', // View for what is blux
+  ADD_TOKEN = 'ADD_TOKEN', // View for adding new token
+  SIGN_MESSAGE = 'SIGN_MESSAGE', // User sign message view
+  WALLET_CONNECT = 'WALLET_CONNECT', // User sign message view
 }

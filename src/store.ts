@@ -93,6 +93,12 @@ export const store = createStore<IStore>((set) => ({
     showWalletUIs: true,
     explorer: "stellarchain",
     appearance: defaultLightTheme,
+    walletConnect: {
+      icons:[],
+      url:"",
+      projectId:"",
+      description:""
+    }
   },
   stellar: undefined,
   signMessage: undefined,

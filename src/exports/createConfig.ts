@@ -1,26 +1,26 @@
-import { createElement } from "react";
-import { createRoot } from "react-dom/client";
-import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { createElement } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Horizon, rpc } from '@stellar/stellar-sdk';
 
-import { getState } from "../store";
-import { Provider } from "../components/Provider";
-import { IConfig, IInternalConfig } from "../types";
-import { defaultLightTheme } from "../constants/themes";
+import { getState } from '../store';
+import { Provider } from '../components/Provider';
+import { IConfig, IInternalConfig } from '../types';
+import { defaultLightTheme } from '../constants/themes';
 
 import {
   getNetworkRpc,
   handleLoadWallets,
   validateNetworkOptions,
-} from "../utils/helpers";
+} from '../utils/helpers';
 
-import "../tailwind.css";
+import '../tailwind.css';
 
 let root: any = null;
 let isInitiated = false;
 let container: HTMLDivElement | null = null;
 
 const init = () => {
-  container = document.createElement("div");
+  container = document.createElement('div');
   document.body.appendChild(container);
 
   root = createRoot(container);
@@ -29,7 +29,7 @@ const init = () => {
 
 export function createConfig(config: IConfig) {
   if (isInitiated) {
-    throw new Error("Config has already been set");
+    throw new Error('Config has already been set');
   }
 
   isInitiated = true;
@@ -42,24 +42,25 @@ export function createConfig(config: IConfig) {
       ...defaultLightTheme,
       ...config?.appearance,
     },
-    lang: config.lang || "en",
-    defaultNetwork: "",
+    lang: config.lang || 'en',
+    defaultNetwork: '',
     showWalletUIs: !!config.showWalletUIs,
-    explorer: config.explorer || "stellarchain",
-    loginMethods: config.loginMethods || ["wallet"],
+    explorer: config.explorer || 'stellarchain',
+    loginMethods: config.loginMethods || ['wallet'],
+    ...(config?.walletConnect ? { walletConnect: config.walletConnect } : {}),
   };
 
   validateNetworkOptions(
     config.networks,
     config.defaultNetwork,
-    config.transports
+    config.transports,
   );
 
   conf.defaultNetwork = config.defaultNetwork ?? config.networks[0];
 
   const { horizon, soroban } = getNetworkRpc(
     conf.defaultNetwork,
-    config.transports ?? {}
+    config.transports ?? {},
   );
 
   const { setConfig, setWallets, setIsReady, setStellar } = getState();

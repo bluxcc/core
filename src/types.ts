@@ -24,6 +24,13 @@ interface IServers {
   soroban: string;
 }
 
+interface IWalletConnectMetaData{
+  icons: [],
+  url:string,
+  projectId: string,
+  description: string
+}
+
 export interface IConfig {
   appId: string;
   appName: string;
@@ -35,6 +42,7 @@ export interface IConfig {
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
   transports?: ITransports;
+  walletConnect?: IWalletConnectMetaData
 }
 
 export interface IInternalConfig extends IConfig {
