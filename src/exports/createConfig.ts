@@ -36,8 +36,14 @@ export function createConfig(config: IConfig) {
 
   init();
 
+  let excludeWallets = config.excludeWallets || [];
+
+  // @ts-ignore
+  excludeWallets = excludeWallets.map((x) => x.toLowerCase());
+
   const conf: IInternalConfig = {
     ...config,
+    excludeWallets,
     appearance: {
       ...defaultLightTheme,
       ...config?.appearance,
@@ -75,7 +81,12 @@ export function createConfig(config: IConfig) {
   setConfig(conf);
 
   handleLoadWallets().then((wallets) => {
-    setWallets(wallets);
+    const includedWallets = wallets.filter((w) =>
+      // @ts-ignore
+      excludeWallets.includes(w.name.toLowerCase()),
+    );
+
+    setWallets(includedWallets);
     setIsReady(true);
   });
 }

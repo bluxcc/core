@@ -14,6 +14,17 @@ export type IExplorer =
 
 export type ILoginMethods = Array<"wallet" | "sms" | "email" | "passkey">;
 
+export type IWalletNames = Array<
+  | "rabet"
+  | "albedo"
+  | "freighter"
+  | "xbull"
+  | "lobstr"
+  | "hana"
+  | "hot"
+  | "klever"
+>;
+
 interface IServers {
   horizon: string;
   soroban: string;
@@ -30,6 +41,7 @@ export interface IConfig {
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
   transports?: ITransports;
+  excludeWallets?: IWalletNames;
 }
 
 export interface IInternalConfig extends IConfig {
@@ -38,6 +50,7 @@ export interface IInternalConfig extends IConfig {
   showWalletUIs: boolean;
   defaultNetwork: string;
   lang: LanguageKey;
+  excludeWallets: IWalletNames;
 }
 
 export interface IAppearance {
