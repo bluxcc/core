@@ -1,26 +1,26 @@
-import json from "@rollup/plugin-json";
-import postcss from "rollup-plugin-postcss";
-import replace from "@rollup/plugin-replace";
-import tailwindcss from "@tailwindcss/postcss";
-import commonjs from "@rollup/plugin-commonjs";
-import resolve from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import json from '@rollup/plugin-json';
+import postcss from 'rollup-plugin-postcss';
+import replace from '@rollup/plugin-replace';
+import tailwindcss from '@tailwindcss/postcss';
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
-import pkg from "./package.json" with { type: "json" };
+import pkg from './package.json' with { type: 'json' };
 
 const config = [
   {
-    input: "src/index.ts",
+    input: 'src/index.ts',
     output: [
       {
-        file: "dist/index.esm.js",
-        format: "esm",
+        file: 'dist/index.esm.js',
+        format: 'esm',
         sourcemap: true,
       },
       {
-        file: "dist/index.cjs.js",
-        format: "cjs",
+        file: 'dist/index.cjs.js',
+        format: 'cjs',
         sourcemap: true,
       },
     ],
@@ -29,7 +29,7 @@ const config = [
       json(),
       peerDepsExternal(),
       replace({
-        "process.env.NODE_ENV": JSON.stringify("production"),
+        'process.env.NODE_ENV': JSON.stringify('production'),
         preventAssignment: true,
       }),
       resolve({
@@ -44,23 +44,24 @@ const config = [
         sourceMap: true,
         plugins: [tailwindcss],
       }),
-      typescript({ tsconfig: "./tsconfig.json" }),
+      typescript({ tsconfig: './tsconfig.json' }),
     ],
   },
   {
-    input: "src/index.ts",
+    input: 'src/index.ts',
     output: [
       {
-        file: "dist/index.iife.js",
-        format: "iife",
-        name: "Blux",
+        file: 'dist/index.iife.js',
+        format: 'iife',
+        name: 'Blux',
         sourcemap: true,
+        inlineDynamicImports: true,
       },
     ],
     plugins: [
       json(),
       replace({
-        "process.env.NODE_ENV": JSON.stringify("development"),
+        'process.env.NODE_ENV': JSON.stringify('development'),
         preventAssignment: true,
       }),
       // nodePolyfills({ include: ["buffer", "crypto"] }),
@@ -77,7 +78,7 @@ const config = [
         sourceMap: true,
         plugins: [tailwindcss],
       }),
-      typescript({ tsconfig: "./tsconfig.json" }),
+      typescript({ tsconfig: './tsconfig.json' }),
     ],
   },
 ];
