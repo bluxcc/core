@@ -2,6 +2,19 @@ import { IWallet } from '../types';
 import { getState } from '../store';
 import { StellarNetwork, SupportedWallet } from '../enums';
 
+/*
+ * todos:
+ * 1. fix error messages
+ * 2. getNetwork implementations
+ * 3. signMessage
+ * 4. signAuthEntryo
+ * 5. signTransaction full test
+ * 5. disconnect full test
+ 
+ TODO: use options.network and options.address to sign the transaction.
+ WC might choose a wrong account/network, so we need to be sure.
+ */
+
 // The WalletConnect CAIP-2 chain IDs for Stellar
 const STELLAR_PUBNET_CAIP = 'stellar:pubnet';
 const STELLAR_TESTNET_CAIP = 'stellar:testnet';
@@ -146,6 +159,8 @@ export const walletConnectConfig: IWallet = {
       const session = activeSessions[0];
 
       const chainId =
+        // TODO: fix typescript error
+        // @ts-ignore
         session.namespaces.stellar?.chains[0] || STELLAR_PUBNET_CAIP;
 
       const response = await walletConnect.client.request({

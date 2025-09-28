@@ -1,18 +1,18 @@
+import { useEffect } from 'react';
+
+import { Route } from '../../enums';
 import { useAppStore } from '../../store';
 import Button from '../../components/Button';
 import QRCode from '../../components/QRCode';
 import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
+import { WalletConnectLogo } from '../../assets/Logos';
+import { walletConnectConfig } from '../../wallets/walletConnect';
 import {
   copyText,
   getWalletNetwork,
   setRecentConnectionMethod,
 } from '../../utils/helpers';
-import { WalletConnectLogo } from '../../assets/Logos';
-import { IStore } from '../../store';
-import { useEffect } from 'react';
-import { Route } from '../../enums';
-import { walletConnectConfig } from '../../wallets/walletConnect';
 
 const WalletConnect = () => {
   const t = useLang();
@@ -25,7 +25,7 @@ const WalletConnect = () => {
       // store.connectWallet('WalletConnect');
 
       try {
-        const { publicKey } = await walletConnectConfig.connect();
+        const publicKey = await walletConnectConfig.connect();
 
         if (publicKey && publicKey.trim() !== '') {
           const passphrase = await getWalletNetwork(walletConnectConfig);
