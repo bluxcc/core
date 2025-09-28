@@ -81,9 +81,10 @@ export function createConfig(config: IConfig) {
   setConfig(conf);
 
   handleLoadWallets().then((wallets) => {
-    const includedWallets = wallets.filter((w) =>
-      // @ts-ignore
-      excludeWallets.includes(w.name.toLowerCase()),
+    const includedWallets = wallets.filter(
+      (w) =>
+        // @ts-ignore
+        !excludeWallets.includes(w.name.toLowerCase()),
     );
 
     setWallets(includedWallets);

@@ -51,9 +51,9 @@ const Onboarding = () => {
       <div
         className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:z-10"
         style={{
-          borderTopWidth: appearance.borderWidth,
           borderTopStyle: "dashed",
           borderTopColor: appearance.borderColor,
+          borderTopWidth: appearance.borderWidth,
         }}
       />
 
