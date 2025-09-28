@@ -67,7 +67,7 @@ const Modal = ({
               isMobile && (isOpening || isClosing)
                 ? "translateY(100%)"
                 : "translateY(0%)",
-            backgroundColor: appearance.background,
+            background: appearance.background,
             opacity: isClosing && !isSticky ? "0" : "1",
             color: appearance.textColor,
             fontFamily: appearance.font,

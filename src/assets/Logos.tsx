@@ -25,7 +25,7 @@ export const AlbedoLogo = () => (
   </svg>
 );
 
-export const HanaLogo = ({ fill = "#221542" }: { fill?: string }) => (
+export const HanaLogo = ({ fill = '#221542' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -69,7 +69,7 @@ export const HotLogo = () => (
   </svg>
 );
 
-export const RabetLogo = ({ fill = "#B8BAC4" }: { fill?: string }) => (
+export const RabetLogo = ({ fill = '#B8BAC4' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -104,7 +104,7 @@ export const RabetLogo = ({ fill = "#B8BAC4" }: { fill?: string }) => (
   </svg>
 );
 
-export const FreighterLogo = ({ fill = "#310CCC" }: { fill?: string }) => (
+export const FreighterLogo = ({ fill = '#310CCC' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -127,7 +127,7 @@ export const FreighterLogo = ({ fill = "#310CCC" }: { fill?: string }) => (
   </svg>
 );
 
-export const XBullLogo = ({ fill = "#C19CFC" }: { fill?: string }) => (
+export const XBullLogo = ({ fill = '#C19CFC' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -175,7 +175,7 @@ export const XBullLogo = ({ fill = "#C19CFC" }: { fill?: string }) => (
   </svg>
 );
 
-export const LobstrLogo = ({ fill = "black" }: { fill?: string }) => (
+export const LobstrLogo = ({ fill = 'black' }: { fill?: string }) => (
   <svg
     width="80"
     height="80"
@@ -190,7 +190,7 @@ export const LobstrLogo = ({ fill = "black" }: { fill?: string }) => (
   </svg>
 );
 
-export const StellarLogo = ({ fill = "black" }: { fill?: string }) => (
+export const StellarLogo = ({ fill = 'black' }: { fill?: string }) => (
   <svg
     width="40"
     height="40"
@@ -220,7 +220,7 @@ export const StellarLogo = ({ fill = "black" }: { fill?: string }) => (
     </defs>
   </svg>
 );
-export const StellarSmallLogo = ({ fill = "black" }: { fill?: string }) => (
+export const StellarSmallLogo = ({ fill = 'black' }: { fill?: string }) => (
   <svg
     width="16"
     height="16"
@@ -265,5 +265,26 @@ export const GoogleLogo = () => (
         <rect width="24" height="24" fill="white" />
       </clipPath>
     </defs>
+  </svg>
+);
+export const WalletConnectLogo = ({
+  fill = 'black',
+  background = 'transparent',
+}: {
+  fill?: string;
+  background?: string;
+}) => (
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 40 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect width="40" height="40" fill={background} />
+    <path
+      d="M12.3719 15.1652C16.6511 10.9449 23.5889 10.9449 27.8682 15.1652L28.3831 15.6731C28.5971 15.8841 28.5971 16.2262 28.3831 16.4373L26.6214 18.1747C26.5144 18.2803 26.341 18.2803 26.234 18.1747L25.5253 17.4758C22.54 14.5316 17.7 14.5316 14.7147 17.4758L13.9557 18.2243C13.8488 18.3298 13.6753 18.3298 13.5683 18.2243L11.8066 16.4868C11.5926 16.2758 11.5926 15.9337 11.8066 15.7227L12.3719 15.1652ZM31.5116 18.7585L33.0795 20.3048C33.2935 20.5159 33.2935 20.858 33.0795 21.069L26.0096 28.0418C25.7956 28.2527 25.4487 28.2527 25.2347 28.0418L20.2169 23.093C20.1634 23.0402 20.0767 23.0402 20.0232 23.093L15.0055 28.0418C14.7915 28.2527 14.4446 28.2527 14.2306 28.0418L7.16047 21.0689C6.94651 20.8579 6.94651 20.5158 7.16047 20.3048L8.72842 18.7584C8.94238 18.5474 9.28928 18.5474 9.50323 18.7584L14.5212 23.7072C14.5746 23.76 14.6613 23.76 14.7148 23.7072L19.7325 18.7584C19.9464 18.5474 20.2934 18.5474 20.5073 18.7584L25.5252 23.7072C25.5787 23.76 25.6654 23.76 25.7189 23.7072L30.7367 18.7585C30.9507 18.5475 31.2976 18.5475 31.5116 18.7585Z"
+      fill={fill}
+    />
   </svg>
 );

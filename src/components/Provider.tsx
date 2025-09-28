@@ -7,7 +7,6 @@ import { Route } from "../enums";
 import { useAppStore } from "../store";
 import { getNetworkRpc } from "../utils/helpers";
 import { getModalContent } from "../constants/routes";
-import { defaultLightTheme } from "../constants/themes";
 import useUpdateAccount from "../hooks/useUpdateAccount";
 
 export const Provider = () => {
@@ -32,7 +31,8 @@ export const Provider = () => {
     route === Route.SWAP ||
     route === Route.BALANCE_DETAILS ||
     route === Route.ABOUT ||
-    route === Route.ADD_TOKEN;
+    route === Route.ADD_TOKEN ||
+    route === Route.WALLET_CONNECT;
 
   let modalIcon: "back" | "info" | undefined;
 
@@ -46,7 +46,8 @@ export const Provider = () => {
     if (
       route === Route.WAITING ||
       (route === Route.OTP && !store.authState.isAuthenticated) ||
-      route === Route.ABOUT
+      route === Route.ABOUT ||
+      route === Route.WALLET_CONNECT
     ) {
       store.setRoute(Route.ONBOARDING);
     } else if (store.showAllWallets) {
@@ -104,7 +105,7 @@ export const Provider = () => {
   useEffect(() => {
     const { horizon, soroban } = getNetworkRpc(
       store.stellar?.activeNetwork || "",
-      store.config.transports ?? {},
+      store.config.transports ?? {}
     );
 
     store.setStellar({
@@ -134,7 +135,7 @@ export const Provider = () => {
       isOpen={modal.isOpen}
       isSticky={modalContent.isSticky}
       onClose={handleCloseModal}
-      appearance={defaultLightTheme}
+      appearance={store.config.appearance}
     >
       <Header
         onBack={handleBackNavigation}

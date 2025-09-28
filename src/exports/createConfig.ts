@@ -1,26 +1,27 @@
-import { createElement } from "react";
-import { createRoot } from "react-dom/client";
-import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { createElement } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Horizon, rpc } from '@stellar/stellar-sdk';
 
-import { getState } from "../store";
-import { Provider } from "../components/Provider";
-import { IConfig, IInternalConfig } from "../types";
-import { defaultLightTheme } from "../constants/themes";
+import { getState } from '../store';
+import { Provider } from '../components/Provider';
+import { IConfig, IInternalConfig } from '../types';
+import { defaultLightTheme } from '../constants/themes';
 
 import {
   getNetworkRpc,
   handleLoadWallets,
   validateNetworkOptions,
-} from "../utils/helpers";
+} from '../utils/helpers';
 
-import "../tailwind.css";
+import '../tailwind.css';
+import initializeWalletConnect from '../utils/initializeWalletConnect';
 
 let root: any = null;
 let isInitiated = false;
 let container: HTMLDivElement | null = null;
 
 const init = () => {
-  container = document.createElement("div");
+  container = document.createElement('div');
   document.body.appendChild(container);
 
   root = createRoot(container);
@@ -29,7 +30,7 @@ const init = () => {
 
 export function createConfig(config: IConfig) {
   if (isInitiated) {
-    throw new Error("Config has already been set");
+    throw new Error('Config has already been set');
   }
 
   isInitiated = true;
@@ -42,11 +43,12 @@ export function createConfig(config: IConfig) {
       ...defaultLightTheme,
       ...config?.appearance,
     },
-    lang: config.lang || "en",
-    defaultNetwork: "",
+    lang: config.lang || 'en',
+    defaultNetwork: '',
     showWalletUIs: !!config.showWalletUIs,
-    explorer: config.explorer || "stellarchain",
-    loginMethods: config.loginMethods || ["wallet"],
+    explorer: config.explorer || 'stellarchain',
+    loginMethods: config.loginMethods || ['wallet'],
+    ...(config?.walletConnect ? { walletConnect: config.walletConnect } : {}),
   };
 
   validateNetworkOptions(
@@ -78,4 +80,8 @@ export function createConfig(config: IConfig) {
     setWallets(wallets);
     setIsReady(true);
   });
+
+  if (config.walletConnect) {
+    initializeWalletConnect(config.walletConnect, config.appName);
+  }
 }

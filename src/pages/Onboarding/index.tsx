@@ -1,29 +1,30 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from 'react';
 
-import { IWallet } from "../../types";
-import { useAppStore } from "../../store";
-import { useLang } from "../../hooks/useLang";
-import { StellarLogo } from "../../assets/Logos";
-import CardItem from "../../components/CardItem";
-import handleLogos from "../../utils/walletLogos";
-import { SmallEmailIcon } from "../../assets/Icons";
-import { getContrastColor, isBackgroundDark } from "../../utils/helpers";
-import connectWalletProcess from "../../stellar/processes/connectWalletProcess";
+import { IWallet } from '../../types';
+import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
+import { StellarLogo } from '../../assets/Logos';
+import CardItem from '../../components/CardItem';
+import handleLogos from '../../utils/walletLogos';
+import { SmallEmailIcon } from '../../assets/Icons';
+import { Route, SupportedWallet } from '../../enums';
+import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
+import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 
 const Onboarding = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
 
   const { config, wallets, connectEmail, setShowAllWallets } = store;
   const { appearance } = config;
   const loginMethods = config.loginMethods || [];
 
-  const isPassKeyEnabled = loginMethods.includes("passkey");
+  const isPassKeyEnabled = loginMethods.includes('passkey');
 
   const orderedLoginMethods = useMemo(() => {
-    const methods = [...loginMethods].filter((method) => method !== "passkey");
-    return [...methods, ...(isPassKeyEnabled ? ["passkey"] : [])];
+    const methods = [...loginMethods].filter((method) => method !== 'passkey');
+    return [...methods, ...(isPassKeyEnabled ? ['passkey'] : [])];
   }, [loginMethods, isPassKeyEnabled]);
 
   const hiddenWallets = useMemo(() => {
@@ -39,7 +40,11 @@ const Onboarding = () => {
   }, [wallets, store.showAllWallets]);
 
   const handleConnect = async (wallet: IWallet) => {
-    connectWalletProcess(store, wallet);
+    if (wallet.name === SupportedWallet.WalletConnect) {
+      store.setRoute(Route.WALLET_CONNECT);
+    } else {
+      connectWalletProcess(store, wallet);
+    }
   };
 
   const handleConnectEmail = () => {
@@ -52,7 +57,7 @@ const Onboarding = () => {
         className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:z-10"
         style={{
           borderTopWidth: appearance.borderWidth,
-          borderTopStyle: "dashed",
+          borderTopStyle: 'dashed',
           borderTopColor: appearance.borderColor,
         }}
       />
@@ -64,7 +69,7 @@ const Onboarding = () => {
           color: appearance.borderColor,
         }}
       >
-        {t("or")}
+        {t('or')}
       </span>
     </div>
   );
@@ -82,7 +87,7 @@ const Onboarding = () => {
             loading="eager"
             decoding="async"
             draggable="false"
-            style={{ contentVisibility: "auto" }}
+            style={{ contentVisibility: 'auto' }}
           />
         </div>
       )}
@@ -91,15 +96,15 @@ const Onboarding = () => {
         {orderedLoginMethods.map((method, index) => {
           const nextMethod = orderedLoginMethods[index + 1];
           const prevMethod = orderedLoginMethods[index - 1];
-          const walletExists = orderedLoginMethods.includes("wallet");
+          const walletExists = orderedLoginMethods.includes('wallet');
           const shouldRenderDivider =
             (walletExists &&
               !store.showAllWallets &&
-              method === "wallet" &&
-              nextMethod === "email") ||
-            (walletExists && method === "email" && prevMethod !== "wallet");
+              method === 'wallet' &&
+              nextMethod === 'email') ||
+            (walletExists && method === 'email' && prevMethod !== 'wallet');
 
-          if (method === "wallet") {
+          if (method === 'wallet') {
             return (
               <React.Fragment key="wallet">
                 {visibleWallets.map((checkedWallet) => (
@@ -114,11 +119,10 @@ const Onboarding = () => {
                     onClick={() => handleConnect(checkedWallet)}
                   />
                 ))}
-
                 {hiddenWallets.length > 0 && !store.showAllWallets && (
                   <CardItem
                     endArrow
-                    label={t("allStellarWallets")}
+                    label={t('allStellarWallets')}
                     startIcon={
                       <StellarLogo
                         fill={getContrastColor(appearance.fieldBackground)}
@@ -135,7 +139,7 @@ const Onboarding = () => {
             );
           }
 
-          if (!store.showAllWallets && method === "email") {
+          if (!store.showAllWallets && method === 'email') {
             return (
               <React.Fragment key="email">
                 {
@@ -156,14 +160,14 @@ const Onboarding = () => {
             );
           }
 
-          if (!store.showAllWallets && method === "passkey") {
+          if (!store.showAllWallets && method === 'passkey') {
             return (
               <div
                 key="passkey"
                 className="bluxcc:mt-6! bluxcc:flex bluxcc:h-4 bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-[28px] bluxcc:font-medium"
                 style={{ color: appearance.accentColor }}
               >
-                {t("logInWithPasskey")}
+                {t('logInWithPasskey')}
               </div>
             );
           }
@@ -185,7 +189,7 @@ const Onboarding = () => {
             color: appearance.textColor,
           }}
         >
-          {t("poweredByBlux")}
+          {t('poweredByBlux')}
         </a>
       </footer>
     </div>
