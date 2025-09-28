@@ -3,6 +3,7 @@ import SignClient from '@walletconnect/sign-client';
 
 import { getState } from '../store';
 import { IWalletConnectMetaData } from '../types';
+import { WC_STELLAR_PUBNET, WC_STELLAR_TESTNET } from '../constants/consts';
 
 let isInitialized = false;
 
@@ -35,10 +36,14 @@ const initializeWalletConnect = async (
 
     const connection = await client.connect({
       requiredNamespaces: {
-        eip155: {
-          chains: ['eip155:1'], // e.g., Ethereum Mainnet
-          methods: ['eth_sendTransaction', 'personal_sign'],
-          events: ['chainChanged', 'accountsChanged'],
+        stellar: {
+          methods: [
+            'stellar_signXDR',
+            'stellar_signAndSubmitXDR',
+            'stellar_signMessage',
+          ],
+          chains: [WC_STELLAR_PUBNET, WC_STELLAR_TESTNET],
+          events: [],
         },
       },
     });

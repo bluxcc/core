@@ -1,6 +1,7 @@
 import { IWallet } from '../types';
 import { getState } from '../store';
 import { StellarNetwork, SupportedWallet } from '../enums';
+import { WC_STELLAR_PUBNET, WC_STELLAR_TESTNET } from '../constants/consts';
 
 /*
  * todos:
@@ -16,8 +17,6 @@ import { StellarNetwork, SupportedWallet } from '../enums';
  */
 
 // The WalletConnect CAIP-2 chain IDs for Stellar
-const STELLAR_PUBNET_CAIP = 'stellar:pubnet';
-const STELLAR_TESTNET_CAIP = 'stellar:testnet';
 
 export const walletConnectConfig: IWallet = {
   name: SupportedWallet.WalletConnect,
@@ -39,23 +38,10 @@ export const walletConnectConfig: IWallet = {
     }
 
     try {
-      const session = await walletConnect.client.connect({
-        optionalNamespaces: {
-          stellar: {
-            methods: [
-              'stellar_signXDR',
-              'stellar_signAndSubmitXDR',
-              'stellar_signMessage',
-            ],
-            chains: [STELLAR_PUBNET_CAIP, STELLAR_TESTNET_CAIP],
-            events: [],
-          },
-        },
-      });
-
-      const approval = await session.approval();
+      const approval = await walletConnect.connection.approval();
 
       const stellarNamespace = approval.namespaces.stellar;
+
       if (!stellarNamespace || !stellarNamespace.accounts[0]) {
         throw new Error(
           'Wallet did not approve the required Stellar namespace/account.',
@@ -122,8 +108,8 @@ export const walletConnectConfig: IWallet = {
 
       const chainId =
         options.network === StellarNetwork.PUBLIC
-          ? STELLAR_PUBNET_CAIP
-          : STELLAR_TESTNET_CAIP;
+          ? WC_STELLAR_PUBNET
+          : WC_STELLAR_TESTNET;
 
       const response = await walletConnect.client.request({
         topic: session.topic,
