@@ -8,7 +8,8 @@ export enum SupportedWallet {
   Lobstr = 'LOBSTR',
   Hana = 'Hana',
   WalletConnect = 'WalletConnect',
-  // Hot = 'Hot',
+  Hot = 'Hot',
+  Klever = 'Klever',
 }
 
 export enum StellarNetwork {

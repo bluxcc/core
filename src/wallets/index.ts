@@ -1,9 +1,10 @@
-// import { hotConfig } from "./hot";
+import { hotConfig } from './hot';
 import { IWallet } from '../types';
 import { hanaConfig } from './hana';
 import { rabetConfig } from './rabet';
 import { xBullConfig } from './xbull';
 import { albedoConfig } from './albedo';
+import { kleverConfig } from './klever';
 import { lobstrConfig } from './lobstr';
 import { SupportedWallet } from '../enums';
 import { freighterConfig } from './freighter';
@@ -17,5 +18,6 @@ export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.WalletConnect]: walletConnectConfig,
   [SupportedWallet.Xbull]: xBullConfig,
   [SupportedWallet.Albedo]: albedoConfig,
-  // [SupportedWallet.Hot]: hotConfig,
+  [SupportedWallet.Hot]: hotConfig,
+  [SupportedWallet.Klever]: kleverConfig,
 };

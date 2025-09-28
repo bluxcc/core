@@ -12,6 +12,7 @@ export const walletConnectConfig: IWallet = {
 
   isAvailable: async () => {
     const { config } = getState();
+
     return !!config.walletConnect;
   },
 
@@ -50,9 +51,8 @@ export const walletConnectConfig: IWallet = {
 
       const account = stellarNamespace.accounts[0].split(':').pop();
 
-      return { publicKey: account as string };
+      return account as string;
     } catch (e) {
-      console.error('WalletConnect connection error:', e);
       throw new Error(
         'Failed to connect to Wallet. Ensure your wallet supports Stellar WalletConnect.',
       );
@@ -81,7 +81,6 @@ export const walletConnectConfig: IWallet = {
         },
       });
     } catch (e) {
-      console.error('WalletConnect disconnect error:', e);
       throw new Error(
         'Failed to disconnect from Wallet Connect. Try closing the session in your mobile wallet.',
       );
@@ -94,10 +93,7 @@ export const walletConnectConfig: IWallet = {
     );
   },
 
-  signTransaction: async (
-    xdr: string,
-    options: { networkPassphrase?: string; address?: string } = {},
-  ) => {
+  signTransaction: async (xdr, options) => {
     const { walletConnect } = getState();
 
     if (!walletConnect || !walletConnect.client) {
@@ -112,7 +108,7 @@ export const walletConnectConfig: IWallet = {
       const session = activeSessions[0];
 
       const chainId =
-        options.networkPassphrase === StellarNetwork.PUBLIC
+        options.network === StellarNetwork.PUBLIC
           ? STELLAR_PUBNET_CAIP
           : STELLAR_TESTNET_CAIP;
 
@@ -129,17 +125,13 @@ export const walletConnectConfig: IWallet = {
 
       return response as string;
     } catch (e) {
-      console.error('WalletConnect signTransaction error:', e);
       throw new Error(
-        'Failed to sign and submit the transaction with Wallet Connect. See console for details.',
+        'Failed to sign and submit the transaction with Wallet Connect.',
       );
     }
   },
 
-  signMessage: async (
-    message: string,
-    options: { address: string; networkPassphrase: string },
-  ) => {
+  signMessage: async (message, options) => {
     const { walletConnect } = getState();
 
     if (!walletConnect || !walletConnect.client) {
@@ -169,7 +161,6 @@ export const walletConnectConfig: IWallet = {
 
       return response as string;
     } catch (e) {
-      console.error('WalletConnect signMessage error:', e);
       throw new Error('Failed to sign message with Wallet Connect.');
     }
   },

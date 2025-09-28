@@ -32,26 +32,27 @@ Include Blux and set up the authentication flow:
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Blux Example</title>
-  <script src="https://unpkg.com/@bluxcc/core/dist/index.iife.js"></script>
-</head>
-<body>
-  <button id="loginBtn">Login with Blux</button>
+  <head>
+    <title>Blux Example</title>
+    <script src="https://unpkg.com/@bluxcc/core/dist/index.iife.js"></script>
+  </head>
+  <body>
+    <button id="loginBtn">Login with Blux</button>
 
-  <script>
-    Blux.createConfig({
-      appName: "your-app-name",
-      appId: "get-id-from-dashboard",
-      networks: ["Public Global Stellar Network ; September 2015"],
-    });
+    <script>
+      Blux.createConfig({
+        appName: 'your-app-name',
+        appId: 'get-id-from-dashboard',
+        networks: ['Public Global Stellar Network ; September 2015'],
+      });
 
-    document.getElementById("loginBtn").onclick = async () => {
-      const user = await Blux.Blux.login();
-      console.log("Logged in:", user);
-    };
-  </script>
-</body>
+      document.getElementById('loginBtn').onclick = async () => {
+        const user = await Blux.Blux.login();
+
+        console.log('Logged in:', user);
+      };
+    </script>
+  </body>
 </html>
 ```
 

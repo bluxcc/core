@@ -87,7 +87,7 @@ export interface IStoreMethods {
   setWalletConnectClient: (client: SignClient, connection: any) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -96,6 +96,7 @@ export const store = createStore<IStore>((set) => ({
     appName: '',
     networks: [],
     defaultNetwork: '',
+    excludeWallets: [],
     showWalletUIs: true,
     explorer: 'stellarchain',
     appearance: defaultLightTheme,

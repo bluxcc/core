@@ -3,6 +3,41 @@ declare module "*.css" {
   export default content;
 }
 
+interface KleverApi {
+  getAddress(params?: {
+    path?: string;
+    skipRequestAccess?: boolean;
+  }): Promise<{ address: string }>;
+  signTransaction(
+    xdr: string,
+    opts?: {
+      networkPassphrase?: string;
+      address?: string;
+      path?: string;
+      submit?: boolean;
+      submitUrl?: string;
+    },
+  ): Promise<{ signedTxXdr: string; signerAddress?: string }>;
+  signAuthEntry(
+    authEntry: string,
+    opts?: {
+      networkPassphrase?: string;
+      address?: string;
+      path?: string;
+    },
+  ): Promise<{ signedAuthEntry: string; signerAddress?: string }>;
+  signMessage(
+    message: string,
+    opts?: {
+      networkPassphrase?: string;
+      address?: string;
+      path?: string;
+    },
+  ): Promise<{ signedMessage: string; signerAddress?: string }>;
+  getNetwork(): Promise<{ network: string; networkPassphrase: string }>;
+  disconnect?(): Promise<void>;
+}
+
 interface FreighterApi {
   isConnected: () => Promise<{ isConnected: boolean }>;
   requestAccess: () => Promise<{ address: string }>;
@@ -20,6 +55,9 @@ interface FreighterApi {
 
 declare global {
   interface Window {
+    kleverWallet?: {
+      stellar?: KleverApi;
+    };
     xBullSDK?: {
       connect(params?: {
         canRequestPublicKey: boolean;
@@ -33,6 +71,13 @@ declare global {
           publicKey?: string;
         },
       ): Promise<string>;
+      signMessage(
+        message: string,
+        params?: {
+          address?: string;
+          networkPassphrase?: string;
+        },
+      ): Promise<{ error?: any; signedMessage?: string }>;
       getNetwork(): Promise<{ networkPassphrase: string; network: string }>;
     };
     freighterApiSDK?: FreighterApi;
@@ -57,6 +102,14 @@ declare global {
           networkUrl: string;
           sorobanRpcUrl: string;
         }>;
+        signAuthEntry({
+          xdr,
+          accountToSign,
+        }: SignTransactionProps): Promise<string>;
+        signMessage({
+          xdr,
+          accountToSign,
+        }: SignTransactionProps): Promise<string>;
         signTransaction({
           xdr,
           accountToSign,
@@ -67,4 +120,4 @@ declare global {
   }
 }
 
-export { };
+export {};

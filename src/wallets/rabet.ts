@@ -5,51 +5,23 @@ export const rabetConfig: IWallet = {
   name: SupportedWallet.Rabet,
   website: "https://rabet.io",
 
-  isAvailable: () =>
-    new Promise((resolve) => {
-      setTimeout(
-        () => resolve(typeof window !== "undefined" && !!window.rabet),
-        250,
-      );
-    }),
-
   connect: async () => {
     try {
       if (!window.rabet) throw new Error("Rabet Wallet is not installed.");
 
       const result = await window.rabet.connect();
 
-      return { publicKey: result.publicKey };
-    } catch (error) {
+      return result.publicKey;
+    } catch {
       throw new Error("Failed to connect to Rabet.");
     }
   },
-
-  signTransaction: async (xdr: string, options = {}): Promise<string> => {
-    try {
-      if (!window.rabet) throw new Error("Rabet Wallet is not installed.");
-
-      const result = await window.rabet.sign(
-        xdr,
-        options.networkPassphrase === StellarNetwork.PUBLIC
-          ? "mainnet"
-          : "testnet",
-      );
-
-      return result.xdr;
-    } catch (error) {
-      throw new Error("Failed to sign the transaction with Rabet.");
-    }
-  },
-
   disconnect: async () => {
     try {
       if (!window.rabet) throw new Error("Rabet Wallet is not installed.");
 
       window.rabet.disconnect();
-    } catch (error) {
-      throw new Error("Failed to disconnect from Rabet.");
-    }
+    } catch {}
   },
   getNetwork: async () => {
     try {
@@ -59,7 +31,34 @@ export const rabetConfig: IWallet = {
 
       return network;
     } catch (error) {
-      throw new Error("Error getting network from Rabet:");
+      throw new Error("Failed to getNetwork from Rabet");
+    }
+  },
+  isAvailable: () =>
+    new Promise((resolve) => {
+      setTimeout(
+        () => resolve(typeof window !== "undefined" && !!window.rabet),
+        250,
+      );
+    }),
+  signAuthEntry: async () => {
+    throw new Error("Rabet does not support the signAuthEntry function");
+  },
+  signMessage: async () => {
+    throw new Error("Rabet does not support the signMessage function");
+  },
+  signTransaction: async (xdr, options) => {
+    try {
+      if (!window.rabet) throw new Error("Rabet Wallet is not installed.");
+
+      const result = await window.rabet.sign(
+        xdr,
+        options.network === StellarNetwork.PUBLIC ? "mainnet" : "testnet",
+      );
+
+      return result.xdr;
+    } catch (error) {
+      throw new Error("Failed to sign the transaction with Rabet.");
     }
   },
 };

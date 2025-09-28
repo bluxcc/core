@@ -10,7 +10,7 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
   store.connectWallet(wallet.name);
 
   try {
-    const { publicKey } = await wallet.connect();
+    const publicKey = await wallet.connect();
 
     if (publicKey && publicKey.trim() !== "") {
       const passphrase = await getWalletNetwork(wallet);

@@ -14,10 +14,16 @@ export type IExplorer =
 
 export type ILoginMethods = Array<'wallet' | 'sms' | 'email' | 'passkey'>;
 
-export type SignMessageResult = {
-  signedMessage: string;
-  signerPublicKey?: string;
-};
+export type IWalletNames = Array<
+  | 'rabet'
+  | 'albedo'
+  | 'freighter'
+  | 'xbull'
+  | 'lobstr'
+  | 'hana'
+  | 'hot'
+  | 'klever'
+>;
 
 interface IServers {
   horizon: string;
@@ -42,6 +48,7 @@ export interface IConfig {
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
   transports?: ITransports;
+  excludeWallets?: IWalletNames;
   walletConnect?: IWalletConnectMetaData;
 }
 
@@ -51,6 +58,7 @@ export interface IInternalConfig extends IConfig {
   showWalletUIs: boolean;
   defaultNetwork: string;
   lang: LanguageKey;
+  excludeWallets: IWalletNames;
 }
 
 export interface IAppearance {
@@ -69,37 +77,34 @@ export interface IAppearance {
 export interface IWallet {
   name: SupportedWallet;
   website: string;
-  isAvailable: () => Promise<boolean> | boolean;
-  connect: () => Promise<{ publicKey: string }>;
-  getAddress?: (options?: { path?: string }) => Promise<{ address: string }>;
-  signTransaction?: (
-    xdr: string,
-    options?: {
-      networkPassphrase?: string;
-      address?: string;
-      submit?: boolean;
-    },
-  ) => Promise<string>;
-  disconnect?: () => Promise<void>;
+  connect: () => Promise<string>;
+  disconnect: () => Promise<void>;
   getNetwork: () => Promise<{
     network: string;
     passphrase: string;
   }>;
-  signMessage?: (
+  isAvailable: () => Promise<boolean>;
+  signAuthEntry: (
+    authorizationEntry: string,
+    options: {
+      network: string;
+      address: string;
+    },
+  ) => Promise<string>;
+  signMessage: (
     message: string,
     options: {
       address: string;
-      networkPassphrase: string;
+      network: string;
     },
-  ) => Promise<SignMessageResult>;
-  signAuthEntry?: (
-    authorizationEntry: string,
-    options?: {
-      networkPassphrase?: string;
-      address?: string;
-      path?: string;
+  ) => Promise<string>;
+  signTransaction: (
+    xdr: string,
+    options: {
+      network: string;
+      address: string;
     },
-  ) => Promise<{ signedAuthorizationEntry: string; signerPublicKey?: string }>;
+  ) => Promise<string>;
 }
 
 export interface IAccountData {
@@ -141,7 +146,7 @@ export interface ISignMessage {
   wallet: IWallet;
   message: string;
   options: ISignOptions;
-  result?: SignMessageResult;
+  result?: string;
   rejecter: (reason: any) => void;
-  resolver: (value: SignMessageResult) => void;
+  resolver: (value: string) => void;
 }
