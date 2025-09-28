@@ -3,14 +3,49 @@ import Button from '../../components/Button';
 import QRCode from '../../components/QRCode';
 import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
-import { copyText } from '../../utils/helpers';
+import {
+  copyText,
+  getWalletNetwork,
+  setRecentConnectionMethod,
+} from '../../utils/helpers';
 import { WalletConnectLogo } from '../../assets/Logos';
+import { IStore } from '../../store';
+import { useEffect } from 'react';
+import { Route } from '../../enums';
+import { walletConnectConfig } from '../../wallets/walletConnect';
 
 const WalletConnect = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
 
   const appearance = store.config.appearance;
+
+  useEffect(() => {
+    const connect = async () => {
+      // store.connectWallet('WalletConnect');
+
+      try {
+        const { publicKey } = await walletConnectConfig.connect();
+
+        if (publicKey && publicKey.trim() !== '') {
+          const passphrase = await getWalletNetwork(walletConnectConfig);
+
+          store.connectWalletSuccessful(publicKey, passphrase);
+
+          setRecentConnectionMethod(walletConnectConfig.name);
+
+          setTimeout(() => {
+            store.setRoute(Route.SUCCESSFUL);
+          }, 500);
+        }
+      } catch {
+        store.setRoute(Route.FAILED);
+      }
+    };
+
+    connect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCopyURI = (uri: string) => {
     copyText(uri);

@@ -1,90 +1,182 @@
 import { IWallet } from '../types';
 import { getState } from '../store';
-import { SupportedWallet } from '../enums';
+import { StellarNetwork, SupportedWallet } from '../enums';
 
-/*
- * todos:
- * 1. fix error messages
- * 2. getNetwork implementations
- * 3. signMessage
- * 4. signAuthEntryo
- * 5. signTransaction full test
- * 5. disconnect full test
- */
+// The WalletConnect CAIP-2 chain IDs for Stellar
+const STELLAR_PUBNET_CAIP = 'stellar:pubnet';
+const STELLAR_TESTNET_CAIP = 'stellar:testnet';
+
 export const walletConnectConfig: IWallet = {
   name: SupportedWallet.WalletConnect,
   website: 'https://walletconnect.com',
 
+  isAvailable: async () => {
+    const { config } = getState();
+    return !!config.walletConnect;
+  },
+
   connect: async () => {
     const { walletConnect } = getState();
 
-    if (!walletConnect) {
-      throw new Error('no wc is set up');
+    if (!walletConnect || !walletConnect.client) {
+      throw new Error(
+        'WalletConnect client is not set up. Please check your store configuration.',
+      );
     }
 
     try {
-      const session = await walletConnect.connection.approval();
+      const session = await walletConnect.client.connect({
+        optionalNamespaces: {
+          stellar: {
+            methods: [
+              'stellar_signXDR',
+              'stellar_signAndSubmitXDR',
+              'stellar_signMessage',
+            ],
+            chains: [STELLAR_PUBNET_CAIP, STELLAR_TESTNET_CAIP],
+            events: [],
+          },
+        },
+      });
 
-      return { publicKey: session.self.publicKey };
-    } catch {
-      throw new Error('error connecting to wallet connect');
+      const approval = await session.approval();
+
+      const stellarNamespace = approval.namespaces.stellar;
+      if (!stellarNamespace || !stellarNamespace.accounts[0]) {
+        throw new Error(
+          'Wallet did not approve the required Stellar namespace/account.',
+        );
+      }
+
+      const account = stellarNamespace.accounts[0].split(':').pop();
+
+      return { publicKey: account as string };
+    } catch (e) {
+      console.error('WalletConnect connection error:', e);
+      throw new Error(
+        'Failed to connect to Wallet. Ensure your wallet supports Stellar WalletConnect.',
+      );
     }
   },
+
   disconnect: async () => {
     const { walletConnect } = getState();
 
-    if (!walletConnect) {
-      throw new Error('no wc is set up');
+    if (!walletConnect || !walletConnect.client) {
+      throw new Error('WalletConnect client is not set up.');
     }
 
     try {
-      await walletConnect.client.disconnect({
-        topic: walletConnect.client.session.getAll()[0].topic,
-        reason: {
-          code: 6000,
-          message: 'User disconnected.',
-        },
-      });
-    } catch {
-      throw new Error('Failed to disconnect from Wallet Connect.');
-    }
-  },
-  getNetwork: async () => {
-    throw new Error('no support');
-  },
-  isAvailable: async () => {
-    const { config } = getState();
-
-    return !!config.walletConnect;
-  },
-  signTransaction: async (xdr, options) => {
-    const { walletConnect } = getState();
-
-    if (!walletConnect) {
-      throw new Error('no wc is set up');
-    }
-
-    try {
-      if (!walletConnect.client.session.getAll()) {
-        throw new Error('WalletConnect not connected.');
+      const activeSessions = walletConnect.client.session.getAll();
+      if (activeSessions.length === 0) {
+        return;
       }
 
-      const session = walletConnect.client.session.getAll()[0];
+      // Disconnect the first active session
+      await walletConnect.client.disconnect({
+        topic: activeSessions[0].topic,
+        reason: {
+          code: 6000,
+          message: 'User explicitly disconnected.',
+        },
+      });
+    } catch (e) {
+      console.error('WalletConnect disconnect error:', e);
+      throw new Error(
+        'Failed to disconnect from Wallet Connect. Try closing the session in your mobile wallet.',
+      );
+    }
+  },
 
-      // TODO: use options.network and options.address to sign the transaction.
-      // WC might choose a wrong account/network, so we need to be sure.
+  getNetwork: async () => {
+    throw new Error(
+      'Cannot reliably get the active network from WalletConnect without a specific session request.',
+    );
+  },
+
+  signTransaction: async (
+    xdr: string,
+    options: { networkPassphrase?: string; address?: string } = {},
+  ) => {
+    const { walletConnect } = getState();
+
+    if (!walletConnect || !walletConnect.client) {
+      throw new Error('WalletConnect client is not set up.');
+    }
+
+    try {
+      const activeSessions = walletConnect.client.session.getAll();
+      if (activeSessions.length === 0) {
+        throw new Error('WalletConnect not connected. Please connect first.');
+      }
+      const session = activeSessions[0];
+
+      const chainId =
+        options.networkPassphrase === StellarNetwork.PUBLIC
+          ? STELLAR_PUBNET_CAIP
+          : STELLAR_TESTNET_CAIP;
+
       const response = await walletConnect.client.request({
         topic: session.topic,
-        chainId: 'stellar:public',
+        chainId: chainId,
         request: {
-          method: 'stellar_signTransaction',
-          params: { xdr },
+          method: 'stellar_signAndSubmitXDR',
+          params: {
+            xdr,
+          },
         },
       });
 
       return response as string;
-    } catch {
-      throw new Error('Failed to sign the transaction with Wallet Connect.');
+    } catch (e) {
+      console.error('WalletConnect signTransaction error:', e);
+      throw new Error(
+        'Failed to sign and submit the transaction with Wallet Connect. See console for details.',
+      );
     }
+  },
+
+  signMessage: async (
+    message: string,
+    options: { address: string; networkPassphrase: string },
+  ) => {
+    const { walletConnect } = getState();
+
+    if (!walletConnect || !walletConnect.client) {
+      throw new Error('WalletConnect client is not set up.');
+    }
+
+    try {
+      const activeSessions = walletConnect.client.session.getAll();
+      if (activeSessions.length === 0) {
+        throw new Error('WalletConnect not connected. Please connect first.');
+      }
+      const session = activeSessions[0];
+
+      const chainId =
+        session.namespaces.stellar?.chains[0] || STELLAR_PUBNET_CAIP;
+
+      const response = await walletConnect.client.request({
+        topic: session.topic,
+        chainId: chainId,
+        request: {
+          method: 'stellar_signMessage',
+          params: {
+            message: message,
+          },
+        },
+      });
+
+      return response as string;
+    } catch (e) {
+      console.error('WalletConnect signMessage error:', e);
+      throw new Error('Failed to sign message with Wallet Connect.');
+    }
+  },
+
+  signAuthEntry: async () => {
+    throw new Error(
+      'Stellar Auth Entry signing is not supported via standard WalletConnect methods.',
+    );
   },
 };
