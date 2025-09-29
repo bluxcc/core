@@ -4,56 +4,56 @@ import freighterApi, {
   signAuthEntry,
   requestAccess,
   signTransaction,
-} from "@stellar/freighter-api";
+} from '@stellar/freighter-api';
 
-import { IWallet } from "../types";
-import { SupportedWallet } from "../enums";
+import { IWallet } from '../types';
+import { SupportedWallet } from '../enums';
 
 export const freighterConfig: IWallet = {
   name: SupportedWallet.Freighter,
-  website: "https://freighter.app",
+  website: 'https://freighter.app',
 
   connect: async () => {
     try {
       if (!(await isConnected())) {
-        throw new Error("Freighter Wallet is not installed or connected.");
+        throw new Error('Freighter Wallet is not installed or connected.');
       }
 
       const result = await requestAccess();
 
       if (
         result.error &&
-        result.error.message === "The user rejected this request."
+        result.error.message === 'The user rejected this request.'
       ) {
-        throw new Error("Failed to connect to Freighter");
+        throw new Error('Failed to connect to Freighter');
       }
 
-      if (result.address.trim() === "") {
-        throw new Error("Failed to connect to Freighter.");
+      if (result.address.trim() === '') {
+        throw new Error('Failed to connect to Freighter.');
       }
 
       return result.address;
     } catch (error: any) {
-      if (error.message === "Failed to connect to Freighter.") {
+      if (error.message === 'Failed to connect to Freighter.') {
         const res = await freighterConfig.connect();
 
         return res;
       }
 
-      throw new Error("Failed to connect to Freighter.");
+      throw new Error('Failed to connect to Freighter.');
     }
   },
   disconnect: async () => {},
   getNetwork: async () => {
     try {
       if (!(await isConnected())) {
-        throw new Error("Freighter Wallet is not installed or connected.");
+        throw new Error('Freighter Wallet is not installed or connected.');
       }
 
       const network = await freighterApi.getNetwork();
 
       if (network.error) {
-        throw new Error("Failed to get network from Freighter");
+        throw new Error('Failed to get network from Freighter');
       }
 
       return {
@@ -61,7 +61,7 @@ export const freighterConfig: IWallet = {
         passphrase: network.networkPassphrase,
       };
     } catch {
-      throw new Error("Failed to disconnect from Rabet.");
+      throw new Error('Failed to disconnect from Rabet.');
     }
   },
   isAvailable: () =>
@@ -101,7 +101,7 @@ export const freighterConfig: IWallet = {
   signAuthEntry: async (authEntry, options) => {
     try {
       if (!(await isConnected())) {
-        throw new Error("Freighter Wallet is not installed or connected.");
+        throw new Error('Freighter Wallet is not installed or connected.');
       }
 
       const { error, signedAuthEntry } = await signAuthEntry(authEntry, {
@@ -110,12 +110,12 @@ export const freighterConfig: IWallet = {
       });
 
       if (error || !signedAuthEntry) {
-        throw new Error("Could not signedAuthEntry using Freighter");
+        throw new Error('Could not signedAuthEntry using Freighter');
       }
 
-      return Buffer.from(signedAuthEntry).toString("base64");
+      return Buffer.from(signedAuthEntry).toString('base64');
     } catch (error) {
-      throw new Error("Failed to sign the transaction with Freighter.");
+      throw new Error('Failed to sign the transaction with Freighter.');
     }
   },
   signMessage: async (message, options) => {
@@ -126,20 +126,20 @@ export const freighterConfig: IWallet = {
       });
 
       if (error || !signedMessage) {
-        throw new Error("Failed to sign message using Freighter");
+        throw new Error('Failed to sign message using Freighter');
       }
 
-      return typeof signedMessage === "string"
+      return typeof signedMessage === 'string'
         ? signedMessage
-        : Buffer.from(signedMessage).toString("base64");
+        : Buffer.from(signedMessage).toString('base64');
     } catch {
-      throw new Error("Failed to sign message using Freighter");
+      throw new Error('Failed to sign message using Freighter');
     }
   },
   signTransaction: async (xdr, options) => {
     try {
       if (!(await isConnected())) {
-        throw new Error("Freighter Wallet is not installed or connected.");
+        throw new Error('Freighter Wallet is not installed or connected.');
       }
 
       const result = await signTransaction(xdr, {
@@ -149,7 +149,7 @@ export const freighterConfig: IWallet = {
 
       return result.signedTxXdr;
     } catch (error) {
-      throw new Error("Failed to sign the transaction with Freighter.");
+      throw new Error('Failed to sign the transaction with Freighter.');
     }
   },
 };

@@ -1,13 +1,13 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent } from 'react';
 
-import { useAppStore } from "../../store";
-import { useLang } from "../../hooks/useLang";
-import { ArrowRight } from "../../assets/Icons";
-import { hexToRgba } from "../../utils/helpers";
+import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
+import { ArrowRight } from '../../assets/Icons';
+import { hexToRgba } from '../../utils/helpers';
 
 type CardItemProps = {
-  variant?: "social" | "default" | "input";
-  size?: "small" | "medium";
+  variant?: 'social' | 'default' | 'input';
+  size?: 'small' | 'medium';
   startIcon: React.ReactNode;
   endArrow?: boolean;
   isRecent?: boolean;
@@ -16,12 +16,12 @@ type CardItemProps = {
   onChange?: (value: string) => void;
   onEnter?: (value: string) => void;
   onSubmit?: (value: string) => void;
-  inputType?: "text" | "password" | "number" | "email" | string;
+  inputType?: 'text' | 'password' | 'number' | 'email' | string;
 };
 
 const CardItem = ({
-  variant = "default",
-  size = "medium",
+  variant = 'default',
+  size = 'medium',
   startIcon,
   endArrow,
   isRecent = false,
@@ -30,21 +30,21 @@ const CardItem = ({
   onChange,
   onEnter,
   onSubmit,
-  inputType = "text",
+  inputType = 'text',
 }: CardItemProps) => {
   const store = useAppStore((store) => store);
   const { appearance } = store.config;
   const t = useLang();
 
-  const [inputValue, setInputValue] = useState(label || "");
+  const [inputValue, setInputValue] = useState(label || '');
   const [isValid, setIsValid] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
   const validateInput = (value: string) => {
-    if (inputType === "email") {
+    if (inputType === 'email') {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
-    return value.trim() !== "";
+    return value.trim() !== '';
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,32 +55,32 @@ const CardItem = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && isValid) {
+    if (e.key === 'Enter' && isValid) {
       onEnter?.(inputValue);
     }
   };
 
   const onMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
-    if (variant !== "social" && !isFocused) {
+    if (variant !== 'social' && !isFocused) {
       e.currentTarget.style.borderColor = appearance.accentColor;
-      e.currentTarget.style.transition = "border-color 0.35s ease-in-out";
+      e.currentTarget.style.transition = 'border-color 0.35s ease-in-out';
     }
   };
   const onMouseLeave = (e: MouseEvent<HTMLDivElement>) => {
-    if (variant !== "social" && !isFocused) {
+    if (variant !== 'social' && !isFocused) {
       e.currentTarget.style.borderColor = appearance.borderColor;
     }
   };
 
   return (
     <div
-      onClick={variant === "input" ? undefined : onClick}
+      onClick={variant === 'input' ? undefined : onClick}
       className={`bluxcc:flex ${
-        variant === "input" ? "bluxcc:cursor-text" : "bluxcc:cursor-pointer"
+        variant === 'input' ? 'bluxcc:cursor-text' : 'bluxcc:cursor-pointer'
       } ${
-        size === "small"
-          ? "bluxcc:size-[96px] bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4"
-          : "bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px]"
+        size === 'small'
+          ? 'bluxcc:size-[96px] bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4'
+          : 'bluxcc:!h-14 bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3.5 bluxcc:pl-[10px]'
       }`}
       style={{
         borderRadius: appearance.borderRadius,
@@ -108,10 +108,10 @@ const CardItem = ({
 
       <div
         className={`${
-          size === "small" ? "bluxcc:mt-0" : "bluxcc:ml-4"
+          size === 'small' ? 'bluxcc:mt-0' : 'bluxcc:ml-4'
         } bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
       >
-        {variant === "input" ? (
+        {variant === 'input' ? (
           <>
             <input
               id="bluxcc-input"
@@ -119,9 +119,9 @@ const CardItem = ({
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder={t("email")}
-              className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:focus:outline-hidden"
-              style={{ color: appearance.textColor }}
+              placeholder={t('email')}
+              className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:!text-base"
+              style={{ color: appearance.textColor, font: appearance.font }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
                 setIsFocused(false);
@@ -141,20 +141,20 @@ const CardItem = ({
                   borderColor: isValid
                     ? appearance.accentColor
                     : appearance.borderColor,
-                  color: isValid ? appearance.accentColor : "#999999",
+                  color: isValid ? appearance.accentColor : '#999999',
                   borderWidth: appearance.borderWidth,
                 }}
               >
-                {t("submit")}
+                {t('submit')}
               </button>
             </div>
           </>
         ) : (
           <span
             className={`${
-              size === "small"
-                ? "bluxcc:text-sm bluxcc:leading-[16px]"
-                : "bluxcc:text-base"
+              size === 'small'
+                ? 'bluxcc:text-sm bluxcc:leading-[16px]'
+                : 'bluxcc:text-base'
             } bluxcc:font-medium bluxcc:select-none`}
           >
             {label}
@@ -170,11 +170,11 @@ const CardItem = ({
             backgroundColor: `${hexToRgba(appearance.accentColor, 0.1)}`,
           }}
         >
-          {t("recent")}
+          {t('recent')}
         </div>
       )}
 
-      {endArrow && size === "medium" && (
+      {endArrow && size === 'medium' && (
         <span className="bluxcc:ml-auto bluxcc:flex bluxcc:items-center">
           <ArrowRight fill={`${hexToRgba(appearance.textColor, 0.7)}`} />
         </span>

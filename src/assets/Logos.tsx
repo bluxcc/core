@@ -288,3 +288,62 @@ export const WalletConnectLogo = ({
     />
   </svg>
 );
+
+export const KleverLogo = () => (
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 40 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M33.1136 33.4481H19.4885L33.1136 19.793V33.4481Z"
+      fill="url(#paint0_linear_422_7528)"
+    />
+    <path
+      opacity="0.14"
+      d="M33.1135 33.4473L26.301 26.5507L27.5273 25.4473L33.1135 33.4473Z"
+      fill="url(#paint1_linear_422_7528)"
+    />
+    <path
+      d="M33.1138 33.4483H6V6L33.1138 33.4483Z"
+      fill="url(#paint2_linear_422_7528)"
+    />
+    <defs>
+      <linearGradient
+        id="paint0_linear_422_7528"
+        x1="26.301"
+        y1="19.7297"
+        x2="26.301"
+        y2="33.4756"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="2.71717e-07" stop-color="#FF4681" />
+        <stop offset="1" stop-color="#9B44F6" />
+      </linearGradient>
+      <linearGradient
+        id="paint1_linear_422_7528"
+        x1="29.5872"
+        y1="26.3475"
+        x2="27.6346"
+        y2="31.4405"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="9.43019e-07" />
+        <stop offset="1" />
+      </linearGradient>
+      <linearGradient
+        id="paint2_linear_422_7528"
+        x1="-0.459354"
+        y1="13.1851"
+        x2="27.0303"
+        y2="40.3398"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="9.43019e-07" stop-color="#FF4681" />
+        <stop offset="0.7392" stop-color="#9B44F6" />
+      </linearGradient>
+    </defs>
+  </svg>
+);

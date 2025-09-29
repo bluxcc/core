@@ -7,6 +7,7 @@ import {
   AlbedoLogo,
   FreighterLogo,
   WalletConnectLogo,
+  KleverLogo,
 } from '../assets/Logos';
 
 const handleLogos = (walletName: string, isDark: boolean) => {
@@ -27,6 +28,8 @@ const handleLogos = (walletName: string, isDark: boolean) => {
       return <HotLogo />;
     case 'Wallet Connect':
       return <WalletConnectLogo fill={isDark ? '#ffffff' : '#0988f1'} />;
+    case 'Klever':
+      return <KleverLogo />;
     default:
       return null;
   }

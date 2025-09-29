@@ -95,7 +95,7 @@ const Onboarding = () => {
             width={152}
             height={60}
             className="bluxcc:max-h-[80px] bluxcc:max-w-[180px] bluxcc:select-none"
-            loading="eager"
+            loading="lazy"
             decoding="async"
             draggable="false"
             style={{ contentVisibility: 'auto' }}
@@ -118,34 +118,36 @@ const Onboarding = () => {
           if (method === 'wallet') {
             return (
               <React.Fragment key="wallet">
-                {visibleWallets.map((checkedWallet) => (
-                  <CardItem
-                    key={checkedWallet.name}
-                    {...checkedWallet}
-                    label={checkedWallet.name}
-                    startIcon={handleLogos(
-                      checkedWallet.name,
-                      isBackgroundDark(appearance.background),
-                    )}
-                    onClick={() => handleConnect(checkedWallet)}
-                  />
-                ))}
-                {hiddenWallets.length > 0 && !store.showAllWallets && (
-                  <CardItem
-                    endArrow
-                    label={t('allStellarWallets')}
-                    startIcon={
-                      <StellarLogo
-                        fill={getContrastColor(appearance.fieldBackground)}
-                      />
-                    }
-                    onClick={() => {
-                      setShowAllWallets(true);
-                    }}
-                  />
-                )}
+                <div className="bluxcc:max-h-[324px] bluxcc:space-y-2 bluxcc:overflow-y-auto overflowStyle">
+                  {visibleWallets.map((checkedWallet) => (
+                    <CardItem
+                      key={checkedWallet.name}
+                      {...checkedWallet}
+                      label={checkedWallet.name}
+                      startIcon={handleLogos(
+                        checkedWallet.name,
+                        isBackgroundDark(appearance.background),
+                      )}
+                      onClick={() => handleConnect(checkedWallet)}
+                    />
+                  ))}
 
-                {shouldRenderDivider && renderDivider()}
+                  {hiddenWallets.length > 0 && !store.showAllWallets && (
+                    <CardItem
+                      endArrow
+                      label={t('allStellarWallets')}
+                      startIcon={
+                        <StellarLogo
+                          fill={getContrastColor(appearance.fieldBackground)}
+                        />
+                      }
+                      onClick={() => {
+                        setShowAllWallets(true);
+                      }}
+                    />
+                  )}
+                  {shouldRenderDivider && renderDivider()}
+                </div>
               </React.Fragment>
             );
           }
