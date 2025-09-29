@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import { IWallet } from '../../types';
 import { useAppStore } from '../../store';
@@ -10,6 +10,7 @@ import { SmallEmailIcon } from '../../assets/Icons';
 import { Route, SupportedWallet } from '../../enums';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
+import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
 
 const Onboarding = () => {
   const t = useLang();
@@ -38,6 +39,16 @@ const Onboarding = () => {
         ? wallets.slice(2, wallets.length)
         : wallets.slice(0, 2);
   }, [wallets, store.showAllWallets]);
+
+  useEffect(() => {
+    if (store.walletConnect) {
+      generateWalletConnectSession(store.walletConnect.client)
+        .then((connection) => {
+          store.setWalletConnectClient(store.walletConnect!.client, connection);
+        })
+        .catch(() => {});
+    }
+  }, []);
 
   const handleConnect = async (wallet: IWallet) => {
     if (wallet.name === SupportedWallet.WalletConnect) {

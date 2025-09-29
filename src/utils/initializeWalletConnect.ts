@@ -7,7 +7,7 @@ import { WC_STELLAR_PUBNET, WC_STELLAR_TESTNET } from '../constants/consts';
 
 let isInitialized = false;
 
-const initializeWalletConnect = async (
+export const initializeWalletConnect = async (
   wc: IWalletConnectMetaData,
   appName: string,
 ) => {
@@ -21,7 +21,7 @@ const initializeWalletConnect = async (
     const state = getState();
 
     const core = new Core({
-      projectId: 'ebdf266b394a51841e471539ccbdefaa',
+      projectId: wc.projectId,
     });
 
     const client = await SignClient.init({
@@ -34,22 +34,26 @@ const initializeWalletConnect = async (
       },
     });
 
-    const connection = await client.connect({
-      requiredNamespaces: {
-        stellar: {
-          methods: [
-            'stellar_signXDR',
-            'stellar_signAndSubmitXDR',
-            'stellar_signMessage',
-          ],
-          chains: [WC_STELLAR_PUBNET, WC_STELLAR_TESTNET],
-          events: [],
-        },
-      },
-    });
+    const connection = await generateWalletConnectSession(client);
 
     state.setWalletConnectClient(client, connection);
-  } catch { }
+  } catch {}
 };
 
-export default initializeWalletConnect;
+export const generateWalletConnectSession = async (client: SignClient) => {
+  const connection = await client.connect({
+    requiredNamespaces: {
+      stellar: {
+        methods: [
+          'stellar_signXDR',
+          'stellar_signAndSubmitXDR',
+          'stellar_signMessage',
+        ],
+        chains: [WC_STELLAR_PUBNET, WC_STELLAR_TESTNET],
+        events: [],
+      },
+    },
+  });
+
+  return connection;
+};

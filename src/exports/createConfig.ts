@@ -6,7 +6,7 @@ import { getState } from '../store';
 import { Provider } from '../components/Provider';
 import { IConfig, IInternalConfig } from '../types';
 import { defaultLightTheme } from '../constants/themes';
-
+import { initializeWalletConnect } from '../utils/initializeWalletConnect';
 import {
   getNetworkRpc,
   handleLoadWallets,
@@ -14,7 +14,6 @@ import {
 } from '../utils/helpers';
 
 import '../tailwind.css';
-import initializeWalletConnect from '../utils/initializeWalletConnect';
 
 let root: any = null;
 let isInitiated = false;

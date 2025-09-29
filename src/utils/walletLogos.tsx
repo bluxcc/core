@@ -25,7 +25,7 @@ const handleLogos = (walletName: string, isDark: boolean) => {
       return <HanaLogo fill={isDark ? '#E6E0F7' : '#221542'} />;
     case 'Hot':
       return <HotLogo />;
-    case 'WalletConnect':
+    case 'Wallet Connect':
       return <WalletConnectLogo fill={isDark ? '#ffffff' : '#0988f1'} />;
     default:
       return null;
