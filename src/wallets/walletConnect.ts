@@ -115,7 +115,7 @@ export const walletConnectConfig: IWallet = {
         topic: session.topic,
         chainId: chainId,
         request: {
-          method: 'stellar_signAndSubmitXDR',
+          method: 'stellar_signXDR',
           params: {
             xdr,
           },

@@ -1,18 +1,15 @@
 import { useEffect } from 'react';
 
-import { Route } from '../../enums';
 import { useAppStore } from '../../store';
 import Button from '../../components/Button';
 import QRCode from '../../components/QRCode';
 import { useLang } from '../../hooks/useLang';
+import { SupportedWallet } from '../../enums';
+import { walletsConfig } from '../../wallets';
+import { copyText } from '../../utils/helpers';
 import Divider from '../../components/Divider';
 import { WalletConnectLogo } from '../../assets/Logos';
-import { walletConnectConfig } from '../../wallets/walletConnect';
-import {
-  copyText,
-  getWalletNetwork,
-  setRecentConnectionMethod,
-} from '../../utils/helpers';
+import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 
 const WalletConnect = () => {
   const t = useLang();
@@ -22,29 +19,10 @@ const WalletConnect = () => {
 
   useEffect(() => {
     const connect = async () => {
-      // store.connectWallet('WalletConnect');
-
-      try {
-        const publicKey = await walletConnectConfig.connect();
-
-        if (publicKey && publicKey.trim() !== '') {
-          const passphrase = await getWalletNetwork(walletConnectConfig);
-
-          store.connectWalletSuccessful(publicKey, passphrase);
-
-          setRecentConnectionMethod(walletConnectConfig.name);
-
-          setTimeout(() => {
-            store.setRoute(Route.SUCCESSFUL);
-          }, 500);
-        }
-      } catch {
-        store.setRoute(Route.FAILED);
-      }
+      connectWalletProcess(store, walletsConfig[SupportedWallet.WalletConnect]);
     };
 
     connect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCopyURI = (uri: string) => {

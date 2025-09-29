@@ -42,7 +42,7 @@ export const initializeWalletConnect = async (
 
 export const generateWalletConnectSession = async (client: SignClient) => {
   const connection = await client.connect({
-    requiredNamespaces: {
+    optionalNamespaces: {
       stellar: {
         methods: [
           'stellar_signXDR',

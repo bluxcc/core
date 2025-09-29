@@ -3,7 +3,7 @@ import { createStore } from 'zustand/vanilla';
 import { Horizon, rpc } from '@stellar/stellar-sdk';
 import { SignClient } from '@walletconnect/sign-client/dist/types/client';
 
-import { Route } from './enums';
+import { Route, SupportedWallet } from './enums';
 import { defaultLightTheme } from './constants/themes';
 import { UseBalancesResult } from './hooks/useBalances';
 import { UseTransactionsResult } from './hooks/useTransactions';
@@ -221,7 +221,10 @@ export const store = createStore<IStore>((set) => ({
       modal: {
         ...state.modal,
         isOpen: true,
-        route: Route.WAITING,
+        route:
+          walletName === SupportedWallet.WalletConnect
+            ? Route.WALLET_CONNECT
+            : Route.WAITING,
       },
     })),
   connectWalletSuccessful: (publicKey: string, passphrase: string) =>

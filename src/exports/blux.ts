@@ -1,20 +1,20 @@
-import { Route } from "../enums";
-import { getState } from "../store";
-import { ISendTransaction, ISignMessage } from "../types";
-import handleSignMessage from "../stellar/handleSignMessage";
-import getTransactionDetails from "../stellar/getTransactionDetails";
-import handleTransactionSigning from "../stellar/handleTransactionSigning";
+import { Route } from '../enums';
+import { getState } from '../store';
+import { ISendTransaction, ISignMessage } from '../types';
+import handleSignMessage from '../stellar/handleSignMessage';
+import getTransactionDetails from '../stellar/getTransactionDetails';
+import handleTransactionSigning from '../stellar/handleTransactionSigning';
 
 export const login = async () => {
   const { authState, openModal } = getState();
   const { isReady, isAuthenticated } = authState;
 
   if (!isReady) {
-    throw new Error("Cannot connect when isReady is false.");
+    throw new Error('Cannot connect when isReady is false.');
   }
 
   if (isAuthenticated) {
-    throw new Error("Already connected.");
+    throw new Error('Already connected.');
   }
 
   openModal(Route.ONBOARDING);
@@ -32,7 +32,7 @@ const profile = () => {
   const { isAuthenticated } = authState;
 
   if (!isAuthenticated) {
-    throw new Error("User is not authenticated.");
+    throw new Error('User is not authenticated.');
   }
 
   openModal(Route.PROFILE);
@@ -44,7 +44,7 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       getState();
 
     if (!authState.isAuthenticated || !stellar || !user) {
-      reject(new Error("User is not authenticated."));
+      reject(new Error('User is not authenticated.'));
 
       return;
     }
@@ -56,7 +56,7 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
     }
 
     if (!getTransactionDetails(xdr, network)) {
-      reject("Invalid XDR");
+      reject('Invalid XDR');
 
       return;
     }
@@ -64,7 +64,7 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
     const foundWallet = wallets.find((w) => w.name === user.authValue);
 
     if (!foundWallet) {
-      throw new Error("Could not find the connected wallet.");
+      throw new Error('Could not find the connected wallet.');
     }
 
     const transactionObject: ISendTransaction = {
@@ -103,7 +103,7 @@ export const signMessage = (message: string, options?: { network: string }) =>
       getState();
 
     if (!authState.isAuthenticated || !stellar || !user) {
-      reject(new Error("User is not authenticated."));
+      reject(new Error('User is not authenticated.'));
 
       return;
     }
@@ -117,7 +117,7 @@ export const signMessage = (message: string, options?: { network: string }) =>
     const foundWallet = wallets.find((w) => w.name === user.authValue);
 
     if (!foundWallet) {
-      throw new Error("Could not find the connected wallet.");
+      throw new Error('Could not find the connected wallet.');
     }
 
     const signMessageDetails: ISignMessage = {

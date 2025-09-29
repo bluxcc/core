@@ -1,10 +1,10 @@
-import { Route } from "../../enums";
-import { IStore } from "../../store";
-import { IWallet } from "../../types";
+import { Route } from '../../enums';
+import { IStore } from '../../store';
+import { IWallet } from '../../types';
 import {
   getWalletNetwork,
   setRecentConnectionMethod,
-} from "../../utils/helpers";
+} from '../../utils/helpers';
 
 const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
   store.connectWallet(wallet.name);
@@ -12,7 +12,7 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
   try {
     const publicKey = await wallet.connect();
 
-    if (publicKey && publicKey.trim() !== "") {
+    if (publicKey && publicKey.trim() !== '') {
       const passphrase = await getWalletNetwork(wallet);
 
       store.connectWalletSuccessful(publicKey, passphrase);
