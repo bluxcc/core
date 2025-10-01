@@ -1,18 +1,19 @@
-import React, { useState } from "react";
-import { StrKey } from "@stellar/stellar-sdk";
-import { HorizonServer } from "@stellar/stellar-sdk/lib/horizon/server";
+import React, { useState } from 'react';
+import { StrKey } from '@stellar/stellar-sdk';
+import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
 
-import { IAsset } from "../../../types";
-import SelectAssets from "../SelectAsset";
-import { useAppStore } from "../../../store";
-import Button from "../../../components/Button";
-import { useLang } from "../../../hooks/useLang";
-import InputField from "../../../components/Input";
-import { ArrowDropUp } from "../../../assets/Icons";
-import { sendTransaction } from "../../../exports/blux";
-import { StellarSmallLogo } from "../../../assets/Logos";
-import paymentTransaction from "../../../stellar/paymentTransaction";
-import { addXLMToBalances, getContrastColor } from "../../../utils/helpers";
+import { IAsset } from '../../../types';
+import SelectAssets from '../SelectAsset';
+import { useAppStore } from '../../../store';
+import Button from '../../../components/Button';
+import { useLang } from '../../../hooks/useLang';
+import InputField from '../../../components/Input';
+import { ArrowDropUp } from '../../../assets/Icons';
+import { sendTransaction } from '../../../exports/blux';
+import { StellarSmallLogo } from '../../../assets/Logos';
+import paymentTransaction from '../../../stellar/paymentTransaction';
+import { addXLMToBalances, getContrastColor } from '../../../utils/helpers';
+import Divider from '../../../components/Divider';
 
 type SendFormValues = {
   memo: string;
@@ -26,22 +27,22 @@ const SendForm = () => {
   const [errors, setErrors] = useState<Partial<SendFormValues>>({});
   const [showSelectAssetPage, setShowSelectAssetPage] = useState(false);
   const [form, setForm] = useState<SendFormValues>({
-    memo: "",
-    amount: "",
-    address: "",
+    memo: '',
+    amount: '',
+    address: '',
   });
 
   const { appearance } = store.config;
   const { balances } = store.balances;
 
   const defaultAssets: IAsset[] = balances
-    .filter((x) => x.asset_type !== "liquidity_pool_shares")
-    .filter((x) => x.balance !== "0.0000000")
+    .filter((x) => x.asset_type !== 'liquidity_pool_shares')
+    .filter((x) => x.balance !== '0.0000000')
     .map((asset) => {
-      if (asset.asset_type === "native") {
+      if (asset.asset_type === 'native') {
         return {
-          assetIssuer: "",
-          assetCode: "XLM",
+          assetIssuer: '',
+          assetCode: 'XLM',
           assetBalance: asset.balance,
           assetType: asset.asset_type,
         };
@@ -62,7 +63,7 @@ const SendForm = () => {
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     };
 
   const handleOpenAssets = () => {
@@ -89,17 +90,17 @@ const SendForm = () => {
     const errorMessages: typeof errors = {};
 
     if (!form.amount) {
-      errorMessages.amount = t("amountRequired");
+      errorMessages.amount = t('amountRequired');
     } else if (
-      Number(form.amount) > Number(selectedAsset.assetBalance || "0")
+      Number(form.amount) > Number(selectedAsset.assetBalance || '0')
     ) {
-      errorMessages.amount = t("amountExceedsBalance");
+      errorMessages.amount = t('amountExceedsBalance');
     }
 
     if (!form.address) {
-      errorMessages.address = t("addressRequired");
+      errorMessages.address = t('addressRequired');
     } else if (!StrKey.isValidEd25519PublicKey(form.address)) {
-      errorMessages.address = t("addressInvalid");
+      errorMessages.address = t('addressInvalid');
     }
 
     setErrors(errorMessages);
@@ -113,13 +114,13 @@ const SendForm = () => {
           selectedAsset,
           store.user?.address as string,
           store.stellar?.servers.horizon as HorizonServer,
-          store.stellar?.activeNetwork || "",
+          store.stellar?.activeNetwork || '',
         );
 
         store.closeModal();
 
         setTimeout(() => {
-          sendTransaction(xdr, { network: store.stellar?.activeNetwork || "" });
+          sendTransaction(xdr, { network: store.stellar?.activeNetwork || '' });
         }, 250);
       } catch (e: any) {
         errorMessages.address = e.message;
@@ -146,10 +147,10 @@ const SendForm = () => {
           <InputField
             autoFocus
             type="number"
-            label={t("amount")}
+            label={t('amount')}
             placeholder="0.00"
             value={form.amount}
-            onChange={handleChange("amount")}
+            onChange={handleChange('amount')}
             error={errors.amount}
             customLabel={
               <span
@@ -157,7 +158,7 @@ const SendForm = () => {
                 style={{ color: appearance.accentColor }}
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:cursor-pointer"
               >
-                {t("max")} <ArrowDropUp fill={appearance.accentColor} />
+                {t('max')} <ArrowDropUp fill={appearance.accentColor} />
               </span>
             }
             onButtonClick={handleOpenAssets}
@@ -168,7 +169,7 @@ const SendForm = () => {
                     fill={getContrastColor(appearance.background)}
                   />
                 </span>
-                {selectedAsset ? selectedAsset.assetCode : "XLM"}
+                {selectedAsset ? selectedAsset.assetCode : 'XLM'}
               </span>
             }
           />
@@ -176,37 +177,26 @@ const SendForm = () => {
 
         <div className="bluxcc:mb-4">
           <InputField
-            label={t("to")}
-            placeholder={t("enterAddress")}
+            label={t('to')}
+            placeholder={t('enterAddress')}
             value={form.address}
-            onChange={handleChange("address")}
+            onChange={handleChange('address')}
             error={errors.address}
-            button={t("paste")}
+            button={t('paste')}
             onButtonClick={handlePasteClick}
           />
         </div>
 
         <div>
           <InputField
-            label={t("memo")}
-            placeholder={t("enterMemo")}
+            label={t('memo')}
+            placeholder={t('enterMemo')}
             value={form.memo}
-            onChange={handleChange("memo")}
+            onChange={handleChange('memo')}
           />
         </div>
 
-        {/* divider */}
-        <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
-          <div
-            className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-            style={{
-              // borderTopWidth: appearance.includeBorders
-              //   ? appearance.borderWidth
-              //   : "1px",
-              borderTopColor: appearance.borderColor,
-            }}
-          />
-        </div>
+        <Divider />
 
         <Button
           size="large"
@@ -214,7 +204,7 @@ const SendForm = () => {
           state="enabled"
           onClick={handleSubmit}
         >
-          {t("sendButton")}
+          {t('sendButton')}
         </Button>
       </div>
     </>

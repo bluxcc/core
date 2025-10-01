@@ -178,13 +178,9 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({
       ...state,
       modal: {
+        ...state.modal,
         route,
         isOpen: true,
-        dynamicTitle: '',
-        alert: {
-          type: 'none',
-          message: '',
-        },
       },
     })),
   setDynamicTitle: (dynamicTitle: string) =>
@@ -192,7 +188,7 @@ export const store = createStore<IStore>((set) => ({
       ...state,
       modal: {
         ...state.modal,
-        dynamicTitle: dynamicTitle,
+        dynamicTitle,
       },
     })),
   setAlert: (alert: AlertType, message: string) =>
@@ -202,7 +198,7 @@ export const store = createStore<IStore>((set) => ({
         ...state.modal,
         alert: {
           type: alert,
-          message: message,
+          message,
         },
       },
     })),

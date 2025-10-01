@@ -3,7 +3,7 @@ import React, { useState, MouseEvent } from 'react';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
 import { ArrowRight } from '../../assets/Icons';
-import { hexToRgba } from '../../utils/helpers';
+import { hexToRgba, isBackgroundDark } from '../../utils/helpers';
 
 type CardItemProps = {
   variant?: 'social' | 'default' | 'input';
@@ -120,8 +120,14 @@ const CardItem = ({
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={t('email')}
-              className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:!text-base"
-              style={{ color: appearance.textColor, font: appearance.font }}
+              className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden
+              bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:!text-base"
+              style={{
+                color: appearance.textColor,
+                font: appearance.font,
+                ['--input-text-color' as any]:
+                  appearance.textColor as React.CSSProperties,
+              }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
                 setIsFocused(false);

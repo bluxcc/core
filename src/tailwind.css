@@ -98,9 +98,9 @@
 #bluxcc-input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
   box-shadow: 0 0 0 1000px transparent inset !important;
-  -webkit-text-fill-color: inherit !important;
-  color: inherit !important;
   transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-text-fill-color: var(--input-text-color) !important;
+  color: var(--input-text-color) !important;
 }
 
 @theme {
@@ -138,9 +138,6 @@
   --color-alert-error: #ec2929;
   --color-alert-success: #00bd81;
   --color-alert-warning: #fa8f02;
-
-  --animate-fade-in: fadeIn 1s ease-in-out;
-  --animate-fade-out: fadeOut 1s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -162,11 +159,11 @@
 }
 
 .bluxcc\:animate-fadeIn {
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 500ms ease-in-out;
 }
 
 .bluxcc\:animate-fadeOut {
-  animation: fadeOut 0.5s ease-in-out;
+  animation: fadeOut 300ms ease-in-out;
 }
 
 @keyframes marquee {

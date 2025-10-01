@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 
-import { useIsMobile } from "../../hooks/useIsMobile";
-import { useDynamicHeight } from "../../hooks/useDynamicHeight";
-import { useModalAnimation } from "../../hooks/useModalAnimation";
-import { IAppearance } from "../../types";
-import ModalBackdrop from "./Backdrop";
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { useDynamicHeight } from '../../hooks/useDynamicHeight';
+import { useModalAnimation } from '../../hooks/useModalAnimation';
+import { IAppearance } from '../../types';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 interface ModalProps {
   isOpen: boolean;
@@ -22,69 +22,96 @@ const Modal = ({
   appearance,
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
-
+  const [isAnimating, setIsAnimating] = useState(false);
   const isMobile = useIsMobile();
-  const { isOpening, isClosing, handleClose } = useModalAnimation(isOpen);
-  const { height, ready: heightReady } = useDynamicHeight(contentRef, [
+  const { isOpening, isClosing, handleClose } = useModalAnimation(isOpen, 300);
+  const { height, isHeightReady, reset } = useDynamicHeight(contentRef, [
     isOpen,
     children,
   ]);
+
+  useEffect(() => {
+    if (isOpen && isMobile) {
+      setIsAnimating(false);
+
+      const id = requestAnimationFrame(() => {
+        setIsAnimating(true);
+      });
+
+      return () => cancelAnimationFrame(id);
+    }
+  }, [isOpen, isMobile]);
+
+  useLockBodyScroll(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) reset();
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <>
-      <ModalBackdrop
-        isClosing={isClosing}
-        isSticky={isSticky}
-        onClose={() => handleClose(onClose)}
+      {/* backdrop */}
+      <div
+        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 bluxcc:bg-black/20 bluxcc:!backdrop-blur-[1px] ${
+          isClosing && !isSticky
+            ? 'bluxcc:animate-fadeOut'
+            : 'bluxcc:animate-fadeIn'
+        }`}
+        onClick={onClose}
       />
+
+      {/* modal */}
       <div
         className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
-          isClosing && !isSticky && "bluxcc:animate-fadeOut"
+          isClosing && !isSticky && 'bluxcc:animate-fadeOut'
         }`}
         onClick={(e) => e.target === e.currentTarget && handleClose(onClose)}
       >
         <div
           className={`bluxcc:box-border bluxcc:!shadow-[0px_4px_80px_0px_#00000008] ${
             isMobile
-              ? "bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:max-h-[90vh] bluxcc:w-full bluxcc:!rounded-b-none"
-              : "bluxcc:relative bluxcc:!w-[360px]"
+              ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:!rounded-b-none'
+              : 'bluxcc:relative bluxcc:!w-[360px]'
           }`}
           style={{
             height:
-              typeof height === "number"
+              typeof height === 'number'
                 ? `${isMobile ? height + 20 : height}px`
                 : height,
-            transition: heightReady
-              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${
-                  isMobile ? ", transform 250ms ease-out" : ""
+            transition: isHeightReady
+              ? `height 300ms ease-in-out, border-radius 300ms, opacity 300ms ease-out, outline 300ms ease-out, color 300ms ease-out${
+                  isMobile ? ', transform 300ms ease-out' : ''
                 }`
-              : `border-radius 250ms, opacity 250ms ease-out${
-                  isMobile ? ", transform 250ms ease-out" : ""
+              : `border-radius 300ms, opacity 300ms ease-out${
+                  isMobile ? ', transform 300ms ease-out' : ''
                 }`,
-            transform:
-              isMobile && (isOpening || isClosing)
-                ? "translateY(100%)"
-                : "translateY(0%)",
+            transform: isMobile
+              ? isClosing
+                ? 'translateY(100%)'
+                : isAnimating
+                  ? 'translateY(0%)'
+                  : 'translateY(80%)'
+              : '',
             background: appearance.background,
-            opacity: isClosing && !isSticky ? "0" : "1",
+            opacity: isClosing && !isSticky ? '0' : '1',
             color: appearance.textColor,
             fontFamily: appearance.font,
-            letterSpacing: "-0.04px",
-            outlineStyle: "solid",
+            letterSpacing: '-0.04px',
+            outlineStyle: 'solid',
             outlineColor: appearance.borderColor,
-            outlineWidth: appearance.borderWidth,
+            outlineWidth: appearance.outlineWidth,
             borderRadius: appearance.borderRadius,
-            overflow: "hidden",
+            overflow: 'hidden',
           }}
         >
           <div
             ref={contentRef}
             className={`bluxcc:px-6 bluxcc:pb-4`}
             style={{
-              opacity: heightReady ? 1 : 0,
-              transition: "opacity 250ms ease-in-out",
+              opacity: isHeightReady ? 1 : 0,
+              transition: 'opacity 200ms ease-in-out',
             }}
           >
             {children}

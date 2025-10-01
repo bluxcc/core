@@ -1,39 +1,37 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 interface ModalAnimationState {
   isOpening: boolean;
   isClosing: boolean;
-  hasTransition: boolean;
 }
 
-export const useModalAnimation = (isOpen: boolean) => {
+export const useModalAnimation = (isOpen: boolean, duration = 300) => {
   const [state, setState] = useState<ModalAnimationState>({
-    isOpening: true,
+    isOpening: false,
     isClosing: false,
-    hasTransition: false,
   });
 
   useEffect(() => {
-    if (isOpen && state.isOpening) {
+    if (isOpen) {
+      setState({ isOpening: true, isClosing: false });
       const timer = setTimeout(() => {
-        setState((prev) => ({ ...prev, isOpening: false }));
-      }, 300);
+        setState({ isOpening: false, isClosing: false });
+      }, duration);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, state.isOpening]);
+  }, [isOpen, duration]);
 
   const handleClose = (onClose: () => void) => {
-    setState((prev) => ({ ...prev, isClosing: true }));
-    setTimeout(() => {
-      setState((prev) => ({ ...prev, isClosing: false }));
+    setState({ isOpening: false, isClosing: true });
+    const timer = setTimeout(() => {
+      setState({ isOpening: false, isClosing: false });
       onClose();
-    }, 300);
+    }, duration);
+    return () => clearTimeout(timer);
   };
 
   return {
     ...state,
-    setHasTransition: (value: boolean) =>
-      setState((prev) => ({ ...prev, hasTransition: value })),
     handleClose,
   };
 };
