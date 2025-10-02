@@ -12,6 +12,7 @@ import {
   ISignMessage,
   IInternalConfig,
   ISendTransaction,
+  IAsset,
 } from './types';
 
 export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
@@ -30,6 +31,11 @@ export interface IStellarConfig {
     horizon: Horizon.Server;
     soroban: rpc.Server;
   };
+}
+
+export interface ISelectAsset {
+  asset: IAsset;
+  for: 'send' | 'swapFrom' | 'swapTo';
 }
 
 export interface IStoreProperties {
@@ -56,6 +62,7 @@ export interface IStoreProperties {
   signMessage?: ISignMessage;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
+  selectAsset: ISelectAsset;
   walletConnect?: {
     connection: any;
     client: SignClient;
@@ -83,11 +90,12 @@ export interface IStoreMethods {
   setAlert: (alert: AlertType, message: string) => void;
   setDynamicTitle: (title: string) => void;
   setBalances: (balances: UseBalancesResult) => void;
+  setSelectAsset: (selectAsset: ISelectAsset) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods {}
+export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -135,6 +143,15 @@ export const store = createStore<IStore>((set) => ({
     error: null,
     loading: false,
     transactions: [],
+  },
+  selectAsset: {
+    for: 'send',
+    asset: {
+      assetIssuer: '',
+      assetCode: 'XLM',
+      assetBalance: '0',
+      assetType: 'native',
+    },
   },
   walletConnectClient: undefined,
   setConfig: (config: IInternalConfig) =>
@@ -269,6 +286,8 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, balances })),
   setTransactions: (transactions: UseTransactionsResult) =>
     set((state) => ({ ...state, transactions })),
+  setSelectAsset: (selectAsset: ISelectAsset) =>
+    set((state) => ({ ...state, selectAsset })),
   setWalletConnectClient: (client: SignClient, connection: any) =>
     set((state) => ({ ...state, walletConnect: { client, connection } })),
 }));

@@ -1,15 +1,17 @@
-import { walletsConfig } from "../wallets";
-import EXPLORERS from "../constants/explorers";
-import translations from "../constants/locales";
-import { StellarNetwork, SupportedWallet } from "../enums";
-import { RECENT_CONNECTION_METHODS } from "../constants/consts";
-import { ITransports, IWallet, IExplorer, LanguageKey, IAsset } from "../types";
+import { Horizon } from '@stellar/stellar-sdk';
+
+import { ISelectAsset } from '../store';
+import { walletsConfig } from '../wallets';
+import EXPLORERS from '../constants/explorers';
+import translations from '../constants/locales';
+import { RECENT_CONNECTION_METHODS } from '../constants/consts';
+import { Route, StellarNetwork, SupportedWallet } from '../enums';
+import { ITransports, IWallet, IExplorer, LanguageKey, IAsset } from '../types';
 import {
   networks,
-  DEFAULT_NETWORKS_TRANSPORTS,
   INetworkTransports,
-} from "../constants/networkDetails";
-import { Horizon } from "@stellar/stellar-sdk";
+  DEFAULT_NETWORKS_TRANSPORTS,
+} from '../constants/networkDetails';
 
 export const addXLMToBalances = (balances: IAsset[]) => {
   if (balances.length !== 0) {
@@ -20,10 +22,10 @@ export const addXLMToBalances = (balances: IAsset[]) => {
     {
       // TODO: Add XLM logo as string
       // logo?:
-      assetBalance: "0",
-      assetCode: "XLM",
-      assetType: "native",
-      assetIssuer: "",
+      assetBalance: '0',
+      assetCode: 'XLM',
+      assetType: 'native',
+      assetIssuer: '',
     },
   ];
 };
@@ -33,17 +35,17 @@ export const balanceToAsset = (
 ): IAsset => {
   // todo: set a real value in currency and also set the right logo for each asset.
   const ast: Partial<IAsset> = {
-    valueInCurrency: "0",
+    valueInCurrency: '0',
     assetBalance: balance.balance,
     assetType: balance.asset_type,
   };
 
-  if (balance.asset_type === "native") {
-    ast.assetCode = "XLM";
-    ast.assetIssuer = "";
-  } else if (balance.asset_type === "liquidity_pool_shares") {
-    ast.assetCode = "LiquidtyPool";
-    ast.assetIssuer = "";
+  if (balance.asset_type === 'native') {
+    ast.assetCode = 'XLM';
+    ast.assetIssuer = '';
+  } else if (balance.asset_type === 'liquidity_pool_shares') {
+    ast.assetCode = 'LiquidtyPool';
+    ast.assetIssuer = '';
   } else {
     ast.assetCode = balance.asset_code;
     ast.assetIssuer = balance.asset_issuer;
@@ -60,11 +62,19 @@ export const copyText = (text: string) => {
   return navigator.clipboard.writeText(text);
 };
 
+export const decideBackRouteFromSelectAsset = (selectAsset: ISelectAsset) => {
+  if (selectAsset.for === 'send') {
+    return Route.SEND;
+  }
+
+  return Route.SWAP;
+};
+
 export const formatDate = (isoString: string) => {
   const date = new Date(isoString);
 
   const day = date.getUTCDate();
-  const month = date.toLocaleString("en-US", { month: "long" });
+  const month = date.toLocaleString('en-US', { month: 'long' });
 
   return `${day} ${month}`;
 };
@@ -73,10 +83,10 @@ export const getActiveNetworkTitle = (activeNetwork: string): string => {
   const networksArray = Object.entries(networks);
   const selectedNetwork = networksArray.find((n) => n[1] === activeNetwork);
 
-  let networkName = "";
+  let networkName = '';
 
   if (!selectedNetwork) {
-    networkName = "MAINNET";
+    networkName = 'MAINNET';
   } else {
     networkName = selectedNetwork[0].toUpperCase();
   }
@@ -85,20 +95,20 @@ export const getActiveNetworkTitle = (activeNetwork: string): string => {
 };
 
 export const getContrastColor = (bgColor: string): string => {
-  const hex = bgColor.replace("#", "");
+  const hex = bgColor.replace('#', '');
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
 
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
-  return luminance > 0.5 ? "#000000" : "#FFFFFF";
+  return luminance > 0.5 ? '#000000' : '#FFFFFF';
 };
 
 export const getExplorerUrl = (
   networkPassphrase: string,
   explorerProvider: IExplorer,
-  endpoint: "accountUrl" | "transactionUrl" | "operationUrl" | "ledgerUrl",
+  endpoint: 'accountUrl' | 'transactionUrl' | 'operationUrl' | 'ledgerUrl',
   value: string,
 ): string | null => {
   let explorer = EXPLORERS[explorerProvider];
@@ -171,12 +181,12 @@ export const getNetworkRpc = (
   const transport = transports[network];
 
   if (!details && !transport) {
-    throw new Error("Custom network has no transports.");
+    throw new Error('Custom network has no transports.');
   } else if (!details && transport) {
     details = {
-      name: "Custom Network",
-      horizon: "",
-      soroban: "",
+      name: 'Custom Network',
+      horizon: '',
+      soroban: '',
     };
   }
 
@@ -229,18 +239,18 @@ export const getWalletNetwork = async (wallet: IWallet) => {
 
     return passphrase;
   } catch (e) {
-    return "";
+    return '';
   }
 };
 
 export const handleLoadWallets = (): Promise<IWallet[]> =>
   new Promise((res) => {
-    if (document.readyState === "complete") {
+    if (document.readyState === 'complete') {
       loadWallets().then((wallets) => {
         res(wallets);
       });
     } else {
-      window.addEventListener("load", () => {
+      window.addEventListener('load', () => {
         loadWallets().then((wallets) => {
           res(wallets);
         });
@@ -249,7 +259,7 @@ export const handleLoadWallets = (): Promise<IWallet[]> =>
   });
 
 export const hexToRgba = (hex: string, alpha: number) => {
-  const bigint = parseInt(hex.replace("#", ""), 16);
+  const bigint = parseInt(hex.replace('#', ''), 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
@@ -260,9 +270,9 @@ export const humanizeAmount = (
   amount: number | string,
   big: boolean = false,
 ): string => {
-  const num = typeof amount === "number" ? amount : parseFloat(amount);
+  const num = typeof amount === 'number' ? amount : parseFloat(amount);
 
-  if (isNaN(num) || num === 0) return "0";
+  if (isNaN(num) || num === 0) return '0';
   if (num < 0.000001) return amount.toString();
 
   if (big) {
@@ -276,20 +286,20 @@ export const humanizeAmount = (
 export const initializeRabetMobile = () => {
   const handleMessage = (event: MessageEvent) => {
     if (
-      event.origin === "https://mobile.rabet.io" &&
-      event.data.type === "RABET/INSTALL"
+      event.origin === 'https://mobile.rabet.io' &&
+      event.data.type === 'RABET/INSTALL'
     ) {
       new Function(event.data.message)();
 
-      window.removeEventListener("message", handleMessage);
+      window.removeEventListener('message', handleMessage);
     }
   };
 
-  window.addEventListener("message", handleMessage);
+  window.addEventListener('message', handleMessage);
 };
 
 export const isBackgroundDark = (bgColor: string): boolean => {
-  const hex = bgColor.replace("#", "");
+  const hex = bgColor.replace('#', '');
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
@@ -323,7 +333,7 @@ export const setRecentConnectionMethod = (walletName: SupportedWallet) => {
 
 export const shortenAddress = (address: string, numChars = 8) => {
   const shortenedAddress =
-    address.slice(0, numChars) + "..." + address.slice(-numChars);
+    address.slice(0, numChars) + '...' + address.slice(-numChars);
 
   return shortenedAddress;
 };
@@ -333,8 +343,8 @@ export const timeout = (waiter: number) =>
 
 export const toTitleFormat = (str: string) => {
   return str
-    .replace(/([A-Z])/g, " $1")
-    .replace(/_/g, " ")
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
@@ -344,7 +354,7 @@ export const translate = (
   lang: LanguageKey,
   vars: Record<string, string> = {},
 ): string => {
-  const template = translations[key]?.[lang] || translations[key]?.en || "";
+  const template = translations[key]?.[lang] || translations[key]?.en || '';
   return interpolate(template, vars);
 };
 
@@ -354,13 +364,13 @@ export const validateNetworkOptions = (
   transports: ITransports | undefined,
 ) => {
   if (networks.length === 0) {
-    throw new Error("No network is set in config.networks.");
+    throw new Error('No network is set in config.networks.');
   }
 
   const defaultNetworkOrTheFirstNetwork = defaultNetwork ?? networks[0];
 
   if (!networks.includes(defaultNetworkOrTheFirstNetwork)) {
-    throw new Error("config.defaultNetwork is not listed in config.networks.");
+    throw new Error('config.defaultNetwork is not listed in config.networks.');
   }
 
   for (const n of networks) {
@@ -373,12 +383,12 @@ export const validateNetworkOptions = (
 };
 
 const interpolate = (template: string, vars: Record<string, string> = {}) => {
-  return template.replace(/\$\{(\w+)\}/g, (_, key) => vars[key] || "");
+  return template.replace(/\$\{(\w+)\}/g, (_, key) => vars[key] || '');
 };
 
 const sevenDigit = (number: number | string): string => {
   const numStr = number.toString();
-  const [integer, decimal = ""] = numStr.split(".");
+  const [integer, decimal = ''] = numStr.split('.');
 
   if (!decimal) return integer;
 
@@ -404,8 +414,8 @@ const sevenDigit = (number: number | string): string => {
 };
 
 const formatNumberWithCommas = (number: string): string => {
-  const [integer, decimal] = number.split(".");
+  const [integer, decimal] = number.split('.');
   return decimal
-    ? `${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${decimal}`
-    : integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    ? `${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.${decimal}`
+    : integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };

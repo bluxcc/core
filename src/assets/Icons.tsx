@@ -1,4 +1,4 @@
-export const AboutIcon = ({ fill = "#1C1B1F" }: { fill?: string }) => (
+export const AboutIcon = ({ fill = '#1C1B1F' }: { fill?: string }) => (
   <svg
     width="20"
     height="20"
@@ -24,7 +24,7 @@ export const AboutIcon = ({ fill = "#1C1B1F" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const ArrowRight = ({ fill = "#5F6367" }: { fill?: string }) => (
+export const ArrowRight = ({ fill = '#5F6367' }: { fill?: string }) => (
   <svg
     width="20"
     height="20"
@@ -50,7 +50,7 @@ export const ArrowRight = ({ fill = "#5F6367" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const ArrowLeft = ({ fill = "#5F6367" }: { fill?: string }) => (
+export const ArrowLeft = ({ fill = '#5F6367' }: { fill?: string }) => (
   <svg
     width="24"
     height="25"
@@ -76,7 +76,7 @@ export const ArrowLeft = ({ fill = "#5F6367" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const Close = ({ fill = "#5F6367" }: { fill?: string }) => (
+export const Close = ({ fill = '#5F6367' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -102,7 +102,7 @@ export const Close = ({ fill = "#5F6367" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const Loading = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const Loading = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="25"
     height="24"
@@ -130,7 +130,7 @@ export const Loading = ({ fill = "#0C1083" }: { fill?: string }) => (
   </svg>
 );
 
-export const Search = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const Search = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -157,7 +157,7 @@ export const Search = ({ fill = "#0C1083" }: { fill?: string }) => (
   </svg>
 );
 
-export const GreenCheck = ({ fill = "#FFD60A" }: { fill?: string }) => (
+export const GreenCheck = ({ fill = '#FFD60A' }: { fill?: string }) => (
   <svg
     width="32"
     height="32"
@@ -171,7 +171,7 @@ export const GreenCheck = ({ fill = "#FFD60A" }: { fill?: string }) => (
     />
   </svg>
 );
-export const LogOut = ({ fill = "#666666" }: { fill?: string }) => (
+export const LogOut = ({ fill = '#666666' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -197,7 +197,7 @@ export const LogOut = ({ fill = "#666666" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const Copy = ({ fill = "#4D4D4D" }: { fill?: string }) => (
+export const Copy = ({ fill = '#4D4D4D' }: { fill?: string }) => (
   <svg
     width="16"
     height="16"
@@ -223,7 +223,7 @@ export const Copy = ({ fill = "#4D4D4D" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const LargeCopy = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const LargeCopy = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="25"
     height="24"
@@ -250,7 +250,7 @@ export const LargeCopy = ({ fill = "#0C1083" }: { fill?: string }) => (
   </svg>
 );
 
-export const History = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const History = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -276,7 +276,7 @@ export const History = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const Send = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const Send = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -302,7 +302,7 @@ export const Send = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const ArrowDropUp = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const ArrowDropUp = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="16"
     height="16"
@@ -329,7 +329,7 @@ export const ArrowDropUp = ({ fill = "#0C1083" }: { fill?: string }) => (
   </svg>
 );
 
-export const ArrowDropDown = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const ArrowDropDown = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -523,7 +523,7 @@ export const Globe = () => (
     </g>
   </svg>
 );
-export const SmallEmailIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const SmallEmailIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -550,7 +550,7 @@ export const SmallEmailIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
   </svg>
 );
 
-export const EmailIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const EmailIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="40"
     height="40"
@@ -630,7 +630,7 @@ export const WrongNetworkIcon = () => (
     </g>
   </svg>
 );
-export const SwapIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const SwapIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -656,7 +656,7 @@ export const SwapIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const ReceiveIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const ReceiveIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -682,7 +682,7 @@ export const ReceiveIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const BalancesIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const BalancesIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -708,7 +708,7 @@ export const BalancesIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const NFTsIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const NFTsIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -734,7 +734,7 @@ export const NFTsIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const AssetsIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const AssetsIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -760,7 +760,7 @@ export const AssetsIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const TokenIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const TokenIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -786,7 +786,7 @@ export const TokenIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const PlusIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const PlusIcon = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="24"
     height="24"
@@ -812,7 +812,7 @@ export const PlusIcon = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const OpenEye = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const OpenEye = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="21"
     height="20"
@@ -838,7 +838,7 @@ export const OpenEye = ({ fill = "#0C1083" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const CloseEye = ({ fill = "#0C1083" }: { fill?: string }) => (
+export const CloseEye = ({ fill = '#0C1083' }: { fill?: string }) => (
   <svg
     width="21"
     height="20"
@@ -968,7 +968,7 @@ export const SuccessIcon = () => (
     </g>
   </svg>
 );
-export const KeyIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
+export const KeyIcon = ({ fill = '#ffffff' }: { fill?: string }) => (
   <svg
     width="42"
     height="42"
@@ -1000,7 +1000,7 @@ export const KeyIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const ChipIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
+export const ChipIcon = ({ fill = '#ffffff' }: { fill?: string }) => (
   <svg
     width="42"
     height="42"
@@ -1032,7 +1032,7 @@ export const ChipIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
     </g>
   </svg>
 );
-export const ShieldIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
+export const ShieldIcon = ({ fill = '#ffffff' }: { fill?: string }) => (
   <svg
     width="29"
     height="35"
@@ -1046,7 +1046,7 @@ export const ShieldIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
     />
   </svg>
 );
-export const WalletIcon = ({ fill = "#ffffff" }: { fill?: string }) => (
+export const WalletIcon = ({ fill = '#ffffff' }: { fill?: string }) => (
   <svg
     width="40"
     height="39"

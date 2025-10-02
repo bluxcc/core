@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import { StrKey } from '@stellar/stellar-sdk';
 import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
 
-import { IAsset } from '../../../types';
-import SelectAssets from '../SelectAsset';
+import { Route } from '../../../enums';
 import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
+import Divider from '../../../components/Divider';
 import InputField from '../../../components/Input';
 import { ArrowDropUp } from '../../../assets/Icons';
 import { sendTransaction } from '../../../exports/blux';
 import { StellarSmallLogo } from '../../../assets/Logos';
+import { getContrastColor } from '../../../utils/helpers';
 import paymentTransaction from '../../../stellar/paymentTransaction';
-import { addXLMToBalances, getContrastColor } from '../../../utils/helpers';
-import Divider from '../../../components/Divider';
 
 type SendFormValues = {
   memo: string;
@@ -25,40 +24,11 @@ const SendForm = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
   const [errors, setErrors] = useState<Partial<SendFormValues>>({});
-  const [showSelectAssetPage, setShowSelectAssetPage] = useState(false);
   const [form, setForm] = useState<SendFormValues>({
     memo: '',
     amount: '',
     address: '',
   });
-
-  const { appearance } = store.config;
-  const { balances } = store.balances;
-
-  const defaultAssets: IAsset[] = balances
-    .filter((x) => x.asset_type !== 'liquidity_pool_shares')
-    .filter((x) => x.balance !== '0.0000000')
-    .map((asset) => {
-      if (asset.asset_type === 'native') {
-        return {
-          assetIssuer: '',
-          assetCode: 'XLM',
-          assetBalance: asset.balance,
-          assetType: asset.asset_type,
-        };
-      } else {
-        return {
-          assetBalance: asset.balance,
-          assetCode: asset.asset_code,
-          assetType: asset.asset_type,
-          assetIssuer: asset.asset_issuer,
-        };
-      }
-    });
-
-  const assets = addXLMToBalances(defaultAssets);
-
-  const [selectedAsset, setSelectedAsset] = useState<IAsset>(assets[0]);
 
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,15 +37,16 @@ const SendForm = () => {
     };
 
   const handleOpenAssets = () => {
-    setShowSelectAssetPage(true);
+    store.setSelectAsset({
+      ...store.selectAsset,
+      for: 'send',
+    });
+
+    store.setRoute(Route.SELECT_ASSET);
   };
 
   const handleMaxClick = () => {
-    if (!selectedAsset) {
-      return;
-    }
-
-    const balance = Number(selectedAsset.assetBalance).toString();
+    const balance = Number(store.selectAsset.asset.assetBalance).toString();
 
     setForm((prev) => ({ ...prev, amount: balance }));
   };
@@ -92,7 +63,7 @@ const SendForm = () => {
     if (!form.amount) {
       errorMessages.amount = t('amountRequired');
     } else if (
-      Number(form.amount) > Number(selectedAsset.assetBalance || '0')
+      Number(form.amount) > Number(store.selectAsset.asset.assetBalance || '0')
     ) {
       errorMessages.amount = t('amountExceedsBalance');
     }
@@ -111,7 +82,7 @@ const SendForm = () => {
           form.memo,
           form.amount,
           form.address,
-          selectedAsset,
+          store.selectAsset.asset,
           store.user?.address as string,
           store.stellar?.servers.horizon as HorizonServer,
           store.stellar?.activeNetwork || '',
@@ -130,16 +101,6 @@ const SendForm = () => {
     }
   };
 
-  if (showSelectAssetPage) {
-    return (
-      <SelectAssets
-        assets={assets}
-        setSelectedAsset={setSelectedAsset}
-        setShowSelectAssetPage={setShowSelectAssetPage}
-      />
-    );
-  }
-
   return (
     <>
       <div>
@@ -155,10 +116,11 @@ const SendForm = () => {
             customLabel={
               <span
                 onClick={handleMaxClick}
-                style={{ color: appearance.accentColor }}
+                style={{ color: store.config.appearance.accentColor }}
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:cursor-pointer"
               >
-                {t('max')} <ArrowDropUp fill={appearance.accentColor} />
+                {t('max')}{' '}
+                <ArrowDropUp fill={store.config.appearance.accentColor} />
               </span>
             }
             onButtonClick={handleOpenAssets}
@@ -166,10 +128,10 @@ const SendForm = () => {
               <span className="bluxcc:flex bluxcc:justify-between bluxcc:!gap-1">
                 <span className="bluxcc:flex bluxcc:items-center">
                   <StellarSmallLogo
-                    fill={getContrastColor(appearance.background)}
+                    fill={getContrastColor(store.config.appearance.background)}
                   />
                 </span>
-                {selectedAsset ? selectedAsset.assetCode : 'XLM'}
+                {store.selectAsset.asset.assetCode}
               </span>
             }
           />

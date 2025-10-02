@@ -1,49 +1,72 @@
-import React, { useState, MouseEvent, ChangeEvent } from "react";
+import React, { useState, MouseEvent, ChangeEvent } from 'react';
 
-import { IAsset } from "../../../types";
-import { useAppStore } from "../../../store";
-import { Search } from "../../../assets/Icons";
-import { useLang } from "../../../hooks/useLang";
-import { humanizeAmount } from "../../../utils/helpers";
+import { IAsset } from '../../../types';
+import { useAppStore } from '../../../store';
+import { Search } from '../../../assets/Icons';
+import { useLang } from '../../../hooks/useLang';
+import {
+  addXLMToBalances,
+  humanizeAmount,
+  decideBackRouteFromSelectAsset,
+} from '../../../utils/helpers';
 
-type SelectAssetsProps = {
-  assets: IAsset[];
-  setShowSelectAssetPage: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedAsset: React.Dispatch<React.SetStateAction<IAsset>>;
-};
-
-const SelectAssets = ({
-  assets,
-  setSelectedAsset,
-  setShowSelectAssetPage,
-}: SelectAssetsProps) => {
+const SelectAsset = () => {
   const t = useLang();
-  const appearance = useAppStore((store) => store.config.appearance);
   const [isFocused, setIsFocused] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const store = useAppStore((store) => store);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const defaultAssets: IAsset[] = store.balances.balances
+    .filter((x) => x.asset_type !== 'liquidity_pool_shares')
+    .filter((x) => x.balance !== '0.0000000')
+    .map((asset) => {
+      if (asset.asset_type === 'native') {
+        return {
+          assetIssuer: '',
+          assetCode: 'XLM',
+          assetBalance: asset.balance,
+          assetType: asset.asset_type,
+        };
+      } else {
+        return {
+          assetBalance: asset.balance,
+          assetCode: asset.asset_code,
+          assetType: asset.asset_type,
+          assetIssuer: asset.asset_issuer,
+        };
+      }
+    });
+
+  const assets = addXLMToBalances(defaultAssets);
+
   const handleSelectAsset = (asset: IAsset) => {
-    setSelectedAsset(asset);
-    setShowSelectAssetPage(false);
+    store.setSelectAsset({
+      ...store.selectAsset,
+      asset,
+    });
+
+    const route = decideBackRouteFromSelectAsset(store.selectAsset);
+
+    store.setRoute(route);
   };
 
   const onMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
     if (!isFocused) {
-      e.currentTarget.style.borderColor = appearance.accentColor;
-      e.currentTarget.style.transition = "border-color 0.35s ease-in-out";
+      e.currentTarget.style.borderColor = store.config.appearance.accentColor;
+      e.currentTarget.style.transition = 'border-color 0.35s ease-in-out';
     }
   };
 
   const onMouseLeave = (e: MouseEvent<HTMLDivElement>) => {
     if (!isFocused) {
-      e.currentTarget.style.borderColor = appearance.borderColor;
+      e.currentTarget.style.borderColor = store.config.appearance.borderColor;
     }
   };
 
   const getBorderAndRingColor = () => {
-    if (isFocused) return appearance.accentColor;
-    return appearance.borderColor;
+    if (isFocused) return store.config.appearance.accentColor;
+    return store.config.appearance.borderColor;
   };
 
   // Todo
@@ -62,28 +85,28 @@ const SelectAssets = ({
           className="bluxcc:flex bluxcc:h-14 bluxcc:items-center bluxcc:gap-2 bluxcc:p-4"
           style={
             {
-              background: appearance.fieldBackground,
-              borderWidth: appearance.borderWidth,
-              "--tw-ring-color": getBorderAndRingColor(),
-              borderRadius: appearance.borderRadius,
+              background: store.config.appearance.fieldBackground,
+              borderWidth: store.config.appearance.borderWidth,
+              '--tw-ring-color': getBorderAndRingColor(),
+              borderRadius: store.config.appearance.borderRadius,
               borderColor: getBorderAndRingColor(),
-              color: appearance.textColor,
+              color: store.config.appearance.textColor,
             } as React.CSSProperties
           }
         >
-          <Search fill={appearance.textColor} />
+          <Search fill={store.config.appearance.textColor} />
 
           <input
             autoFocus
             type="text"
-            placeholder={t("search")}
+            placeholder={t('search')}
             value={searchQuery}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
             className="bluxcc:bg-transparent bluxcc:outline-hidden"
             style={{
-              color: appearance.textColor,
+              color: store.config.appearance.textColor,
             }}
           />
         </div>
@@ -102,14 +125,16 @@ const SelectAssets = ({
             style={{
               background:
                 hoveredIndex === index
-                  ? appearance.fieldBackground
-                  : "transparent",
-              color: appearance.textColor,
-              borderBottomStyle: "dashed",
+                  ? store.config.appearance.fieldBackground
+                  : 'transparent',
+              color: store.config.appearance.textColor,
+              borderBottomStyle: 'dashed',
               borderBottomWidth:
-                index < assets.length - 1 ? appearance.borderWidth : "0px",
-              borderBottomColor: appearance.borderColor,
-              transition: "all 0.2s ease-in-out",
+                index < assets.length - 1
+                  ? store.config.appearance.borderWidth
+                  : '0px',
+              borderBottomColor: store.config.appearance.borderColor,
+              transition: 'all 0.2s ease-in-out',
             }}
           >
             <div className="bluxcc:flex bluxcc:items-center bluxcc:gap-[10px]">
@@ -130,10 +155,10 @@ const SelectAssets = ({
 
         {assets.length === 0 && (
           <div
-            style={{ color: appearance.textColor }}
+            style={{ color: store.config.appearance.textColor }}
             className="bluxcc:mt-2 bluxcc:text-center"
           >
-            {t("noAssetsFound")}
+            {t('noAssetsFound')}
           </div>
         )}
       </div>
@@ -141,4 +166,4 @@ const SelectAssets = ({
   );
 };
 
-export default SelectAssets;
+export default SelectAsset;
