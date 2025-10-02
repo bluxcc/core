@@ -1,13 +1,16 @@
-import { useEffect } from "react";
-import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { useEffect } from 'react';
+import { Horizon, rpc } from '@stellar/stellar-sdk';
 
-import Modal from "./Modal";
-import Header from "./Header";
-import { Route } from "../enums";
-import { useAppStore } from "../store";
-import { getNetworkRpc } from "../utils/helpers";
-import { getModalContent } from "../constants/routes";
-import useUpdateAccount from "../hooks/useUpdateAccount";
+import Modal from './Modal';
+import Header from './Header';
+import { Route } from '../enums';
+import { useAppStore } from '../store';
+import {
+  decideBackRouteFromSelectAsset,
+  getNetworkRpc,
+} from '../utils/helpers';
+import { getModalContent } from '../constants/routes';
+import useUpdateAccount from '../hooks/useUpdateAccount';
 
 export const Provider = () => {
   useUpdateAccount();
@@ -18,10 +21,10 @@ export const Provider = () => {
 
   const { route } = modal;
 
-  const modalContent = getModalContent("en")[route];
+  const modalContent = getModalContent('en')[route];
 
   const shouldShowBackButton =
-    (route === Route.WAITING && store.waitingStatus !== "sendTransaction") ||
+    (route === Route.WAITING && store.waitingStatus !== 'sendTransaction') ||
     (route === Route.ONBOARDING && store.showAllWallets) ||
     route === Route.ACTIVITY ||
     route === Route.SEND ||
@@ -34,12 +37,12 @@ export const Provider = () => {
     route === Route.ADD_TOKEN ||
     route === Route.WALLET_CONNECT;
 
-  let modalIcon: "back" | "info" | undefined;
+  let modalIcon: 'back' | 'info' | undefined;
 
   if (shouldShowBackButton) {
-    modalIcon = "back";
+    modalIcon = 'back';
   } else if (route === Route.ONBOARDING) {
-    modalIcon = "info";
+    modalIcon = 'info';
   }
 
   const handleBackNavigation = () => {
@@ -62,6 +65,10 @@ export const Provider = () => {
       store.setRoute(Route.PROFILE);
     } else if (route === Route.BALANCE_DETAILS || route === Route.ADD_TOKEN) {
       store.setRoute(Route.BALANCES);
+    } else if (route === Route.SELECT_ASSET) {
+      const route = decideBackRouteFromSelectAsset(store.selectAsset);
+
+      store.setRoute(route);
     }
   };
 
@@ -70,11 +77,11 @@ export const Provider = () => {
     setShowAllWallets(false);
 
     if (
-      store.waitingStatus === "signMessage" ||
-      store.waitingStatus === "sendTransaction"
+      store.waitingStatus === 'signMessage' ||
+      store.waitingStatus === 'sendTransaction'
     ) {
       const resolverObject =
-        store.waitingStatus === "signMessage"
+        store.waitingStatus === 'signMessage'
           ? store.signMessage
           : store.sendTransaction;
       const isFailed =
@@ -96,7 +103,7 @@ export const Provider = () => {
         }
       } else if (isFailed) {
         if (rejecter) {
-          rejecter({ code: 4001, message: "User rejected the transaction" });
+          rejecter({ code: 4001, message: 'User rejected the transaction' });
         }
       }
     }
@@ -104,12 +111,12 @@ export const Provider = () => {
 
   useEffect(() => {
     const { horizon, soroban } = getNetworkRpc(
-      store.stellar?.activeNetwork || "",
-      store.config.transports ?? {}
+      store.stellar?.activeNetwork || '',
+      store.config.transports ?? {},
     );
 
     store.setStellar({
-      activeNetwork: store.stellar?.activeNetwork || "",
+      activeNetwork: store.stellar?.activeNetwork || '',
       servers: {
         horizon: new Horizon.Server(horizon),
         soroban: new rpc.Server(soroban),
@@ -140,9 +147,9 @@ export const Provider = () => {
       <Header
         onBack={handleBackNavigation}
         onInfo={handleGoToAbout}
-        onClose={modalContent.isSticky ? () => {} : handleCloseModal}
+        onClose={modalContent.isSticky ? () => { } : handleCloseModal}
         title={
-          store.modal.dynamicTitle !== ""
+          store.modal.dynamicTitle !== ''
             ? store.modal.dynamicTitle
             : modalContent.title
         }

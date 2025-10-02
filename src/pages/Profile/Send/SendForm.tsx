@@ -1,18 +1,17 @@
-import React, { useState } from "react";
-import { StrKey } from "@stellar/stellar-sdk";
-import { HorizonServer } from "@stellar/stellar-sdk/lib/horizon/server";
+import React, { useState } from 'react';
+import { StrKey } from '@stellar/stellar-sdk';
+import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
 
-import { IAsset } from "../../../types";
-import SelectAssets from "../SelectAsset";
-import { useAppStore } from "../../../store";
-import Button from "../../../components/Button";
-import { useLang } from "../../../hooks/useLang";
-import InputField from "../../../components/Input";
-import { ArrowDropUp } from "../../../assets/Icons";
-import { sendTransaction } from "../../../exports/blux";
-import { StellarSmallLogo } from "../../../assets/Logos";
-import paymentTransaction from "../../../stellar/paymentTransaction";
-import { addXLMToBalances, getContrastColor } from "../../../utils/helpers";
+import { Route } from '../../../enums';
+import { useAppStore } from '../../../store';
+import Button from '../../../components/Button';
+import { useLang } from '../../../hooks/useLang';
+import InputField from '../../../components/Input';
+import { ArrowDropUp } from '../../../assets/Icons';
+import { sendTransaction } from '../../../exports/blux';
+import { StellarSmallLogo } from '../../../assets/Logos';
+import { getContrastColor } from '../../../utils/helpers';
+import paymentTransaction from '../../../stellar/paymentTransaction';
 
 type SendFormValues = {
   memo: string;
@@ -24,57 +23,29 @@ const SendForm = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
   const [errors, setErrors] = useState<Partial<SendFormValues>>({});
-  const [showSelectAssetPage, setShowSelectAssetPage] = useState(false);
   const [form, setForm] = useState<SendFormValues>({
-    memo: "",
-    amount: "",
-    address: "",
+    memo: '',
+    amount: '',
+    address: '',
   });
-
-  const { appearance } = store.config;
-  const { balances } = store.balances;
-
-  const defaultAssets: IAsset[] = balances
-    .filter((x) => x.asset_type !== "liquidity_pool_shares")
-    .filter((x) => x.balance !== "0.0000000")
-    .map((asset) => {
-      if (asset.asset_type === "native") {
-        return {
-          assetIssuer: "",
-          assetCode: "XLM",
-          assetBalance: asset.balance,
-          assetType: asset.asset_type,
-        };
-      } else {
-        return {
-          assetBalance: asset.balance,
-          assetCode: asset.asset_code,
-          assetType: asset.asset_type,
-          assetIssuer: asset.asset_issuer,
-        };
-      }
-    });
-
-  const assets = addXLMToBalances(defaultAssets);
-
-  const [selectedAsset, setSelectedAsset] = useState<IAsset>(assets[0]);
 
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     };
 
   const handleOpenAssets = () => {
-    setShowSelectAssetPage(true);
+    store.setSelectAsset({
+      ...store.selectAsset,
+      for: 'send',
+    });
+
+    store.setRoute(Route.SELECT_ASSET);
   };
 
   const handleMaxClick = () => {
-    if (!selectedAsset) {
-      return;
-    }
-
-    const balance = Number(selectedAsset.assetBalance).toString();
+    const balance = Number(store.selectAsset.asset.assetBalance).toString();
 
     setForm((prev) => ({ ...prev, amount: balance }));
   };
@@ -89,17 +60,17 @@ const SendForm = () => {
     const errorMessages: typeof errors = {};
 
     if (!form.amount) {
-      errorMessages.amount = t("amountRequired");
+      errorMessages.amount = t('amountRequired');
     } else if (
-      Number(form.amount) > Number(selectedAsset.assetBalance || "0")
+      Number(form.amount) > Number(store.selectAsset.asset.assetBalance || '0')
     ) {
-      errorMessages.amount = t("amountExceedsBalance");
+      errorMessages.amount = t('amountExceedsBalance');
     }
 
     if (!form.address) {
-      errorMessages.address = t("addressRequired");
+      errorMessages.address = t('addressRequired');
     } else if (!StrKey.isValidEd25519PublicKey(form.address)) {
-      errorMessages.address = t("addressInvalid");
+      errorMessages.address = t('addressInvalid');
     }
 
     setErrors(errorMessages);
@@ -110,16 +81,16 @@ const SendForm = () => {
           form.memo,
           form.amount,
           form.address,
-          selectedAsset,
+          store.selectAsset.asset,
           store.user?.address as string,
           store.stellar?.servers.horizon as HorizonServer,
-          store.stellar?.activeNetwork || "",
+          store.stellar?.activeNetwork || '',
         );
 
         store.closeModal();
 
         setTimeout(() => {
-          sendTransaction(xdr, { network: store.stellar?.activeNetwork || "" });
+          sendTransaction(xdr, { network: store.stellar?.activeNetwork || '' });
         }, 250);
       } catch (e: any) {
         errorMessages.address = e.message;
@@ -129,16 +100,6 @@ const SendForm = () => {
     }
   };
 
-  if (showSelectAssetPage) {
-    return (
-      <SelectAssets
-        assets={assets}
-        setSelectedAsset={setSelectedAsset}
-        setShowSelectAssetPage={setShowSelectAssetPage}
-      />
-    );
-  }
-
   return (
     <>
       <div>
@@ -146,18 +107,19 @@ const SendForm = () => {
           <InputField
             autoFocus
             type="number"
-            label={t("amount")}
+            label={t('amount')}
             placeholder="0.00"
             value={form.amount}
-            onChange={handleChange("amount")}
+            onChange={handleChange('amount')}
             error={errors.amount}
             customLabel={
               <span
                 onClick={handleMaxClick}
-                style={{ color: appearance.accentColor }}
+                style={{ color: store.config.appearance.accentColor }}
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:cursor-pointer"
               >
-                {t("max")} <ArrowDropUp fill={appearance.accentColor} />
+                {t('max')}{' '}
+                <ArrowDropUp fill={store.config.appearance.accentColor} />
               </span>
             }
             onButtonClick={handleOpenAssets}
@@ -165,10 +127,10 @@ const SendForm = () => {
               <span className="bluxcc:flex bluxcc:justify-between bluxcc:!gap-1">
                 <span className="bluxcc:flex bluxcc:items-center">
                   <StellarSmallLogo
-                    fill={getContrastColor(appearance.background)}
+                    fill={getContrastColor(store.config.appearance.background)}
                   />
                 </span>
-                {selectedAsset ? selectedAsset.assetCode : "XLM"}
+                {store.selectAsset.asset.assetCode}
               </span>
             }
           />
@@ -176,22 +138,22 @@ const SendForm = () => {
 
         <div className="bluxcc:mb-4">
           <InputField
-            label={t("to")}
-            placeholder={t("enterAddress")}
+            label={t('to')}
+            placeholder={t('enterAddress')}
             value={form.address}
-            onChange={handleChange("address")}
+            onChange={handleChange('address')}
             error={errors.address}
-            button={t("paste")}
+            button={t('paste')}
             onButtonClick={handlePasteClick}
           />
         </div>
 
         <div>
           <InputField
-            label={t("memo")}
-            placeholder={t("enterMemo")}
+            label={t('memo')}
+            placeholder={t('enterMemo')}
             value={form.memo}
-            onChange={handleChange("memo")}
+            onChange={handleChange('memo')}
           />
         </div>
 
@@ -203,7 +165,7 @@ const SendForm = () => {
               // borderTopWidth: appearance.includeBorders
               //   ? appearance.borderWidth
               //   : "1px",
-              borderTopColor: appearance.borderColor,
+              borderTopColor: store.config.appearance.borderColor,
             }}
           />
         </div>
@@ -214,7 +176,7 @@ const SendForm = () => {
           state="enabled"
           onClick={handleSubmit}
         >
-          {t("sendButton")}
+          {t('sendButton')}
         </Button>
       </div>
     </>

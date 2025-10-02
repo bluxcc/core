@@ -1,31 +1,31 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import AssetBox from "./AssetBox";
-import { IAsset } from "../../../types";
-import SelectAssets from "../SelectAsset";
-import { useAppStore } from "../../../store";
-import Button from "../../../components/Button";
-import { useLang } from "../../../hooks/useLang";
-import Divider from "../../../components/Divider";
-import { hexToRgba } from "../../../utils/helpers";
-import { StellarLogo } from "../../../assets/Logos";
-import { ArrowDropUp, SwapIcon } from "../../../assets/Icons";
+import AssetBox from './AssetBox';
+import { IAsset } from '../../../types';
+import SelectAsset from '../SelectAsset';
+import { useAppStore } from '../../../store';
+import Button from '../../../components/Button';
+import { useLang } from '../../../hooks/useLang';
+import Divider from '../../../components/Divider';
+import { hexToRgba } from '../../../utils/helpers';
+import { StellarLogo } from '../../../assets/Logos';
+import { ArrowDropUp, SwapIcon } from '../../../assets/Icons';
 
 const mockAssets: IAsset[] = [
   {
-    assetCode: "XLM",
-    assetIssuer: "Stellar Foundation",
-    assetType: "native",
-    valueInCurrency: "10",
-    assetBalance: "1000.1234",
+    assetCode: 'XLM',
+    assetIssuer: 'Stellar Foundation',
+    assetType: 'native',
+    valueInCurrency: '10',
+    assetBalance: '1000.1234',
     logo: <StellarLogo />,
   },
   {
-    assetCode: "USDC",
-    assetIssuer: "Centre Consortium",
-    assetType: "credit_alphanum4",
-    assetBalance: "500.5",
-    valueInCurrency: "10",
+    assetCode: 'USDC',
+    assetIssuer: 'Centre Consortium',
+    assetType: 'credit_alphanum4',
+    assetBalance: '500.5',
+    valueInCurrency: '10',
     logo: <StellarLogo />,
   },
 ];
@@ -42,7 +42,7 @@ const Swap = () => {
 
   if (showSelectAssetPage) {
     return (
-      <SelectAssets
+      <SelectAsset
         assets={mockAssets}
         setSelectedAsset={setSelectedAsset}
         setShowSelectAssetPage={setShowSelectAssetPage}
@@ -65,12 +65,12 @@ const Swap = () => {
             From
           </span>
           <span className="bluxcc:cursor-pointer">
-            345.00{" "}
+            345.00{' '}
             <span
               style={{ color: appearance.accentColor }}
               className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:cursor-pointer"
             >
-              {t("max")} <ArrowDropUp fill={appearance.accentColor} />
+              {t('max')} <ArrowDropUp fill={appearance.accentColor} />
             </span>
           </span>
         </div>
@@ -96,7 +96,7 @@ const Swap = () => {
             className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
             style={{
               borderTopWidth: appearance.borderWidth,
-              borderTopStyle: "solid",
+              borderTopStyle: 'solid',
               borderTopColor: appearance.borderColor,
             }}
           />
@@ -156,7 +156,7 @@ const Swap = () => {
           {/* this should change color based on the impact if its positive its green if not red or yellow */}
           <span
             className="bluxcc:h-2 bluxcc:w-2"
-            style={{ backgroundColor: "#32D74B" }}
+            style={{ backgroundColor: '#32D74B' }}
           />
         </div>
       </div>
@@ -164,7 +164,7 @@ const Swap = () => {
         className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs"
         style={{ color: hexToRgba(appearance.textColor, 0.7) }}
       >
-        The estimated effect of your swap on the market price.{" "}
+        The estimated effect of your swap on the market price.{' '}
         <span
           className="bluxcc:cursor-pointer bluxcc:rounded-full"
           style={{ color: appearance.accentColor }}
