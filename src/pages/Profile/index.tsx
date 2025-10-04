@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Route } from "../../enums";
-import { useAppStore } from "../../store";
-import { useLang } from "../../hooks/useLang";
-import Divider from "../../components/Divider";
-import CardItem from "../../components/CardItem";
+import { Route } from '../../enums';
+import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
+import Divider from '../../components/Divider';
+import CardItem from '../../components/CardItem';
 import {
   Copy,
   Send,
+  LogOut,
   History,
+  OpenEye,
   SwapIcon,
+  CloseEye,
   ReceiveIcon,
   BalancesIcon,
-  LogOut,
-  OpenEye,
-  CloseEye,
-} from "../../assets/Icons";
+} from '../../assets/Icons';
 import {
   copyText,
   hexToRgba,
   humanizeAmount,
   shortenAddress,
-} from "../../utils/helpers";
+} from '../../utils/helpers';
 
 const Profile = () => {
   const t = useLang();
@@ -41,9 +41,9 @@ const Profile = () => {
     copyText(address)
       .then(() => {
         copyText(address);
-        setAlert("info", "Address Copied");
+        setAlert('info', 'Address Copied');
         setTimeout(() => {
-          setAlert("none", "");
+          setAlert('none', '');
         }, 1000);
       })
       .catch(() => { });
@@ -51,8 +51,8 @@ const Profile = () => {
 
   const balance =
     store.balances.balances.length !== 0
-      ? store.balances.balances.find((b) => b.asset_type === "native")!.balance
-      : "0";
+      ? store.balances.balances.find((b) => b.asset_type === 'native')!.balance
+      : '0';
 
   return (
     <div className="bluxcc:flex bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
@@ -69,15 +69,15 @@ const Profile = () => {
             <p
               className="bluxcc:select-none"
               style={{
-                verticalAlign: "middle",
-                paddingTop: !visible ? "8px" : "0px",
+                verticalAlign: 'middle',
+                paddingTop: !visible ? '8px' : '0px',
               }}
             >
               {balance
                 ? visible
                   ? `${humanizeAmount(balance)} XLM`
-                  : "******"
-                : t("loading")}
+                  : '******'
+                : t('loading')}
             </p>
           </div>
 
@@ -105,7 +105,7 @@ const Profile = () => {
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
           <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
-            {address ? shortenAddress(address, 5) : ""}
+            {address ? shortenAddress(address, 5) : ''}
             <Copy fill={hexToRgba(appearance.textColor, 0.7)} />
           </span>
         </p>
@@ -114,35 +114,35 @@ const Profile = () => {
       <div className="bluxcc:flex bluxcc:space-x-3">
         <CardItem
           size="small"
-          label={t("send")}
+          label={t('send')}
           startIcon={<Send fill={appearance.textColor} />}
           onClick={() => {
             setRoute(Route.SEND);
           }}
         />
+
         <CardItem
           size="small"
-          label={t("receive")}
+          label={t('receive')}
           startIcon={<ReceiveIcon fill={appearance.textColor} />}
           onClick={() => {
             setRoute(Route.RECEIVE);
           }}
         />
-        {/*
+
         <CardItem
           size="small"
-          label={t("swap")}
+          label={t('swap')}
           startIcon={<SwapIcon fill={appearance.textColor} />}
           onClick={() => {
             setRoute(Route.SWAP);
           }}
         />
-        */}
       </div>
       <div className="bluxcc:mt-[16px] bluxcc:w-full bluxcc:space-y-2">
         <CardItem
           endArrow
-          label={t("balances")}
+          label={t('balances')}
           startIcon={<BalancesIcon fill={appearance.textColor} />}
           onClick={() => {
             setRoute(Route.BALANCES);
@@ -151,7 +151,7 @@ const Profile = () => {
 
         <CardItem
           endArrow
-          label={t("activity")}
+          label={t('activity')}
           startIcon={<History fill={appearance.textColor} />}
           onClick={() => {
             setRoute(Route.ACTIVITY);
@@ -167,7 +167,7 @@ const Profile = () => {
         className="bluxcc:flex bluxcc:h-12 bluxcc:w-full bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
       >
         <LogOut fill={appearance.textColor} />
-        {t("logout")}
+        {t('logout')}
       </div>
     </div>
   );

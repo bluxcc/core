@@ -1,9 +1,15 @@
-import { useAppStore } from "../../../../store";
-import { StellarLogo } from "../../../../assets/Logos";
-import { ArrowDropDown } from "../../../../assets/Icons";
-import { getContrastColor } from "../../../../utils/helpers";
+import { IAsset } from '../../../../types';
+import { useAppStore } from '../../../../store';
+import { StellarLogo } from '../../../../assets/Logos';
+import { ArrowDropDown } from '../../../../assets/Icons';
+import { getContrastColor } from '../../../../utils/helpers';
 
-const AssetBox = ({ handleOpenAssets }: { handleOpenAssets: () => void }) => {
+type AssetBoxProps = {
+  asset: IAsset;
+  handleOpenAssets: () => void;
+};
+
+const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
   const appearance = useAppStore((store) => store.config.appearance);
 
   return (
@@ -28,7 +34,9 @@ const AssetBox = ({ handleOpenAssets }: { handleOpenAssets: () => void }) => {
       >
         <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
       </div>
-      <span>XLM</span>
+
+      <span>{asset.assetCode}</span>
+
       <ArrowDropDown fill={appearance.accentColor} />
     </div>
   );

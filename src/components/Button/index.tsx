@@ -17,6 +17,7 @@ interface ButtonProps {
   onClick?: () => void;
   style?: React.CSSProperties;
   className?: string;
+  type?: 'button' | 'submit';
 }
 
 const buttonBase =
@@ -38,6 +39,7 @@ const Button = ({
   onClick,
   style,
   className,
+  type,
 }: ButtonProps) => {
   const appearance = useAppStore((store) => store.config.appearance);
 
@@ -80,11 +82,11 @@ const Button = ({
 
   return (
     <button
+      type={type ? type : 'button'}
       onClick={onClick}
       disabled={state === 'disabled'}
-      className={`${buttonBase} ${sizeClasses[size]} ${
-        className ?? ''
-      } bluxcc:transition-all bluxcc:duration-300`}
+      className={`${buttonBase} ${sizeClasses[size]} ${className ?? ''
+        } bluxcc:transition-all bluxcc:duration-300`}
       style={baseStyle}
     >
       {startIcon && <span>{startIcon}</span>}
