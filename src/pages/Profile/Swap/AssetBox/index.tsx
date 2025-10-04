@@ -32,7 +32,11 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
         }}
         className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
       >
-        <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
+        {asset.assetType === 'native' ? (
+          <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
+        ) : (
+          <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
+        )}
       </div>
 
       <span>{asset.assetCode}</span>

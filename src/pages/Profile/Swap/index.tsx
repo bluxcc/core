@@ -142,6 +142,7 @@ const Swap = () => {
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
               style={{ color: appearance.textColor }}
             />
+
             <AssetBox
               asset={toAsset}
               handleOpenAssets={() => {
