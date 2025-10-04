@@ -59,7 +59,7 @@ const Modal = ({
             ? 'bluxcc:animate-fadeOut'
             : 'bluxcc:animate-fadeIn'
         }`}
-        onClick={onClose}
+        onClick={isSticky ? () => {} : onClose}
       />
 
       {/* modal */}
@@ -67,7 +67,9 @@ const Modal = ({
         className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
           isClosing && !isSticky && 'bluxcc:animate-fadeOut'
         }`}
-        onClick={(e) => e.target === e.currentTarget && handleClose(onClose)}
+        onClick={(e) =>
+          e.target === e.currentTarget && handleClose(onClose) && !isSticky
+        }
       >
         <div
           className={`bluxcc:box-border bluxcc:!shadow-[0px_4px_80px_0px_#00000008] ${
@@ -99,10 +101,8 @@ const Modal = ({
             color: appearance.textColor,
             fontFamily: appearance.font,
             letterSpacing: '-0.04px',
-            outlineStyle: 'solid',
-            outlineColor: appearance.borderColor,
-            outlineWidth: appearance.outlineWidth,
             borderRadius: appearance.borderRadius,
+            outline: `${appearance.outlineWidth} 'solid' ${appearance.borderColor}`,
             overflow: 'hidden',
           }}
         >
@@ -110,6 +110,7 @@ const Modal = ({
             ref={contentRef}
             className={`bluxcc:px-6 bluxcc:pb-4`}
             style={{
+              fontFamily: appearance.font,
               opacity: isHeightReady ? 1 : 0,
               transition: 'opacity 200ms ease-in-out',
             }}

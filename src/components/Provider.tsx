@@ -144,7 +144,7 @@ export const Provider = () => {
     <Modal
       isOpen={modal.isOpen}
       isSticky={modalContent.isSticky}
-      onClose={handleCloseModal}
+      onClose={modalContent.isSticky ? () => {} : handleCloseModal}
       appearance={store.config.appearance}
     >
       <Header

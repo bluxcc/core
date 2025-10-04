@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { hexToRgba } from "../../utils/helpers";
-import { useAppStore } from "../../store";
+import React, { useState } from 'react';
+import { hexToRgba } from '../../utils/helpers';
+import { useAppStore } from '../../store';
 
 type Tab = {
   label: string;
@@ -47,11 +47,13 @@ const TabBox = ({ tabs }: TabsProps) => {
       </div>
 
       <div
-        className="bluxcc:overflow-y-auto"
+        className="bluxcc:max-h-[312px] bluxcc:h-[312px] w-full bluxcc:overflow-auto overflowStyle"
         role="tabpanel"
         aria-labelledby={`tab-${activeTab}`}
       >
-        {tabs[activeTab]?.content}
+        <div className="bluxcc:absolute bluxcc:left-0 bluxcc:right-0 bluxcc:max-h-[312px] bluxcc:overflow-auto overflowStyle">
+          {tabs[activeTab]?.content}
+        </div>
       </div>
     </>
   );

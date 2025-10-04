@@ -2,13 +2,16 @@ import React, { useState, MouseEvent, ChangeEvent } from 'react';
 
 import { IAsset } from '../../../types';
 import { useAppStore } from '../../../store';
-import { Search } from '../../../assets/Icons';
+import { QuestionMark, Search } from '../../../assets/Icons';
 import { useLang } from '../../../hooks/useLang';
 import {
   addXLMToBalances,
   humanizeAmount,
   decideBackRouteFromSelectAsset,
+  getContrastColor,
+  hexToRgba,
 } from '../../../utils/helpers';
+import { StellarLogo } from '../../../assets/Logos';
 
 const SelectAsset = () => {
   const t = useLang();
@@ -16,6 +19,7 @@ const SelectAsset = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const store = useAppStore((store) => store);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { appearance } = store.config;
 
   const defaultAssets: IAsset[] = store.balances.balances
     .filter((x) => x.asset_type !== 'liquidity_pool_shares')
@@ -53,20 +57,20 @@ const SelectAsset = () => {
 
   const onMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
     if (!isFocused) {
-      e.currentTarget.style.borderColor = store.config.appearance.accentColor;
+      e.currentTarget.style.borderColor = appearance.accentColor;
       e.currentTarget.style.transition = 'border-color 0.35s ease-in-out';
     }
   };
 
   const onMouseLeave = (e: MouseEvent<HTMLDivElement>) => {
     if (!isFocused) {
-      e.currentTarget.style.borderColor = store.config.appearance.borderColor;
+      e.currentTarget.style.borderColor = appearance.borderColor;
     }
   };
 
   const getBorderAndRingColor = () => {
-    if (isFocused) return store.config.appearance.accentColor;
-    return store.config.appearance.borderColor;
+    if (isFocused) return appearance.accentColor;
+    return appearance.borderColor;
   };
 
   // Todo
@@ -75,7 +79,7 @@ const SelectAsset = () => {
   // }
 
   return (
-    <div className="bluxcc:h-[348px]">
+    <div className="bluxcc:h-[360px] bluxcc:w-full">
       <div>
         <div
           onFocus={() => setIsFocused(true)}
@@ -85,34 +89,35 @@ const SelectAsset = () => {
           className="bluxcc:flex bluxcc:h-14 bluxcc:items-center bluxcc:gap-2 bluxcc:p-4"
           style={
             {
-              background: store.config.appearance.fieldBackground,
-              borderWidth: store.config.appearance.borderWidth,
+              background: appearance.fieldBackground,
+              borderWidth: appearance.borderWidth,
               '--tw-ring-color': getBorderAndRingColor(),
-              borderRadius: store.config.appearance.borderRadius,
+              borderRadius: appearance.borderRadius,
               borderColor: getBorderAndRingColor(),
-              color: store.config.appearance.textColor,
+              color: appearance.textColor,
             } as React.CSSProperties
           }
         >
-          <Search fill={store.config.appearance.textColor} />
+          <Search fill={appearance.textColor} />
 
           <input
             autoFocus
             type="text"
+            id="bluxcc-input"
             placeholder={t('search')}
             value={searchQuery}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            className="bluxcc:bg-transparent bluxcc:outline-hidden"
+            className="bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:text-base"
             style={{
-              color: store.config.appearance.textColor,
+              color: appearance.textColor,
             }}
           />
         </div>
       </div>
 
-      <div className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:mt-4 bluxcc:gap-2 bluxcc:overflow-y-auto">
+      <div className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:mt-4 bluxcc:gap-2 bluxcc:overflow-y-auto overflowStyle bluxcc:max-h-[300px]">
         {assets.map((asset, index) => (
           <div
             key={asset.assetType + asset.assetIssuer}
@@ -125,25 +130,45 @@ const SelectAsset = () => {
             style={{
               background:
                 hoveredIndex === index
-                  ? store.config.appearance.fieldBackground
+                  ? appearance.fieldBackground
                   : 'transparent',
-              color: store.config.appearance.textColor,
+              color: appearance.textColor,
               borderBottomStyle: 'dashed',
               borderBottomWidth:
-                index < assets.length - 1
-                  ? store.config.appearance.borderWidth
-                  : '0px',
-              borderBottomColor: store.config.appearance.borderColor,
+                index < assets.length - 1 ? appearance.borderWidth : '0px',
+              borderBottomColor: appearance.borderColor,
               transition: 'all 0.2s ease-in-out',
             }}
           >
             <div className="bluxcc:flex bluxcc:items-center bluxcc:gap-[10px]">
-              <span className="bluxcc:font-medium">{asset.logo}</span>
+              <span
+                className="bluxcc:font-medium bluxcc:size-10 bluxcc:flex bluxcc:items-center bluxcc:justify-center"
+                style={{
+                  borderRadius: appearance.borderRadius,
+                  background: appearance.fieldBackground,
+                  border: `${appearance.borderWidth} solid ${appearance.borderColor}`,
+                }}
+              >
+                {asset.assetType === 'native' ? (
+                  <StellarLogo
+                    fill={getContrastColor(appearance.fieldBackground)}
+                  />
+                ) : (
+                  <QuestionMark
+                    fill={getContrastColor(appearance.fieldBackground)}
+                  />
+                )}
+              </span>
               <div className="bluxcc:flex bluxcc:flex-col">
-                <span className="bluxcc:text-xs bluxcc:font-medium">
+                <span className="bluxcc:text-sm bluxcc:font-medium">
                   {asset.assetCode}
                 </span>
-                <span className="bluxcc:text-xs">{asset.assetCode}</span>
+                <span
+                  className="bluxcc:text-xs"
+                  style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+                >
+                  {asset.assetCode}
+                </span>
               </div>
             </div>
 
@@ -155,7 +180,7 @@ const SelectAsset = () => {
 
         {assets.length === 0 && (
           <div
-            style={{ color: store.config.appearance.textColor }}
+            style={{ color: appearance.textColor }}
             className="bluxcc:mt-2 bluxcc:text-center"
           >
             {t('noAssetsFound')}

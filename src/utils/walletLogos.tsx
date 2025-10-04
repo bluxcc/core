@@ -8,6 +8,7 @@ import {
   FreighterLogo,
   WalletConnectLogo,
   KleverLogo,
+  DarkFreighterLogo,
 } from '../assets/Logos';
 
 const handleLogos = (walletName: string, isDark: boolean) => {
@@ -15,7 +16,11 @@ const handleLogos = (walletName: string, isDark: boolean) => {
     case 'Rabet':
       return <RabetLogo fill={isDark ? '#ffffff' : '#B8BAC4'} />;
     case 'Freighter':
-      return <FreighterLogo fill={isDark ? '#7863FF' : '#310CCC'} />;
+      return isDark ? (
+        <DarkFreighterLogo />
+      ) : (
+        <FreighterLogo fill={'#310CCC'} />
+      );
     case 'Albedo':
       return <AlbedoLogo />;
     case 'LOBSTR':

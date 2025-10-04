@@ -1,4 +1,4 @@
-import { useAppStore } from "../../store";
+import { useAppStore } from '../../store';
 
 const Divider = () => {
   const appearance = useAppStore((store) => store.config.appearance);

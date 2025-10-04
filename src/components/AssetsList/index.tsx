@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { IAsset } from "../../types";
-import { useAppStore } from "../../store";
-import { useLang } from "../../hooks/useLang";
-import { hexToRgba, humanizeAmount } from "../../utils/helpers";
+import { IAsset } from '../../types';
+import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
+import {
+  getContrastColor,
+  hexToRgba,
+  humanizeAmount,
+} from '../../utils/helpers';
+import { StellarLogo } from '../../assets/Logos';
+import { QuestionMark } from '../../assets/Icons';
 
 type AssetsProps = {
   assets: IAsset[];
@@ -21,38 +27,45 @@ const Assets = ({ assets }: AssetsProps) => {
   // };
 
   return (
-    <div className="bluxcc:w-full">
+    <div className="bluxcc:h-full bluxcc:w-full bluxcc:overflow-auto overflowStyle">
       {assets.map((asset, index) => (
         <div
           // onClick={handleClickAsset}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}
-          className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-between bluxcc:py-2 bluxcc:w-full"
+          className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-between bluxcc:py-2 bluxcc:px-4"
           style={{
             background:
               hoveredIndex === index
                 ? appearance.fieldBackground
-                : "transparent",
+                : 'transparent',
             color: appearance.textColor,
-            borderBottomStyle: "dashed",
+            borderBottomStyle: 'dashed',
             borderBottomWidth:
-              index < assets.length - 1 ? appearance.borderWidth : "0px",
+              index < assets.length - 1 ? appearance.borderWidth : '0px',
             borderBottomColor: appearance.borderColor,
-            transition: "all 0.2s ease-in-out",
+            transition: 'all 0.2s ease-in-out',
           }}
         >
-          <div className="bluxcc:flex bluxcc:items-center bluxcc:gap-[10px]">
+          <div className=" bluxcc:flex bluxcc:items-center bluxcc:gap-[10px]">
             <span
               className="bluxcc:font-medium bluxcc:size-10 bluxcc:flex bluxcc:items-center bluxcc:justify-center"
               style={{
-                borderStyle: "solid",
-                borderWidth: appearance.borderWidth,
-                borderColor: appearance.borderColor,
                 borderRadius: appearance.borderRadius,
+                background: appearance.fieldBackground,
+                border: `${appearance.borderWidth} solid ${appearance.borderColor}`,
               }}
             >
-              {asset.logo}
+              {asset.assetType === 'native' ? (
+                <StellarLogo
+                  fill={getContrastColor(appearance.fieldBackground)}
+                />
+              ) : (
+                <QuestionMark
+                  fill={getContrastColor(appearance.fieldBackground)}
+                />
+              )}
             </span>
             <div className="bluxcc:flex bluxcc:flex-col">
               <span className="bluxcc:text-sm bluxcc:font-medium">
@@ -75,7 +88,7 @@ const Assets = ({ assets }: AssetsProps) => {
               className="bluxcc:font-semibold bluxcc:text-xs"
               style={{ color: hexToRgba(appearance.textColor, 0.7) }}
             >
-              {humanizeAmount(asset.valueInCurrency || "0")}$
+              {humanizeAmount(asset.valueInCurrency || '0')}$
             </span>
           </div>
         </div>
@@ -83,10 +96,10 @@ const Assets = ({ assets }: AssetsProps) => {
 
       {assets.length === 0 && (
         <div
-          style={{ color: appearance.textColor }}
-          className="bluxcc:mt-2 bluxcc:text-center"
+          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+          className="bluxcc:mb-2 bluxcc:text-center"
         >
-          {t("noAssetsFound")}
+          {t('noAssetsFound')}
         </div>
       )}
     </div>

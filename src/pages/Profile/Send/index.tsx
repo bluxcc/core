@@ -104,7 +104,7 @@ const SendForm = () => {
   return (
     <>
       <div>
-        <div className="bluxcc:relative bluxcc:mb-4">
+        <div className="bluxcc:relative bluxcc:mb-1">
           <InputField
             autoFocus
             type="number"
@@ -137,7 +137,7 @@ const SendForm = () => {
           />
         </div>
 
-        <div className="bluxcc:mb-4">
+        <div className="bluxcc:mb-1">
           <InputField
             label={t('to')}
             placeholder={t('enterAddress')}
@@ -151,6 +151,7 @@ const SendForm = () => {
 
         <div>
           <InputField
+            optionalField
             label={t('memo')}
             placeholder={t('enterMemo')}
             value={form.memo}

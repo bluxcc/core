@@ -1,13 +1,15 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent } from 'react';
 
-import { IAppearance } from "../../types";
-import { useAppStore } from "../../store";
+import { IAppearance } from '../../types';
+import { useAppStore } from '../../store';
+import { hexToRgba } from '../../utils/helpers';
+import { useLang } from '../../hooks/useLang';
 
 type InputFieldProps = {
   label?: string;
   placeholder?: string;
   error?: string;
-  type?: "text" | "password" | "number";
+  type?: 'text' | 'password' | 'number';
   iconRight?: React.ReactNode;
   iconLeft?: React.ReactNode;
   button?: string | React.ReactNode;
@@ -17,6 +19,7 @@ type InputFieldProps = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   customLabel?: React.ReactNode;
   className?: string;
+  optionalField?: boolean;
 };
 
 type CustomButtonProps = {
@@ -50,12 +53,13 @@ const CustomButton = ({
 const InputField = ({
   label,
   autoFocus,
-  type = "text",
-  placeholder = "Input",
+  type = 'text',
+  placeholder = 'Input',
   error,
   iconRight,
   iconLeft,
   button,
+  optionalField = false,
   onButtonClick,
   customLabel,
   value,
@@ -64,24 +68,25 @@ const InputField = ({
 }: InputFieldProps) => {
   const appearance = useAppStore((store) => store.config.appearance);
   const [isFocused, setIsFocused] = useState(false);
+  const t = useLang();
 
   const onMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
     if (!isFocused && !error) {
       e.currentTarget.style.borderColor = appearance.accentColor;
-      e.currentTarget.style.transition = "border-color 0.35s ease-in-out";
+      e.currentTarget.style.transition = 'border-color 0.35s ease-in-out';
     }
   };
 
   const onMouseLeave = (e: MouseEvent<HTMLDivElement>) => {
     if (!isFocused) {
       e.currentTarget.style.borderColor = error
-        ? "#ec2929"
+        ? '#ec2929'
         : appearance.borderColor;
     }
   };
 
   const getBorderAndRingColor = () => {
-    if (error) return "#ec2929";
+    if (error) return '#ec2929';
     if (isFocused) return appearance.accentColor;
     return appearance.borderColor;
   };
@@ -90,10 +95,20 @@ const InputField = ({
     <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col">
       {label && (
         <label
-          style={{ color: error ? "#ec2929" : appearance.textColor }}
-          className={`bluxcc:mb-1 bluxcc:ml-2 bluxcc:flex bluxcc:justify-between bluxcc:text-xs`}
+          style={{ color: error ? '#ec2929' : appearance.textColor }}
+          className={`bluxcc:mb-2 bluxcc:ml-4 bluxcc:flex bluxcc:justify-between bluxcc:text-xs`}
         >
-          <span>{label}</span>
+          <span>
+            {label}{' '}
+            {optionalField && (
+              <span
+                style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+                className="bluxcc:text-[10px]"
+              >
+                ({t('optional')})
+              </span>
+            )}
+          </span>
           <span>{customLabel}</span>
         </label>
       )}
@@ -105,7 +120,7 @@ const InputField = ({
         onMouseLeave={onMouseLeave}
         style={
           {
-            "--tw-ring-color": getBorderAndRingColor(),
+            '--tw-ring-color': getBorderAndRingColor(),
             borderRadius: appearance.borderRadius,
             borderColor: getBorderAndRingColor(),
             backgroundColor: appearance.fieldBackground,
@@ -117,7 +132,7 @@ const InputField = ({
         <input
           id="bluxcc-input"
           autoComplete="off"
-          min={type === "number" ? 1 : undefined}
+          min={type === 'number' ? 1 : undefined}
           type={type}
           autoFocus={autoFocus}
           value={value}
@@ -125,7 +140,7 @@ const InputField = ({
           className="bluxcc:!mr-2 bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:text-base bluxcc:font-medium"
           style={{
             color: appearance.textColor,
-            width: !button ? "100%" : "90%",
+            width: !button ? '100%' : '90%',
           }}
           onChange={onChange}
         />
@@ -136,14 +151,12 @@ const InputField = ({
             appearance={appearance}
           />
         )}
-        {iconRight && <div className="bluxcc:ml-2">{iconRight}</div>}
+        {iconRight && <div className="bluxcc:ml-4">{iconRight}</div>}
       </div>
-      {error && (
-        <p
-          className={`bluxcc:mt-1 bluxcc:ml-2 bluxcc:text-xs bluxcc:text-alert-error`}
-        >
-          {error}
-        </p>
+      {!optionalField && (
+        <div className="bluxcc:mt-1 bluxcc:text-xs bluxcc:ml-4 bluxcc:h-4">
+          {error ? <p className={`bluxcc:text-alert-error`}>{error}</p> : ''}
+        </div>
       )}
     </div>
   );

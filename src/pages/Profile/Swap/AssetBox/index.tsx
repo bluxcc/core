@@ -1,7 +1,7 @@
 import { IAsset } from '../../../../types';
 import { useAppStore } from '../../../../store';
 import { StellarLogo } from '../../../../assets/Logos';
-import { ArrowDropDown } from '../../../../assets/Icons';
+import { ArrowDropDown, QuestionMark } from '../../../../assets/Icons';
 import { getContrastColor } from '../../../../utils/helpers';
 
 type AssetBoxProps = {
@@ -35,7 +35,7 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
         {asset.assetType === 'native' ? (
           <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
         ) : (
-          <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
+          <QuestionMark fill={getContrastColor(appearance.fieldBackground)} />
         )}
       </div>
 

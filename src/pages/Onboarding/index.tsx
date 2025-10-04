@@ -67,9 +67,7 @@ const Onboarding = () => {
       <div
         className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:z-10"
         style={{
-          borderTopStyle: 'dashed',
-          borderTopColor: appearance.borderColor,
-          borderTopWidth: appearance.borderWidth,
+          borderTop: `${appearance.borderWidth} dashed ${appearance.borderColor}`,
         }}
       />
 
@@ -103,7 +101,7 @@ const Onboarding = () => {
         </div>
       )}
 
-      <div className="bluxcc:space-y-2">
+      <div className="">
         {orderedLoginMethods.map((method, index) => {
           const nextMethod = orderedLoginMethods[index + 1];
           const prevMethod = orderedLoginMethods[index - 1];
@@ -200,6 +198,7 @@ const Onboarding = () => {
           className="bluxcc:no-underline"
           style={{
             color: appearance.textColor,
+            fontFamily: appearance.font,
           }}
         >
           {t('poweredByBlux')}
