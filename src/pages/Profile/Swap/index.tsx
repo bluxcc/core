@@ -34,10 +34,10 @@ const Swap = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(e.target.from.value);
-    console.log(e.target.to.value);
-    console.log(fromAsset);
-    console.log(toAsset);
+    // console.log(e.target.from.value);
+    // console.log(e.target.to.value);
+    // console.log(fromAsset);
+    // console.log(toAsset);
   };
 
   useEffect(() => {

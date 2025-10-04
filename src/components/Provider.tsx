@@ -11,11 +11,14 @@ import {
 } from '../utils/helpers';
 import { getModalContent } from '../constants/routes';
 import useUpdateAccount from '../hooks/useUpdateAccount';
+import useCheckWalletNetwork from '../hooks/useCheckWalletNetwork';
 
 export const Provider = () => {
   useUpdateAccount();
 
   const store = useAppStore((store) => store);
+
+  useCheckWalletNetwork(store);
 
   const { modal, closeModal, setShowAllWallets } = store;
 
@@ -147,7 +150,7 @@ export const Provider = () => {
       <Header
         onBack={handleBackNavigation}
         onInfo={handleGoToAbout}
-        onClose={modalContent.isSticky ? () => { } : handleCloseModal}
+        onClose={modalContent.isSticky ? () => {} : handleCloseModal}
         title={
           store.modal.dynamicTitle !== ''
             ? store.modal.dynamicTitle

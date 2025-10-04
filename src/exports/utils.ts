@@ -1,13 +1,13 @@
-import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { Horizon, rpc } from '@stellar/stellar-sdk';
 
-import { getState } from "../store";
-import { getNetworkRpc } from "../utils/helpers";
+import { getState } from '../store';
+import { getNetworkRpc } from '../utils/helpers';
 
 export type CallBuilderOptions = {
   cursor?: string;
   limit?: number;
   network?: string;
-  order?: "asc" | "desc";
+  order?: 'asc' | 'desc';
 };
 
 export const checkConfigCreated = () => {
@@ -20,7 +20,7 @@ export const getAddress = (address?: string) => {
   const { user } = getState();
 
   if (!user && !address) {
-    throw new Error("Address not found");
+    throw new Error('Address not found');
   }
 
   if (address) {
@@ -42,7 +42,7 @@ export const getNetwork = (network?: string) => {
       };
     }
 
-    throw new Error("Custom network has no transports.");
+    throw new Error('Custom network has no transports.');
   }
 
   const { horizon, soroban } = getNetworkRpc(network, config.transports ?? {});

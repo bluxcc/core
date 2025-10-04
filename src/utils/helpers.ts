@@ -358,6 +358,16 @@ export const translate = (
   return interpolate(template, vars);
 };
 
+export const getNetworkNamesFromPassphrase = (
+  userNetworks: string[],
+): string[] => {
+  const result = Object.entries(networks)
+    .filter((n) => userNetworks.includes(n[1]))
+    .map((n) => capitalizeFirstLetter(n[0]));
+
+  return result;
+};
+
 export const validateNetworkOptions = (
   networks: string[],
   defaultNetwork: string | undefined,

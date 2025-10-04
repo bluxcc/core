@@ -84,8 +84,8 @@ export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
     Component: <OTP />,
   },
   [Route.WRONG_NETWORK]: {
-    isSticky: true,
     title: '',
+    isSticky: true,
     Component: <WrongNetwork />,
   },
   [Route.ABOUT]: {

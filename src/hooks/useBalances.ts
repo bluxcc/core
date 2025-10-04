@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Horizon } from "@stellar/stellar-sdk";
+import { useState, useEffect } from 'react';
+import { Horizon } from '@stellar/stellar-sdk';
 
-import { useAppStore } from "../store";
-import getBalances from "../exports/core/getBalances";
+import { useAppStore } from '../store';
+import getBalances from '../exports/core/getBalances';
 
 export type UseBalancesResult = {
   loading: boolean;
@@ -44,7 +44,7 @@ const useBalances = (): UseBalancesResult => {
           balances: [],
         });
       });
-  }, [userAddress, store.stellar?.activeNetwork]);
+  }, [userAddress, store.stellar?.servers]);
 
   return result;
 };

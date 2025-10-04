@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { Horizon } from "@stellar/stellar-sdk";
+import { useState, useEffect } from 'react';
+import { Horizon } from '@stellar/stellar-sdk';
 
-import { useAppStore } from "../store";
-import getTransactions from "../exports/core/getTransactions";
+import { useAppStore } from '../store';
+import getTransactions from '../exports/core/getTransactions';
 
 interface TransactionRecordWithOperations
-  extends Omit<Horizon.ServerApi.TransactionRecord, "operations"> {
+  extends Omit<Horizon.ServerApi.TransactionRecord, 'operations'> {
   operations: Horizon.ServerApi.OperationRecord[];
 }
 
@@ -68,7 +68,7 @@ const useTransactions = (): UseTransactionsResult => {
           transactions: [],
         });
       });
-  }, [userAddress, store.stellar?.activeNetwork]);
+  }, [userAddress, store.stellar?.servers]);
 
   return result;
 };
