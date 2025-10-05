@@ -4,6 +4,7 @@ import { IStore } from '../store';
 import { walletsConfig } from '../wallets';
 import { Route, SupportedWallet } from '../enums';
 import { getWalletNetwork } from '../utils/helpers';
+import switchNetwork from '../exports/core/switchNetwork';
 
 const useCheckWalletNetwork = (store: IStore) => {
   const [shouldModalOpen, setShouldModalOpen] = useState(false);
@@ -22,6 +23,12 @@ const useCheckWalletNetwork = (store: IStore) => {
         .then((networkPassphrase) => {
           if (
             networkPassphrase &&
+            store.config.networks.includes(networkPassphrase) &&
+            store.stellar?.activeNetwork !== networkPassphrase
+          ) {
+            switchNetwork(networkPassphrase);
+          } else if (
+            networkPassphrase &&
             !store.config.networks.includes(networkPassphrase)
           ) {
             setShouldModalOpen(true);
@@ -29,7 +36,7 @@ const useCheckWalletNetwork = (store: IStore) => {
             setShouldModalOpen(false);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }, 1000);
 
     return () => {

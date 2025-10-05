@@ -5,13 +5,13 @@ import Modal from './Modal';
 import Header from './Header';
 import { Route } from '../enums';
 import { useAppStore } from '../store';
-import {
-  decideBackRouteFromSelectAsset,
-  getNetworkRpc,
-} from '../utils/helpers';
 import { getModalContent } from '../constants/routes';
 import useUpdateAccount from '../hooks/useUpdateAccount';
 import useCheckWalletNetwork from '../hooks/useCheckWalletNetwork';
+import {
+  getNetworkRpc,
+  decideBackRouteFromSelectAsset,
+} from '../utils/helpers';
 
 export const Provider = () => {
   useUpdateAccount();
@@ -144,13 +144,13 @@ export const Provider = () => {
     <Modal
       isOpen={modal.isOpen}
       isSticky={modalContent.isSticky}
-      onClose={modalContent.isSticky ? () => {} : handleCloseModal}
+      onClose={modalContent.isSticky ? () => { } : handleCloseModal}
       appearance={store.config.appearance}
     >
       <Header
         onBack={handleBackNavigation}
         onInfo={handleGoToAbout}
-        onClose={modalContent.isSticky ? () => {} : handleCloseModal}
+        onClose={modalContent.isSticky ? () => { } : handleCloseModal}
         title={
           store.modal.dynamicTitle !== ''
             ? store.modal.dynamicTitle

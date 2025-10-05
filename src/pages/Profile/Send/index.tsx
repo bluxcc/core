@@ -8,7 +8,7 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import InputField from '../../../components/Input';
-import { ArrowDropUp } from '../../../assets/Icons';
+import { ArrowDropUp, QuestionMark } from '../../../assets/Icons';
 import { sendTransaction } from '../../../exports/blux';
 import { StellarSmallLogo } from '../../../assets/Logos';
 import { getContrastColor } from '../../../utils/helpers';
@@ -127,9 +127,19 @@ const SendForm = () => {
             button={
               <span className="bluxcc:flex bluxcc:justify-between bluxcc:!gap-1">
                 <span className="bluxcc:flex bluxcc:items-center">
-                  <StellarSmallLogo
-                    fill={getContrastColor(store.config.appearance.background)}
-                  />
+                  {store.selectAsset.asset.assetType === 'native' ? (
+                    <StellarSmallLogo
+                      fill={getContrastColor(
+                        store.config.appearance.background,
+                      )}
+                    />
+                  ) : (
+                    <QuestionMark
+                      fill={getContrastColor(
+                        store.config.appearance.fieldBackground,
+                      )}
+                    />
+                  )}
                 </span>
                 {store.selectAsset.asset.assetCode}
               </span>
