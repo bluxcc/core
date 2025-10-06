@@ -8,10 +8,10 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import InputField from '../../../components/Input';
-import { ArrowDropUp, QuestionMark } from '../../../assets/Icons';
 import { sendTransaction } from '../../../exports/blux';
 import { StellarSmallLogo } from '../../../assets/Logos';
 import { getContrastColor } from '../../../utils/helpers';
+import { ArrowDropUp, QuestionMark } from '../../../assets/Icons';
 import paymentTransaction from '../../../stellar/paymentTransaction';
 
 type SendFormValues = {
@@ -39,14 +39,14 @@ const SendForm = () => {
   const handleOpenAssets = () => {
     store.setSelectAsset({
       ...store.selectAsset,
-      for: 'send',
+      field: 'send',
     });
 
     store.setRoute(Route.SELECT_ASSET);
   };
 
   const handleMaxClick = () => {
-    const balance = Number(store.selectAsset.asset.assetBalance).toString();
+    const balance = Number(store.selectAsset.sendAsset.assetBalance).toString();
 
     setForm((prev) => ({ ...prev, amount: balance }));
   };
@@ -63,7 +63,8 @@ const SendForm = () => {
     if (!form.amount) {
       errorMessages.amount = t('amountRequired');
     } else if (
-      Number(form.amount) > Number(store.selectAsset.asset.assetBalance || '0')
+      Number(form.amount) >
+      Number(store.selectAsset.sendAsset.assetBalance || '0')
     ) {
       errorMessages.amount = t('amountExceedsBalance');
     }
@@ -82,7 +83,7 @@ const SendForm = () => {
           form.memo,
           form.amount,
           form.address,
-          store.selectAsset.asset,
+          store.selectAsset.sendAsset,
           store.user?.address as string,
           store.stellar?.servers.horizon as HorizonServer,
           store.stellar?.activeNetwork || '',
@@ -127,7 +128,7 @@ const SendForm = () => {
             button={
               <span className="bluxcc:flex bluxcc:justify-between bluxcc:!gap-1">
                 <span className="bluxcc:flex bluxcc:items-center">
-                  {store.selectAsset.asset.assetType === 'native' ? (
+                  {store.selectAsset.sendAsset.assetType === 'native' ? (
                     <StellarSmallLogo
                       fill={getContrastColor(
                         store.config.appearance.background,
@@ -141,7 +142,7 @@ const SendForm = () => {
                     />
                   )}
                 </span>
-                {store.selectAsset.asset.assetCode}
+                {store.selectAsset.sendAsset.assetCode}
               </span>
             }
           />

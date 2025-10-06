@@ -36,7 +36,7 @@ const useCheckWalletNetwork = (store: IStore) => {
             setShouldModalOpen(false);
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }, 1000);
 
     return () => {
@@ -48,6 +48,7 @@ const useCheckWalletNetwork = (store: IStore) => {
     store.authState.isAuthenticated,
     store.config.networks,
     store.user?.authValue,
+    store.stellar?.activeNetwork,
   ]);
 
   useEffect(() => {

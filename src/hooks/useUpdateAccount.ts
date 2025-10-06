@@ -4,7 +4,9 @@ import { Route } from '../enums';
 import { useAppStore } from '../store';
 import useBalances from './useBalances';
 import useTransactions from './useTransactions';
+import networks from '../exports/core/networks';
 import { balanceToAsset } from '../utils/helpers';
+import { MAINNET_USDC, TESTNET_USDC } from '../constants/assets';
 
 const INTERVAL = 10000;
 
@@ -32,9 +34,17 @@ const useUpdateAccount = () => {
       balances.length !== 0 &&
       xlmAsset
     ) {
+      let swapToAsset = balanceToAsset(xlmAsset);
+
+      if (balances.length > 1) {
+        swapToAsset = balanceToAsset(balances[1]);
+      }
+
       store.setSelectAsset({
         ...store.selectAsset,
-        asset: balanceToAsset(xlmAsset),
+        swapToAsset,
+        sendAsset: balanceToAsset(xlmAsset),
+        swapFromAsset: balanceToAsset(xlmAsset),
       });
     }
   };
@@ -49,7 +59,7 @@ const useUpdateAccount = () => {
     return () => {
       clearInterval(i);
     };
-  }, [balancesResult, transactionsResult]);
+  }, [balancesResult, transactionsResult, store.modal.route]);
 };
 
 export default useUpdateAccount;

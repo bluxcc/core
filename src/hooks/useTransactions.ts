@@ -34,6 +34,7 @@ const useTransactions = (): UseTransactionsResult => {
 
     getTransactions({
       limit: 5,
+      order: 'desc',
       forAccount: userAddress,
     })
       .then((result) => {

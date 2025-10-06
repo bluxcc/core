@@ -1,6 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
 
-import { ISelectAsset } from '../store';
 import { walletsConfig } from '../wallets';
 import EXPLORERS from '../constants/explorers';
 import translations from '../constants/locales';
@@ -12,22 +11,14 @@ import {
   INetworkTransports,
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
+import { XLM } from '../constants/assets';
 
 export const addXLMToBalances = (balances: IAsset[]) => {
   if (balances.length !== 0) {
     return balances;
   }
 
-  return [
-    {
-      // TODO: Add XLM logo as string
-      // logo?:
-      assetBalance: '0',
-      assetCode: 'XLM',
-      assetType: 'native',
-      assetIssuer: '',
-    },
-  ];
+  return [XLM];
 };
 
 export const balanceToAsset = (
@@ -62,8 +53,10 @@ export const copyText = (text: string) => {
   return navigator.clipboard.writeText(text);
 };
 
-export const decideBackRouteFromSelectAsset = (selectAsset: ISelectAsset) => {
-  if (selectAsset.for === 'send') {
+export const decideBackRouteFromSelectAsset = (
+  field: 'send' | 'swapTo' | 'swapFrom',
+) => {
+  if (field === 'send') {
     return Route.SEND;
   }
 

@@ -2,16 +2,16 @@ import React, { useState, MouseEvent, ChangeEvent } from 'react';
 
 import { IAsset } from '../../../types';
 import { useAppStore } from '../../../store';
-import { QuestionMark, Search } from '../../../assets/Icons';
 import { useLang } from '../../../hooks/useLang';
-import {
-  addXLMToBalances,
-  humanizeAmount,
-  decideBackRouteFromSelectAsset,
-  getContrastColor,
-  hexToRgba,
-} from '../../../utils/helpers';
 import { StellarLogo } from '../../../assets/Logos';
+import { QuestionMark, Search } from '../../../assets/Icons';
+import {
+  hexToRgba,
+  humanizeAmount,
+  getContrastColor,
+  addXLMToBalances,
+  decideBackRouteFromSelectAsset,
+} from '../../../utils/helpers';
 
 const SelectAsset = () => {
   const t = useLang();
@@ -45,12 +45,20 @@ const SelectAsset = () => {
   const assets = addXLMToBalances(defaultAssets);
 
   const handleSelectAsset = (asset: IAsset) => {
+    let fieldName = 'sendAsset';
+
+    if (store.selectAsset.field === 'swapTo') {
+      fieldName = 'swapToAsset';
+    } else if (store.selectAsset.field === 'swapFrom') {
+      fieldName = 'swapFromAsset';
+    }
+
     store.setSelectAsset({
       ...store.selectAsset,
-      asset,
+      [fieldName]: asset,
     });
 
-    const route = decideBackRouteFromSelectAsset(store.selectAsset);
+    const route = decideBackRouteFromSelectAsset(store.selectAsset.field);
 
     store.setRoute(route);
   };
@@ -72,11 +80,6 @@ const SelectAsset = () => {
     if (isFocused) return appearance.accentColor;
     return appearance.borderColor;
   };
-
-  // Todo
-  // if (context.value.account.loading) {
-  //   return <div>{t("loading")}</div>;
-  // }
 
   return (
     <div className="bluxcc:h-[360px] bluxcc:w-full">

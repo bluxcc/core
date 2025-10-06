@@ -1,6 +1,6 @@
-import { Horizon, StrKey } from "@stellar/stellar-sdk";
+import { Horizon, StrKey } from '@stellar/stellar-sdk';
 
-import { checkConfigCreated, getAddress, getNetwork } from "../utils";
+import { checkConfigCreated, getAddress, getNetwork } from '../utils';
 
 type GetBalanceOptions = {
   address?: string;
@@ -16,7 +16,7 @@ const getBalances = async (
   const { horizon } = getNetwork(options.network);
 
   if (!StrKey.isValidEd25519PublicKey(address)) {
-    throw new Error("Invalid address");
+    throw new Error('Invalid address');
   }
 
   try {
@@ -26,7 +26,16 @@ const getBalances = async (
       return account.balances;
     }
 
-    return account.balances.filter((b) => Number(b.balance) !== 0);
+    const result = account.balances.filter((b) => Number(b.balance) !== 0);
+
+    const xlm = result.find((x) => x.asset_type === 'native');
+    const abcd = result.filter((x) => x.asset_type !== 'native');
+
+    if (xlm) {
+      return [xlm, ...abcd];
+    }
+
+    return abcd;
   } catch {
     return [];
   }

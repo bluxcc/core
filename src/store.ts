@@ -3,6 +3,7 @@ import { createStore } from 'zustand/vanilla';
 import { Horizon, rpc } from '@stellar/stellar-sdk';
 import { SignClient } from '@walletconnect/sign-client/dist/types/client';
 
+import { XLM } from './constants/assets';
 import { Route, SupportedWallet } from './enums';
 import { defaultLightTheme } from './constants/themes';
 import { UseBalancesResult } from './hooks/useBalances';
@@ -34,8 +35,10 @@ export interface IStellarConfig {
 }
 
 export interface ISelectAsset {
-  asset: IAsset;
-  for: 'send' | 'swapFrom' | 'swapTo';
+  field: 'send' | 'swapFrom' | 'swapTo';
+  sendAsset: IAsset;
+  swapToAsset: IAsset;
+  swapFromAsset: IAsset;
 }
 
 export interface IStoreProperties {
@@ -95,7 +98,7 @@ export interface IStoreMethods {
   setWalletConnectClient: (client: SignClient, connection: any) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -145,13 +148,10 @@ export const store = createStore<IStore>((set) => ({
     transactions: [],
   },
   selectAsset: {
-    for: 'send',
-    asset: {
-      assetIssuer: '',
-      assetCode: 'XLM',
-      assetBalance: '0',
-      assetType: 'native',
-    },
+    field: 'send',
+    sendAsset: XLM,
+    swapToAsset: XLM,
+    swapFromAsset: XLM,
   },
   walletConnectClient: undefined,
   setConfig: (config: IInternalConfig) =>

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 import AssetBox from './AssetBox';
 import { Route } from '../../../enums';
-import { IAsset } from '../../../types';
 import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
@@ -11,24 +10,24 @@ import { ArrowDropUp, SwapIcon } from '../../../assets/Icons';
 import { hexToRgba, humanizeAmount } from '../../../utils/helpers';
 
 const Swap = () => {
+  const [to, setTo] = useState('0');
+  const [from, setFrom] = useState('0');
+  const [error, setError] = useState('');
+
   const store = useAppStore((store) => store);
   const t = useLang();
-
-  const [fromAsset, setFromAsset] = useState<IAsset>(store.selectAsset.asset);
-  const [toAsset, setToAsset] = useState<IAsset>(store.selectAsset.asset);
 
   const handleOpenAssets = (field: 'swapFrom' | 'swapTo') => {
     store.setSelectAsset({
       ...store.selectAsset,
-      for: field,
+      field: field,
     });
 
     store.setRoute(Route.SELECT_ASSET);
   };
 
   const handleMax = () => {
-    // dmskfjdkh
-    // e.target.from.value = fromAsset.assetBalance;
+    setFrom(store.selectAsset.swapFromAsset.assetBalance);
   };
 
   const handleSubmit = (e) => {
@@ -40,15 +39,63 @@ const Swap = () => {
     // console.log(toAsset);
   };
 
-  useEffect(() => {
-    const field = store.selectAsset.for;
-
-    if (field === 'swapFrom') {
-      setFromAsset(store.selectAsset.asset);
+  const handleInputChange = (e, field: 'from' | 'to') => {
+    if (field === 'from') {
+      setFrom(e.target.value);
     } else {
-      setToAsset(store.selectAsset.asset);
+      setTo(e.target.value);
     }
-  }, [store.selectAsset.asset]);
+  };
+
+  const handleSwapAssets = () => {
+    const fromAsset = store.selectAsset.swapFromAsset;
+    const toAsset = store.selectAsset.swapToAsset;
+
+    store.setSelectAsset({
+      ...store.selectAsset,
+      swapFromAsset: toAsset,
+      swapToAsset: fromAsset,
+    });
+  };
+
+  useEffect(() => {
+    if (isNaN(Number(from)) || from === '') {
+      setError('Invalid value for FROM field.');
+
+      return;
+    }
+
+    if (isNaN(Number(to)) || to === '') {
+      setError('Invalid value for TO field.');
+
+      return;
+    }
+
+    if (
+      store.selectAsset.swapFromAsset.assetCode ===
+        store.selectAsset.swapToAsset.assetCode &&
+      store.selectAsset.swapFromAsset.assetIssuer ===
+        store.selectAsset.swapToAsset.assetIssuer
+    ) {
+      setError('FROM and TO assets are the same.');
+
+      return;
+    }
+
+    if (isNaN(Number(store.selectAsset.swapFromAsset.assetBalance))) {
+      setError('FROM asset has invalid balance.');
+
+      return;
+    }
+
+    if (Number(from) > Number(store.selectAsset.swapFromAsset.assetBalance)) {
+      setError('Insufficient balance.');
+
+      return;
+    }
+
+    setError('');
+  }, [store.selectAsset, from, to]);
 
   const { appearance } = store.config;
 
@@ -69,7 +116,7 @@ const Swap = () => {
               From
             </span>
             <span className="bluxcc:cursor-pointer">
-              {humanizeAmount(fromAsset.assetBalance)}{' '}
+              {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}{' '}
               <span
                 onClick={handleMax}
                 style={{ color: appearance.accentColor }}
@@ -82,14 +129,18 @@ const Swap = () => {
           <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
             <input
               name="from"
-              id="bluxcc-input"
               type="number"
               defaultValue={0}
+              value={from}
+              onChange={(e) => {
+                handleInputChange(e, 'from');
+              }}
+              id="bluxcc-input"
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
               style={{ color: appearance.textColor }}
             />
             <AssetBox
-              asset={fromAsset}
+              asset={store.selectAsset.swapFromAsset}
               handleOpenAssets={() => {
                 handleOpenAssets('swapFrom');
               }}
@@ -115,6 +166,7 @@ const Swap = () => {
             />
 
             <div
+              onClick={handleSwapAssets}
               className="bluxcc:z-20 bluxcc:p-2"
               style={{
                 backgroundColor: appearance.fieldBackground,
@@ -139,12 +191,16 @@ const Swap = () => {
               id="bluxcc-input"
               type="number"
               defaultValue={0}
+              value={to}
+              onChange={(e) => {
+                handleInputChange(e, 'to');
+              }}
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
               style={{ color: appearance.textColor }}
             />
 
             <AssetBox
-              asset={toAsset}
+              asset={store.selectAsset.swapToAsset}
               handleOpenAssets={() => {
                 handleOpenAssets('swapTo');
               }}
@@ -182,15 +238,9 @@ const Swap = () => {
         </div>
         <div
           className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs"
-          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+          style={{ color: 'red' }}
         >
-          The estimated effect of your swap on the market price.{' '}
-          <span
-            className="bluxcc:cursor-pointer bluxcc:rounded-full"
-            style={{ color: appearance.accentColor }}
-          >
-            learn more
-          </span>
+          {error}
         </div>
 
         <Divider />
