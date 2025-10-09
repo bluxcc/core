@@ -29,6 +29,37 @@ export const addXLMToBalances = (balances: IAsset[]) => {
   return [XLM];
 };
 
+export const isChangeTrustNeeded = (
+  to: string,
+  asset: IAsset,
+  balances: Horizon.HorizonApi.BalanceLine[],
+) => {
+  let foundAsset = balances.find((x) => x.asset_type === 'native');
+
+  if (asset.assetType !== 'native') {
+    // @ts-ignore
+    foundAsset = balances.find(
+      (x) =>
+        x.asset_type === asset.assetType &&
+        // @ts-ignore
+        x.asset_code === asset.assetCode &&
+        // @ts-ignore
+        x.asset_issuer === asset.assetIssuer,
+    );
+  }
+
+  if (!foundAsset) {
+    return true;
+  }
+
+  // @ts-ignore
+  if (Number(foundAsset.balance) + Number(to) >= Number(foundAsset.limit)) {
+    return true;
+  }
+
+  return false;
+};
+
 export const balanceToAsset = (
   balance: Horizon.HorizonApi.BalanceLine,
 ): IAsset => {

@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
+import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
 
 import AssetBox from './AssetBox';
 import { Route } from '../../../enums';
@@ -15,7 +16,10 @@ import {
   iAssetToAsset,
   humanizeAmount,
   balanceToAsset,
+  isChangeTrustNeeded,
 } from '../../../utils/helpers';
+import swapTransaction from '../../../stellar/swapTransaction';
+import { sendTransaction } from '../../../exports/blux';
 
 const Swap = () => {
   const t = useLang();
@@ -46,20 +50,41 @@ const Swap = () => {
     setFrom(store.selectAsset.swapFromAsset.assetBalance);
   };
 
-  const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (error.message !== '') {
       return;
     }
 
-    console.log(
-      from,
-      to,
-      store.selectAsset.swapToAsset,
-      store.selectAsset.swapFromAsset,
-      path,
-    );
+    try {
+      const isNeeded = isChangeTrustNeeded(
+        to,
+        store.selectAsset.swapToAsset,
+        store.balances.balances,
+      );
+
+      const xdr = await swapTransaction(
+        from,
+        to,
+        lastFieldChanged,
+        store.selectAsset.swapToAsset,
+        store.selectAsset.swapFromAsset,
+        path,
+        store.user?.address as string,
+        store.stellar?.servers.horizon as HorizonServer,
+        store.stellar?.activeNetwork || '',
+        isNeeded,
+      );
+
+      store.closeModal();
+
+      setTimeout(() => {
+        sendTransaction(xdr, { network: store.stellar?.activeNetwork || '' });
+      }, 250);
+    } catch {
+      setError({ field: 'both', message: 'Failed to make transaction.' });
+    }
   };
 
   const handleInputChange = (
@@ -201,6 +226,10 @@ const Swap = () => {
     if (Number(from) > Number(store.selectAsset.swapFromAsset.assetBalance)) {
       setError({ field: 'from', message: 'Insufficient balance.' });
 
+      return;
+    }
+
+    if (Number(from) === 0 && Number(to) === 0) {
       return;
     }
 
