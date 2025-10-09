@@ -7,12 +7,26 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import { ArrowDropUp, SwapIcon } from '../../../assets/Icons';
-import { hexToRgba, humanizeAmount } from '../../../utils/helpers';
+import {
+  balanceToAsset,
+  hexToRgba,
+  humanizeAmount,
+  iAssetToAsset,
+} from '../../../utils/helpers';
+import getStrictSendPaths from '../../../exports/core/getStrictSendPaths';
+import getStrictReceivePaths from '../../../exports/core/getStrictReceivePaths';
+import { IAsset } from '../../../types';
 
 const Swap = () => {
   const [to, setTo] = useState('0');
   const [from, setFrom] = useState('0');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [path, setPath] = useState<IAsset[]>([]);
+  const [shouldCheckAgain, setShouldCheckAgain] = useState(false);
+  const [lastFieldChanged, setLastFieldChanged] = useState<'from' | 'to'>(
+    'from',
+  );
 
   const store = useAppStore((store) => store);
   const t = useLang();
@@ -27,10 +41,13 @@ const Swap = () => {
   };
 
   const handleMax = () => {
+    setLastFieldChanged('from');
+    setShouldCheckAgain(!shouldCheckAgain);
+
     setFrom(store.selectAsset.swapFromAsset.assetBalance);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     // console.log(e.target.from.value);
@@ -39,12 +56,21 @@ const Swap = () => {
     // console.log(toAsset);
   };
 
-  const handleInputChange = (e, field: 'from' | 'to') => {
+  const handleInputChange = (e: any, field: 'from' | 'to') => {
     if (field === 'from') {
       setFrom(e.target.value);
     } else {
       setTo(e.target.value);
     }
+
+    setLastFieldChanged(field);
+    setShouldCheckAgain(!shouldCheckAgain);
+  };
+
+  const cleanup = () => {
+    setPath([]);
+    setError('');
+    setLoading(false);
   };
 
   const handleSwapAssets = () => {
@@ -58,8 +84,76 @@ const Swap = () => {
     });
   };
 
+  const findSwapRoute = async () => {
+    setLoading(true);
+
+    if (lastFieldChanged === 'from') {
+      try {
+        const result = await getStrictSendPaths(
+          [
+            iAssetToAsset(store.selectAsset.swapFromAsset),
+            from,
+            [iAssetToAsset(store.selectAsset.swapToAsset)],
+          ],
+          {},
+        );
+
+        setLoading(false);
+
+        if (result.response.records.length === 0) {
+          setError('Could not find path. Try again.');
+        } else {
+          const swapDetails = result.response.records[0];
+
+          setPath([
+            store.selectAsset.swapFromAsset,
+            // @ts-ignore
+            ...swapDetails.path.map(balanceToAsset),
+            store.selectAsset.swapToAsset,
+          ]);
+          setTo(swapDetails.destination_amount);
+        }
+      } catch {
+        setLoading(false);
+        setError('Could not find path. Try again.');
+      }
+    } else {
+      try {
+        const result = await getStrictReceivePaths(
+          [
+            [iAssetToAsset(store.selectAsset.swapFromAsset)],
+            iAssetToAsset(store.selectAsset.swapToAsset),
+            to,
+          ],
+          {},
+        );
+
+        setLoading(false);
+
+        if (result.response.records.length === 0) {
+          setError('Could not find path. Try again.');
+        } else {
+          const swapDetails = result.response.records[0];
+
+          setPath([
+            store.selectAsset.swapFromAsset,
+            // @ts-ignore
+            ...swapDetails.path.map(balanceToAsset),
+            store.selectAsset.swapToAsset,
+          ]);
+          setFrom(swapDetails.source_amount);
+        }
+      } catch {
+        setLoading(false);
+        setError('Could not find path. Try again.');
+      }
+    }
+  };
+
   useEffect(() => {
-    if (isNaN(Number(from)) || from === '') {
+    cleanup();
+
+    if (isNaN(Number(from)) || from === '' || Number(from) <= 0) {
       setError('Invalid value for FROM field.');
 
       return;
@@ -73,9 +167,9 @@ const Swap = () => {
 
     if (
       store.selectAsset.swapFromAsset.assetCode ===
-        store.selectAsset.swapToAsset.assetCode &&
+      store.selectAsset.swapToAsset.assetCode &&
       store.selectAsset.swapFromAsset.assetIssuer ===
-        store.selectAsset.swapToAsset.assetIssuer
+      store.selectAsset.swapToAsset.assetIssuer
     ) {
       setError('FROM and TO assets are the same.');
 
@@ -94,8 +188,10 @@ const Swap = () => {
       return;
     }
 
+    findSwapRoute();
+
     setError('');
-  }, [store.selectAsset, from, to]);
+  }, [store.selectAsset, shouldCheckAgain]);
 
   const { appearance } = store.config;
 
@@ -207,7 +303,15 @@ const Swap = () => {
             />
           </div>
         </div>
+        {loading ? (
+          <p>LOADING...</p>
+        ) : (
+          <div>
+            {path.length !== 0 && <p>PATH</p>}
 
+            {path.map((x) => x.assetCode).join(' > ')}
+          </div>
+        )}
         {/* Price Impact */}
         <div
           className="bluxcc:mb-2 bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:px-4 bluxcc:py-2 bluxcc:text-sm"
@@ -242,10 +346,14 @@ const Swap = () => {
         >
           {error}
         </div>
-
         <Divider />
-
-        <Button size="large" state="enabled" variant="outline" type="submit">
+        <Button
+          size="large"
+          state="enabled"
+          variant="outline"
+          type="submit"
+          disabled={error !== ''}
+        >
           Swap
         </Button>
       </div>

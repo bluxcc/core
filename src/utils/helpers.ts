@@ -1,4 +1,4 @@
-import { Horizon } from '@stellar/stellar-sdk';
+import { Asset, Horizon } from '@stellar/stellar-sdk';
 
 import { walletsConfig } from '../wallets';
 import EXPLORERS from '../constants/explorers';
@@ -12,6 +12,14 @@ import {
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
 import { XLM } from '../constants/assets';
+
+export const iAssetToAsset = (asset: IAsset): Asset => {
+  if (asset.assetType === 'native') {
+    return Asset.native();
+  }
+
+  return new Asset(asset.assetCode, asset.assetIssuer);
+};
 
 export const addXLMToBalances = (balances: IAsset[]) => {
   if (balances.length !== 0) {
@@ -27,7 +35,7 @@ export const balanceToAsset = (
   // todo: set a real value in currency and also set the right logo for each asset.
   const ast: Partial<IAsset> = {
     valueInCurrency: '0',
-    assetBalance: balance.balance,
+    assetBalance: balance.balance || '0',
     assetType: balance.asset_type,
   };
 
