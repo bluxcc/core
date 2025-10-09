@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import AssetBox from './AssetBox';
 import { Route } from '../../../enums';
@@ -12,7 +12,7 @@ import { hexToRgba, humanizeAmount } from '../../../utils/helpers';
 const Swap = () => {
   const [to, setTo] = useState('0');
   const [from, setFrom] = useState('0');
-  const [error, setError] = useState('');
+  const [error, setError] = useState({ field: '', message: '' });
 
   const store = useAppStore((store) => store);
   const t = useLang();
@@ -30,7 +30,7 @@ const Swap = () => {
     setFrom(store.selectAsset.swapFromAsset.assetBalance);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // console.log(e.target.from.value);
@@ -38,8 +38,12 @@ const Swap = () => {
     // console.log(fromAsset);
     // console.log(toAsset);
   };
+  // Todo: add translation
 
-  const handleInputChange = (e, field: 'from' | 'to') => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: 'from' | 'to',
+  ) => {
     if (field === 'from') {
       setFrom(e.target.value);
     } else {
@@ -60,13 +64,13 @@ const Swap = () => {
 
   useEffect(() => {
     if (isNaN(Number(from)) || from === '') {
-      setError('Invalid value for FROM field.');
+      setError({ field: 'from', message: 'Invalid value for FROM field.' });
 
       return;
     }
 
     if (isNaN(Number(to)) || to === '') {
-      setError('Invalid value for TO field.');
+      setError({ field: 'to', message: 'Invalid value for TO field.' });
 
       return;
     }
@@ -77,24 +81,24 @@ const Swap = () => {
       store.selectAsset.swapFromAsset.assetIssuer ===
         store.selectAsset.swapToAsset.assetIssuer
     ) {
-      setError('FROM and TO assets are the same.');
+      setError({ field: 'both', message: 'FROM and TO assets are the same.' });
 
       return;
     }
 
     if (isNaN(Number(store.selectAsset.swapFromAsset.assetBalance))) {
-      setError('FROM asset has invalid balance.');
+      setError({ field: 'from', message: 'FROM asset has invalid balance.' });
 
       return;
     }
 
     if (Number(from) > Number(store.selectAsset.swapFromAsset.assetBalance)) {
-      setError('Insufficient balance.');
+      setError({ field: 'from', message: 'Insufficient balance.' });
 
       return;
     }
 
-    setError('');
+    setError({ field: '', message: '' });
   }, [store.selectAsset, from, to]);
 
   const { appearance } = store.config;
@@ -103,7 +107,7 @@ const Swap = () => {
     <form onSubmit={handleSubmit}>
       <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:text-center">
         <div
-          className="bluxcc:relative bluxcc:mb-4 bluxcc:w-full bluxcc:p-4"
+          className="bluxcc:relative bluxcc:w-full bluxcc:p-4"
           style={{
             backgroundColor: appearance.fieldBackground,
             borderColor: appearance.borderColor,
@@ -130,14 +134,18 @@ const Swap = () => {
             <input
               name="from"
               type="number"
-              defaultValue={0}
               value={from}
               onChange={(e) => {
                 handleInputChange(e, 'from');
               }}
               id="bluxcc-input"
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
-              style={{ color: appearance.textColor }}
+              style={{
+                color:
+                  error.field === 'from' || error.field === 'both'
+                    ? '#ec2929'
+                    : appearance.textColor,
+              }}
             />
             <AssetBox
               asset={store.selectAsset.swapFromAsset}
@@ -146,6 +154,7 @@ const Swap = () => {
               }}
             />
           </div>
+          {/* Todo: add estimated value here */}
           <div
             className="bluxcc:mt-1 bluxcc:text-left bluxcc:text-xs"
             style={{ color: hexToRgba(appearance.textColor, 0.7) }}
@@ -167,7 +176,7 @@ const Swap = () => {
 
             <div
               onClick={handleSwapAssets}
-              className="bluxcc:z-20 bluxcc:p-2"
+              className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer"
               style={{
                 backgroundColor: appearance.fieldBackground,
                 borderColor: appearance.borderColor,
@@ -190,13 +199,17 @@ const Swap = () => {
               name="to"
               id="bluxcc-input"
               type="number"
-              defaultValue={0}
               value={to}
               onChange={(e) => {
                 handleInputChange(e, 'to');
               }}
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
-              style={{ color: appearance.textColor }}
+              style={{
+                color:
+                  error.field === 'to' || error.field === 'both'
+                    ? '#ec2929'
+                    : appearance.textColor,
+              }}
             />
 
             <AssetBox
@@ -206,6 +219,10 @@ const Swap = () => {
               }}
             />
           </div>
+        </div>
+
+        <div className="bluxcc:h-4 bluxcc:w-full bluxcc:my-2 bluxcc:ml-3 bluxcc:text-left bluxcc:text-xs bluxcc:text-alert-error">
+          {error.message}
         </div>
 
         {/* Price Impact */}
@@ -220,7 +237,7 @@ const Swap = () => {
         >
           <span>Price Impact</span>
           <div
-            className="bluxcc:flex bluxcc:items-center bluxcc:gap-1 bluxcc:px-2.5 bluxcc:py-2"
+            className="bluxcc:flex bluxcc:items-center bluxcc:text-sm bluxcc:max-h-8 bluxcc:gap-1 bluxcc:px-2.5 bluxcc:py-2"
             style={{
               backgroundColor: appearance.fieldBackground,
               borderRadius: appearance.borderRadius,
@@ -228,19 +245,24 @@ const Swap = () => {
               borderWidth: appearance.borderWidth,
             }}
           >
-            <span style={{ color: appearance.accentColor }}>%0.2</span>
+            <span
+              style={{ color: appearance.accentColor }}
+              className="bluxcc:leading-[20px]"
+            >
+              %0.2
+            </span>
             {/* this should change color based on the impact if its positive its green if not red or yellow */}
             <span
               className="bluxcc:h-2 bluxcc:w-2"
-              style={{ backgroundColor: '#32D74B' }}
+              style={{
+                backgroundColor: '#32D74B',
+                borderRadius: appearance.borderRadius,
+              }}
             />
           </div>
         </div>
-        <div
-          className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs"
-          style={{ color: 'red' }}
-        >
-          {error}
+        <div className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs">
+          The estimated effect of your swap on the market price.
         </div>
 
         <Divider />

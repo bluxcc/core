@@ -97,7 +97,7 @@ const Assets = ({ assets }: AssetsProps) => {
       {assets.length === 0 && (
         <div
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
-          className="bluxcc:mb-2 bluxcc:text-center"
+          className="bluxcc:mb-2 bluxcc:text-center bluxcc:h-full bluxcc:flex bluxcc:justify-center bluxcc:items-center"
         >
           {t('noAssetsFound')}
         </div>

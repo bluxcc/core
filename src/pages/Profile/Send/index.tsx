@@ -11,7 +11,7 @@ import InputField from '../../../components/Input';
 import { sendTransaction } from '../../../exports/blux';
 import { StellarSmallLogo } from '../../../assets/Logos';
 import { getContrastColor } from '../../../utils/helpers';
-import { ArrowDropUp, QuestionMark } from '../../../assets/Icons';
+import { ArrowDropUp, SmallQuestionMark } from '../../../assets/Icons';
 import paymentTransaction from '../../../stellar/paymentTransaction';
 
 type SendFormValues = {
@@ -135,7 +135,7 @@ const SendForm = () => {
                       )}
                     />
                   ) : (
-                    <QuestionMark
+                    <SmallQuestionMark
                       fill={getContrastColor(
                         store.config.appearance.fieldBackground,
                       )}
