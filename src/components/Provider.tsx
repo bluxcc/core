@@ -69,7 +69,7 @@ export const Provider = () => {
     } else if (route === Route.BALANCE_DETAILS || route === Route.ADD_TOKEN) {
       store.setRoute(Route.BALANCES);
     } else if (route === Route.SELECT_ASSET) {
-      const route = decideBackRouteFromSelectAsset(store.selectAsset);
+      const route = decideBackRouteFromSelectAsset(store.selectAsset.field);
 
       store.setRoute(route);
     }
@@ -144,13 +144,13 @@ export const Provider = () => {
     <Modal
       isOpen={modal.isOpen}
       isSticky={modalContent.isSticky}
-      onClose={modalContent.isSticky ? () => { } : handleCloseModal}
+      onClose={modalContent.isSticky ? () => {} : handleCloseModal}
       appearance={store.config.appearance}
     >
       <Header
         onBack={handleBackNavigation}
         onInfo={handleGoToAbout}
-        onClose={modalContent.isSticky ? () => { } : handleCloseModal}
+        onClose={modalContent.isSticky ? () => {} : handleCloseModal}
         title={
           store.modal.dynamicTitle !== ''
             ? store.modal.dynamicTitle

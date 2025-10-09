@@ -18,6 +18,7 @@ interface ButtonProps {
   style?: React.CSSProperties;
   className?: string;
   type?: 'button' | 'submit';
+  disabled?: boolean;
 }
 
 const buttonBase =
@@ -31,6 +32,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 
 const Button = ({
   size = 'large',
+  disabled = false,
   variant = 'outline',
   state = 'enabled',
   children,
@@ -84,9 +86,10 @@ const Button = ({
     <button
       type={type ? type : 'button'}
       onClick={onClick}
-      disabled={state === 'disabled'}
-      className={`${buttonBase} ${sizeClasses[size]} ${className ?? ''
-        } bluxcc:transition-all bluxcc:duration-300`}
+      disabled={state === 'disabled' && disabled}
+      className={`${buttonBase} ${sizeClasses[size]} ${
+        className ?? ''
+      } bluxcc:transition-all bluxcc:duration-300`}
       style={baseStyle}
     >
       {startIcon && <span>{startIcon}</span>}

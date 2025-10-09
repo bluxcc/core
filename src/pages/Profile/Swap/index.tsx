@@ -1,35 +1,34 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import AssetBox from './AssetBox';
 import { Route } from '../../../enums';
+import { IAsset } from '../../../types';
 import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import { ArrowDropUp, SwapIcon } from '../../../assets/Icons';
-import {
-  balanceToAsset,
-  hexToRgba,
-  humanizeAmount,
-  iAssetToAsset,
-} from '../../../utils/helpers';
 import getStrictSendPaths from '../../../exports/core/getStrictSendPaths';
 import getStrictReceivePaths from '../../../exports/core/getStrictReceivePaths';
-import { IAsset } from '../../../types';
+import {
+  hexToRgba,
+  iAssetToAsset,
+  humanizeAmount,
+  balanceToAsset,
+} from '../../../utils/helpers';
 
 const Swap = () => {
+  const t = useLang();
   const [to, setTo] = useState('0');
   const [from, setFrom] = useState('0');
-  const [error, setError] = useState('');
+  const store = useAppStore((store) => store);
   const [loading, setLoading] = useState(false);
   const [path, setPath] = useState<IAsset[]>([]);
+  const [error, setError] = useState({ field: '', message: '' });
   const [shouldCheckAgain, setShouldCheckAgain] = useState(false);
   const [lastFieldChanged, setLastFieldChanged] = useState<'from' | 'to'>(
     'from',
   );
-
-  const store = useAppStore((store) => store);
-  const t = useLang();
 
   const handleOpenAssets = (field: 'swapFrom' | 'swapTo') => {
     store.setSelectAsset({
@@ -47,16 +46,26 @@ const Swap = () => {
     setFrom(store.selectAsset.swapFromAsset.assetBalance);
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // console.log(e.target.from.value);
-    // console.log(e.target.to.value);
-    // console.log(fromAsset);
-    // console.log(toAsset);
+    if (error.message !== '') {
+      return;
+    }
+
+    console.log(
+      from,
+      to,
+      store.selectAsset.swapToAsset,
+      store.selectAsset.swapFromAsset,
+      path,
+    );
   };
 
-  const handleInputChange = (e: any, field: 'from' | 'to') => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: 'from' | 'to',
+  ) => {
     if (field === 'from') {
       setFrom(e.target.value);
     } else {
@@ -69,8 +78,8 @@ const Swap = () => {
 
   const cleanup = () => {
     setPath([]);
-    setError('');
     setLoading(false);
+    setError({ field: '', message: '' });
   };
 
   const handleSwapAssets = () => {
@@ -101,7 +110,10 @@ const Swap = () => {
         setLoading(false);
 
         if (result.response.records.length === 0) {
-          setError('Could not find path. Try again.');
+          setError({
+            field: 'both',
+            message: 'Could not find path. Try again.',
+          });
         } else {
           const swapDetails = result.response.records[0];
 
@@ -115,7 +127,7 @@ const Swap = () => {
         }
       } catch {
         setLoading(false);
-        setError('Could not find path. Try again.');
+        setError({ field: 'both', message: 'Could not find path. Try again.' });
       }
     } else {
       try {
@@ -131,7 +143,10 @@ const Swap = () => {
         setLoading(false);
 
         if (result.response.records.length === 0) {
-          setError('Could not find path. Try again.');
+          setError({
+            field: 'both',
+            message: 'Could not find path. Try again.',
+          });
         } else {
           const swapDetails = result.response.records[0];
 
@@ -145,7 +160,8 @@ const Swap = () => {
         }
       } catch {
         setLoading(false);
-        setError('Could not find path. Try again.');
+
+        setError({ field: 'both', message: 'Could not find path. Try again.' });
       }
     }
   };
@@ -153,44 +169,44 @@ const Swap = () => {
   useEffect(() => {
     cleanup();
 
-    if (isNaN(Number(from)) || from === '' || Number(from) <= 0) {
-      setError('Invalid value for FROM field.');
+    if (isNaN(Number(from)) || from === '' || Number(from) < 0) {
+      setError({ field: 'from', message: 'Invalid value for FROM field.' });
 
       return;
     }
 
-    if (isNaN(Number(to)) || to === '') {
-      setError('Invalid value for TO field.');
+    if (isNaN(Number(to)) || to === '' || Number(to) < 0) {
+      setError({ field: 'to', message: 'Invalid value for TO field.' });
 
       return;
     }
 
     if (
       store.selectAsset.swapFromAsset.assetCode ===
-      store.selectAsset.swapToAsset.assetCode &&
+        store.selectAsset.swapToAsset.assetCode &&
       store.selectAsset.swapFromAsset.assetIssuer ===
-      store.selectAsset.swapToAsset.assetIssuer
+        store.selectAsset.swapToAsset.assetIssuer
     ) {
-      setError('FROM and TO assets are the same.');
+      setError({ field: 'both', message: 'FROM and TO assets are the same.' });
 
       return;
     }
 
     if (isNaN(Number(store.selectAsset.swapFromAsset.assetBalance))) {
-      setError('FROM asset has invalid balance.');
+      setError({ field: 'from', message: 'FROM asset has invalid balance.' });
 
       return;
     }
 
     if (Number(from) > Number(store.selectAsset.swapFromAsset.assetBalance)) {
-      setError('Insufficient balance.');
+      setError({ field: 'from', message: 'Insufficient balance.' });
 
       return;
     }
 
-    findSwapRoute();
+    setError({ field: '', message: '' });
 
-    setError('');
+    findSwapRoute();
   }, [store.selectAsset, shouldCheckAgain]);
 
   const { appearance } = store.config;
@@ -199,7 +215,7 @@ const Swap = () => {
     <form onSubmit={handleSubmit}>
       <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:text-center">
         <div
-          className="bluxcc:relative bluxcc:mb-4 bluxcc:w-full bluxcc:p-4"
+          className="bluxcc:relative bluxcc:w-full bluxcc:p-4"
           style={{
             backgroundColor: appearance.fieldBackground,
             borderColor: appearance.borderColor,
@@ -226,14 +242,18 @@ const Swap = () => {
             <input
               name="from"
               type="number"
-              defaultValue={0}
               value={from}
               onChange={(e) => {
                 handleInputChange(e, 'from');
               }}
               id="bluxcc-input"
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
-              style={{ color: appearance.textColor }}
+              style={{
+                color:
+                  error.field === 'from' || error.field === 'both'
+                    ? '#ec2929'
+                    : appearance.textColor,
+              }}
             />
             <AssetBox
               asset={store.selectAsset.swapFromAsset}
@@ -242,6 +262,7 @@ const Swap = () => {
               }}
             />
           </div>
+          {/* Todo: add estimated value here */}
           <div
             className="bluxcc:mt-1 bluxcc:text-left bluxcc:text-xs"
             style={{ color: hexToRgba(appearance.textColor, 0.7) }}
@@ -263,7 +284,7 @@ const Swap = () => {
 
             <div
               onClick={handleSwapAssets}
-              className="bluxcc:z-20 bluxcc:p-2"
+              className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer"
               style={{
                 backgroundColor: appearance.fieldBackground,
                 borderColor: appearance.borderColor,
@@ -286,13 +307,17 @@ const Swap = () => {
               name="to"
               id="bluxcc-input"
               type="number"
-              defaultValue={0}
               value={to}
               onChange={(e) => {
                 handleInputChange(e, 'to');
               }}
               className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
-              style={{ color: appearance.textColor }}
+              style={{
+                color:
+                  error.field === 'to' || error.field === 'both'
+                    ? '#ec2929'
+                    : appearance.textColor,
+              }}
             />
 
             <AssetBox
@@ -306,12 +331,13 @@ const Swap = () => {
         {loading ? (
           <p>LOADING...</p>
         ) : (
-          <div>
-            {path.length !== 0 && <p>PATH</p>}
-
-            {path.map((x) => x.assetCode).join(' > ')}
-          </div>
+          <div>{path.map((x) => x.assetCode).join(' > ')}</div>
         )}
+
+        <div className="bluxcc:h-4 bluxcc:w-full bluxcc:my-2 bluxcc:ml-3 bluxcc:text-left bluxcc:text-xs bluxcc:text-alert-error">
+          {error.message}
+        </div>
+
         {/* Price Impact */}
         <div
           className="bluxcc:mb-2 bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:px-4 bluxcc:py-2 bluxcc:text-sm"
@@ -324,7 +350,7 @@ const Swap = () => {
         >
           <span>Price Impact</span>
           <div
-            className="bluxcc:flex bluxcc:items-center bluxcc:gap-1 bluxcc:px-2.5 bluxcc:py-2"
+            className="bluxcc:flex bluxcc:items-center bluxcc:text-sm bluxcc:max-h-8 bluxcc:gap-1 bluxcc:px-2.5 bluxcc:py-2"
             style={{
               backgroundColor: appearance.fieldBackground,
               borderRadius: appearance.borderRadius,
@@ -332,19 +358,24 @@ const Swap = () => {
               borderWidth: appearance.borderWidth,
             }}
           >
-            <span style={{ color: appearance.accentColor }}>%0.2</span>
+            <span
+              style={{ color: appearance.accentColor }}
+              className="bluxcc:leading-[20px]"
+            >
+              %0.2
+            </span>
             {/* this should change color based on the impact if its positive its green if not red or yellow */}
             <span
               className="bluxcc:h-2 bluxcc:w-2"
-              style={{ backgroundColor: '#32D74B' }}
+              style={{
+                backgroundColor: '#32D74B',
+                borderRadius: appearance.borderRadius,
+              }}
             />
           </div>
         </div>
-        <div
-          className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs"
-          style={{ color: 'red' }}
-        >
-          {error}
+        <div className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs">
+          The estimated effect of your swap on the market price.
         </div>
         <Divider />
         <Button
@@ -352,7 +383,7 @@ const Swap = () => {
           state="enabled"
           variant="outline"
           type="submit"
-          disabled={error !== ''}
+          disabled={error.message !== ''}
         >
           Swap
         </Button>

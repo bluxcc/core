@@ -15,7 +15,7 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
   return (
     <div
       onClick={handleOpenAssets}
-      className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:gap-1 bluxcc:p-1"
+      className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:gap-1 bluxcc:p-1 bluxcc:max-h-12"
       style={{
         borderColor: appearance.borderColor,
         borderWidth: appearance.borderWidth,
