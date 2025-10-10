@@ -1,4 +1,4 @@
-import { Transaction, Operation } from "@stellar/stellar-sdk";
+import { Transaction, Operation } from '@stellar/stellar-sdk';
 
 const getTransactionDetails = (xdr: string, network: string) => {
   try {
@@ -7,8 +7,15 @@ const getTransactionDetails = (xdr: string, network: string) => {
 
     let receiver: string | null = null;
 
-    if (firstOp.type === "payment") {
+    if (firstOp.type === 'payment') {
       receiver = (firstOp as Operation.Payment).destination;
+    } else if (
+      firstOp.type === 'pathPaymentStrictSend' ||
+      firstOp.type === 'pathPaymentStrictReceive'
+    ) {
+      receiver = firstOp.destination;
+    } else {
+      receiver = '';
     }
 
     return {

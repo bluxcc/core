@@ -2,9 +2,9 @@ import {
   capitalizeFirstLetter,
   copyText,
   shortenAddress,
-} from "../../../utils/helpers";
-import { DEFAULT_NETWORKS_TRANSPORTS } from "../../../constants/networkDetails";
-import { useAppStore } from "../../../store";
+} from '../../../utils/helpers';
+import { DEFAULT_NETWORKS_TRANSPORTS } from '../../../constants/networkDetails';
+import { useAppStore } from '../../../store';
 
 interface TransactionDetail {
   label: string;
@@ -38,28 +38,29 @@ const Summary = ({
 
   const handleCopyText = (address: string) => {
     copyText(address);
-    setAlert("info", "Address Copied");
+    setAlert('info', 'Address Copied');
     setTimeout(() => {
-      setAlert("none", "");
+      setAlert('none', '');
     }, 1000);
   };
+
   const details: TransactionDetail[] = [
-    { label: "Action", value: capitalizeFirstLetter(action) },
-    { label: "Operations", value: operationsCount.toString() },
+    { label: 'Action', value: capitalizeFirstLetter(action) },
+    { label: 'Operations', value: operationsCount.toString() },
     {
-      label: "Sender",
+      label: 'Sender',
       value: shortenAddress(sender, 5),
       isHighlighted: true,
       isCopyable: true,
       copyValue: sender,
     },
-    { label: "Network", value: DEFAULT_NETWORKS_TRANSPORTS[network].name },
-    { label: "Estimated Fee", value: `${estimatedFee} XLM` },
+    { label: 'Network', value: DEFAULT_NETWORKS_TRANSPORTS[network].name },
+    { label: 'Estimated Fee', value: `${estimatedFee} XLM` },
   ];
 
   if (receiver) {
     details.splice(3, 0, {
-      label: "To",
+      label: 'To',
       value: shortenAddress(receiver, 5),
       isHighlighted: true,
       isCopyable: true,
@@ -78,15 +79,15 @@ const Summary = ({
               index === details.length - 1
                 ? {}
                 : {
-                    borderBottomColor: appearance.borderColor,
-                    borderBottomStyle: "dashed",
-                    borderBottomWidth: appearance.borderWidth,
-                  }
+                  borderBottomColor: appearance.borderColor,
+                  borderBottomStyle: 'dashed',
+                  borderBottomWidth: appearance.borderWidth,
+                }
             }
           >
             <span style={{ color: appearance.textColor }}>{label}</span>
             <span
-              className={`${isCopyable ? "bluxcc:cursor-pointer" : ""}`}
+              className={`${isCopyable ? 'bluxcc:cursor-pointer' : ''}`}
               style={{
                 color: isHighlighted
                   ? appearance.accentColor
@@ -99,7 +100,7 @@ const Summary = ({
               {value}
             </span>
           </div>
-        )
+        ),
       )}
     </div>
   );

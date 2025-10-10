@@ -89,11 +89,9 @@ const SendForm = () => {
           store.stellar?.activeNetwork || '',
         );
 
-        store.closeModal();
-
         setTimeout(() => {
           sendTransaction(xdr, { network: store.stellar?.activeNetwork || '' });
-        }, 250);
+        }, 150);
       } catch (e: any) {
         errorMessages.address = e.message;
 

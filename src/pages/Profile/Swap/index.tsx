@@ -8,7 +8,9 @@ import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
+import { sendTransaction } from '../../../exports/blux';
 import { ArrowDropUp, SwapIcon } from '../../../assets/Icons';
+import swapTransaction from '../../../stellar/swapTransaction';
 import getStrictSendPaths from '../../../exports/core/getStrictSendPaths';
 import getStrictReceivePaths from '../../../exports/core/getStrictReceivePaths';
 import {
@@ -18,8 +20,6 @@ import {
   balanceToAsset,
   isChangeTrustNeeded,
 } from '../../../utils/helpers';
-import swapTransaction from '../../../stellar/swapTransaction';
-import { sendTransaction } from '../../../exports/blux';
 
 const Swap = () => {
   const t = useLang();
@@ -30,6 +30,7 @@ const Swap = () => {
   const [path, setPath] = useState<IAsset[]>([]);
   const [error, setError] = useState({ field: '', message: '' });
   const [shouldCheckAgain, setShouldCheckAgain] = useState(false);
+  const [rate, setRate] = useState({ rate: 0, isInverted: false });
   const [lastFieldChanged, setLastFieldChanged] = useState<'from' | 'to'>(
     'from',
   );
@@ -41,6 +42,13 @@ const Swap = () => {
     });
 
     store.setRoute(Route.SELECT_ASSET);
+  };
+
+  const handleInvertRate = () => {
+    setRate({
+      ...rate,
+      isInverted: !rate.isInverted,
+    });
   };
 
   const handleMax = () => {
@@ -68,8 +76,8 @@ const Swap = () => {
         from,
         to,
         lastFieldChanged,
-        store.selectAsset.swapToAsset,
         store.selectAsset.swapFromAsset,
+        store.selectAsset.swapToAsset,
         path,
         store.user?.address as string,
         store.stellar?.servers.horizon as HorizonServer,
@@ -77,11 +85,11 @@ const Swap = () => {
         isNeeded,
       );
 
-      store.closeModal();
-
       setTimeout(() => {
-        sendTransaction(xdr, { network: store.stellar?.activeNetwork || '' });
-      }, 250);
+        try {
+          sendTransaction(xdr);
+        } catch (e) { }
+      }, 150);
     } catch {
       setError({ field: 'both', message: 'Failed to make transaction.' });
     }
@@ -105,6 +113,7 @@ const Swap = () => {
     setPath([]);
     setLoading(false);
     setError({ field: '', message: '' });
+    setRate({ rate: 0, isInverted: false });
   };
 
   const handleSwapAssets = () => {
@@ -142,6 +151,12 @@ const Swap = () => {
         } else {
           const swapDetails = result.response.records[0];
 
+          setRate({
+            rate:
+              Number(swapDetails.destination_amount) /
+              Number(swapDetails.source_amount),
+            isInverted: false,
+          });
           setPath([
             store.selectAsset.swapFromAsset,
             // @ts-ignore
@@ -175,6 +190,12 @@ const Swap = () => {
         } else {
           const swapDetails = result.response.records[0];
 
+          setRate({
+            rate:
+              Number(swapDetails.destination_amount) /
+              Number(swapDetails.source_amount),
+            isInverted: false,
+          });
           setPath([
             store.selectAsset.swapFromAsset,
             // @ts-ignore
@@ -208,9 +229,9 @@ const Swap = () => {
 
     if (
       store.selectAsset.swapFromAsset.assetCode ===
-        store.selectAsset.swapToAsset.assetCode &&
+      store.selectAsset.swapToAsset.assetCode &&
       store.selectAsset.swapFromAsset.assetIssuer ===
-        store.selectAsset.swapToAsset.assetIssuer
+      store.selectAsset.swapToAsset.assetIssuer
     ) {
       setError({ field: 'both', message: 'FROM and TO assets are the same.' });
 
@@ -239,6 +260,26 @@ const Swap = () => {
   }, [store.selectAsset, shouldCheckAgain]);
 
   const { appearance } = store.config;
+
+  let rateText = '';
+
+  if (rate.rate !== 0) {
+    if (rate.isInverted) {
+      rateText = `1 ${store.selectAsset.swapToAsset.assetCode} = ${(1 / rate.rate).toFixed(5)} ${store.selectAsset.swapFromAsset.assetCode}`;
+    } else {
+      rateText = `1 ${store.selectAsset.swapFromAsset.assetCode} = ${humanizeAmount(rate.rate)} ${store.selectAsset.swapToAsset.assetCode}`;
+    }
+  }
+
+  let minimumReceived = '';
+  let isFromValid =
+    from !== '' && from !== '0' && Number(from) >= 0 && !isNaN(Number(from));
+  let isToValid =
+    to !== '' && to !== '0' && Number(to) >= 0 && !isNaN(Number(to));
+
+  if (isFromValid && isToValid && !loading) {
+    minimumReceived = `${((Number(to) / 100) * 99.5).toFixed(5)} ${store.selectAsset.swapToAsset.assetCode}`;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -357,6 +398,17 @@ const Swap = () => {
             />
           </div>
         </div>
+        {!loading && rate.rate !== 0 && isToValid && (
+          <p>
+            {rateText}{' '}
+            <button onClick={handleInvertRate} type="button">
+              Invert
+            </button>
+          </p>
+        )}
+
+        {!loading && isToValid && <p>Minimum received: {minimumReceived}</p>}
+
         {loading ? (
           <p>LOADING...</p>
         ) : (
@@ -367,46 +419,8 @@ const Swap = () => {
           {error.message}
         </div>
 
-        {/* Price Impact */}
-        <div
-          className="bluxcc:mb-2 bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:px-4 bluxcc:py-2 bluxcc:text-sm"
-          style={{
-            backgroundColor: appearance.fieldBackground,
-            borderRadius: appearance.borderRadius,
-            borderColor: appearance.borderColor,
-            borderWidth: appearance.borderWidth,
-          }}
-        >
-          <span>Price Impact</span>
-          <div
-            className="bluxcc:flex bluxcc:items-center bluxcc:text-sm bluxcc:max-h-8 bluxcc:gap-1 bluxcc:px-2.5 bluxcc:py-2"
-            style={{
-              backgroundColor: appearance.fieldBackground,
-              borderRadius: appearance.borderRadius,
-              borderColor: appearance.borderColor,
-              borderWidth: appearance.borderWidth,
-            }}
-          >
-            <span
-              style={{ color: appearance.accentColor }}
-              className="bluxcc:leading-[20px]"
-            >
-              %0.2
-            </span>
-            {/* this should change color based on the impact if its positive its green if not red or yellow */}
-            <span
-              className="bluxcc:h-2 bluxcc:w-2"
-              style={{
-                backgroundColor: '#32D74B',
-                borderRadius: appearance.borderRadius,
-              }}
-            />
-          </div>
-        </div>
-        <div className="bluxcc:ml-4 bluxcc:text-left bluxcc:text-xs">
-          The estimated effect of your swap on the market price.
-        </div>
         <Divider />
+
         <Button
           size="large"
           state="enabled"

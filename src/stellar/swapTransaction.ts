@@ -5,8 +5,8 @@ import { IAsset } from '../types';
 import { iAssetToAsset } from '../utils/helpers';
 
 const swapTransaction = async (
-  from: string,
-  to: string,
+  rawFromAmount: string,
+  rawToAmount: string,
   lastFieldChanged: 'from' | 'to',
   fromAsset: IAsset,
   toAsset: IAsset,
@@ -16,18 +16,21 @@ const swapTransaction = async (
   networkPassphrase: string,
   isChangeTrustNeeded: boolean,
 ) => {
+  const from = Number(Number(rawFromAmount).toFixed(5)).toString();
+  const to = Number(((Number(rawToAmount) / 100) * 99.5).toFixed(5)).toString();
+
   let sourceAccount: null | Horizon.AccountResponse = null;
 
   try {
     sourceAccount = await server.loadAccount(sourceAddress);
-  } catch {}
+  } catch { }
 
   if (!sourceAccount) {
     throw new Error('Inactive account cannot send a transaction.');
   }
 
   let transaction = new TransactionBuilder(sourceAccount, {
-    fee: '50000',
+    fee: '70000',
     networkPassphrase,
   });
 

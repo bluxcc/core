@@ -1,17 +1,17 @@
-import { useAppStore } from "../../store";
-import Button from "../../components/Button";
-import { useLang } from "../../hooks/useLang";
-import { SupportedWallet } from "../../enums";
-import Divider from "../../components/Divider";
-import Summary from "../../components/Transaction/Summary";
-import getTransactionDetails from "../../stellar/getTransactionDetails";
+import { useAppStore } from '../../store';
+import Button from '../../components/Button';
+import { useLang } from '../../hooks/useLang';
+import { SupportedWallet } from '../../enums';
+import Divider from '../../components/Divider';
+import Summary from '../../components/Transaction/Summary';
+import getTransactionDetails from '../../stellar/getTransactionDetails';
+import sendTransactionProcess from '../../stellar/processes/sendTransactionProcess';
 import {
   hexToRgba,
   humanizeAmount,
   shortenAddress,
   getActiveNetworkTitle,
-} from "../../utils/helpers";
-import sendTransactionProcess from "../../stellar/processes/sendTransactionProcess";
+} from '../../utils/helpers';
 
 const SendTransaction = () => {
   const t = useLang();
@@ -24,7 +24,7 @@ const SendTransaction = () => {
   if (!sendTransaction || !user || !stellar) {
     return (
       <div>
-        <p>{t("invalidXdr")}</p>
+        <p>{t('invalidXdr')}</p>
       </div>
     );
   }
@@ -40,15 +40,15 @@ const SendTransaction = () => {
   if (!txDetails) {
     return (
       <div>
-        <p>{t("invalidXdr")}</p>
+        <p>{t('invalidXdr')}</p>
       </div>
     );
   }
 
   const balance =
     store.balances.balances.length === 0
-      ? "0"
-      : store.balances.balances.find((b) => b.asset_type === "native")!.balance;
+      ? '0'
+      : store.balances.balances.find((b) => b.asset_type === 'native')!.balance;
   const isLobstr = user.authValue === SupportedWallet.Lobstr;
   const networkTitle = getActiveNetworkTitle(stellar.activeNetwork);
 
@@ -56,9 +56,9 @@ const SendTransaction = () => {
     <div className="bluxcc:w-full">
       <p className="bluxcc:mx-3 bluxcc:my-4 bluxcc:text-center bluxcc:text-sm bluxcc:font-medium bluxcc:select-none">
         <span className="bluxcc:font-semibold bluxcc:capitalize">
-          {store.config.appName}{" "}
+          {store.config.appName}{' '}
         </span>
-        {t("signTransactionPrompt")}
+        {t('signTransactionPrompt')}
       </p>
 
       <Summary
@@ -72,21 +72,21 @@ const SendTransaction = () => {
 
       {isLobstr && (
         <p className="bluxcc:!my-2 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:!text-xs bluxcc:text-alert-error">
-          {t("lobstrWarning", { network: networkTitle })}
+          {t('lobstrWarning', { network: networkTitle })}
         </p>
       )}
 
       <div
         className="bluxcc:inline-flex bluxcc:h-14 bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:border bluxcc:px-4"
         style={{
-          marginTop: isLobstr ? "0px" : "16px",
+          marginTop: isLobstr ? '0px' : '16px',
           borderRadius: appearance.borderRadius,
           borderColor: appearance.borderColor,
         }}
       >
         <div className="bluxcc:inline-flex bluxcc:items-center bluxcc:gap-1 bluxcc:font-medium bluxcc:whitespace-nowrap">
           <p className="bluxcc:text-sm bluxcc:font-medium bluxcc:whitespace-nowrap">
-            {t("yourWallet")}
+            {t('yourWallet')}
           </p>
           <p
             className="bluxcc:mt-0.5 bluxcc:text-xs"
@@ -94,7 +94,7 @@ const SendTransaction = () => {
           >
             {user.address
               ? shortenAddress(store.user?.address as string, 5)
-              : t("noAddressFound")}
+              : t('noAddressFound')}
           </p>
         </div>
         <div
@@ -106,7 +106,7 @@ const SendTransaction = () => {
           }}
         >
           <p className="bluxcc:max-w-[90px] bluxcc:text-xs bluxcc:font-normal">
-            {balance ? humanizeAmount(balance) : "0"} XLM
+            {balance ? humanizeAmount(balance) : '0'} XLM
           </p>
         </div>
       </div>
@@ -119,7 +119,7 @@ const SendTransaction = () => {
         variant="fill"
         onClick={handleSignTx}
       >
-        {t("approve")}
+        {t('approve')}
       </Button>
     </div>
   );
