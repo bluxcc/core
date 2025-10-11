@@ -1,5 +1,5 @@
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
 type GetPaymentsOptions = CallBuilderOptions & {
   forAccount?: string;
@@ -11,7 +11,7 @@ type GetPaymentsOptions = CallBuilderOptions & {
 const getPayments = async (options: GetPaymentsOptions) => {
   checkConfigCreated();
 
-  let builder = callBuilder("payments", [], options);
+  let builder = callBuilder('payments', [], options);
 
   if (options.forAccount) {
     builder = builder.forAccount(options.forAccount);

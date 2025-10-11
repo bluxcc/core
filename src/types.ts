@@ -38,7 +38,7 @@ export interface IWalletConnectMetaData {
 }
 
 export interface IConfig {
-  appId: string;
+  appId?: string;
   appName: string;
   networks: string[];
   defaultNetwork?: string;
