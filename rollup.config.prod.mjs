@@ -8,8 +8,6 @@ import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
-import pkg from './package.json' with { type: 'json' };
-
 const config = [
   {
     input: 'src/index.ts',
@@ -25,7 +23,6 @@ const config = [
         sourcemap: false,
       },
     ],
-    external: [...Object.keys(pkg.peerDependencies || {})],
     plugins: [
       json(),
       peerDepsExternal(),
@@ -35,7 +32,7 @@ const config = [
       }),
       resolve({
         browser: true,
-        preferBuiltins: false,
+        preferBuiltins: true,
       }),
       commonjs(),
       postcss({
@@ -68,7 +65,7 @@ const config = [
       }),
       resolve({
         browser: true,
-        preferBuiltins: false,
+        preferBuiltins: true,
       }),
       commonjs(),
       postcss({

@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
-import { Horizon } from "@stellar/stellar-sdk";
+import { useEffect, useState } from 'react';
+import { Horizon } from '@stellar/stellar-sdk';
 
-import { useAppStore } from "../../../store";
-import Button from "../../../components/Button";
-import { useLang } from "../../../hooks/useLang";
-import History, { TxDetail } from "../../../components/Transaction/History";
+import { useAppStore } from '../../../store';
+import Button from '../../../components/Button';
+import { useLang } from '../../../hooks/useLang';
+import History, { TxDetail } from '../../../components/Transaction/History';
 import {
   hexToRgba,
   toTitleFormat,
   getExplorerUrl,
   humanizeAmount,
-} from "../../../utils/helpers";
+} from '../../../utils/helpers';
 
 const handleAssetText = (
   op: Horizon.ServerApi.PaymentOperationRecord | any,
 ) => {
-  if (op.asset_type === "native") {
-    return "XLM";
+  if (op.asset_type === 'native') {
+    return 'XLM';
   }
-  return op.asset_code || "Pool";
+  return op.asset_code || 'Pool';
 };
 
 const Activity = () => {
@@ -33,13 +33,13 @@ const Activity = () => {
   const explorerUrl = getExplorerUrl(
     store.stellar?.activeNetwork as string,
     store.config.explorer,
-    "accountUrl",
+    'accountUrl',
     userAddress,
   );
 
   const handleGoToExplorer = () => {
     if (explorerUrl) {
-      window.open(explorerUrl, "_blank", "noopener,noreferrer");
+      window.open(explorerUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -55,18 +55,18 @@ const Activity = () => {
 
       const details: TxDetail = {
         hash: tx.hash,
-        description: "",
+        description: '',
         date: tx.created_at,
         title: toTitleFormat(op.type),
       };
 
       if (tx.operations.length > 1) {
-        details.title = t("multiOperation");
-      } else if (op.type === "payment") {
-        let title = t("send");
+        details.title = t('multiOperation');
+      } else if (op.type === 'payment') {
+        let title = t('send');
 
         if (op.to.toLowerCase() === userAddress.toLowerCase()) {
-          title = t("receive");
+          title = t('receive');
         }
 
         details.title = title;
@@ -78,8 +78,8 @@ const Activity = () => {
           Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
         op.type === Horizon.HorizonApi.OperationResponseType.pathPayment
       ) {
-        details.title = t("swap");
-        details.description = `Received ${op.amount} ${handleAssetText(op)}`;
+        details.title = t('swap');
+        details.description = `Received ${handleAssetText(op)}`;
       }
 
       result.push(details);
@@ -97,25 +97,25 @@ const Activity = () => {
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
           className="bluxcc:flex bluxcc:h-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center"
         >
-          {t("loadingActivity")}
+          {t('loadingActivity')}
         </div>
       ) : isEmpty ? (
         <div
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
           className="bluxcc:flex bluxcc:h-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center"
         >
-          {t("noActivityFound")}
+          {t('noActivityFound')}
         </div>
       ) : (
         transactionsDetails.map((tx, index) => (
           <div
             key={index}
             style={{
-              borderBottomStyle: "dashed",
+              borderBottomStyle: 'dashed',
               borderBottomWidth:
                 index < transactionsDetails.length - 1
                   ? appearance.borderWidth
-                  : "0px",
+                  : '0px',
               borderBottomColor: appearance.borderColor,
             }}
             className={`bluxcc:p-2`}
@@ -133,7 +133,7 @@ const Activity = () => {
             size="medium"
             onClick={handleGoToExplorer}
           >
-            {t("seeAllInExplorer")}
+            {t('seeAllInExplorer')}
           </Button>
         </div>
       )}
