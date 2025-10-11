@@ -1,6 +1,6 @@
 {
   "name": "@bluxcc/core",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "homepage": "https://blux.cc",
   "description": "Blux is a wallet infra for the Stellar network",
   "type": "module",

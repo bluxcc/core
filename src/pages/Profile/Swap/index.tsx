@@ -9,9 +9,9 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import { sendTransaction } from '../../../exports/blux';
-import { ArrowDropUp, SmallSwapIcon, SwapIcon } from '../../../assets/Icons';
 import swapTransaction from '../../../stellar/swapTransaction';
 import getStrictSendPaths from '../../../exports/core/getStrictSendPaths';
+import { ArrowDropUp, SmallSwapIcon, SwapIcon } from '../../../assets/Icons';
 import getStrictReceivePaths from '../../../exports/core/getStrictReceivePaths';
 import {
   hexToRgba,
@@ -397,7 +397,7 @@ const Swap = () => {
         >
           <span>To</span>
           <span className="bluxcc:mr-2">
-            {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
+            {humanizeAmount(store.selectAsset.swapToAsset.assetBalance)}
           </span>
         </div>
         <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
