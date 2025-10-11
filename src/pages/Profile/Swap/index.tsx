@@ -9,7 +9,7 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import { sendTransaction } from '../../../exports/blux';
-import { ArrowDropUp, SwapIcon } from '../../../assets/Icons';
+import { ArrowDropUp, SmallSwapIcon, SwapIcon } from '../../../assets/Icons';
 import swapTransaction from '../../../stellar/swapTransaction';
 import getStrictSendPaths from '../../../exports/core/getStrictSendPaths';
 import getStrictReceivePaths from '../../../exports/core/getStrictReceivePaths';
@@ -88,7 +88,7 @@ const Swap = () => {
       setTimeout(() => {
         try {
           sendTransaction(xdr);
-        } catch (e) { }
+        } catch (e) {}
       }, 150);
     } catch {
       setError({ field: 'both', message: 'Failed to make transaction.' });
@@ -229,9 +229,9 @@ const Swap = () => {
 
     if (
       store.selectAsset.swapFromAsset.assetCode ===
-      store.selectAsset.swapToAsset.assetCode &&
+        store.selectAsset.swapToAsset.assetCode &&
       store.selectAsset.swapFromAsset.assetIssuer ===
-      store.selectAsset.swapToAsset.assetIssuer
+        store.selectAsset.swapToAsset.assetIssuer
     ) {
       setError({ field: 'both', message: 'FROM and TO assets are the same.' });
 
@@ -281,156 +281,205 @@ const Swap = () => {
     minimumReceived = `${((Number(to) / 100) * 99.5).toFixed(5)} ${store.selectAsset.swapToAsset.assetCode}`;
   }
 
+  const SwapDetails = [
+    {
+      label: 'Rate',
+      value:
+        rate.rate !== 0 && isToValid ? (
+          <span className="bluxcc:flex bluxcc:gap-1.5 bluxcc:items-center">
+            {rateText}
+            <div onClick={handleInvertRate} className="bluxcc:cursor-pointer">
+              <SmallSwapIcon fill={hexToRgba(appearance.textColor, 0.7)} />
+            </div>
+          </span>
+        ) : (
+          '—'
+        ),
+    },
+    {
+      label: 'Path',
+      value: path?.length ? path.map((x) => x.assetCode).join(' > ') : '—',
+    },
+    {
+      label: 'Minimum Received',
+      value: isToValid ? minimumReceived : '—',
+    },
+  ];
+
   return (
     <form onSubmit={handleSubmit}>
-      <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:text-center">
-        <div
-          className="bluxcc:relative bluxcc:w-full bluxcc:p-4"
-          style={{
-            backgroundColor: appearance.fieldBackground,
-            borderColor: appearance.borderColor,
-            borderRadius: appearance.borderRadius,
-            borderWidth: appearance.borderWidth,
-          }}
-        >
-          <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm">
+      <div
+        className="bluxcc:relative bluxcc:w-full bluxcc:p-4"
+        style={{
+          backgroundColor: appearance.fieldBackground,
+          borderColor: appearance.borderColor,
+          borderRadius: appearance.borderRadius,
+          borderWidth: appearance.borderWidth,
+        }}
+      >
+        <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm">
+          <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
+            From
+          </span>
+          <span className="bluxcc:cursor-pointer">
             <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
-              From
+              {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
             </span>
-            <span className="bluxcc:cursor-pointer">
-              {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}{' '}
-              <span
-                onClick={handleMax}
-                style={{ color: appearance.accentColor }}
-                className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:cursor-pointer"
-              >
-                {t('max')} <ArrowDropUp fill={appearance.accentColor} />
-              </span>
-            </span>
-          </div>
-          <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
-            <input
-              name="from"
-              type="number"
-              value={from}
-              onChange={(e) => {
-                handleInputChange(e, 'from');
-              }}
-              id="bluxcc-input"
-              className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
-              style={{
-                color:
-                  error.field === 'from' || error.field === 'both'
-                    ? '#ec2929'
-                    : appearance.textColor,
-              }}
-            />
-            <AssetBox
-              asset={store.selectAsset.swapFromAsset}
-              handleOpenAssets={() => {
-                handleOpenAssets('swapFrom');
-              }}
-            />
-          </div>
-          {/* Todo: add estimated value here */}
-          <div
-            className="bluxcc:mt-1 bluxcc:text-left bluxcc:text-xs"
-            style={{ color: hexToRgba(appearance.textColor, 0.7) }}
-          >
-            {/*
-            ≈ $23.74 USD
-          */}
-          </div>
-          {/* Swap Icon */}
-          <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center cursor-pointer">
-            <div
-              className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
-              style={{
-                borderTopWidth: appearance.borderWidth,
-                borderTopStyle: 'solid',
-                borderTopColor: appearance.borderColor,
-              }}
-            />
-
-            <div
-              onClick={handleSwapAssets}
-              className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer"
-              style={{
-                backgroundColor: appearance.fieldBackground,
-                borderColor: appearance.borderColor,
-                borderRadius: appearance.borderRadius,
-                borderWidth: appearance.borderWidth,
-              }}
+            <span
+              onClick={handleMax}
+              style={{ color: appearance.accentColor }}
+              className="bluxcc:mr-2 bluxcc:ml-1.5 bluxcc:inline-flex bluxcc:cursor-pointer"
             >
-              <SwapIcon fill={appearance.accentColor} />
-            </div>
-          </div>
-          {/* To Input */}
-
-          <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm">
-            <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
-              To
+              {t('max')} <ArrowDropUp fill={appearance.accentColor} />
             </span>
-          </div>
-          <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
-            <input
-              name="to"
-              id="bluxcc-input"
-              type="number"
-              value={to}
-              onChange={(e) => {
-                handleInputChange(e, 'to');
-              }}
-              className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
-              style={{
-                color:
-                  error.field === 'to' || error.field === 'both'
-                    ? '#ec2929'
-                    : appearance.textColor,
-              }}
-            />
-
-            <AssetBox
-              asset={store.selectAsset.swapToAsset}
-              handleOpenAssets={() => {
-                handleOpenAssets('swapTo');
-              }}
-            />
-          </div>
+          </span>
         </div>
-        {!loading && rate.rate !== 0 && isToValid && (
-          <p>
-            {rateText}{' '}
-            <button onClick={handleInvertRate} type="button">
-              Invert
-            </button>
-          </p>
-        )}
-
-        {!loading && isToValid && <p>Minimum received: {minimumReceived}</p>}
-
-        {loading ? (
-          <p>LOADING...</p>
-        ) : (
-          <div>{path.map((x) => x.assetCode).join(' > ')}</div>
-        )}
-
-        <div className="bluxcc:h-4 bluxcc:w-full bluxcc:my-2 bluxcc:ml-3 bluxcc:text-left bluxcc:text-xs bluxcc:text-alert-error">
-          {error.message}
+        <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
+          <input
+            name="from"
+            type="number"
+            value={from}
+            onChange={(e) => {
+              handleInputChange(e, 'from');
+            }}
+            id="bluxcc-input"
+            className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
+            style={{
+              color:
+                error.field === 'from' || error.field === 'both'
+                  ? '#ec2929'
+                  : appearance.textColor,
+            }}
+          />
+          <AssetBox
+            asset={store.selectAsset.swapFromAsset}
+            handleOpenAssets={() => {
+              handleOpenAssets('swapFrom');
+            }}
+          />
         </div>
-
-        <Divider />
-
-        <Button
-          size="large"
-          state="enabled"
-          variant="outline"
-          type="submit"
-          disabled={error.message !== ''}
+        {/* Todo: add real estimated value here */}
+        <div
+          className="bluxcc:mt-1 bluxcc:text-left bluxcc:text-xs"
+          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
-          Swap
-        </Button>
+          {/* ≈ $23.74 USD */}
+        </div>
+        {/* Swap Icon */}
+        <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center cursor-pointer">
+          <div
+            className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
+            style={{
+              borderTopWidth: appearance.borderWidth,
+              borderTopStyle: 'solid',
+              borderTopColor: appearance.borderColor,
+            }}
+          />
+
+          <div
+            onClick={handleSwapAssets}
+            className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer"
+            style={{
+              backgroundColor: appearance.fieldBackground,
+              borderColor: appearance.borderColor,
+              borderRadius: appearance.borderRadius,
+              borderWidth: appearance.borderWidth,
+            }}
+          >
+            <SwapIcon fill={appearance.accentColor} />
+          </div>
+        </div>
+        {/* To Input */}
+
+        <div
+          className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm"
+          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+        >
+          <span>To</span>
+          <span className="bluxcc:mr-2">
+            {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
+          </span>
+        </div>
+        <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
+          <input
+            name="to"
+            id="bluxcc-input"
+            type="number"
+            value={to}
+            onChange={(e) => {
+              handleInputChange(e, 'to');
+            }}
+            className="bluxcc:w-full bluxcc:bg-transparent bluxcc:text-xl bluxcc:font-medium bluxcc:outline-none"
+            style={{
+              color:
+                error.field === 'to' || error.field === 'both'
+                  ? '#ec2929'
+                  : appearance.textColor,
+            }}
+          />
+
+          <AssetBox
+            asset={store.selectAsset.swapToAsset}
+            handleOpenAssets={() => {
+              handleOpenAssets('swapTo');
+            }}
+          />
+        </div>
+        <div
+          className="bluxcc:mt-1 bluxcc:text-left bluxcc:text-xs"
+          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+        >
+          {/* ≈ $23.74 USD */}
+        </div>
       </div>
+
+      <div className="bluxcc:h-3.5 bluxcc:my-[5px] bluxcc:mx-3 bluxcc:text-left bluxcc:text-xs bluxcc:text-alert-error">
+        {error.message}
+      </div>
+
+      <div
+        style={{
+          borderColor: appearance.borderColor,
+          borderRadius: appearance.borderRadius,
+          borderWidth: appearance.borderWidth,
+        }}
+        className="bluxcc:w-full bluxcc:py-3 bluxcc:px-4"
+      >
+        {SwapDetails.map((item, index, array) => (
+          <div key={item.label}>
+            <div className="bluxcc:flex bluxcc:justify-between bluxcc:items-center bluxcc:text-xs bluxcc:font-medium">
+              <span style={{ color: hexToRgba(appearance.textColor, 0.8) }}>
+                {item.label}
+              </span>
+              <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
+                {loading ? 'LOADING...' : item.value}
+              </span>
+            </div>
+
+            {index !== array.length - 1 && (
+              <div
+                className="bluxcc:my-2"
+                style={{
+                  borderRadius: appearance.borderRadius,
+                  borderTop: `${appearance.borderWidth} dashed ${appearance.borderColor}`,
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <Divider />
+
+      <Button
+        size="large"
+        state="enabled"
+        variant="outline"
+        type="submit"
+        disabled={error.message !== ''}
+      >
+        Swap
+      </Button>
     </form>
   );
 };

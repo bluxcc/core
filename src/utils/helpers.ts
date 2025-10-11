@@ -106,7 +106,7 @@ export const formatDate = (isoString: string) => {
   const date = new Date(isoString);
 
   const day = date.getUTCDate();
-  const month = date.toLocaleString('en-US', { month: 'long' });
+  const month = date.toLocaleString('en-US', { month: 'short' });
 
   return `${day} ${month}`;
 };

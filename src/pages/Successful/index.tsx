@@ -1,15 +1,15 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import { useAppStore } from "../../store";
-import Button from "../../components/Button";
-import { useLang } from "../../hooks/useLang";
-import Divider from "../../components/Divider";
-import { GreenCheck } from "../../assets/Icons";
+import { useAppStore } from '../../store';
+import Button from '../../components/Button';
+import { useLang } from '../../hooks/useLang';
+import Divider from '../../components/Divider';
+import { GreenCheck } from '../../assets/Icons';
 import {
   hexToRgba,
   getExplorerUrl,
   capitalizeFirstLetter,
-} from "../../utils/helpers";
+} from '../../utils/helpers';
 
 const Successful = () => {
   const t = useLang();
@@ -21,14 +21,14 @@ const Successful = () => {
   const { sendTransaction } = store;
 
   const hash = sendTransaction?.result?.hash;
-  const network = sendTransaction?.options?.network || "";
+  const network = sendTransaction?.options?.network || '';
 
   const explorerUrl = hash
-    ? getExplorerUrl(network, config.explorer, "transactionUrl", hash)
+    ? getExplorerUrl(network, config.explorer, 'transactionUrl', hash)
     : null;
 
   useEffect(() => {
-    if (waitingStatus === "login") {
+    if (waitingStatus === 'login') {
       setTimeout(() => {
         closeModal();
       }, 1000);
@@ -37,14 +37,14 @@ const Successful = () => {
 
   const handleGoToExplorer = () => {
     if (explorerUrl) {
-      window.open(explorerUrl, "_blank", "noopener,noreferrer");
+      window.open(explorerUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
   const handleDone = () => {
     closeModal();
 
-    if (waitingStatus === "sendTransaction") {
+    if (waitingStatus === 'sendTransaction') {
       if (!sendTransaction) {
         return;
       }
@@ -54,7 +54,7 @@ const Successful = () => {
       if (resolver && result) {
         resolver(result);
       }
-    } else if (waitingStatus === "signMessage") {
+    } else if (waitingStatus === 'signMessage') {
       if (!store.signMessage) {
         return;
       }
@@ -78,42 +78,42 @@ const Successful = () => {
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
         <p className="bluxcc:text-xl">
-          {waitingStatus === "login"
-            ? t("connectionSuccessfulTitle")
-            : t("transactionSuccessfulTitle")}
+          {waitingStatus === 'login'
+            ? t('connectionSuccessfulTitle')
+            : t('transactionSuccessfulTitle')}
         </p>
         <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5">
-          {waitingStatus === "login"
-            ? t("connectionSuccessfulMessage", {
+          {waitingStatus === 'login'
+            ? t('connectionSuccessfulMessage', {
                 appName: capitalizeFirstLetter(config.appName),
               })
-            : t("transactionSuccessfulMessage")}
+            : t('transactionSuccessfulMessage')}
         </p>
       </div>
 
-      {waitingStatus === "sendTransaction" &&
+      {waitingStatus === 'sendTransaction' &&
         hash &&
-        typeof explorerUrl == "string" && (
+        typeof explorerUrl == 'string' && (
           <Button
             state="enabled"
             variant="outline"
             size="small"
-            className="mt-4"
+            className="bluxcc:mt-4"
             onClick={handleGoToExplorer}
           >
-            {t("seeInExplorer")}
+            {t('seeInExplorer')}
           </Button>
         )}
 
       <Divider />
 
-      {waitingStatus === "login" ? (
+      {waitingStatus === 'login' ? (
         <Button
           state="enabled"
           variant="outline"
           className="bluxcc:cursor-default!"
         >
-          {t("loggingIn")}
+          {t('loggingIn')}
         </Button>
       ) : (
         <Button
@@ -122,7 +122,7 @@ const Successful = () => {
           size="large"
           onClick={handleDone}
         >
-          {t("done")}
+          {t('done')}
         </Button>
       )}
     </div>
