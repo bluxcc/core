@@ -36,7 +36,7 @@ export function createConfig(config: IConfig) {
 
   init();
 
-  let excludeWallets = config.excludeWallets || [];
+  let excludeWallets = config.excludeWallets || ['lobstr', 'albedo'];
 
   // @ts-ignore
   excludeWallets = excludeWallets.map((x) => x.toLowerCase());
@@ -48,8 +48,8 @@ export function createConfig(config: IConfig) {
       ...defaultLightTheme,
       ...config?.appearance,
     },
-    lang: config.lang || 'en',
     defaultNetwork: '',
+    lang: config.lang || 'en',
     showWalletUIs: !!config.showWalletUIs,
     explorer: config.explorer || 'stellarchain',
     loginMethods: config.loginMethods || ['wallet'],
@@ -81,7 +81,7 @@ export function createConfig(config: IConfig) {
 
   setConfig(conf);
 
-  handleLoadWallets().then((wallets) => {
+  handleLoadWallets(excludeWallets).then((wallets) => {
     const includedWallets = wallets.filter(
       (w) =>
         // @ts-ignore

@@ -38,7 +38,7 @@ export const rabetConfig: IWallet = {
     new Promise((resolve) => {
       setTimeout(
         () => resolve(typeof window !== 'undefined' && !!window.rabet),
-        250,
+        150,
       );
     }),
   signAuthEntry: async () => {

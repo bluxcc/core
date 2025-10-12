@@ -40,7 +40,7 @@ export const xBullConfig: IWallet = {
     new Promise((resolve) => {
       setTimeout(() => {
         resolve(typeof window !== 'undefined' && !!window.xBullSDK);
-      }, 250);
+      }, 150);
     }),
   signAuthEntry: async () => {
     throw new Error('xBull does not support the signAuthEntry function');

@@ -1,17 +1,24 @@
 import { Asset, Horizon } from '@stellar/stellar-sdk';
 
+import { XLM } from '../constants/assets';
 import { walletsConfig } from '../wallets';
 import EXPLORERS from '../constants/explorers';
 import translations from '../constants/locales';
 import { RECENT_CONNECTION_METHODS } from '../constants/consts';
 import { Route, StellarNetwork, SupportedWallet } from '../enums';
-import { ITransports, IWallet, IExplorer, LanguageKey, IAsset } from '../types';
+import {
+  IAsset,
+  IWallet,
+  IExplorer,
+  LanguageKey,
+  ITransports,
+  IWalletNames,
+} from '../types';
 import {
   networks,
   INetworkTransports,
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
-import { XLM } from '../constants/assets';
 
 export const iAssetToAsset = (asset: IAsset): Asset => {
   if (asset.assetType === 'native') {
@@ -158,10 +165,17 @@ export const getExplorerUrl = (
   return `${networkExplorer}/${explorer[endpoint]}/${value}`;
 };
 
-export const getMappedWallets = async (): Promise<IWallet[]> => {
+export const getMappedWallets = async (
+  walletNames: IWalletNames,
+): Promise<IWallet[]> => {
   const checkedWallets = await Promise.all(
     Object.values(walletsConfig).map(async (wallet) => {
       try {
+        // @ts-ignore
+        if (walletNames.includes(wallet.name.toLowerCase())) {
+          return { wallet, isAvailable: false };
+        }
+
         const isAvailable = await wallet.isAvailable();
 
         return { wallet, isAvailable };
@@ -275,15 +289,17 @@ export const getWalletNetwork = async (wallet: IWallet) => {
   }
 };
 
-export const handleLoadWallets = (): Promise<IWallet[]> =>
+export const handleLoadWallets = (
+  walletNames: IWalletNames,
+): Promise<IWallet[]> =>
   new Promise((res) => {
     if (document.readyState === 'complete') {
-      loadWallets().then((wallets) => {
+      loadWallets(walletNames).then((wallets) => {
         res(wallets);
       });
     } else {
       window.addEventListener('load', () => {
-        loadWallets().then((wallets) => {
+        loadWallets(walletNames).then((wallets) => {
           res(wallets);
         });
       });
@@ -341,12 +357,11 @@ export const isBackgroundDark = (bgColor: string): boolean => {
   return luminance > 0.5 ? false : true;
 };
 
-export const loadWallets = async () => {
+export const loadWallets = async (excludedWallets: IWalletNames) => {
   initializeRabetMobile();
 
-  await timeout(150);
+  const wallets = await getMappedWallets(excludedWallets);
 
-  const wallets = await getMappedWallets();
   const sortAvailableWallets = getSortedCheckedWallets(wallets);
 
   return sortAvailableWallets;
