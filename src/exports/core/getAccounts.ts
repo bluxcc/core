@@ -1,17 +1,17 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
-import { AccountCallBuilder } from "@stellar/stellar-sdk/lib/horizon/account_call_builder";
+import { Asset, Horizon } from '@stellar/stellar-sdk';
+import { AccountCallBuilder } from '@stellar/stellar-sdk/lib/horizon/account_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetAccountsOptions = CallBuilderOptions & {
+export type GetAccountsOptions = CallBuilderOptions & {
   forSigner?: string;
   forAsset?: Asset;
   sponsor?: string;
   forLiquidityPool?: string;
 };
 
-type GetAccountsResult = {
+export type GetAccountsResult = {
   builder: AccountCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.AccountRecord>;
 };
@@ -21,7 +21,7 @@ const getAccounts = async (
 ): Promise<GetAccountsResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("accounts", [], options);
+  let builder = callBuilder('accounts', [], options);
 
   if (options.forSigner) {
     builder = builder.forSigner(options.forSigner);

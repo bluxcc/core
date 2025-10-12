@@ -1,10 +1,10 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
-import { OfferCallBuilder } from "@stellar/stellar-sdk/lib/horizon/offer_call_builder";
+import { Asset, Horizon } from '@stellar/stellar-sdk';
+import { OfferCallBuilder } from '@stellar/stellar-sdk/lib/horizon/offer_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetOffersOptions = CallBuilderOptions & {
+export type GetOffersOptions = CallBuilderOptions & {
   forAccount?: string;
   buying?: Asset;
   selling?: Asset;
@@ -12,7 +12,7 @@ type GetOffersOptions = CallBuilderOptions & {
   seller?: string;
 };
 
-type GetOffersResult = {
+export type GetOffersResult = {
   builder: OfferCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OfferRecord>;
 };
@@ -22,7 +22,7 @@ const getOffers = async (
 ): Promise<GetOffersResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("offers", [], options);
+  let builder = callBuilder('offers', [], options);
 
   if (options.forAccount) {
     builder = builder.forAccount(options.forAccount);

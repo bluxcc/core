@@ -50,6 +50,7 @@ export interface IConfig {
   transports?: ITransports;
   excludeWallets?: IWalletNames;
   walletConnect?: IWalletConnectMetaData;
+  promptOnWrongNetwork?: boolean;
 }
 
 export interface IInternalConfig extends IConfig {
@@ -59,6 +60,7 @@ export interface IInternalConfig extends IConfig {
   defaultNetwork: string;
   lang: LanguageKey;
   excludeWallets: IWalletNames;
+  promptOnWrongNetwork: boolean;
 }
 
 export interface IAppearance {

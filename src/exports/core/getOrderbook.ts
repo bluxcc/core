@@ -1,10 +1,10 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
-import { OrderbookCallBuilder } from "@stellar/stellar-sdk/lib/horizon/orderbook_call_builder";
+import { Asset, Horizon } from '@stellar/stellar-sdk';
+import { OrderbookCallBuilder } from '@stellar/stellar-sdk/lib/horizon/orderbook_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetOrderbookResult = {
+export type GetOrderbookResult = {
   builder: OrderbookCallBuilder;
   response: Horizon.ServerApi.OrderbookRecord;
 };
@@ -15,7 +15,7 @@ const getOrderbook = async (
 ): Promise<GetOrderbookResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("orderbook", args, options);
+  let builder = callBuilder('orderbook', args, options);
 
   const response = await builder.call();
 

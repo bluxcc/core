@@ -2,15 +2,17 @@ import { Horizon, StrKey } from '@stellar/stellar-sdk';
 
 import { checkConfigCreated, getAddress, getNetwork } from '../utils';
 
-type GetBalancesOptions = {
+export type GetBalancesOptions = {
   address?: string;
   network?: string;
   includeZeroBalances?: boolean;
 };
 
+export type GetBalancesResult = Horizon.HorizonApi.BalanceLine[];
+
 const getBalances = async (
   options: GetBalancesOptions,
-): Promise<Horizon.HorizonApi.BalanceLine[]> => {
+): Promise<GetBalancesResult> => {
   checkConfigCreated();
   const address = getAddress(options.address);
   const { horizon } = getNetwork(options.network);

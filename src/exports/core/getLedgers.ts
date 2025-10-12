@@ -1,14 +1,14 @@
-import { Horizon } from "@stellar/stellar-sdk";
-import { LedgerCallBuilder } from "@stellar/stellar-sdk/lib/horizon/ledger_call_builder";
+import { Horizon } from '@stellar/stellar-sdk';
+import { LedgerCallBuilder } from '@stellar/stellar-sdk/lib/horizon/ledger_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetLedgersOptions = CallBuilderOptions & {
+export type GetLedgersOptions = CallBuilderOptions & {
   ledger?: number | string;
 };
 
-type GetLedgersResult = {
+export type GetLedgersResult = {
   builder: LedgerCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.LedgerRecord>;
 };
@@ -18,7 +18,7 @@ const getLedgers = async (
 ): Promise<GetLedgersResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("ledgers", [], options);
+  let builder = callBuilder('ledgers', [], options);
 
   if (options.ledger) {
     builder = builder.ledger(options.ledger);

@@ -29,7 +29,7 @@ const init = () => {
 
 export function createConfig(config: IConfig) {
   if (isInitiated) {
-    throw new Error('Config has already been set');
+    return;
   }
 
   isInitiated = true;
@@ -41,6 +41,12 @@ export function createConfig(config: IConfig) {
   // @ts-ignore
   excludeWallets = excludeWallets.map((x) => x.toLowerCase());
 
+  let promptOnWrongNetwork = true;
+
+  if (config.promptOnWrongNetwork !== undefined) {
+    promptOnWrongNetwork = config.promptOnWrongNetwork;
+  }
+
   const conf: IInternalConfig = {
     ...config,
     excludeWallets,
@@ -49,6 +55,7 @@ export function createConfig(config: IConfig) {
       ...config?.appearance,
     },
     defaultNetwork: '',
+    promptOnWrongNetwork,
     lang: config.lang || 'en',
     showWalletUIs: !!config.showWalletUIs,
     explorer: config.explorer || 'stellarchain',

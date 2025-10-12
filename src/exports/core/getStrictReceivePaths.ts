@@ -1,10 +1,10 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
-import { PathCallBuilder } from "@stellar/stellar-sdk/lib/horizon/path_call_builder";
+import { Asset, Horizon } from '@stellar/stellar-sdk';
+import { PathCallBuilder } from '@stellar/stellar-sdk/lib/horizon/path_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetPaymentPathResult = {
+export type GetPaymentPathResult = {
   builder: PathCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.PaymentPathRecord>;
 };
@@ -19,7 +19,7 @@ const getStrictReceivePaths = async (
 ): Promise<GetPaymentPathResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("strictReceivePaths", args, options);
+  let builder = callBuilder('strictReceivePaths', args, options);
 
   const response = await builder.call();
 

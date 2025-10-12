@@ -1,16 +1,16 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
-import { ClaimableBalanceCallBuilder } from "@stellar/stellar-sdk/lib/horizon/claimable_balances_call_builder";
+import { Asset, Horizon } from '@stellar/stellar-sdk';
+import { ClaimableBalanceCallBuilder } from '@stellar/stellar-sdk/lib/horizon/claimable_balances_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetClaimableBalancesOptions = CallBuilderOptions & {
+export type GetClaimableBalancesOptions = CallBuilderOptions & {
   asset: Asset;
   sponsor?: string;
   claimant: string;
 };
 
-type GetClaimableBalancesResult = {
+export type GetClaimableBalancesResult = {
   builder: ClaimableBalanceCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.ClaimableBalanceRecord>;
 };
@@ -20,7 +20,7 @@ const getClaimableBalances = async (
 ): Promise<GetClaimableBalancesResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("claimableBalances", [], options);
+  let builder = callBuilder('claimableBalances', [], options);
 
   if (options.asset) {
     builder = builder.asset(options.asset);

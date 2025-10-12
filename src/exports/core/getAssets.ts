@@ -1,15 +1,15 @@
-import { Horizon } from "@stellar/stellar-sdk";
-import { AssetsCallBuilder } from "@stellar/stellar-sdk/lib/horizon/assets_call_builder";
+import { Horizon } from '@stellar/stellar-sdk';
+import { AssetsCallBuilder } from '@stellar/stellar-sdk/lib/horizon/assets_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetAssetsOptions = CallBuilderOptions & {
+export type GetAssetsOptions = CallBuilderOptions & {
   forCode?: string;
   forIssuer?: string;
 };
 
-type GetAssetsResult = {
+export type GetAssetsResult = {
   builder: AssetsCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.AssetRecord>;
 };
@@ -19,7 +19,7 @@ const getAssets = async (
 ): Promise<GetAssetsResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("assets", [], options);
+  let builder = callBuilder('assets', [], options);
 
   if (options.forCode) {
     builder = builder.forCode(options.forCode);

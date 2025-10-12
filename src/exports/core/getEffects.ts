@@ -1,10 +1,10 @@
-import { Horizon } from "@stellar/stellar-sdk";
-import { EffectCallBuilder } from "@stellar/stellar-sdk/lib/horizon/effect_call_builder";
+import { Horizon } from '@stellar/stellar-sdk';
+import { EffectCallBuilder } from '@stellar/stellar-sdk/lib/horizon/effect_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetEffectsOptions = CallBuilderOptions & {
+export type GetEffectsOptions = CallBuilderOptions & {
   forAccount?: string;
   forLedger?: string | number;
   forTransaction?: string;
@@ -12,7 +12,7 @@ type GetEffectsOptions = CallBuilderOptions & {
   forLiquidityPool?: string;
 };
 
-type GetEffectsResult = {
+export type GetEffectsResult = {
   builder: EffectCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.EffectRecord>;
 };
@@ -22,7 +22,7 @@ const getEffects = async (
 ): Promise<GetEffectsResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("effects", [], options);
+  let builder = callBuilder('effects', [], options);
 
   if (options.forAccount) {
     builder = builder.forAccount(options.forAccount);

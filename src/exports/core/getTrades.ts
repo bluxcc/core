@@ -1,10 +1,10 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
-import { TradesCallBuilder } from "@stellar/stellar-sdk/lib/horizon/trades_call_builder";
+import { Asset, Horizon } from '@stellar/stellar-sdk';
+import { TradesCallBuilder } from '@stellar/stellar-sdk/lib/horizon/trades_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetTradesOptions = CallBuilderOptions & {
+export type GetTradesOptions = CallBuilderOptions & {
   forAssetPair?: [base: Asset, counter: Asset];
   forOffer?: string;
   forType?: Horizon.ServerApi.TradeType;
@@ -12,7 +12,7 @@ type GetTradesOptions = CallBuilderOptions & {
   forLiquidityPool?: string;
 };
 
-type GetTradesResult = {
+export type GetTradesResult = {
   builder: TradesCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TradeRecord>;
 };
@@ -22,7 +22,7 @@ const getTrades = async (
 ): Promise<GetTradesResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("trades", [], options);
+  let builder = callBuilder('trades', [], options);
 
   if (options.forAssetPair) {
     builder = builder.forAssetPair(

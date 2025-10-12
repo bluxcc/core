@@ -1,10 +1,10 @@
-import { Horizon } from "@stellar/stellar-sdk";
-import { OperationCallBuilder } from "@stellar/stellar-sdk/lib/horizon/operation_call_builder";
+import { Horizon } from '@stellar/stellar-sdk';
+import { OperationCallBuilder } from '@stellar/stellar-sdk/lib/horizon/operation_call_builder';
 
-import { callBuilder } from "./callBuilder";
-import { checkConfigCreated, CallBuilderOptions } from "../utils";
+import { callBuilder } from './callBuilder';
+import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetOperationsOptions = CallBuilderOptions & {
+export type GetOperationsOptions = CallBuilderOptions & {
   forAccount?: string;
   forClaimableBalance?: string;
   forLedger?: string | number;
@@ -13,7 +13,7 @@ type GetOperationsOptions = CallBuilderOptions & {
   includeFailed?: boolean;
 };
 
-type GetOperationsResult = {
+export type GetOperationsResult = {
   builder: OperationCallBuilder;
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OperationRecord>;
 };
@@ -23,7 +23,7 @@ const getOperations = async (
 ): Promise<GetOperationsResult> => {
   checkConfigCreated();
 
-  let builder = callBuilder("operations", [], options);
+  let builder = callBuilder('operations', [], options);
 
   if (options.forAccount) {
     builder = builder.forAccount(options.forAccount);

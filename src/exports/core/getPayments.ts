@@ -1,7 +1,7 @@
 import { callBuilder } from './callBuilder';
 import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-type GetPaymentsOptions = CallBuilderOptions & {
+export type GetPaymentsOptions = CallBuilderOptions & {
   forAccount?: string;
   forLedger?: string | number;
   forTransaction?: string;

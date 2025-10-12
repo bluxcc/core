@@ -54,7 +54,7 @@ const useCheckWalletNetwork = (store: IStore) => {
   useEffect(() => {
     if (!store.modal.isOpen) {
       setTimeout(() => {
-        if (shouldModalOpen) {
+        if (shouldModalOpen && store.config.promptOnWrongNetwork) {
           store.openModal(Route.WRONG_NETWORK);
         } else {
           store.closeModal();

@@ -1,13 +1,13 @@
-import { Horizon, StrKey } from "@stellar/stellar-sdk";
+import { Horizon, StrKey } from '@stellar/stellar-sdk';
 
-import { checkConfigCreated, getAddress, getNetwork } from "../utils";
+import { checkConfigCreated, getAddress, getNetwork } from '../utils';
 
-type GetAccountOptions = {
+export type GetAccountOptions = {
   address?: string;
   network?: string;
 };
 
-type GetAccountResult = Horizon.AccountResponse | null;
+export type GetAccountResult = Horizon.AccountResponse | null;
 
 const getAccount = async (
   options: GetAccountOptions,
@@ -17,7 +17,7 @@ const getAccount = async (
   const { horizon } = getNetwork(options.network);
 
   if (!StrKey.isValidEd25519PublicKey(address)) {
-    throw new Error("Invalid address");
+    throw new Error('Invalid address');
   }
 
   try {
