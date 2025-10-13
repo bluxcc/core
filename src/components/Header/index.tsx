@@ -1,13 +1,15 @@
 import { useAppStore } from '../../store';
 import { hexToRgba } from '../../utils/helpers';
+import { useLang } from '../../hooks/useLang';
 import { AboutIcon, ArrowLeft, Close } from '../../assets/Icons';
+
 import Alert from '../Alert';
 
 interface HeaderProps {
   icon?: 'info' | 'back';
   onInfo?: () => void;
   onBack?: () => void;
-  title: string;
+  title?: string;
   closeButton?: boolean;
   onClose: () => void;
 }
@@ -16,53 +18,73 @@ const Header = ({
   icon,
   onInfo,
   onBack,
-  title,
+  title = ' ',
   closeButton = false,
   onClose,
 }: HeaderProps) => {
-  const appearance = useAppStore((store) => store.config.appearance);
-  const { modal } = useAppStore((store) => store);
+  const config = useAppStore((state) => state.config);
+  const modal = useAppStore((state) => state.modal);
+
+  const t = useLang();
+  const textColor = hexToRgba(config.appearance.textColor, 0.7);
+  const showAlert = modal.alert.type !== 'none';
+
+  const IconWrapper = ({
+    onClick,
+    children,
+  }: {
+    onClick?: () => void;
+    children: React.ReactNode;
+  }) => (
+    <div
+      onClick={onClick}
+      className="bluxcc:flex bluxcc:size-5 bluxcc:items-center bluxcc:justify-center bluxcc:cursor-pointer"
+    >
+      {children}
+    </div>
+  );
+
+  const showLeftIcon = () => {
+    if (icon === 'info')
+      return (
+        <IconWrapper onClick={onInfo}>
+          <AboutIcon fill={textColor} />
+        </IconWrapper>
+      );
+    if (icon === 'back')
+      return (
+        <IconWrapper onClick={onBack}>
+          <ArrowLeft fill={textColor} />
+        </IconWrapper>
+      );
+    return <div className="bluxcc:size-5" />;
+  };
+
+  const showRightIcon = () => {
+    if (!closeButton) return <div className="bluxcc:size-5" />;
+    return (
+      <IconWrapper onClick={onClose}>
+        <Close fill={textColor} />
+      </IconWrapper>
+    );
+  };
 
   return (
-    <div className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:h-16">
-      {icon === 'info' ? (
-        <div
-          onClick={onInfo}
-          className="bluxcc:flex bluxcc:size-5 bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center"
-        >
-          <AboutIcon fill={hexToRgba(appearance.textColor, 0.7)} />
-        </div>
-      ) : icon === 'back' ? (
-        <div
-          onClick={onBack}
-          className="bluxcc:flex bluxcc:size-5 bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center"
-        >
-          <ArrowLeft fill={hexToRgba(appearance.textColor, 0.7)} />
-        </div>
-      ) : (
-        <div className="bluxcc:size-5" />
-      )}
+    <header className="bluxcc:flex bluxcc:h-16 bluxcc:w-full bluxcc:items-center bluxcc:justify-between">
+      {showLeftIcon()}
 
-      <div className="bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:w-full">
-        {modal.alert.type === 'none' ? (
-          <p className="bluxcc:grow bluxcc:text-center bluxcc:text-base bluxcc:font-medium bluxcc:select-none">
-            {title}
-          </p>
+      <div className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
+        {showAlert ? (
+          <Alert type={modal.alert.type} message={modal.alert.message} />
         ) : (
-          <div>
-            <Alert type={modal.alert.type} message={modal.alert.message} />
-          </div>
+          <p className="bluxcc:grow bluxcc:select-none bluxcc:text-center bluxcc:text-base bluxcc:font-medium">
+            {t(title)}
+          </p>
         )}
       </div>
 
-      {closeButton ? (
-        <div onClick={onClose} className="bluxcc:size-5 bluxcc:cursor-pointer">
-          <Close fill={hexToRgba(appearance.textColor, 0.7)} />
-        </div>
-      ) : (
-        <div className="bluxcc:size-5" />
-      )}
-    </div>
+      {showRightIcon()}
+    </header>
   );
 };
 

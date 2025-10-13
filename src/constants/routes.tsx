@@ -3,13 +3,11 @@ import { JSX } from 'react';
 import { Route } from '../enums';
 import Profile from '../pages/Profile';
 import Waiting from '../pages/Waiting';
-import { LanguageKey } from '../types';
 import Swap from '../pages/Profile/Swap';
 import Send from '../pages/Profile/Send';
 import OTP from '../pages/Onboarding/OTP';
 import Successful from '../pages/Successful';
 import Onboarding from '../pages/Onboarding';
-import { translate } from '../utils/helpers';
 import Receive from '../pages/Profile/Receive';
 import WrongNetwork from '../pages/WrongNetwork';
 import Balances from '../pages/Profile/Balances';
@@ -24,88 +22,88 @@ import WalletConnect from '../pages/WalletConnect';
 import SelectAsset from '../pages/Profile/SelectAsset';
 
 type IRoute = {
-  title: string;
-  isSticky?: boolean;
+  title?: string;
   Component: JSX.Element;
 };
 
-export const getModalContent = (lang: LanguageKey): Record<string, IRoute> => ({
-  [Route.ONBOARDING]: {
-    title: translate('logInOrSignUp', lang),
-    Component: <Onboarding />,
-  },
-  [Route.PROFILE]: {
-    title: translate('profile', lang),
-    Component: <Profile />,
-  },
-  [Route.WAITING]: {
-    title: '',
-    Component: <Waiting />,
-  },
-  [Route.SUCCESSFUL]: {
-    title: '',
-    Component: <Successful />,
-  },
-  [Route.FAILED]: {
-    title: '',
-    Component: <Failed />,
-  },
-  [Route.SEND_TRANSACTION]: {
-    title: translate('confirmation', lang),
-    Component: <SendTransaction />,
-  },
-  [Route.SEND]: {
-    title: translate('send', lang),
-    Component: <Send />,
-  },
-  [Route.ACTIVITY]: {
-    title: translate('activity', lang),
-    Component: <Activity />,
-  },
+export const getModalContent = (): Record<string, IRoute> => {
+  return {
+    [Route.ONBOARDING]: {
+      title: 'logInOrSignUp',
+      Component: <Onboarding />,
+    },
+    [Route.PROFILE]: {
+      title: 'profile',
+      Component: <Profile />,
+    },
+    [Route.WAITING]: {
+      title: '',
+      Component: <Waiting />,
+    },
+    [Route.SUCCESSFUL]: {
+      title: '',
+      Component: <Successful />,
+    },
+    [Route.FAILED]: {
+      title: '',
+      Component: <Failed />,
+    },
+    [Route.SEND_TRANSACTION]: {
+      title: 'confirmation',
+      Component: <SendTransaction />,
+    },
+    [Route.SEND]: {
+      title: 'send',
+      Component: <Send />,
+    },
+    [Route.ACTIVITY]: {
+      title: 'activity',
+      Component: <Activity />,
+    },
 
-  [Route.RECEIVE]: {
-    title: translate('receive', lang),
-    Component: <Receive />,
-  },
-  [Route.SWAP]: {
-    title: translate('swap', lang),
-    Component: <Swap />,
-  },
-  [Route.BALANCES]: {
-    title: translate('balances', lang),
-    Component: <Balances />,
-  },
-  [Route.BALANCE_DETAILS]: {
-    title: '',
-    Component: <BalanceDetails />,
-  },
-  [Route.OTP]: {
-    title: '',
-    Component: <OTP />,
-  },
-  [Route.WRONG_NETWORK]: {
-    title: '',
-    isSticky: true,
-    Component: <WrongNetwork />,
-  },
-  [Route.ABOUT]: {
-    title: 'What is Blux',
-    Component: <About />,
-  },
-  [Route.ADD_TOKEN]: {
-    title: 'Add Token',
-    Component: <AddToken />,
-  },
-  [Route.SIGN_MESSAGE]: {
-    title: 'Sign Message',
-    Component: <SignMessage />,
-  },
-  [Route.SELECT_ASSET]: {
-    title: 'Select Asset',
-    Component: <SelectAsset />,
-  },
-  [Route.WALLET_CONNECT]: {
-    title: 'Wallet Connect',
-    Component: <WalletConnect />,
-  },
-});
+    [Route.RECEIVE]: {
+      title: 'receive',
+      Component: <Receive />,
+    },
+    [Route.SWAP]: {
+      title: 'swap',
+      Component: <Swap />,
+    },
+    [Route.BALANCES]: {
+      title: 'balances',
+      Component: <Balances />,
+    },
+    [Route.BALANCE_DETAILS]: {
+      title: '',
+      Component: <BalanceDetails />,
+    },
+    [Route.OTP]: {
+      title: '',
+      Component: <OTP />,
+    },
+    [Route.WRONG_NETWORK]: {
+      title: '',
+      Component: <WrongNetwork />,
+    },
+    [Route.ABOUT]: {
+      title: 'whatIsBlux',
+      Component: <About />,
+    },
+    [Route.ADD_TOKEN]: {
+      title: 'addToken',
+      Component: <AddToken />,
+    },
+    [Route.SIGN_MESSAGE]: {
+      title: 'signMessage',
+      Component: <SignMessage />,
+    },
+    [Route.SELECT_ASSET]: {
+      title: 'selectAsset',
+      Component: <SelectAsset />,
+    },
+    [Route.WALLET_CONNECT]: {
+      title: 'walletConnect',
+      Component: <WalletConnect />,
+    },
+  };
+};

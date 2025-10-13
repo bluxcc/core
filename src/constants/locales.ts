@@ -46,6 +46,26 @@ const translations: Translations = {
     en: 'Balances',
     es: 'Saldos',
   },
+  whatIsBlux: {
+    en: 'What is Blux',
+    es: 'Qué es Blux',
+  },
+  addToken: {
+    en: 'Add Token',
+    es: 'Agregar token',
+  },
+  signMessage: {
+    en: 'Sign Message',
+    es: 'Firmar mensaje',
+  },
+  selectAsset: {
+    en: 'Select Asset',
+    es: 'Seleccionar activo',
+  },
+  walletConnect: {
+    en: 'Wallet Connect',
+    es: 'Conectar billetera',
+  },
   // General / Shared
   loading: {
     en: 'Loading',

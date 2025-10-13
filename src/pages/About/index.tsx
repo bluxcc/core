@@ -34,7 +34,7 @@ const About = () => {
           ))}
         </div>
       </AnimatedGradient>
-      <p className="bluxcc:text-2xl bluxcc:mt-[26px] bluxcc:mb-2">
+      <p className="bluxcc:text-2xl bluxcc:mt-[26px] bluxcc:mb-2 bluxcc:px-6  ">
         {t('wallet_infra')}
       </p>
       <p className="bluxcc:text-sm text-center">{t('blux_gateway')}</p>

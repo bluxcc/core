@@ -25,6 +25,8 @@ const Swap = () => {
   const t = useLang();
   const [to, setTo] = useState('0');
   const [from, setFrom] = useState('0');
+  const [rotation, setRotation] = useState(0);
+  const [secondRotation, setSecondRotation] = useState(0);
   const store = useAppStore((store) => store);
   const [loading, setLoading] = useState(false);
   const [path, setPath] = useState<IAsset[]>([]);
@@ -45,6 +47,8 @@ const Swap = () => {
   };
 
   const handleInvertRate = () => {
+    setSecondRotation((prev) => prev + 180);
+
     setRate({
       ...rate,
       isInverted: !rate.isInverted,
@@ -119,6 +123,8 @@ const Swap = () => {
   const handleSwapAssets = () => {
     const fromAsset = store.selectAsset.swapFromAsset;
     const toAsset = store.selectAsset.swapToAsset;
+
+    setRotation((prev) => prev + 180);
 
     store.setSelectAsset({
       ...store.selectAsset,
@@ -288,7 +294,11 @@ const Swap = () => {
         rate.rate !== 0 && isToValid ? (
           <span className="bluxcc:flex bluxcc:gap-1.5 bluxcc:items-center">
             {rateText}
-            <div onClick={handleInvertRate} className="bluxcc:cursor-pointer">
+            <div
+              onClick={handleInvertRate}
+              className={`bluxcc:transition-transform bluxcc:duration-300 bluxcc:cursor-pointer`}
+              style={{ transform: `rotate(${secondRotation}deg)` }}
+            >
               <SmallSwapIcon fill={hexToRgba(appearance.textColor, 0.7)} />
             </div>
           </span>
@@ -317,7 +327,7 @@ const Swap = () => {
           borderWidth: appearance.borderWidth,
         }}
       >
-        <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm">
+        <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm bluxcc:select-none">
           <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
             From
           </span>
@@ -378,7 +388,7 @@ const Swap = () => {
 
           <div
             onClick={handleSwapAssets}
-            className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer"
+            className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer bluxcc:transition-all bluxcc:duration-200"
             style={{
               backgroundColor: appearance.fieldBackground,
               borderColor: appearance.borderColor,
@@ -386,13 +396,18 @@ const Swap = () => {
               borderWidth: appearance.borderWidth,
             }}
           >
-            <SwapIcon fill={appearance.accentColor} />
+            <div
+              className={`bluxcc:transition-transform bluxcc:duration-300`}
+              style={{ transform: `rotate(${rotation}deg)` }}
+            >
+              <SwapIcon fill={appearance.accentColor} />
+            </div>
           </div>
         </div>
         {/* To Input */}
 
         <div
-          className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm"
+          className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm bluxcc:select-none"
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
           <span>To</span>

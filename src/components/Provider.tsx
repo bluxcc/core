@@ -24,31 +24,48 @@ export const Provider = () => {
 
   const { route } = modal;
 
-  const modalContent = getModalContent('en')[route];
+  const modalContent = getModalContent()[route];
+
+  const isSticky = route === Route.WRONG_NETWORK;
+  const isWaiting = route === Route.WAITING;
+  const isSuccessful = route === Route.SUCCESSFUL;
+  const isFailed =
+    route === Route.SIGN_MESSAGE ||
+    route === Route.SEND_TRANSACTION ||
+    route === Route.FAILED;
+
+  const showCloseIcon =
+    route === Route.WRONG_NETWORK || isWaiting || isSuccessful;
 
   const shouldShowBackButton =
-    (route === Route.WAITING && store.waitingStatus !== 'sendTransaction') ||
+    (isWaiting && store.waitingStatus !== 'sendTransaction') ||
     (route === Route.ONBOARDING && store.showAllWallets) ||
-    route === Route.ACTIVITY ||
-    route === Route.SEND ||
-    route === Route.OTP ||
-    route === Route.BALANCES ||
-    route === Route.RECEIVE ||
-    route === Route.SWAP ||
-    route === Route.BALANCE_DETAILS ||
-    route === Route.ABOUT ||
-    route === Route.ADD_TOKEN ||
-    route === Route.WALLET_CONNECT;
+    [
+      Route.ACTIVITY,
+      Route.SEND,
+      Route.OTP,
+      Route.BALANCES,
+      Route.RECEIVE,
+      Route.SWAP,
+      Route.BALANCE_DETAILS,
+      Route.ABOUT,
+      Route.ADD_TOKEN,
+      Route.WALLET_CONNECT,
+    ].includes(route);
 
-  let modalIcon: 'back' | 'info' | undefined;
+  const modalIcon = shouldShowBackButton
+    ? 'back'
+    : route === Route.ONBOARDING
+      ? 'info'
+      : undefined;
 
-  if (shouldShowBackButton) {
-    modalIcon = 'back';
-  } else if (route === Route.ONBOARDING) {
-    modalIcon = 'info';
-  }
+  const modalHeaderTitle = store.modal.dynamicTitle || modalContent.title;
 
-  const handleBackNavigation = () => {
+  const handleInfo = () => {
+    store.setRoute(Route.ABOUT);
+  };
+
+  const handleBack = () => {
     if (
       route === Route.WAITING ||
       (route === Route.OTP && !store.authState.isAuthenticated) ||
@@ -56,59 +73,61 @@ export const Provider = () => {
       route === Route.WALLET_CONNECT
     ) {
       store.setRoute(Route.ONBOARDING);
-    } else if (store.showAllWallets) {
+      return;
+    }
+
+    if (store.showAllWallets) {
       setShowAllWallets(false);
-    } else if (
-      route === Route.SEND ||
-      route === Route.ACTIVITY ||
-      route === Route.BALANCES ||
-      route === Route.RECEIVE ||
-      route === Route.SWAP
+      return;
+    }
+
+    if (
+      [
+        Route.SEND,
+        Route.ACTIVITY,
+        Route.BALANCES,
+        Route.RECEIVE,
+        Route.SWAP,
+      ].includes(route)
     ) {
       store.setRoute(Route.PROFILE);
-    } else if (route === Route.BALANCE_DETAILS || route === Route.ADD_TOKEN) {
-      store.setRoute(Route.BALANCES);
-    } else if (route === Route.SELECT_ASSET) {
-      const route = decideBackRouteFromSelectAsset(store.selectAsset.field);
+      return;
+    }
 
-      store.setRoute(route);
+    if ([Route.BALANCE_DETAILS, Route.ADD_TOKEN].includes(route)) {
+      store.setRoute(Route.BALANCES);
+      return;
+    }
+
+    if (route === Route.SELECT_ASSET) {
+      const prevRoute = decideBackRouteFromSelectAsset(store.selectAsset.field);
+      store.setRoute(prevRoute);
     }
   };
 
-  const handleCloseModal = () => {
+  const handleClose = () => {
+    if (isSticky) return;
+
     closeModal();
     setShowAllWallets(false);
 
-    if (
-      store.waitingStatus === 'signMessage' ||
-      store.waitingStatus === 'sendTransaction'
-    ) {
-      const resolverObject =
-        store.waitingStatus === 'signMessage'
-          ? store.signMessage
-          : store.sendTransaction;
-      const isFailed =
-        modal.route === Route.SIGN_MESSAGE ||
-        modal.route === Route.SEND_TRANSACTION ||
-        modal.route === Route.FAILED;
-      const isSuccessful = modal.route === Route.SUCCESSFUL;
+    const { waitingStatus } = store;
+    const isSigning = waitingStatus === 'signMessage';
+    const isSending = waitingStatus === 'sendTransaction';
+    if (!isSigning && !isSending) return;
 
-      if (!resolverObject) {
-        return;
-      }
+    const resolverObject = isSigning
+      ? store.signMessage
+      : store.sendTransaction;
+    if (!resolverObject) return;
 
-      const { resolver, rejecter, result } = resolverObject;
+    const { resolver, rejecter, result } = resolverObject;
 
-      if (isSuccessful) {
-        if (resolver && result) {
-          // @ts-ignore
-          resolver(result);
-        }
-      } else if (isFailed) {
-        if (rejecter) {
-          rejecter({ code: 4001, message: 'User rejected the transaction' });
-        }
-      }
+    if (isSuccessful && resolver && result) {
+      // @ts-ignore
+      resolver(result);
+    } else if (isFailed && rejecter) {
+      rejecter({ code: 4001, message: 'User rejected the transaction' });
     }
   };
 
@@ -131,33 +150,20 @@ export const Provider = () => {
     store.stellar?.activeNetwork,
   ]);
 
-  const showCloseModalIcon =
-    route === Route.WRONG_NETWORK ||
-    route === Route.WAITING ||
-    route === Route.SUCCESSFUL;
-
-  const handleGoToAbout = () => {
-    store.setRoute(Route.ABOUT);
-  };
-
   return (
     <Modal
       isOpen={modal.isOpen}
-      isSticky={modalContent.isSticky}
-      onClose={modalContent.isSticky ? () => {} : handleCloseModal}
+      isSticky={isSticky}
+      onClose={handleClose}
       appearance={store.config.appearance}
     >
       <Header
-        onBack={handleBackNavigation}
-        onInfo={handleGoToAbout}
-        onClose={modalContent.isSticky ? () => {} : handleCloseModal}
-        title={
-          store.modal.dynamicTitle !== ''
-            ? store.modal.dynamicTitle
-            : modalContent.title
-        }
         icon={modalIcon}
-        closeButton={!showCloseModalIcon}
+        onBack={handleBack}
+        onInfo={handleInfo}
+        onClose={handleClose}
+        title={modalHeaderTitle}
+        closeButton={!showCloseIcon}
       />
       {modalContent.Component}
     </Modal>

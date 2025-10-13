@@ -24,7 +24,7 @@ const Modal = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const isMobile = useIsMobile();
-  const { isOpening, isClosing, handleClose } = useModalAnimation(isOpen, 300);
+  const { isClosing, handleClose } = useModalAnimation(isOpen, 300);
   const { height, isHeightReady, reset } = useDynamicHeight(contentRef, [
     isOpen,
     children,
@@ -83,11 +83,11 @@ const Modal = ({
                 ? `${isMobile ? height + 20 : height}px`
                 : height,
             transition: isHeightReady
-              ? `height 300ms ease-in-out, border-radius 300ms, opacity 300ms ease-out, outline 300ms ease-out, color 300ms ease-out${
-                  isMobile ? ', transform 300ms ease-out' : ''
+              ? `height 350ms ease-in-out, border-radius 350ms, opacity 350ms ease-out, outline 350ms ease-out, color 350ms ease-out${
+                  isMobile ? ', transform 350ms ease-out' : ''
                 }`
-              : `border-radius 300ms, opacity 300ms ease-out${
-                  isMobile ? ', transform 300ms ease-out' : ''
+              : `border-radius 350ms, opacity 350ms ease-out${
+                  isMobile ? ', transform 350ms ease-out' : ''
                 }`,
             transform: isMobile
               ? isClosing
@@ -108,7 +108,7 @@ const Modal = ({
         >
           <div
             ref={contentRef}
-            className={`bluxcc:px-6 bluxcc:pb-4`}
+            className="bluxcc:px-6 bluxcc:pb-4"
             style={{
               fontFamily: appearance.font,
               opacity: isHeightReady ? 1 : 0,
