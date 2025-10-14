@@ -16,7 +16,7 @@ export type GetAccountsResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.AccountRecord>;
 };
 
-const getAccounts = async (
+export const getAccounts = async (
   options: GetAccountsOptions,
 ): Promise<GetAccountsResult> => {
   checkConfigCreated();
@@ -46,5 +46,3 @@ const getAccounts = async (
     response,
   };
 };
-
-export default getAccounts;

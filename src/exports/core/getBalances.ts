@@ -10,7 +10,7 @@ export type GetBalancesOptions = {
 
 export type GetBalancesResult = Horizon.HorizonApi.BalanceLine[];
 
-const getBalances = async (
+export const getBalances = async (
   options: GetBalancesOptions,
 ): Promise<GetBalancesResult> => {
   checkConfigCreated();
@@ -42,5 +42,3 @@ const getBalances = async (
     return [];
   }
 };
-
-export default getBalances;

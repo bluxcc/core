@@ -1,18 +1,18 @@
-import { getState } from "../../store";
+import { getState } from '../../store';
 
-const switchNetwork = (newNetwork: string) => {
+export const switchNetwork = (newNetwork: string) => {
   const store = getState();
 
   if (store.config.networks.length === 0) {
-    throw new Error("switchNetwork must be called after createConfig");
+    throw new Error('switchNetwork must be called after createConfig');
   }
 
   if (!store.config.networks.includes(newNetwork)) {
-    throw new Error("New network must be defined in config.networks");
+    throw new Error('New network must be defined in config.networks');
   }
 
   if (!store.stellar) {
-    throw new Error("Could not find the current activeNetwork");
+    throw new Error('Could not find the current activeNetwork');
   }
 
   store.setStellar({
@@ -20,5 +20,3 @@ const switchNetwork = (newNetwork: string) => {
     servers: store.stellar?.servers,
   });
 };
-
-export default switchNetwork;

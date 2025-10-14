@@ -15,7 +15,7 @@ export type GetClaimableBalancesResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.ClaimableBalanceRecord>;
 };
 
-const getClaimableBalances = async (
+export const getClaimableBalances = async (
   options: GetClaimableBalancesOptions,
 ): Promise<GetClaimableBalancesResult> => {
   checkConfigCreated();
@@ -41,5 +41,3 @@ const getClaimableBalances = async (
     response,
   };
 };
-
-export default getClaimableBalances;

@@ -14,7 +14,7 @@ export type GetAssetsResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.AssetRecord>;
 };
 
-const getAssets = async (
+export const getAssets = async (
   options: GetAssetsOptions,
 ): Promise<GetAssetsResult> => {
   checkConfigCreated();
@@ -36,5 +36,3 @@ const getAssets = async (
     response,
   };
 };
-
-export default getAssets;

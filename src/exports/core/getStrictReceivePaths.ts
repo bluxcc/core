@@ -9,7 +9,7 @@ export type GetPaymentPathResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.PaymentPathRecord>;
 };
 
-const getStrictReceivePaths = async (
+export const getStrictReceivePaths = async (
   args: [
     source: string | Asset[],
     destinationAsset: Asset,
@@ -28,5 +28,3 @@ const getStrictReceivePaths = async (
     response,
   };
 };
-
-export default getStrictReceivePaths;

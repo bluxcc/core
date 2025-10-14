@@ -17,7 +17,7 @@ export type GetTradesResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TradeRecord>;
 };
 
-const getTrades = async (
+export const getTrades = async (
   options: GetTradesOptions,
 ): Promise<GetTradesResult> => {
   checkConfigCreated();
@@ -54,5 +54,3 @@ const getTrades = async (
     response,
   };
 };
-
-export default getTrades;

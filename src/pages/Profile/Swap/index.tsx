@@ -10,9 +10,8 @@ import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import { sendTransaction } from '../../../exports/blux';
 import swapTransaction from '../../../stellar/swapTransaction';
-import getStrictSendPaths from '../../../exports/core/getStrictSendPaths';
 import { ArrowDropUp, SmallSwapIcon, SwapIcon } from '../../../assets/Icons';
-import getStrictReceivePaths from '../../../exports/core/getStrictReceivePaths';
+import { getStrictReceivePaths, getStrictSendPaths } from '../../../exports';
 import {
   hexToRgba,
   iAssetToAsset,

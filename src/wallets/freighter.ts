@@ -81,7 +81,7 @@ export const freighterConfig: IWallet = {
 
                     resolve(!err && isCon);
                   });
-                }, 150);
+                }, 250);
               } else {
                 clearTimeout(timeout);
 
@@ -96,7 +96,7 @@ export const freighterConfig: IWallet = {
         } catch {
           resolve(false);
         }
-      }, 300);
+      }, 350);
     }),
   signAuthEntry: async (authEntry, options) => {
     try {

@@ -7,13 +7,14 @@ import { XLM } from './constants/assets';
 import { Route, SupportedWallet } from './enums';
 import { defaultLightTheme } from './constants/themes';
 import { UseBalancesResult } from './hooks/useBalances';
+import { syncExportedStore } from './exports/exportedStore';
 import { UseTransactionsResult } from './hooks/useTransactions';
 import {
+  IAsset,
   IWallet,
   ISignMessage,
   IInternalConfig,
   ISendTransaction,
-  IAsset,
 } from './types';
 
 export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
@@ -98,7 +99,7 @@ export interface IStoreMethods {
   setWalletConnectClient: (client: SignClient, connection: any) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods {}
+export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -110,6 +111,7 @@ export const store = createStore<IStore>((set) => ({
     excludeWallets: [],
     showWalletUIs: true,
     explorer: 'stellarchain',
+    promptOnWrongNetwork: true,
     appearance: defaultLightTheme,
     walletConnect: {
       icons: [],
@@ -296,3 +298,5 @@ export const { getState, setState, subscribe, getInitialState } = store;
 
 export const useAppStore = <T>(selector: (state: IStore) => T): T =>
   useStore(store, selector);
+
+syncExportedStore(store);

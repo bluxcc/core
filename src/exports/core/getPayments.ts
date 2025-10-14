@@ -8,7 +8,7 @@ export type GetPaymentsOptions = CallBuilderOptions & {
   includeFailed?: boolean;
 };
 
-const getPayments = async (options: GetPaymentsOptions) => {
+export const getPayments = async (options: GetPaymentsOptions) => {
   checkConfigCreated();
 
   let builder = callBuilder('payments', [], options);
@@ -36,5 +36,3 @@ const getPayments = async (options: GetPaymentsOptions) => {
     response,
   };
 };
-
-export default getPayments;

@@ -17,7 +17,7 @@ export type GetOffersResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OfferRecord>;
 };
 
-const getOffers = async (
+export const getOffers = async (
   options: GetOffersOptions,
 ): Promise<GetOffersResult> => {
   checkConfigCreated();
@@ -51,5 +51,3 @@ const getOffers = async (
     response,
   };
 };
-
-export default getOffers;

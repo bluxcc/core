@@ -57,9 +57,10 @@ export function createConfig(config: IConfig) {
     defaultNetwork: '',
     promptOnWrongNetwork,
     lang: config.lang || 'en',
-    showWalletUIs: !!config.showWalletUIs,
     explorer: config.explorer || 'stellarchain',
     loginMethods: config.loginMethods || ['wallet'],
+    showWalletUIs:
+      config.showWalletUIs !== undefined ? config.showWalletUIs : true,
     ...(config?.walletConnect ? { walletConnect: config.walletConnect } : {}),
   };
 

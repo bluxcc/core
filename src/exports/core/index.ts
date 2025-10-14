@@ -1,45 +1,20 @@
-import getAccount from "./getAccount";
-import getAccounts from "./getAccounts";
-import getAssets from "./getAssets";
-import getBalances from "./getBalances";
-import getClaimableBalances from "./getClaimableBalances";
-import getEffects from "./getEffects";
-import getLedgers from "./getLedgers";
-import getLiquidityPools from "./getLiquidityPools";
-import getNetwork from "./getNetwork";
-import getOffers from "./getOffers";
-import getOperations from "./getOperations";
-import getOrderbook from "./getOrderbook";
-import getPayments from "./getPayments";
-import getStrictReceivePaths from "./getStrictReceivePaths";
-import getStrictSendPaths from "./getStrictSendPaths";
-import getTradeAggregation from "./getTradeAggregation";
-import getTrades from "./getTrades";
-import getTransactions from "./getTransactions";
-import networks from "./networks";
-import switchNetwork from "./switchNetwork";
-
-const core = {
-  getAccount,
-  getAccounts,
-  getAssets,
-  getBalances,
-  getClaimableBalances,
-  getEffects,
-  getLedgers,
-  getLiquidityPools,
-  getNetwork,
-  getOffers,
-  getOperations,
-  getOrderbook,
-  getPayments,
-  getStrictReceivePaths,
-  getStrictSendPaths,
-  getTradeAggregation,
-  getTrades,
-  getTransactions,
-  networks,
-  switchNetwork,
-};
-
-export default core;
+export { getAccount } from './getAccount';
+export { getAccounts } from './getAccounts';
+export { getAssets } from './getAssets';
+export { getBalances } from './getBalances';
+export { getClaimableBalances } from './getClaimableBalances';
+export { getEffects } from './getEffects';
+export { getLedgers } from './getLedgers';
+export { getLiquidityPools } from './getLiquidityPools';
+export { getNetwork } from './getNetwork';
+export { getOffers } from './getOffers';
+export { getOperations } from './getOperations';
+export { getOrderbook } from './getOrderbook';
+export { getPayments } from './getPayments';
+export { getStrictReceivePaths } from './getStrictReceivePaths';
+export { getStrictSendPaths } from './getStrictSendPaths';
+export { getTradeAggregation } from './getTradeAggregation';
+export { getTrades } from './getTrades';
+export { getTransactions } from './getTransactions';
+export { networks } from './networks';
+export { switchNetwork } from './switchNetwork';

@@ -9,7 +9,7 @@ export type GetOrderbookResult = {
   response: Horizon.ServerApi.OrderbookRecord;
 };
 
-const getOrderbook = async (
+export const getOrderbook = async (
   args: [selling: Asset, buying: Asset],
   options: CallBuilderOptions,
 ): Promise<GetOrderbookResult> => {
@@ -24,5 +24,3 @@ const getOrderbook = async (
     response,
   };
 };
-
-export default getOrderbook;

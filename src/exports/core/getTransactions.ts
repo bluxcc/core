@@ -17,7 +17,7 @@ export type GetTransactionsResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.TransactionRecord>;
 };
 
-const getTransactions = async (
+export const getTransactions = async (
   options: GetTransactionsOptions,
 ): Promise<GetTransactionsResult> => {
   checkConfigCreated();
@@ -51,5 +51,3 @@ const getTransactions = async (
     response,
   };
 };
-
-export default getTransactions;

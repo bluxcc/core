@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { IStore } from '../store';
+import { switchNetwork } from '../exports';
 import { walletsConfig } from '../wallets';
 import { Route, SupportedWallet } from '../enums';
 import { getWalletNetwork } from '../utils/helpers';
-import switchNetwork from '../exports/core/switchNetwork';
 
 const useCheckWalletNetwork = (store: IStore) => {
   const [shouldModalOpen, setShouldModalOpen] = useState(false);

@@ -13,7 +13,7 @@ export type GetLedgersResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.LedgerRecord>;
 };
 
-const getLedgers = async (
+export const getLedgers = async (
   options: GetLedgersOptions,
 ): Promise<GetLedgersResult> => {
   checkConfigCreated();
@@ -31,5 +31,3 @@ const getLedgers = async (
     response,
   };
 };
-
-export default getLedgers;

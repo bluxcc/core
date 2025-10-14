@@ -14,7 +14,7 @@ export type GetLiquidityPoolsResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.LiquidityPoolRecord>;
 };
 
-const getLiquidityPools = async (
+export const getLiquidityPools = async (
   options: GetLiquidityPoolsOptions,
 ): Promise<GetLiquidityPoolsResult> => {
   checkConfigCreated();
@@ -36,5 +36,3 @@ const getLiquidityPools = async (
     response,
   };
 };
-
-export default getLiquidityPools;

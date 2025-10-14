@@ -4,9 +4,7 @@ import { Route } from '../enums';
 import { useAppStore } from '../store';
 import useBalances from './useBalances';
 import useTransactions from './useTransactions';
-import networks from '../exports/core/networks';
 import { balanceToAsset } from '../utils/helpers';
-import { MAINNET_USDC, TESTNET_USDC } from '../constants/assets';
 
 const INTERVAL = 10000;
 

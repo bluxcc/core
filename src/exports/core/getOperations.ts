@@ -18,7 +18,7 @@ export type GetOperationsResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OperationRecord>;
 };
 
-const getOperations = async (
+export const getOperations = async (
   options: GetOperationsOptions,
 ): Promise<GetOperationsResult> => {
   checkConfigCreated();
@@ -55,5 +55,3 @@ const getOperations = async (
     response,
   };
 };
-
-export default getOperations;

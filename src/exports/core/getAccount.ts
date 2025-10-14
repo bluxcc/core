@@ -9,7 +9,7 @@ export type GetAccountOptions = {
 
 export type GetAccountResult = Horizon.AccountResponse | null;
 
-const getAccount = async (
+export const getAccount = async (
   options: GetAccountOptions,
 ): Promise<GetAccountResult> => {
   checkConfigCreated();
@@ -28,5 +28,3 @@ const getAccount = async (
     return null;
   }
 };
-
-export default getAccount;

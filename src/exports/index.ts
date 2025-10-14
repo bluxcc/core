@@ -1,7 +1,8 @@
-import core from "./core";
-import { blux } from "./blux";
-
-export default {
-  core,
-  blux,
-};
+export * from './core';
+export { blux } from './blux';
+export {
+  getState,
+  subscribe,
+  getInitialState,
+  useExportedStore,
+} from './exportedStore';

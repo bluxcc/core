@@ -5,7 +5,7 @@ import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
 export type GetTradeAggregationResult = any;
 
-const getTradeAggregation = async (
+export const getTradeAggregation = async (
   args: [
     base: Asset,
     counter: Asset,
@@ -27,5 +27,3 @@ const getTradeAggregation = async (
     response,
   };
 };
-
-export default getTradeAggregation;

@@ -17,7 +17,7 @@ export type GetEffectsResult = {
   response: Horizon.ServerApi.CollectionPage<Horizon.ServerApi.EffectRecord>;
 };
 
-const getEffects = async (
+export const getEffects = async (
   options: GetEffectsOptions,
 ): Promise<GetEffectsResult> => {
   checkConfigCreated();
@@ -51,5 +51,3 @@ const getEffects = async (
     response,
   };
 };
-
-export default getEffects;
