@@ -32,7 +32,7 @@ const config = [
       }),
       resolve({
         browser: true,
-        preferBuiltins: true,
+        preferBuiltins: false,
       }),
       commonjs(),
       postcss({
@@ -65,7 +65,7 @@ const config = [
       }),
       resolve({
         browser: true,
-        preferBuiltins: true,
+        preferBuiltins: false,
       }),
       commonjs(),
       postcss({

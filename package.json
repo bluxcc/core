@@ -1,13 +1,18 @@
 {
   "name": "@bluxcc/core",
-  "version": "0.1.9",
+  "version": "0.1.12",
   "homepage": "https://blux.cc",
   "description": "Blux is a wallet infra for the Stellar network",
   "type": "module",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
-  "browser": "./dist/index.iife.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bluxcc/core"

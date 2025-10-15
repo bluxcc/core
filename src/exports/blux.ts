@@ -6,7 +6,7 @@ import getTransactionDetails from '../stellar/getTransactionDetails';
 import handleTransactionSigning from '../stellar/handleTransactionSigning';
 
 export const login = async () => {
-  const { authState, openModal } = getState();
+  const { authState, openModal, modal } = getState();
   const { isReady, isAuthenticated } = authState;
 
   if (!isReady) {
@@ -17,7 +17,9 @@ export const login = async () => {
     throw new Error('Already connected.');
   }
 
-  openModal(Route.ONBOARDING);
+  if (!modal.isOpen) {
+    openModal(Route.ONBOARDING);
+  }
 };
 
 const logout = () => {
@@ -27,7 +29,7 @@ const logout = () => {
 };
 
 const profile = () => {
-  const { openModal, authState } = getState();
+  const { openModal, authState, modal } = getState();
 
   const { isAuthenticated } = authState;
 
@@ -35,16 +37,31 @@ const profile = () => {
     throw new Error('User is not authenticated.');
   }
 
-  openModal(Route.PROFILE);
+  if (!modal.isOpen) {
+    openModal(Route.PROFILE);
+  }
 };
 
 export const sendTransaction = (xdr: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
-    const { authState, wallets, config, user, stellar, setSendTransaction } =
-      getState();
+    const {
+      modal,
+      authState,
+      wallets,
+      config,
+      user,
+      stellar,
+      setSendTransaction,
+    } = getState();
 
     if (!authState.isAuthenticated || !stellar || !user) {
       reject(new Error('User is not authenticated.'));
+
+      return;
+    }
+
+    if (modal.isOpen) {
+      reject(new Error('Blux modal is open somewhere.'));
 
       return;
     }
@@ -99,11 +116,17 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
 
 export const signMessage = (message: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
-    const { authState, wallets, config, user, stellar, setSignMessage } =
+    const { modal, authState, wallets, config, user, stellar, setSignMessage } =
       getState();
 
     if (!authState.isAuthenticated || !stellar || !user) {
       reject(new Error('User is not authenticated.'));
+
+      return;
+    }
+
+    if (modal.isOpen) {
+      reject(new Error('Blux modal is open somewhere.'));
 
       return;
     }

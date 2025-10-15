@@ -25,8 +25,6 @@ const useCheckWalletNetwork = (store: IStore) => {
 
       getWalletNetwork(walletsConfig[store.user.authValue as SupportedWallet])
         .then((networkPassphrase) => {
-          console.log(networkPassphrase);
-
           if (
             networkPassphrase &&
             store.config.networks.includes(networkPassphrase) &&
