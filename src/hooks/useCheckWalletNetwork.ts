@@ -12,15 +12,21 @@ const useCheckWalletNetwork = (store: IStore) => {
   useEffect(() => {
     const i = setInterval(() => {
       if (!store.authState.isAuthenticated || !store.user?.authValue) {
+        setShouldModalOpen(false);
+
         return;
       }
 
       if (store.user.authMethod !== 'wallet') {
+        setShouldModalOpen(false);
+
         return;
       }
 
       getWalletNetwork(walletsConfig[store.user.authValue as SupportedWallet])
         .then((networkPassphrase) => {
+          console.log(networkPassphrase);
+
           if (
             networkPassphrase &&
             store.config.networks.includes(networkPassphrase) &&
@@ -36,7 +42,9 @@ const useCheckWalletNetwork = (store: IStore) => {
             setShouldModalOpen(false);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          setShouldModalOpen(false);
+        });
     }, 1000);
 
     return () => {
@@ -60,6 +68,10 @@ const useCheckWalletNetwork = (store: IStore) => {
           store.closeModal();
         }
       }, 300);
+    } else {
+      if (!shouldModalOpen && store.modal.route === Route.WRONG_NETWORK) {
+        store.closeModal();
+      }
     }
   }, [shouldModalOpen, store.modal.isOpen]);
 };
