@@ -36,6 +36,8 @@ const useCheckWalletNetwork = (store: IStore) => {
             networkPassphrase &&
             !store.config.networks.includes(networkPassphrase)
           ) {
+            store.setNetworkSyncDisabled(false);
+
             setShouldModalOpen(true);
           } else {
             setShouldModalOpen(false);
