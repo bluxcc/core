@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, Root } from 'react-dom/client';
 import { Horizon, rpc } from '@stellar/stellar-sdk';
 
 import { getState } from '../store';
@@ -15,11 +15,29 @@ import {
 
 import '../tailwind.css';
 
-let root: any = null;
+let root: Root | null = null;
 let isInitiated = false;
 let container: HTMLDivElement | null = null;
+let lastParentElement: HTMLElement | null = null;
+
+const cleanUpBlux = () => {
+  if (root) {
+    root.unmount();
+    root = null;
+  }
+
+  if (container && lastParentElement && lastParentElement.contains(container)) {
+    lastParentElement.removeChild(container);
+  }
+};
 
 const init = (element: HTMLElement = document.body) => {
+  if (isInitiated) {
+    cleanUpBlux();
+  }
+
+  lastParentElement = element;
+
   container = document.createElement('div');
 
   element.appendChild(container);
@@ -29,10 +47,6 @@ const init = (element: HTMLElement = document.body) => {
 };
 
 export function createConfig(config: IConfig, element?: HTMLElement) {
-  if (isInitiated) {
-    return;
-  }
-
   isInitiated = true;
 
   init(element);
