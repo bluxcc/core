@@ -6,5 +6,5 @@ export const switchNetwork = (newNetwork: string) => {
 
   internalSwitchNetwork(newNetwork);
 
-  store.setNetworkSyncDisabled();
+  store.setNetworkSyncDisabled(true);
 };
