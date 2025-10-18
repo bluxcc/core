@@ -19,22 +19,23 @@ let root: any = null;
 let isInitiated = false;
 let container: HTMLDivElement | null = null;
 
-const init = () => {
+const init = (element: HTMLElement = document.body) => {
   container = document.createElement('div');
-  document.body.appendChild(container);
+
+  element.appendChild(container);
 
   root = createRoot(container);
   root.render(createElement(Provider));
 };
 
-export function createConfig(config: IConfig) {
+export function createConfig(config: IConfig, element?: HTMLElement) {
   if (isInitiated) {
     return;
   }
 
   isInitiated = true;
 
-  init();
+  init(element);
 
   let excludeWallets = config.excludeWallets || ['lobstr', 'albedo'];
 
