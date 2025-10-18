@@ -1,6 +1,6 @@
-import { Route } from "../../enums";
-import { IStore } from "../../store";
-import handleSignMessage from "../handleSignMessage";
+import { Route } from '../../enums';
+import { IStore } from '../../store';
+import handleSignMessage from '../handleSignMessage';
 
 const signMessageProcess = async (store: IStore) => {
   const signMessage = store.signMessage;
@@ -26,6 +26,7 @@ const signMessageProcess = async (store: IStore) => {
         ...signMessage,
         result,
       },
+      true,
       Route.WAITING,
     );
 

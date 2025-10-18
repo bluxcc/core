@@ -23,7 +23,7 @@ const swapTransaction = async (
 
   try {
     sourceAccount = await server.loadAccount(sourceAddress);
-  } catch { }
+  } catch {}
 
   if (!sourceAccount) {
     throw new Error('Inactive account cannot send a transaction.');
@@ -52,7 +52,7 @@ const swapTransaction = async (
         sendAmount: from,
         destination: sourceAddress,
         destAsset: iAssetToAsset(toAsset),
-        destMin: to, // todo??
+        destMin: to,
         path: newPath,
       }),
     );

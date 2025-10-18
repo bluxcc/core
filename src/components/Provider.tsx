@@ -126,10 +126,34 @@ export const Provider = () => {
     if (isSuccessful && resolver && result) {
       // @ts-ignore
       resolver(result);
+
+      setTimeout(() => {
+        store.cleanUp(waitingStatus);
+      }, 200);
     } else if (isFailed && rejecter) {
-      rejecter({ code: 4001, message: 'User rejected the transaction' });
+      rejecter('User rejected the transaction');
+
+      setTimeout(() => {
+        store.cleanUp(waitingStatus);
+      }, 200);
     }
   };
+
+  useEffect(() => {
+    if (!store.authState.isAuthenticated) {
+      if (store.signMessage) {
+        store.cleanUp('signMessage');
+
+        store.signMessage.rejecter('User logged out during the process.');
+      }
+
+      if (store.sendTransaction) {
+        store.cleanUp('sendTransaction');
+
+        store.sendTransaction.rejecter('User logged out during the process.');
+      }
+    }
+  }, [store.authState]);
 
   useEffect(() => {
     const { horizon, soroban } = getNetworkRpc(

@@ -36,7 +36,6 @@ const WalletConnect = () => {
   };
 
   if (!store.walletConnect) {
-    // TODO: fix this
     return null;
   }
 

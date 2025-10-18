@@ -93,6 +93,8 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       options: options || { network },
     };
 
+    setSendTransaction(transactionObject, config.showWalletUIs);
+
     if (!config.showWalletUIs) {
       handleTransactionSigning(
         foundWallet,
@@ -110,8 +112,6 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
 
       return;
     }
-
-    setSendTransaction(transactionObject);
   });
 
 export const signMessage = (message: string, options?: { network: string }) =>
@@ -152,6 +152,8 @@ export const signMessage = (message: string, options?: { network: string }) =>
       result: undefined,
     };
 
+    setSignMessage(signMessageDetails, config.showWalletUIs);
+
     if (!config.showWalletUIs) {
       handleSignMessage(foundWallet, message, user.address, network)
         .then((result) => {
@@ -163,8 +165,6 @@ export const signMessage = (message: string, options?: { network: string }) =>
 
       return;
     }
-
-    setSignMessage(signMessageDetails);
   });
 
 export const blux = {

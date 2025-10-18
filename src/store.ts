@@ -86,9 +86,14 @@ export interface IStoreMethods {
   setRoute: (route: Route) => void;
   setSendTransaction: (
     sendTransaction: ISendTransaction,
+    isOpen: boolean,
     route?: Route,
   ) => void;
-  setSignMessage: (messageDetails: ISignMessage, route?: Route) => void;
+  setSignMessage: (
+    messageDetails: ISignMessage,
+    isOpen: boolean,
+    route?: Route,
+  ) => void;
   setStellar: (stellar: IStellarConfig) => void;
   setWallets: (wallets: IWallet[]) => void;
   setAlert: (alert: AlertType, message: string) => void;
@@ -97,9 +102,10 @@ export interface IStoreMethods {
   setSelectAsset: (selectAsset: ISelectAsset) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
+  cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 export const store = createStore<IStore>((set) => ({
   config: {
@@ -167,22 +173,24 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, modal: { ...state.modal, route } })),
   setSendTransaction: (
     sendTransaction: ISendTransaction,
+    isOpen: boolean,
     route: Route = Route.SEND_TRANSACTION,
   ) =>
     set((state) => ({
       ...state,
       sendTransaction,
-      modal: { ...state.modal, isOpen: true, route },
+      modal: { ...state.modal, isOpen, route },
       waitingStatus: 'sendTransaction',
     })),
   setSignMessage: (
     signMessage: ISignMessage,
+    isOpen: boolean,
     route: Route = Route.SIGN_MESSAGE,
   ) =>
     set((state) => ({
       ...state,
       signMessage,
-      modal: { ...state.modal, isOpen: true, route },
+      modal: { ...state.modal, isOpen, route },
       waitingStatus: 'signMessage',
     })),
   setStellar: (stellar: IStellarConfig) =>
@@ -292,6 +300,7 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, selectAsset })),
   setWalletConnectClient: (client: SignClient, connection: any) =>
     set((state) => ({ ...state, walletConnect: { client, connection } })),
+  cleanUp: (prop) => set((state) => ({ ...state, [prop]: undefined })),
 }));
 
 export const { getState, setState, subscribe, getInitialState } = store;

@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
 import {
   Globe,
   Upstream,
   Downstream,
   MultiOperation,
-} from "../../../assets/Icons";
-import { useAppStore } from "../../../store";
-import { formatDate, getExplorerUrl, hexToRgba } from "../../../utils/helpers";
+} from '../../../assets/Icons';
+import { useAppStore } from '../../../store';
+import { formatDate, getExplorerUrl, hexToRgba } from '../../../utils/helpers';
 
 export type TxDetail = {
   hash: string;
@@ -25,17 +25,17 @@ const History = ({ tx }: TransactionProps) => {
   const appearance = store.config.appearance;
 
   const explorerUrl = getExplorerUrl(
-    store.stellar?.activeNetwork || "something", // todo
+    store.stellar?.activeNetwork || '',
     store.config.explorer,
-    "transactionUrl",
-    tx.hash
+    'transactionUrl',
+    tx.hash,
   );
 
   const handleActionLogo = (action: string) => {
     switch (action) {
-      case "Receive":
+      case 'Receive':
         return <Downstream />;
-      case "Send":
+      case 'Send':
         return <Upstream />;
       default:
         return <MultiOperation />;
@@ -44,7 +44,7 @@ const History = ({ tx }: TransactionProps) => {
 
   const handleGoToExplorer = () => {
     if (explorerUrl) {
-      window.open(explorerUrl, "_blank", "noopener,noreferrer");
+      window.open(explorerUrl, '_blank', 'noopener,noreferrer');
     }
   };
 

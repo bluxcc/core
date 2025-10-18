@@ -3,21 +3,6 @@ import { getState } from '../store';
 import { StellarNetwork, SupportedWallet } from '../enums';
 import { WC_STELLAR_PUBNET, WC_STELLAR_TESTNET } from '../constants/consts';
 
-/*
- * todos:
- * 1. fix error messages
- * 2. getNetwork implementations
- * 3. signMessage
- * 4. signAuthEntryo
- * 5. signTransaction full test
- * 5. disconnect full test
- 
- TODO: use options.network and options.address to sign the transaction.
- WC might choose a wrong account/network, so we need to be sure.
- */
-
-// The WalletConnect CAIP-2 chain IDs for Stellar
-
 export const walletConnectConfig: IWallet = {
   name: SupportedWallet.WalletConnect,
   website: 'https://walletconnect.com',
@@ -71,7 +56,6 @@ export const walletConnectConfig: IWallet = {
         return;
       }
 
-      // Disconnect the first active session
       await walletConnect.client.disconnect({
         topic: activeSessions[0].topic,
         reason: {
@@ -144,10 +128,12 @@ export const walletConnectConfig: IWallet = {
       }
       const session = activeSessions[0];
 
-      const chainId =
-        // TODO: fix typescript error
-        // @ts-ignore
-        session.namespaces.stellar?.chains[0] || STELLAR_PUBNET_CAIP;
+      const network =
+        options.network === StellarNetwork.PUBLIC
+          ? WC_STELLAR_PUBNET
+          : WC_STELLAR_TESTNET;
+
+      const chainId = session.namespaces.stellar.chains?.[0] || network;
 
       const response = await walletConnect.client.request({
         topic: session.topic,

@@ -367,7 +367,6 @@ const Swap = () => {
             }}
           />
         </div>
-        {/* Todo: add real estimated value here */}
         <div
           className="bluxcc:mt-1 bluxcc:text-left bluxcc:text-xs"
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}

@@ -53,6 +53,10 @@ const Successful = () => {
 
       if (resolver && result) {
         resolver(result);
+
+        setTimeout(() => {
+          store.cleanUp('signMessage');
+        }, 150);
       }
     } else if (waitingStatus === 'signMessage') {
       if (!store.signMessage) {
@@ -63,6 +67,10 @@ const Successful = () => {
 
       if (resolver && result) {
         resolver(result);
+
+        setTimeout(() => {
+          store.cleanUp('signMessage');
+        }, 150);
       }
     }
   };
