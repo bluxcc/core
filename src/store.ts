@@ -117,6 +117,7 @@ export const store = createStore<IStore>((set) => ({
     networks: [],
     defaultNetwork: '',
     excludeWallets: [],
+    isPersistent: false,
     showWalletUIs: true,
     explorer: 'stellarchain',
     promptOnWrongNetwork: true,

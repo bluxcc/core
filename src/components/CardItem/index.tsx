@@ -96,7 +96,7 @@ const CardItem = ({
     >
       <span
         style={{
-          backgroundColor: appearance.background,
+          background: appearance.background,
           borderRadius: appearance.borderRadius,
           borderColor: appearance.borderColor,
           borderWidth: appearance.borderWidth,

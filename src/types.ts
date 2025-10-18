@@ -45,6 +45,7 @@ export interface IConfig {
   appearance?: Partial<IAppearance>;
   lang?: LanguageKey;
   explorer?: IExplorer;
+  isPersistent?: boolean;
   showWalletUIs?: boolean;
   loginMethods?: ILoginMethods;
   transports?: ITransports;
@@ -64,16 +65,21 @@ export interface IInternalConfig extends IConfig {
 }
 
 export interface IAppearance {
-  background: string; // Background color or image
-  fieldBackground: string; // Background color for input fields or similar UI areas
-  accentColor: string; // Primary accent color
+  background: string; // Modal or component background color/image
+  fieldBackground: string; // Background color for input fields or UI sections
+  accentColor: string; // Primary accent or highlight color
   textColor: string; // Main text color
-  font: string; // Selected font family or style
-  outlineWidth: string;
-  borderRadius: string; // Border radius for UI elements
+  font: string; // Font family or style
+  outlineWidth?: string; // Optional outline width (e.g., '2px') (falls back to borderColor)
+  outlineColor?: string; // Optional outline color (falls back to borderColor)
+  outlineRadius?: string; // Optional Corner radius for modal (falls back to borderRadius)
+  borderRadius: string; // Corner radius for UI elements
   borderColor: string; // Border color for elements
-  borderWidth: string; // Width of borders (e.g., '1px', '0', etc.)
-  logo: string; // Optional application logo URL
+  borderWidth: string; // Border width (e.g., '1px', '0', etc.)
+  logo: string; // App logo URL
+  backdropBlur: string; // Blur level for backdrop (e.g., '8px')
+  backdropColor: string; // Backdrop color behind modal or overlay
+  boxShadow: string; // Box shadow style for modal
 }
 
 export interface IWallet {

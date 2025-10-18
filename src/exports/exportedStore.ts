@@ -25,6 +25,7 @@ export const exportedStore = createStore<IExportedStore>(() => ({
     excludeWallets: [],
     showWalletUIs: true,
     explorer: 'stellarchain',
+    isPersistent: false,
     promptOnWrongNetwork: true,
     appearance: defaultLightTheme,
     walletConnect: {

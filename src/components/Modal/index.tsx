@@ -54,25 +54,32 @@ const Modal = ({
     <>
       {/* backdrop */}
       <div
-        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 bluxcc:bg-black/20 bluxcc:!backdrop-blur-[1px] ${
+        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 ${
           isClosing && !isSticky
             ? 'bluxcc:animate-fadeOut'
             : 'bluxcc:animate-fadeIn'
         }`}
+        style={{
+          backdropFilter: `blur(${appearance.backdropBlur})`,
+          WebkitBackdropFilter: `blur(${appearance.backdropBlur})`,
+          backgroundColor: appearance.backdropColor,
+        }}
         onClick={isSticky ? () => {} : onClose}
       />
 
       {/* modal */}
       <div
-        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
+        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-[9999999] bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
           isClosing && !isSticky && 'bluxcc:animate-fadeOut'
         }`}
-        onClick={(e) =>
-          e.target === e.currentTarget && handleClose(onClose) && !isSticky
-        }
+        onClick={(e) => {
+          if (e.target === e.currentTarget && !isSticky) {
+            handleClose(onClose);
+          }
+        }}
       >
         <div
-          className={`bluxcc:box-border bluxcc:!shadow-[0px_4px_80px_0px_#00000008] ${
+          className={`bluxcc:box-border ${
             isMobile
               ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:!rounded-b-none'
               : 'bluxcc:relative bluxcc:!w-[360px]'
@@ -83,11 +90,11 @@ const Modal = ({
                 ? `${isMobile ? height + 20 : height}px`
                 : height,
             transition: isHeightReady
-              ? `height 350ms ease-in-out, border-radius 350ms, opacity 350ms ease-out, outline 350ms ease-out, color 350ms ease-out${
-                  isMobile ? ', transform 350ms ease-out' : ''
+              ? `height 300ms ease-in-out, border-radius 300ms, opacity 300ms ease-out, outline 300ms ease-out, color 300ms ease-out${
+                  isMobile ? ', transform 300ms ease-out' : ''
                 }`
-              : `border-radius 350ms, opacity 350ms ease-out${
-                  isMobile ? ', transform 350ms ease-out' : ''
+              : `border-radius 300ms, opacity 300ms ease-out${
+                  isMobile ? ', transform 300ms ease-out' : ''
                 }`,
             transform: isMobile
               ? isClosing
@@ -99,18 +106,19 @@ const Modal = ({
             background: appearance.background,
             opacity: isClosing && !isSticky ? '0' : '1',
             color: appearance.textColor,
-            fontFamily: appearance.font,
+            font: appearance.font,
             letterSpacing: '-0.04px',
-            borderRadius: appearance.borderRadius,
-            outline: `${appearance.outlineWidth} 'solid' ${appearance.borderColor}`,
+            borderRadius: appearance.outlineRadius ?? appearance.borderRadius,
+            outline: `${appearance.outlineWidth ?? appearance.borderWidth} solid ${appearance.outlineColor ?? appearance.borderColor}`,
             overflow: 'hidden',
+            boxShadow: appearance.boxShadow,
           }}
         >
           <div
             ref={contentRef}
             className="bluxcc:px-6 bluxcc:pb-4"
             style={{
-              fontFamily: appearance.font,
+              font: appearance.font,
               opacity: isHeightReady ? 1 : 0,
               transition: 'opacity 200ms ease-in-out',
             }}

@@ -74,7 +74,7 @@ const Onboarding = () => {
       <span
         className="bluxcc:z-20 bluxcc:w-auto bluxcc:px-2 bluxcc:text-sm bluxcc:font-medium bluxcc:select-none"
         style={{
-          backgroundColor: appearance.background,
+          background: appearance.background,
           color: appearance.borderColor,
         }}
       >
@@ -198,7 +198,7 @@ const Onboarding = () => {
           className="bluxcc:no-underline"
           style={{
             color: appearance.textColor,
-            fontFamily: appearance.font,
+            font: appearance.font,
           }}
         >
           {t('poweredByBlux')}

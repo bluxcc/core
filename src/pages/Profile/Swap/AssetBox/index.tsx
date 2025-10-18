@@ -25,7 +25,7 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
     >
       <div
         style={{
-          backgroundColor: appearance.background,
+          background: appearance.background,
           borderRadius: appearance.borderRadius,
           borderColor: appearance.borderColor,
           borderWidth: appearance.borderWidth,

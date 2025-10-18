@@ -54,7 +54,7 @@ const History = ({ tx }: TransactionProps) => {
         <div
           className={`bluxcc:flex bluxcc:size-10 bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full`}
           style={{
-            backgroundColor: appearance.background,
+            background: appearance.background,
           }}
         >
           {handleActionLogo(tx.title)}

@@ -40,7 +40,7 @@ const CustomButton = ({
         borderRadius: appearance.borderRadius,
         color: appearance.textColor,
         borderColor: appearance.borderColor,
-        backgroundColor: appearance.background,
+        background: appearance.background,
         borderWidth: appearance.borderWidth,
       }}
       className="bluxcc:border bluxcc:!px-3 bluxcc:!py-1 bluxcc:!text-sm bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"

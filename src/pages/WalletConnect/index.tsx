@@ -69,7 +69,7 @@ const WalletConnect = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            backgroundColor: appearance.background,
+            background: appearance.background,
           }}
         >
           <WalletConnectLogo

@@ -26,7 +26,7 @@ const WrongNetwork = () => {
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
         <p className="bluxcc:text-2xl">{t('wrongNetwork')}</p>
-        <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5 bluxcc:tracking-[-2%]">
+        <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5 bluxcc:tracking-[-2%] bluxcc:mx-3">
           {t('wrongNetworkMessage', {
             currentNetwork: capitalizeFirstLetter(
               getNetworkByPassphrase(store.user?.walletPassphrase as string),
