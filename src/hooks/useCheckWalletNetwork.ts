@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { IStore } from '../store';
-import { switchNetwork } from '../exports';
 import { walletsConfig } from '../wallets';
 import { Route, SupportedWallet } from '../enums';
 import { getWalletNetwork } from '../utils/helpers';
+import { internalSwitchNetwork } from '../exports/utils';
 
 const useCheckWalletNetwork = (store: IStore) => {
   const [shouldModalOpen, setShouldModalOpen] = useState(false);
@@ -28,9 +28,10 @@ const useCheckWalletNetwork = (store: IStore) => {
           if (
             networkPassphrase &&
             store.config.networks.includes(networkPassphrase) &&
-            store.stellar?.activeNetwork !== networkPassphrase
+            store.stellar?.activeNetwork !== networkPassphrase &&
+            !store.networkSyncDisabled
           ) {
-            switchNetwork(networkPassphrase);
+            internalSwitchNetwork(networkPassphrase);
           } else if (
             networkPassphrase &&
             !store.config.networks.includes(networkPassphrase)

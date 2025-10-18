@@ -71,6 +71,7 @@ export interface IStoreProperties {
     connection: any;
     client: SignClient;
   };
+  networkSyncDisabled: boolean;
 }
 
 export interface IStoreMethods {
@@ -103,6 +104,7 @@ export interface IStoreMethods {
   setTransactions: (transactions: UseTransactionsResult) => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
   cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
+  setNetworkSyncDisabled: () => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods {}
@@ -162,6 +164,7 @@ export const store = createStore<IStore>((set) => ({
     swapFromAsset: XLM,
   },
   walletConnectClient: undefined,
+  networkSyncDisabled: false,
   setConfig: (config: IInternalConfig) =>
     set((state) => ({ ...state, config })),
   setWallets: (wallets: IWallet[]) => set((state) => ({ ...state, wallets })),
@@ -301,6 +304,8 @@ export const store = createStore<IStore>((set) => ({
   setWalletConnectClient: (client: SignClient, connection: any) =>
     set((state) => ({ ...state, walletConnect: { client, connection } })),
   cleanUp: (prop) => set((state) => ({ ...state, [prop]: undefined })),
+  setNetworkSyncDisabled: () =>
+    set((state) => ({ ...state, networkSyncDisabled: true })),
 }));
 
 export const { getState, setState, subscribe, getInitialState } = store;
