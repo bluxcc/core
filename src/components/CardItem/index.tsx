@@ -124,7 +124,7 @@ const CardItem = ({
               bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:!text-base"
               style={{
                 color: appearance.textColor,
-                font: appearance.font,
+                font: appearance.fontFamily,
                 ['--input-text-color' as any]:
                   appearance.textColor as React.CSSProperties,
               }}
