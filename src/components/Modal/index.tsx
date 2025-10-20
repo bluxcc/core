@@ -5,6 +5,7 @@ import { useDynamicHeight } from '../../hooks/useDynamicHeight';
 import { useModalAnimation } from '../../hooks/useModalAnimation';
 import { IAppearance } from '../../types';
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
+import { store } from '../../store';
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface ModalProps {
   onClose?: () => void;
   children: React.ReactNode;
   appearance: IAppearance;
+  isPersistent: boolean;
 }
 
 const Modal = ({
@@ -20,6 +22,7 @@ const Modal = ({
   children,
   isSticky = false,
   appearance,
+  isPersistent,
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -53,19 +56,21 @@ const Modal = ({
   return (
     <>
       {/* backdrop */}
-      <div
-        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 ${
-          isClosing && !isSticky
-            ? 'bluxcc:animate-fadeOut'
-            : 'bluxcc:animate-fadeIn'
-        }`}
-        style={{
-          backdropFilter: `blur(${appearance.backdropBlur})`,
-          WebkitBackdropFilter: `blur(${appearance.backdropBlur})`,
-          backgroundColor: appearance.backdropColor,
-        }}
-        onClick={isSticky ? () => {} : onClose}
-      />
+      {!isPersistent && (
+        <div
+          className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 ${
+            isClosing && !isSticky
+              ? 'bluxcc:animate-fadeOut'
+              : 'bluxcc:animate-fadeIn'
+          }`}
+          style={{
+            backdropFilter: `blur(${appearance.backdropBlur})`,
+            WebkitBackdropFilter: `blur(${appearance.backdropBlur})`,
+            backgroundColor: appearance.backdropColor,
+          }}
+          onClick={isSticky ? () => {} : onClose}
+        />
+      )}
 
       {/* modal */}
       <div

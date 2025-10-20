@@ -179,6 +179,7 @@ export const Provider = () => {
       isOpen={modal.isOpen}
       isSticky={isSticky || store.config.isPersistent}
       onClose={handleClose}
+      isPersistent={store.config.isPersistent ?? false}
       appearance={store.config.appearance}
     >
       <Header
