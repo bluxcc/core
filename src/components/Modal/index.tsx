@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { IAppearance } from '../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useDynamicHeight } from '../../hooks/useDynamicHeight';
 import { useModalAnimation } from '../../hooks/useModalAnimation';
-import { IAppearance } from '../../types';
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
-import { store } from '../../store';
 
 interface ModalProps {
   isOpen: boolean;

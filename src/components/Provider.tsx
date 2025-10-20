@@ -189,6 +189,7 @@ export const Provider = () => {
         onClose={handleClose}
         title={modalHeaderTitle}
         closeButton={!showCloseIcon}
+        isPersistent={store.config.isPersistent ?? false}
       />
       {modalContent.Component}
     </Modal>

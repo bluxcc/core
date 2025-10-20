@@ -10,6 +10,7 @@ interface HeaderProps {
   onInfo?: () => void;
   onBack?: () => void;
   title?: string;
+  isPersistent?: boolean;
   closeButton?: boolean;
   onClose: () => void;
 }
@@ -21,6 +22,7 @@ const Header = ({
   title = ' ',
   closeButton = false,
   onClose,
+  isPersistent,
 }: HeaderProps) => {
   const config = useAppStore((state) => state.config);
   const modal = useAppStore((state) => state.modal);
@@ -61,7 +63,8 @@ const Header = ({
   };
 
   const showRightIcon = () => {
-    if (!closeButton) return <div className="bluxcc:size-5" />;
+    if (!closeButton || isPersistent) return <div className="bluxcc:size-5" />;
+
     return (
       <IconWrapper onClick={onClose}>
         <Close fill={textColor} />
