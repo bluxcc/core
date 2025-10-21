@@ -15,6 +15,7 @@ import {
   ISignMessage,
   IInternalConfig,
   ISendTransaction,
+  IAppearance,
 } from './types';
 
 export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
@@ -105,6 +106,7 @@ export interface IStoreMethods {
   setWalletConnectClient: (client: SignClient, connection: any) => void;
   cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
   setNetworkSyncDisabled: (isDisabled: boolean) => void;
+  setAppearance: (newAppearance: Partial<IAppearance>) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
@@ -307,6 +309,17 @@ export const store = createStore<IStore>((set) => ({
   cleanUp: (prop) => set((state) => ({ ...state, [prop]: undefined })),
   setNetworkSyncDisabled: (isDisabled: boolean) =>
     set((state) => ({ ...state, networkSyncDisabled: isDisabled })),
+  setAppearance: (newAppearance: Partial<IAppearance>) =>
+    set((state) => ({
+      ...state,
+      config: {
+        ...state.config,
+        appearance: {
+          ...state.config.appearance,
+          ...newAppearance,
+        },
+      },
+    })),
 }));
 
 export const { getState, setState, subscribe, getInitialState } = store;

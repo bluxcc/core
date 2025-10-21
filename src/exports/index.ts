@@ -1,3 +1,5 @@
+import { getState as getStoreState } from '../store';
+
 export * from './core';
 export { blux } from './blux';
 export {
@@ -6,3 +8,4 @@ export {
   getInitialState,
   useExportedStore,
 } from './exportedStore';
+export const setAppearance = getStoreState().setAppearance;
