@@ -198,7 +198,7 @@ const Onboarding = () => {
           className="bluxcc:no-underline"
           style={{
             color: appearance.textColor,
-            font: appearance.font,
+            font: appearance.fontFamily,
           }}
         >
           {t('poweredByBlux')}

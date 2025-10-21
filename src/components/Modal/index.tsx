@@ -26,7 +26,7 @@ const Modal = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const isMobile = useIsMobile();
-  const { isClosing, handleClose } = useModalAnimation(isOpen, 300);
+  const { isClosing, handleClose } = useModalAnimation(isOpen, 250);
   const { height, isHeightReady, reset } = useDynamicHeight(contentRef, [
     isOpen,
     children,
@@ -94,11 +94,11 @@ const Modal = ({
                 ? `${isMobile ? height + 20 : height}px`
                 : height,
             transition: isHeightReady
-              ? `height 300ms ease-in-out, border-radius 300ms, opacity 300ms ease-out, outline 300ms ease-out, color 300ms ease-out${
-                  isMobile ? ', transform 300ms ease-out' : ''
+              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${
+                  isMobile ? ', transform 250ms ease-out' : ''
                 }`
-              : `border-radius 300ms, opacity 300ms ease-out${
-                  isMobile ? ', transform 300ms ease-out' : ''
+              : `border-radius 250ms, opacity 250ms ease-out${
+                  isMobile ? ', transform 250ms ease-out' : ''
                 }`,
             transform: isMobile
               ? isClosing
@@ -110,7 +110,7 @@ const Modal = ({
             background: appearance.background,
             opacity: isClosing && !isSticky ? '0' : '1',
             color: appearance.textColor,
-            font: appearance.font,
+            fontFamily: appearance.fontFamily,
             letterSpacing: '-0.04px',
             borderRadius: appearance.outlineRadius ?? appearance.borderRadius,
             outline: `${appearance.outlineWidth ?? appearance.borderWidth} solid ${appearance.outlineColor ?? appearance.borderColor}`,
@@ -122,7 +122,7 @@ const Modal = ({
             ref={contentRef}
             className="bluxcc:px-6 bluxcc:pb-4"
             style={{
-              font: appearance.font,
+              fontFamily: appearance.fontFamily,
               opacity: isHeightReady ? 1 : 0,
               transition: 'opacity 200ms ease-in-out',
             }}

@@ -69,7 +69,7 @@ export interface IAppearance {
   fieldBackground: string; // Background color for input fields or UI sections
   accentColor: string; // Primary accent or highlight color
   textColor: string; // Main text color
-  font: string; // Font family or style
+  fontFamily: string; // Font family or style
   outlineWidth?: string; // Optional outline width (e.g., '2px') (falls back to borderColor)
   outlineColor?: string; // Optional outline color (falls back to borderColor)
   outlineRadius?: string; // Optional Corner radius for modal (falls back to borderRadius)

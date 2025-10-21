@@ -2,7 +2,7 @@ import { IAppearance } from '../types';
 
 export const defaultLightTheme: IAppearance = {
   logo: '',
-  font: 'Manrope',
+  fontFamily: 'Manrope',
   textColor: '#000000',
   accentColor: '#0c1083',
   background: '#ffffff',
@@ -17,7 +17,7 @@ export const defaultLightTheme: IAppearance = {
 
 export const defaultDarkTheme: IAppearance = {
   logo: '',
-  font: 'Manrope',
+  fontFamily: 'Manrope',
   textColor: '#ffffff',
   accentColor: '#ffffff',
   background: '#000000',
