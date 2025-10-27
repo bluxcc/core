@@ -9,6 +9,7 @@ import { lobstrConfig } from './lobstr';
 import { SupportedWallet } from '../enums';
 import { freighterConfig } from './freighter';
 import { walletConnectConfig } from './walletConnect';
+import { ledgerConfig } from './ledger';
 
 export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Hana]: hanaConfig,
@@ -20,4 +21,5 @@ export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Albedo]: albedoConfig,
   [SupportedWallet.Hot]: hotConfig,
   [SupportedWallet.Klever]: kleverConfig,
+  [SupportedWallet.Ledger]: ledgerConfig,
 };

@@ -46,7 +46,9 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "@ledgerhq/hw-app-str": "^7.2.8",
+    "@ledgerhq/hw-transport-webusb": "^6.29.12"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
