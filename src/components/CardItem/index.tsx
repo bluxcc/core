@@ -173,7 +173,7 @@ const CardItem = ({
           style={{
             color: appearance.accentColor,
             borderRadius: appearance.borderRadius,
-            backgroundColor: `${hexToRgba(appearance.accentColor, 0.1)}`,
+            backgroundColor: `${hexToRgba(appearance.accentColor, 0.2)}`,
           }}
         >
           {t('recent')}

@@ -1,8 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 
 const COLOR_THEMES = {
   purple: {
-    id: "purple_gradient",
+    id: 'purple_gradient',
     colors: [
       [0.992, 0.878, 1.0], // #FDE0FF
       [0.992, 0.878, 1.0], // #FDE0FF
@@ -23,13 +23,13 @@ type AnimatedGradientType = {
 };
 
 const AnimatedGradient = ({
-  theme = "purple",
-  className = "",
+  theme = 'purple',
+  className = '',
   children,
   animationSpeed = 1.0,
   onClick,
   style,
-  size = "100%",
+  size = '100%',
 }: AnimatedGradientType) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationIdRef = useRef<number | null>(null);
@@ -38,7 +38,7 @@ const AnimatedGradient = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext('webgl');
     if (!gl) return;
 
     const rect = canvas.getBoundingClientRect();
@@ -146,17 +146,17 @@ const AnimatedGradient = ({
       gl.STATIC_DRAW,
     );
 
-    const aPos = gl.getAttribLocation(program, "aPos");
+    const aPos = gl.getAttribLocation(program, 'aPos');
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
     // Uniforms
-    const uTime = gl.getUniformLocation(program, "uTime");
-    const uResolution = gl.getUniformLocation(program, "uResolution");
-    const uColor1 = gl.getUniformLocation(program, "uColor1");
-    const uColor2 = gl.getUniformLocation(program, "uColor2");
-    const uColor3 = gl.getUniformLocation(program, "uColor3");
-    const uColor4 = gl.getUniformLocation(program, "uColor4");
+    const uTime = gl.getUniformLocation(program, 'uTime');
+    const uResolution = gl.getUniformLocation(program, 'uResolution');
+    const uColor1 = gl.getUniformLocation(program, 'uColor1');
+    const uColor2 = gl.getUniformLocation(program, 'uColor2');
+    const uColor3 = gl.getUniformLocation(program, 'uColor3');
+    const uColor4 = gl.getUniformLocation(program, 'uColor4');
 
     const colors = COLOR_THEMES[theme].colors;
     gl.uniform2f(uResolution, rect.width, rect.height);
@@ -187,7 +187,7 @@ const AnimatedGradient = ({
       onClick={onClick}
       className={`relative overflow-hidden ${className}`}
       style={style}
-      data-gradient-id={COLOR_THEMES[theme]?.id || "unknown_gradient"}
+      data-gradient-id={COLOR_THEMES[theme]?.id || 'unknown_gradient'}
     >
       <canvas
         ref={canvasRef}
