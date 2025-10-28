@@ -12,14 +12,14 @@ import { walletConnectConfig } from './walletConnect';
 import { ledgerConfig } from './ledger';
 
 export const walletsConfig: Record<SupportedWallet, IWallet> = {
-  [SupportedWallet.Hana]: hanaConfig,
-  [SupportedWallet.Rabet]: rabetConfig,
-  [SupportedWallet.Lobstr]: lobstrConfig,
   [SupportedWallet.Freighter]: freighterConfig,
+  [SupportedWallet.Rabet]: rabetConfig,
   [SupportedWallet.WalletConnect]: walletConnectConfig,
   [SupportedWallet.Xbull]: xBullConfig,
-  [SupportedWallet.Albedo]: albedoConfig,
   [SupportedWallet.Hot]: hotConfig,
-  [SupportedWallet.Klever]: kleverConfig,
+  [SupportedWallet.Hana]: hanaConfig,
+  [SupportedWallet.Lobstr]: lobstrConfig,
   [SupportedWallet.Ledger]: ledgerConfig,
+  [SupportedWallet.Albedo]: albedoConfig,
+  [SupportedWallet.Klever]: kleverConfig,
 };
