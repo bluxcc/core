@@ -1,6 +1,6 @@
 {
   "name": "@bluxcc/core",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "homepage": "https://blux.cc",
   "description": "Blux is a wallet infra for the Stellar network",
   "type": "module",
@@ -9,6 +9,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.esm.js",
       "require": "./dist/index.cjs.js"
     }
