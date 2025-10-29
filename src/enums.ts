@@ -10,6 +10,7 @@ export enum SupportedWallet {
   WalletConnect = 'Wallet Connect',
   Hot = 'Hot',
   Klever = 'Klever',
+  Ledger = 'Ledger',
 }
 
 export enum StellarNetwork {

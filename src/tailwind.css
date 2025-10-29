@@ -168,7 +168,7 @@
 
 @keyframes marquee {
   0% {
-    transform: translateX(-35%);
+    transform: translateX(-16%);
   }
   100% {
     transform: translateX(-100%);
@@ -177,17 +177,16 @@
 
 .bluxcc\:marquee_outer {
   position: relative;
-  overflow: hidden; /* hide overflow */
   width: 100%;
 }
 
 .bluxcc\:marquee_track {
   display: flex;
-  width: fit-content;
-  animation: marquee 30s linear infinite;
+  width: max-content;
+  animation: marquee 40s linear infinite;
   will-change: transform;
 }
 
-/* .bluxcc\:marquee_track:hover {
+.bluxcc\:marquee_track:hover {
   animation-play-state: paused;
-} */
+}
