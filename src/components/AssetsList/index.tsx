@@ -30,6 +30,7 @@ const Assets = ({ assets }: AssetsProps) => {
     <div className="bluxcc:h-full bluxcc:w-full bluxcc:overflow-auto overflowStyle">
       {assets.map((asset, index) => (
         <button
+          id="bluxcc-button"
           // onClick={handleClickAsset}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}

@@ -114,6 +114,7 @@ const SendForm = () => {
             error={errors.amount}
             customLabel={
               <button
+                id="bluxcc-button"
                 onClick={handleMaxClick}
                 style={{ color: store.config.appearance.accentColor }}
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:bg-transparent"

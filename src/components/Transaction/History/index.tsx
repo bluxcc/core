@@ -75,6 +75,7 @@ const History = ({ tx }: TransactionProps) => {
       >
         {formatDate(tx.date)}
         <button
+          id="bluxcc-button"
           className="bluxcc:flex bluxcc:size-8 bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full"
           title="View transaction details"
           onClick={handleGoToExplorer}

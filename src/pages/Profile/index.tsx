@@ -84,6 +84,7 @@ const Profile = () => {
           <div className="bluxcc:transition-all">
             {visible ? (
               <button
+                id="bluxcc-button"
                 onClick={() => setVisible(false)}
                 className="bluxcc:bg-transparent"
               >
@@ -91,6 +92,7 @@ const Profile = () => {
               </button>
             ) : (
               <button
+                id="bluxcc-button"
                 onClick={() => setVisible(true)}
                 className="bluxcc:bg-transparent"
               >
@@ -100,6 +102,7 @@ const Profile = () => {
           </div>
         </div>
         <button
+          id="bluxcc-button"
           className="bluxcc:mt-4! bluxcc:leading-4 bluxcc:inline-flex bluxcc:bg-transparent bluxcc:text-sm bluxcc:select-none"
           onClick={handleCopyAddress}
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}

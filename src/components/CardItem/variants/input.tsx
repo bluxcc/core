@@ -110,6 +110,7 @@ const InputCard = ({
         />
         <div className="bluxcc:flex bluxcc:h-10 bluxcc:w-[100px] bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent">
           <button
+            id="bluxcc-button"
             disabled={!isValid}
             onClick={() => onSubmit?.(inputValue)}
             className={`bluxcc:absolute bluxcc:right-0 bluxcc:flex bluxcc:h-8 bluxcc:w-[68px]! bluxcc:items-center bluxcc:justify-center bluxcc:border bluxcc:!text-sm bluxcc:font-medium bluxcc:transition-[border-radius,background,border-color] bluxcc:duration-200`}

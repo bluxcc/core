@@ -14,6 +14,7 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
 
   return (
     <button
+      id="bluxcc-button"
       onClick={handleOpenAssets}
       className="bluxcc:flex bluxcc:bg-transparent bluxcc:items-center bluxcc:gap-1 bluxcc:p-1 bluxcc:max-h-12"
       style={{

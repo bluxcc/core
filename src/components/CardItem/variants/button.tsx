@@ -46,6 +46,7 @@ const ButtonCard = ({
   return (
     <button
       type="button"
+      id="bluxcc-button"
       onClick={onClick}
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300
           ${

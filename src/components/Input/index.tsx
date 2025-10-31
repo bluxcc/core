@@ -36,6 +36,7 @@ const CustomButton = ({
   return (
     <button
       onClick={onButtonClick}
+      id="bluxcc-button"
       style={{
         borderRadius: appearance.borderRadius,
         color: appearance.textColor,

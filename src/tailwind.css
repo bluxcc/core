@@ -190,3 +190,7 @@
 .bluxcc\:marquee_track:hover {
   animation-play-state: paused;
 }
+
+#bluxcc-button {
+  cursor: pointer;
+}

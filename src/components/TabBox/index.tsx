@@ -25,9 +25,10 @@ const TabBox = ({ tabs }: TabsProps) => {
           return (
             <button
               key={index}
-              onClick={() => setActiveTab(index)}
               role="tab"
+              onClick={() => setActiveTab(index)}
               aria-label={tab.label}
+              id="bluxcc-button"
               aria-selected={activeTab === index}
               tabIndex={activeTab === index ? 0 : -1}
               className="bluxcc:flex bluxcc:gap-2 bluxcc:h-20 bluxcc:w-24 bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:px-7 bluxcc:py-4 bluxcc:text-sm bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"

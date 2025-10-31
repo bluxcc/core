@@ -123,6 +123,7 @@ const SelectAsset = () => {
       <div className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:mt-4 bluxcc:gap-2 bluxcc:overflow-y-auto overflowStyle bluxcc:max-h-[300px]">
         {assets.map((asset, index) => (
           <button
+            id="bluxcc-button"
             key={asset.assetType + asset.assetIssuer}
             onClick={() => {
               handleSelectAsset(asset);

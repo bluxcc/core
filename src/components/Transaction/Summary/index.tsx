@@ -88,6 +88,7 @@ const Summary = ({
             <span style={{ color: appearance.textColor }}>{label}</span>
             {isCopyable ? (
               <button
+                id="bluxcc-button"
                 className="bluxcc:bg-transparent"
                 style={{
                   color: isHighlighted

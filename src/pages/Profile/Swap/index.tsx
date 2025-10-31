@@ -294,6 +294,7 @@ const Swap = () => {
           <span className="bluxcc:flex bluxcc:gap-1.5 bluxcc:items-center">
             {rateText}
             <button
+              id="bluxcc-button"
               onClick={handleInvertRate}
               className={`bluxcc:transition-transform bluxcc:duration-300 bluxcc:bg-transparent`}
               style={{ transform: `rotate(${secondRotation}deg)` }}
@@ -332,6 +333,7 @@ const Swap = () => {
           </span>
           <span>
             <button
+              id="bluxcc-button"
               className="bluxcc:bg-transparent bluxcc:border-none"
               style={{
                 color: hexToRgba(appearance.textColor, 0.7),
@@ -340,6 +342,7 @@ const Swap = () => {
               {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
             </button>
             <button
+              id="bluxcc-button"
               onClick={handleMax}
               style={{ color: appearance.accentColor }}
               className="bluxcc:mr-2 bluxcc:ml-1.5 bluxcc:inline-flex bluxcc:bg-transparent"
@@ -379,7 +382,10 @@ const Swap = () => {
           {/* ≈ $23.74 USD */}
         </div>
         {/* Swap Icon */}
-        <button className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent">
+        <button
+          id="bluxcc-button"
+          className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent"
+        >
           <div
             className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
             style={{

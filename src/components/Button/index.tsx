@@ -84,6 +84,7 @@ const Button = ({
   return (
     <button
       type={type ? type : 'button'}
+      id="bluxcc-button"
       onClick={onClick}
       disabled={state === 'disabled' && disabled}
       className={`${buttonBase} ${sizeClasses[size]} ${
