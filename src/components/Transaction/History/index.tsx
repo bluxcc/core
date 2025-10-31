@@ -74,8 +74,8 @@ const History = ({ tx }: TransactionProps) => {
         style={{ color: hexToRgba(appearance.textColor, 0.6) }}
       >
         {formatDate(tx.date)}
-        <div
-          className="bluxcc:flex bluxcc:size-8 bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full"
+        <button
+          className="bluxcc:flex bluxcc:size-8 bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full"
           title="View transaction details"
           onClick={handleGoToExplorer}
           style={{ background: appearance.fieldBackground }}
@@ -83,7 +83,7 @@ const History = ({ tx }: TransactionProps) => {
           <span className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
             <Globe />
           </span>
-        </div>
+        </button>
       </div>
     </div>
   );

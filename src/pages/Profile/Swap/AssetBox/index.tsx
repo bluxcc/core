@@ -13,9 +13,9 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
   const appearance = useAppStore((store) => store.config.appearance);
 
   return (
-    <div
+    <button
       onClick={handleOpenAssets}
-      className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:gap-1 bluxcc:p-1 bluxcc:max-h-12"
+      className="bluxcc:flex bluxcc:bg-transparent bluxcc:items-center bluxcc:gap-1 bluxcc:p-1 bluxcc:max-h-12"
       style={{
         borderColor: appearance.borderColor,
         borderWidth: appearance.borderWidth,
@@ -42,7 +42,7 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
       <span>{asset.assetCode}</span>
 
       <ArrowDropDown fill={appearance.accentColor} />
-    </div>
+    </button>
   );
 };
 

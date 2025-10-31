@@ -46,7 +46,7 @@ const Profile = () => {
           setAlert('none', '');
         }, 1000);
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   const balance =
@@ -83,24 +83,24 @@ const Profile = () => {
 
           <div className="bluxcc:transition-all">
             {visible ? (
-              <div
+              <button
                 onClick={() => setVisible(false)}
-                className="bluxcc:cursor-pointer"
+                className="bluxcc:bg-transparent"
               >
                 <OpenEye fill={appearance.accentColor} />
-              </div>
+              </button>
             ) : (
-              <div
+              <button
                 onClick={() => setVisible(true)}
-                className="bluxcc:cursor-pointer"
+                className="bluxcc:bg-transparent"
               >
                 <CloseEye fill={appearance.accentColor} />
-              </div>
+              </button>
             )}
           </div>
         </div>
-        <p
-          className="bluxcc:!mt-4 bluxcc:leading-[16px] bluxcc:inline-flex bluxcc:cursor-pointer bluxcc:text-sm bluxcc:select-none"
+        <button
+          className="bluxcc:mt-4! bluxcc:leading-4 bluxcc:inline-flex bluxcc:bg-transparent bluxcc:text-sm bluxcc:select-none"
           onClick={handleCopyAddress}
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
@@ -108,7 +108,7 @@ const Profile = () => {
             {address ? shortenAddress(address, 5) : ''}
             <Copy fill={hexToRgba(appearance.textColor, 0.7)} />
           </span>
-        </p>
+        </button>
       </div>
 
       <div className="bluxcc:flex bluxcc:space-x-3">
@@ -139,7 +139,7 @@ const Profile = () => {
           }}
         />
       </div>
-      <div className="bluxcc:mt-[16px] bluxcc:w-full bluxcc:space-y-2">
+      <div className="bluxcc:mt-4 bluxcc:w-full bluxcc:space-y-2">
         <CardItem
           endArrow
           label={t('balances')}
@@ -161,14 +161,17 @@ const Profile = () => {
 
       <Divider />
 
-      <div
-        style={{ color: appearance.textColor }}
+      <button
+        style={{
+          color: hexToRgba(appearance.textColor, 0.9),
+          fontFamily: appearance.fontFamily,
+        }}
         onClick={handleLogout}
-        className="bluxcc:flex bluxcc:h-12 bluxcc:w-full bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
+        className="bluxcc:flex bluxcc:h-12 bluxcc:font-medium bluxcc:text-base bluxcc:w-full bluxcc:bg-transparent bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
       >
-        <LogOut fill={appearance.textColor} />
+        <LogOut fill={hexToRgba(appearance.textColor, 0.9)} />
         {t('logout')}
-      </div>
+      </button>
     </div>
   );
 };

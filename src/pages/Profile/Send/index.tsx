@@ -113,18 +113,18 @@ const SendForm = () => {
             onChange={handleChange('amount')}
             error={errors.amount}
             customLabel={
-              <span
+              <button
                 onClick={handleMaxClick}
                 style={{ color: store.config.appearance.accentColor }}
-                className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:cursor-pointer"
+                className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:bg-transparent"
               >
                 {t('max')}{' '}
                 <ArrowDropUp fill={store.config.appearance.accentColor} />
-              </span>
+              </button>
             }
             onButtonClick={handleOpenAssets}
             button={
-              <span className="bluxcc:flex bluxcc:justify-between bluxcc:!gap-1">
+              <span className="bluxcc:flex bluxcc:justify-between bluxcc:gap-1!">
                 <span className="bluxcc:flex bluxcc:items-center">
                   {store.selectAsset.sendAsset.assetType === 'native' ? (
                     <StellarSmallLogo

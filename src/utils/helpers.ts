@@ -476,3 +476,8 @@ const formatNumberWithCommas = (number: string): string => {
     ? `${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.${decimal}`
     : integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
+
+export const validateInput = (type: string, value: string) => {
+  if (type === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  return value.trim() !== '';
+};

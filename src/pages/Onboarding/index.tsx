@@ -86,7 +86,7 @@ const Onboarding = () => {
   return (
     <div className="bluxcc:w-full">
       {appearance.logo && (
-        <div className="bluxcc:my-6 bluxcc:flex bluxcc:max-h-[80px] bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden">
+        <div className="bluxcc:my-6 bluxcc:flex bluxcc:max-h-20 bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden">
           <img
             src={appearance.logo}
             alt={config.appName}
@@ -173,13 +173,16 @@ const Onboarding = () => {
 
           if (!store.showAllWallets && method === 'passkey') {
             return (
-              <div
+              <button
                 key="passkey"
-                className="bluxcc:mt-6! bluxcc:flex bluxcc:h-4 bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-[28px] bluxcc:font-medium"
-                style={{ color: appearance.accentColor }}
+                className="bluxcc:mt-6! bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
+                style={{
+                  color: appearance.accentColor,
+                  fontFamily: appearance.fontFamily,
+                }}
               >
                 {t('logInWithPasskey')}
-              </div>
+              </button>
             );
           }
 
@@ -188,7 +191,7 @@ const Onboarding = () => {
       </div>
 
       <footer
-        className={`bluxcc:w-full bluxcc:cursor-pointer bluxcc:pt-[17px] bluxcc:text-center bluxcc:text-xs bluxcc:font-medium`}
+        className={`bluxcc:w-full bluxcc:pt-[17px] bluxcc:text-center bluxcc:text-xs bluxcc:font-medium`}
       >
         <a
           aria-label="blux website"

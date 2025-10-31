@@ -29,12 +29,12 @@ const Assets = ({ assets }: AssetsProps) => {
   return (
     <div className="bluxcc:h-full bluxcc:w-full bluxcc:overflow-auto overflowStyle">
       {assets.map((asset, index) => (
-        <div
+        <button
           // onClick={handleClickAsset}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}
-          className="bluxcc:flex bluxcc:cursor-pointer bluxcc:items-center bluxcc:justify-between bluxcc:py-2 bluxcc:px-4"
+          className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:py-2 bluxcc:px-4"
           style={{
             background:
               hoveredIndex === index
@@ -46,9 +46,10 @@ const Assets = ({ assets }: AssetsProps) => {
               index < assets.length - 1 ? appearance.borderWidth : '0px',
             borderBottomColor: appearance.borderColor,
             transition: 'all 0.2s ease-in-out',
+            fontFamily: appearance.fontFamily,
           }}
         >
-          <div className=" bluxcc:flex bluxcc:items-center bluxcc:gap-[10px]">
+          <div className="bluxcc:flex bluxcc:items-center bluxcc:gap-2.5">
             <span
               className="bluxcc:font-medium bluxcc:size-10 bluxcc:flex bluxcc:items-center bluxcc:justify-center"
               style={{
@@ -91,7 +92,7 @@ const Assets = ({ assets }: AssetsProps) => {
               {humanizeAmount(asset.valueInCurrency || '0')}$
             </span>
           </div>
-        </div>
+        </button>
       ))}
 
       {assets.length === 0 && (
