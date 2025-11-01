@@ -79,26 +79,37 @@ const Summary = ({
               index === details.length - 1
                 ? {}
                 : {
-                  borderBottomColor: appearance.borderColor,
-                  borderBottomStyle: 'dashed',
-                  borderBottomWidth: appearance.borderWidth,
-                }
+                    borderBottomColor: appearance.borderColor,
+                    borderBottomStyle: 'dashed',
+                    borderBottomWidth: appearance.borderWidth,
+                  }
             }
           >
             <span style={{ color: appearance.textColor }}>{label}</span>
-            <span
-              className={`${isCopyable ? 'bluxcc:cursor-pointer' : ''}`}
-              style={{
-                color: isHighlighted
-                  ? appearance.accentColor
-                  : appearance.textColor,
-              }}
-              onClick={() =>
-                isCopyable && copyValue && handleCopyText(copyValue)
-              }
-            >
-              {value}
-            </span>
+            {isCopyable ? (
+              <button
+                id="bluxcc-button"
+                className="bluxcc:bg-transparent"
+                style={{
+                  color: isHighlighted
+                    ? appearance.accentColor
+                    : appearance.textColor,
+                }}
+                onClick={() => copyValue && handleCopyText(copyValue)}
+              >
+                {value}
+              </button>
+            ) : (
+              <span
+                style={{
+                  color: isHighlighted
+                    ? appearance.accentColor
+                    : appearance.textColor,
+                }}
+              >
+                {value}
+              </span>
+            )}
           </div>
         ),
       )}

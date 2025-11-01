@@ -47,8 +47,7 @@ const Button = ({
 
   const baseStyle: React.CSSProperties = {
     borderRadius: appearance.borderRadius,
-    cursor: state === 'disabled' ? 'not-allowed' : 'pointer',
-    opacity: state === 'disabled' ? 0.5 : 1,
+    // cursor: state === 'disabled' ? 'not-allowed' : 'auto',
     pointerEvents: state === 'disabled' ? 'none' : undefined,
     ...style,
   };
@@ -85,6 +84,7 @@ const Button = ({
   return (
     <button
       type={type ? type : 'button'}
+      id="bluxcc-button"
       onClick={onClick}
       disabled={state === 'disabled' && disabled}
       className={`${buttonBase} ${sizeClasses[size]} ${

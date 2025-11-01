@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import InputField from "../../../../components/Input";
-import { useAppStore } from "../../../../store";
-import Divider from "../../../../components/Divider";
-import Button from "../../../../components/Button";
-import { humanizeAmount } from "../../../../utils/helpers";
-import { StellarLogo } from "../../../../assets/Logos";
-import { useLang } from "../../../../hooks/useLang";
+import React, { useState } from 'react';
+import InputField from '../../../../components/Input';
+import { useAppStore } from '../../../../store';
+import Divider from '../../../../components/Divider';
+import Button from '../../../../components/Button';
+import { humanizeAmount } from '../../../../utils/helpers';
+import { StellarLogo } from '../../../../assets/Logos';
+import { useLang } from '../../../../hooks/useLang';
 
 const AddToken = () => {
   const t = useLang();
   const [form, setForm] = useState({
-    address: "",
+    address: '',
   });
   const [errors, setErrors] = useState({});
 
   let asset = {
     logo: <StellarLogo />,
-    name: "xlm",
+    name: 'xlm',
     valueInCurrency: 203,
   };
 
@@ -25,7 +25,7 @@ const AddToken = () => {
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     };
   const handleButtonClick = () => {};
 
@@ -34,22 +34,22 @@ const AddToken = () => {
       <InputField
         autoFocus
         type="text"
-        label={t("enter_token_address")}
-        placeholder={t("enter_address")}
+        label={t('enter_token_address')}
+        placeholder={t('enter_address')}
         value={form.address}
-        onChange={handleChange("address")}
+        onChange={handleChange('address')}
         onButtonClick={handleButtonClick}
         button={
           <span
             style={{ color: appearance.accentColor }}
             className="bluxcc:flex bluxcc:justify-between"
           >
-            {t("check")}
+            {t('check')}
           </span>
         }
       />
       <div
-        className="bluxcc:h-[224px] bluxcc:my-4"
+        className="bluxcc:h-56 bluxcc:my-4"
         style={{
           borderRadius: appearance.borderRadius,
           border: `${appearance.borderWidth} solid ${appearance.borderColor}`,
@@ -78,16 +78,12 @@ const AddToken = () => {
       </div>
       <Divider />
       <div className="bluxcc:flex bluxcc:gap-4">
-        <Button
-          state="enabled"
-          variant="outline"
-          className="bluxcc:cursor-default!"
-        >
-          {t("cancel")}
+        <Button state="disabled" variant="outline">
+          {t('cancel')}
         </Button>
 
         <Button state="enabled" variant="fill" size="large">
-          {t("add_token")}
+          {t('add_token')}
         </Button>
       </div>
     </div>

@@ -48,9 +48,8 @@ const Waiting = () => {
       <Divider />
 
       <Button
-        state="enabled"
+        state="disabled"
         variant="outline"
-        className="bluxcc:cursor-default!"
         startIcon={<Loading fill={appearance.accentColor} />}
       >
         {waitingStatus === 'login' ? t('connecting') : t('signing')}

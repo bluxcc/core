@@ -293,13 +293,14 @@ const Swap = () => {
         rate.rate !== 0 && isToValid ? (
           <span className="bluxcc:flex bluxcc:gap-1.5 bluxcc:items-center">
             {rateText}
-            <div
+            <button
+              id="bluxcc-button"
               onClick={handleInvertRate}
-              className={`bluxcc:transition-transform bluxcc:duration-300 bluxcc:cursor-pointer`}
+              className={`bluxcc:transition-transform bluxcc:duration-300 bluxcc:bg-transparent`}
               style={{ transform: `rotate(${secondRotation}deg)` }}
             >
               <SmallSwapIcon fill={hexToRgba(appearance.textColor, 0.7)} />
-            </div>
+            </button>
           </span>
         ) : (
           '—'
@@ -330,17 +331,24 @@ const Swap = () => {
           <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
             From
           </span>
-          <span className="bluxcc:cursor-pointer">
-            <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
+          <span>
+            <button
+              id="bluxcc-button"
+              className="bluxcc:bg-transparent bluxcc:border-none"
+              style={{
+                color: hexToRgba(appearance.textColor, 0.7),
+              }}
+            >
               {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
-            </span>
-            <span
+            </button>
+            <button
+              id="bluxcc-button"
               onClick={handleMax}
               style={{ color: appearance.accentColor }}
-              className="bluxcc:mr-2 bluxcc:ml-1.5 bluxcc:inline-flex bluxcc:cursor-pointer"
+              className="bluxcc:mr-2 bluxcc:ml-1.5 bluxcc:inline-flex bluxcc:bg-transparent"
             >
               {t('max')} <ArrowDropUp fill={appearance.accentColor} />
-            </span>
+            </button>
           </span>
         </div>
         <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
@@ -374,7 +382,10 @@ const Swap = () => {
           {/* ≈ $23.74 USD */}
         </div>
         {/* Swap Icon */}
-        <div className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center cursor-pointer">
+        <button
+          id="bluxcc-button"
+          className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent"
+        >
           <div
             className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0"
             style={{
@@ -386,7 +397,7 @@ const Swap = () => {
 
           <div
             onClick={handleSwapAssets}
-            className="bluxcc:z-20 bluxcc:p-2 bluxcc:cursor-pointer bluxcc:transition-all bluxcc:duration-200"
+            className="bluxcc:z-20 bluxcc:p-2 bluxcc:transition-all bluxcc:duration-200"
             style={{
               backgroundColor: appearance.fieldBackground,
               borderColor: appearance.borderColor,
@@ -401,7 +412,7 @@ const Swap = () => {
               <SwapIcon fill={appearance.accentColor} />
             </div>
           </div>
-        </div>
+        </button>
         {/* To Input */}
 
         <div

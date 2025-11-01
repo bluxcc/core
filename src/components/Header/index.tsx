@@ -38,12 +38,13 @@ const Header = ({
     onClick?: () => void;
     children: React.ReactNode;
   }) => (
-    <div
+    <button
+      id="bluxcc-button"
       onClick={onClick}
-      className="bluxcc:flex bluxcc:size-5 bluxcc:items-center bluxcc:justify-center bluxcc:cursor-pointer"
+      className="bluxcc:flex bluxcc:size-5 bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent"
     >
       {children}
-    </div>
+    </button>
   );
 
   const showLeftIcon = () => {

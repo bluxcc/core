@@ -1,9 +1,9 @@
-import { useAppStore } from "../../store";
-import Button from "../../components/Button";
-import { useLang } from "../../hooks/useLang";
-import Divider from "../../components/Divider";
-import { hexToRgba, shortenAddress } from "../../utils/helpers";
-import signMessageProcess from "../../stellar/processes/signMessageProcess";
+import { useAppStore } from '../../store';
+import Button from '../../components/Button';
+import { useLang } from '../../hooks/useLang';
+import Divider from '../../components/Divider';
+import { hexToRgba, shortenAddress } from '../../utils/helpers';
+import signMessageProcess from '../../stellar/processes/signMessageProcess';
 
 const SignMessage = () => {
   const t = useLang();
@@ -23,12 +23,12 @@ const SignMessage = () => {
     <div>
       <div className="bluxcc:p-4 bluxcc:text-center bluxcc:text-sm bluxcc:font-medium bluxcc:select-none">
         <span className="bluxcc:font-semibold bluxcc:capitalize">
-          {store.config.appName}{" "}
+          {store.config.appName}{' '}
         </span>
-        {t("sign_permission")}
+        {t('sign_permission')}
       </div>
       <div
-        className="bluxcc:h-[96px] bluxcc:p-4 bluxcc:font-mono bluxcc:text-xs bluxcc:overflow-auto"
+        className="bluxcc:h-24 bluxcc:p-4 bluxcc:font-mono bluxcc:text-xs bluxcc:overflow-auto"
         style={{
           border: `${appearance.borderWidth} solid ${appearance.borderColor}`,
           borderRadius: appearance.borderRadius,
@@ -45,7 +45,7 @@ const SignMessage = () => {
       >
         <div className="bluxcc:inline-flex bluxcc:items-center bluxcc:gap-1 bluxcc:font-medium bluxcc:whitespace-nowrap">
           <p className="bluxcc:text-sm bluxcc:font-medium bluxcc:whitespace-nowrap">
-            {t("yourWallet")}
+            {t('yourWallet')}
           </p>
         </div>
         <div
@@ -62,7 +62,7 @@ const SignMessage = () => {
           >
             {store.user?.address
               ? shortenAddress(store.user?.address as string, 5)
-              : t("noAddressFound")}
+              : t('noAddressFound')}
           </p>
         </div>
       </div>
@@ -75,7 +75,7 @@ const SignMessage = () => {
         variant="fill"
         onClick={signMessageClicked}
       >
-        {t("approve")}
+        {t('approve')}
       </Button>
     </div>
   );

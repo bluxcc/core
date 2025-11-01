@@ -117,9 +117,8 @@ const Successful = () => {
 
       {waitingStatus === 'login' ? (
         <Button
-          state="enabled"
+          state="disabled"
           variant="outline"
-          className="bluxcc:cursor-default!"
         >
           {t('loggingIn')}
         </Button>
