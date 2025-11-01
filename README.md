@@ -1,6 +1,6 @@
 # Blux Wallet Kit - The Missing Piece for Stellar dApps
 
-![image](https://blux.cc/bluxProduct.svg)
+![image](https://blux.cc/bluxIntro.jpg)
 
 Blux is a **comprehensive authentication and wallet connect kit** designed for Stellar dApps.
 It simplifies onboarding by integrating multiple authentication methods, including **wallets, email, passkey, and socials**.
