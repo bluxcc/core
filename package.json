@@ -39,6 +39,7 @@
   "license": "BUSL",
   "peerDependencies": {
     "@albedo-link/intent": "^0.13.0",
+    "@ledgerhq/hw-app-str": "^7.2.8",
     "@lobstrco/signer-extension-api": "^1.0.0-beta.0",
     "@stellar/freighter-api": "^5.0.0",
     "@stellar/stellar-sdk": "^14.1.1",
@@ -47,15 +48,14 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "zustand": "^5.0.8",
-    "@ledgerhq/hw-app-str": "^7.2.8",
-    "@ledgerhq/hw-transport-webusb": "^6.29.12"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-typescript": "^12.1.4",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/react": "^19.1.12",
@@ -71,6 +71,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@hot-wallet/sdk": "^1.0.11"
+    "@hot-wallet/sdk": "^1.0.11",
+    "@ledgerhq/hw-transport-webusb": "^6.29.12"
   }
 }
