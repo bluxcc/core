@@ -23,8 +23,16 @@ const config = [
       },
     ],
     plugins: [
-      json(),
       peerDepsExternal(),
+      json(),
+      replace({
+        preventAssignment: true,
+        include: ['node_modules/@ledgerhq/**'],
+        values: {
+          'Buffer.alloc': 'require("buffer").Buffer.alloc',
+          'Buffer.concat': 'require("buffer").Buffer.concat',
+        },
+      }),
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
         preventAssignment: true,
@@ -33,7 +41,9 @@ const config = [
         browser: true,
         preferBuiltins: false,
       }),
-      commonjs(),
+      commonjs({
+        transformMixedEsModules: true,
+      }),
       postcss({
         extract: false,
         inject: true,

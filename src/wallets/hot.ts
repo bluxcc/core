@@ -1,4 +1,6 @@
-import { HOT } from '@hot-wallet/sdk';
+import * as H from '@hot-wallet/sdk';
+
+const HOT = H.HOT;
 
 import { IWallet } from '../types';
 import { SupportedWallet } from '../enums';
@@ -16,7 +18,7 @@ export const hotConfig: IWallet = {
       throw new Error('Failed to connect to Hana wallet.');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     throw new Error('HotWallet does not support the getNetwork function');
   },
