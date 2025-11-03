@@ -73,7 +73,7 @@ const Modal = ({
 
       {/* modal */}
       <div
-        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-[9999999] bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
+        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
           isClosing && !isSticky && 'bluxcc:animate-fadeOut'
         }`}
         onClick={(e) => {
@@ -83,10 +83,11 @@ const Modal = ({
         }}
       >
         <div
+          id="bluxcc-modal"
           className={`bluxcc:box-border ${
             isMobile
-              ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:!rounded-b-none'
-              : 'bluxcc:relative bluxcc:!w-[360px]'
+              ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:rounded-b-none!'
+              : 'bluxcc:relative bluxcc:w-[360px]!'
           }`}
           style={{
             height:
