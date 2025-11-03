@@ -34,26 +34,32 @@ export const initializeWalletConnect = async (
       },
     });
 
+    state.setWalletConnectClient(client, null);
+
     const connection = await generateWalletConnectSession(client);
 
     state.setWalletConnectClient(client, connection);
-  } catch {}
+  } catch { }
 };
 
 export const generateWalletConnectSession = async (client: SignClient) => {
-  const connection = await client.connect({
-    optionalNamespaces: {
-      stellar: {
-        methods: [
-          'stellar_signXDR',
-          'stellar_signAndSubmitXDR',
-          'stellar_signMessage',
-        ],
-        chains: [WC_STELLAR_PUBNET, WC_STELLAR_TESTNET],
-        events: [],
+  try {
+    const connection = await client.connect({
+      optionalNamespaces: {
+        stellar: {
+          methods: [
+            'stellar_signXDR',
+            'stellar_signAndSubmitXDR',
+            'stellar_signMessage',
+          ],
+          chains: [WC_STELLAR_PUBNET, WC_STELLAR_TESTNET],
+          events: [],
+        },
       },
-    },
-  });
+    });
 
-  return connection;
+    return connection;
+  } catch (e) {
+    return null;
+  }
 };

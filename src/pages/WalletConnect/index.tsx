@@ -39,6 +39,10 @@ const WalletConnect = () => {
     return null;
   }
 
+  if (!store.walletConnect.connection || !store.walletConnect.client) {
+    return null;
+  }
+
   const uri = store.walletConnect.connection.uri;
 
   return (

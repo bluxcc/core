@@ -46,7 +46,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch(() => {});
+        .catch((_e) => { });
     }
   }, []);
 
