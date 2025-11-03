@@ -6,7 +6,7 @@
     "lib": ["ES2020", "DOM"],
     "moduleResolution": "node",
     "declarationDir": "./dist",
-    "sourceMap": false,
+    "sourceMap": true,
     "declarationMap": false,
     "strict": true,
     "noEmit": true,

@@ -7,6 +7,37 @@ import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
+const commonPlugins = [
+  json(),
+  replace({
+    preventAssignment: true,
+    include: ['node_modules/@ledgerhq/**'],
+    values: {
+      'Buffer.alloc': 'require("buffer").Buffer.alloc',
+      'Buffer.concat': 'require("buffer").Buffer.concat',
+    },
+  }),
+  replace({
+    'process.env.NODE_ENV': JSON.stringify('production'),
+    preventAssignment: true,
+  }),
+  resolve({
+    browser: true,
+    preferBuiltins: false,
+  }),
+  commonjs({
+    transformMixedEsModules: true,
+  }),
+  postcss({
+    extract: false,
+    inject: true,
+    minimize: false,
+    sourceMap: true,
+    plugins: [tailwindcss],
+  }),
+  typescript({ tsconfig: './tsconfig.json' }),
+];
+
 const config = [
   {
     input: 'src/index.ts',
@@ -22,37 +53,7 @@ const config = [
         sourcemap: true,
       },
     ],
-    plugins: [
-      peerDepsExternal(),
-      json(),
-      replace({
-        preventAssignment: true,
-        include: ['node_modules/@ledgerhq/**'],
-        values: {
-          'Buffer.alloc': 'require("buffer").Buffer.alloc',
-          'Buffer.concat': 'require("buffer").Buffer.concat',
-        },
-      }),
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('production'),
-        preventAssignment: true,
-      }),
-      resolve({
-        browser: true,
-        preferBuiltins: false,
-      }),
-      commonjs({
-        transformMixedEsModules: true,
-      }),
-      postcss({
-        extract: false,
-        inject: true,
-        minimize: false,
-        sourceMap: true,
-        plugins: [tailwindcss],
-      }),
-      typescript({ tsconfig: './tsconfig.json' }),
-    ],
+    plugins: [peerDepsExternal(), ...commonPlugins],
   },
   {
     input: 'src/index.ts',
@@ -65,26 +66,7 @@ const config = [
         inlineDynamicImports: true,
       },
     ],
-    plugins: [
-      json(),
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('development'),
-        preventAssignment: true,
-      }),
-      resolve({
-        browser: true,
-        preferBuiltins: false,
-      }),
-      commonjs(),
-      postcss({
-        extract: false,
-        inject: true,
-        minimize: false,
-        sourceMap: true,
-        plugins: [tailwindcss],
-      }),
-      typescript({ tsconfig: './tsconfig.json' }),
-    ],
+    plugins: [...commonPlugins],
   },
 ];
 
