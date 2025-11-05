@@ -46,7 +46,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch((_e) => { });
+        .catch((_e) => {});
     }
   }, []);
 
@@ -136,7 +136,7 @@ const Onboarding = () => {
                       label={t('allStellarWallets')}
                       startIcon={
                         <StellarLogo
-                          fill={getContrastColor(appearance.fieldBackground)}
+                          fill={getContrastColor(appearance.background)}
                         />
                       }
                       onClick={() => {
