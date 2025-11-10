@@ -22,8 +22,14 @@ let lastParentElement: HTMLElement | null = null;
 
 const cleanUpBlux = () => {
   if (root) {
-    root.unmount();
-    root = null;
+    queueMicrotask(() => {
+      try {
+        if (root) {
+          root.unmount();
+          root = null;
+        }
+      } catch { }
+    });
   }
 
   if (container && lastParentElement && lastParentElement.contains(container)) {
