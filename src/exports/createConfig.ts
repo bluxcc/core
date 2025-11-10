@@ -3,6 +3,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { Horizon, rpc } from '@stellar/stellar-sdk';
 
 import { getState } from '../store';
+import { authenticateAppId } from '../utils/api';
 import { Provider } from '../components/Provider';
 import { IConfig, IInternalConfig } from '../types';
 import { defaultLightTheme } from '../constants/themes';
@@ -118,4 +119,6 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   if (config.walletConnect) {
     initializeWalletConnect(config.walletConnect, config.appName);
   }
+
+  authenticateAppId(config.appId);
 }

@@ -36,6 +36,19 @@ export const addXLMToBalances = (balances: IAsset[]) => {
   return [XLM];
 };
 
+export const fetcher = async <T>(url: string, options: RequestInit) => {
+  const response = await fetch(url, options);
+
+  const result = await response.json();
+
+  const returnValue = {
+    status: response.status,
+    ...result,
+  } as T;
+
+  return returnValue;
+};
+
 export const isChangeTrustNeeded = (
   to: string,
   asset: IAsset,
