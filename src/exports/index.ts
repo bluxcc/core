@@ -1,6 +1,7 @@
 import { getState as getStoreState } from '../store';
 
 export * from './core';
+export { Asset } from '@stellar/stellar-sdk'
 export { blux } from './blux';
 export {
   getState,
