@@ -1,39 +1,74 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import { useAppStore } from "../../../store";
-import Button from "../../../components/Button";
-import { useLang } from "../../../hooks/useLang";
-import { EmailIcon } from "../../../assets/Icons";
-import Divider from "../../../components/Divider";
-import OTPInput from "../../../components/Input/OTPInput";
+import { IUser, useAppStore } from '../../../store';
+import Button from '../../../components/Button';
+import { useLang } from '../../../hooks/useLang';
+import { EmailIcon } from '../../../assets/Icons';
+import Divider from '../../../components/Divider';
+import OTPInput from '../../../components/Input/OTPInput';
+import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
+import { Route } from '../../../enums';
 
 const OTP = () => {
   const t = useLang();
-  const appearance = useAppStore((store) => store.config.appearance);
-  const user = useAppStore((store) => store.user);
+  const store = useAppStore((store) => store);
+
+  const user = store.user;
+  const appearance = store.config.appearance;
 
   const email = user?.authValue;
-  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   const [error, setError] = useState(false);
 
-  const handleResendCode = () => {};
+  const handleResendCode = async () => {
+    try {
+      await apiSendOtp(store.config.appId, store.user?.authValue || '');
+    } catch (e) {
+      // TODO
+      // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
+    }
+  };
 
-  const verifyOTPRequest = async (otp: string): Promise<void> => {
+  const verifyOTPRequest = async (otpString: string): Promise<void> => {
     setError(false);
-    const isValid = await new Promise<boolean>((res) => {
-      setTimeout(() => {
-        res(otp === "123456");
-      }, 200);
-    });
 
-    if (!isValid) {
+    try {
+      const JWT = await apiVerifyOtp(
+        store.config.appId,
+        store.user as IUser,
+        otpString,
+      );
+
+      if (JWT) {
+        setError(false);
+        // TODO: setSuccess(true)
+
+        store.setAuth({
+          isAuthenticated: true,
+          JWT,
+        });
+
+        const result = await apiGetUser(JWT);
+
+        store.connectWalletSuccessful(
+          result.public_key,
+          store.stellar?.activeNetwork || '',
+        );
+
+        setTimeout(() => {
+          store.setRoute(Route.SUCCESSFUL);
+        });
+      }
+    } catch (e) {
       setError(true);
-      setTimeout(() => setOtp(Array(6).fill("")), 1000);
+
+      setTimeout(() => setOtp(Array(6).fill('')), 1000);
     }
   };
 
   useEffect(() => {
-    const otpValue = otp.join("");
+    const otpValue = otp.join('');
+
     if (otpValue.length === 6) {
       verifyOTPRequest(otpValue);
     }
@@ -53,15 +88,15 @@ const OTP = () => {
 
       <div className="bluxcc:flex-col bluxcc:space-y-1 bluxcc:text-center">
         <p className="bluxcc:text-xl bluxcc:font-medium">
-          {t("enterConfirmationCodeTitle")}
+          {t('enterConfirmationCodeTitle')}
         </p>
         {error ? (
           <p className="bluxcc:flex bluxcc:h-10 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:text-alert-error">
-            {t("invalidCodeError")}
+            {t('invalidCodeError')}
           </p>
         ) : (
           <p className="bluxcc:h-10 bluxcc:text-sm">
-            {t("enterConfirmationCodeHelp")}
+            {t('enterConfirmationCodeHelp')}
           </p>
         )}
       </div>
@@ -81,7 +116,7 @@ const OTP = () => {
           color: appearance.accentColor,
         }}
       >
-        {t("resendCode")}
+        {t('resendCode')}
       </Button>
     </div>
   );

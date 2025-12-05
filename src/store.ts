@@ -16,6 +16,7 @@ import {
   IInternalConfig,
   ISendTransaction,
   IAppearance,
+  AuthenticateApiResponse,
 } from './types';
 
 export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
@@ -26,6 +27,11 @@ export interface IUser {
   walletPassphrase: string;
   authValue: string; // rabet, freighter, albedo, abcd@gmail.com, +1 555..., Gmail, Apple, etc..
   authMethod: string; // wallet, email, sms, social, etc..
+}
+
+export interface IAuth {
+  isAuthenticated: boolean;
+  JWT: string;
 }
 
 export interface IStellarConfig {
@@ -44,6 +50,7 @@ export interface ISelectAsset {
 }
 
 export interface IStoreProperties {
+  auth?: IAuth;
   config: IInternalConfig;
   user?: IUser;
   authState: {
@@ -73,6 +80,7 @@ export interface IStoreProperties {
     client: SignClient;
   };
   networkSyncDisabled: boolean;
+  apiResponse?: AuthenticateApiResponse;
 }
 
 export interface IStoreMethods {
@@ -107,11 +115,14 @@ export interface IStoreMethods {
   cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
   setNetworkSyncDisabled: (isDisabled: boolean) => void;
   setAppearance: (newAppearance: Partial<IAppearance>) => void;
+  setApiResponse: (res: AuthenticateApiResponse) => void;
+  setAuth: (a: IAuth) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
+  auth: undefined,
   config: {
     appId: '',
     lang: 'en',
@@ -121,6 +132,7 @@ export const store = createStore<IStore>((set) => ({
     excludeWallets: [],
     isPersistent: false,
     showWalletUIs: true,
+    loginMethods: ['wallet'],
     explorer: 'stellarchain',
     promptOnWrongNetwork: true,
     appearance: defaultLightTheme,
@@ -155,6 +167,7 @@ export const store = createStore<IStore>((set) => ({
     loading: false,
     balances: [],
   },
+  apiResponse: undefined,
   transactions: {
     error: null,
     loading: false,
@@ -300,6 +313,7 @@ export const store = createStore<IStore>((set) => ({
     })),
   setBalances: (balances: UseBalancesResult) =>
     set((state) => ({ ...state, balances })),
+  setAuth: (auth: IAuth) => set((state) => ({ ...state, auth }))
   setTransactions: (transactions: UseTransactionsResult) =>
     set((state) => ({ ...state, transactions })),
   setSelectAsset: (selectAsset: ISelectAsset) =>
@@ -319,6 +333,11 @@ export const store = createStore<IStore>((set) => ({
           ...newAppearance,
         },
       },
+    })),
+  setApiResponse: (res: AuthenticateApiResponse) =>
+    set((state) => ({
+      ...state,
+      apiResponse: res,
     })),
 }));
 

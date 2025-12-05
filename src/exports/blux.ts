@@ -44,15 +44,8 @@ const profile = () => {
 
 export const sendTransaction = (xdr: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
-    const {
-      modal,
-      authState,
-      wallets,
-      config,
-      user,
-      stellar,
-      setSendTransaction,
-    } = getState();
+    const { modal, authState, config, user, stellar, setSendTransaction } =
+      getState();
 
     if (!authState.isAuthenticated || !stellar || !user) {
       reject(new Error('User is not authenticated.'));
@@ -78,15 +71,16 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       return;
     }
 
-    const foundWallet = wallets.find((w) => w.name === user.authValue);
-
-    if (!foundWallet) {
-      throw new Error('Could not find the connected wallet.');
-    }
+    // if (user.authMethod === 'email') {
+    //   if (!config.showWalletUIs) {
+    //   } else {
+    //   }
+    //
+    //   return;
+    // }
 
     const transactionObject: ISendTransaction = {
       xdr,
-      wallet: foundWallet,
       rejecter: reject,
       resolver: resolve,
       result: undefined,
@@ -96,13 +90,7 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
     setSendTransaction(transactionObject, config.showWalletUIs);
 
     if (!config.showWalletUIs) {
-      handleTransactionSigning(
-        foundWallet,
-        xdr,
-        user.address,
-        network,
-        config.transports || {},
-      )
+      handleTransactionSigning(xdr, user, network, config.transports || {})
         .then((result) => {
           resolve(result);
         })

@@ -93,7 +93,8 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     config.transports ?? {},
   );
 
-  const { setConfig, setWallets, setIsReady, setStellar } = getState();
+  const { setConfig, setWallets, setIsReady, setStellar, setApiResponse } =
+    getState();
 
   setStellar({
     activeNetwork: conf.defaultNetwork,
@@ -120,5 +121,16 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     initializeWalletConnect(config.walletConnect, config.appName);
   }
 
-  authenticateAppId(config.appId);
+  authenticateAppId(config.appId).then((result) => {
+    setApiResponse(result);
+
+    if (
+      (!result.isValid && conf.loginMethods.includes('email')) ||
+      conf.loginMethods.includes('passkey')
+    ) {
+      conf.loginMethods = ['wallet'];
+
+      setConfig(conf);
+    }
+  });
 }
