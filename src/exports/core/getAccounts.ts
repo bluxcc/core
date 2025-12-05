@@ -4,12 +4,37 @@ import { AccountCallBuilder } from '@stellar/stellar-sdk/lib/horizon/account_cal
 import { callBuilder } from './callBuilder';
 import { checkConfigCreated, CallBuilderOptions } from '../utils';
 
-export type GetAccountsOptions = CallBuilderOptions & {
-  forSigner?: string;
+type GetAccountsOptionsA = {
+  forSigner: string;
   forAsset?: Asset;
   sponsor?: string;
   forLiquidityPool?: string;
 };
+
+type GetAccountsOptionsB = {
+  forSigner?: string;
+  forAsset: Asset;
+  sponsor?: string;
+  forLiquidityPool?: string;
+};
+
+type GetAccountsOptionsC ={
+  forSigner?: string;
+  forAsset?: Asset;
+  sponsor: string;
+  forLiquidityPool?: string;
+};
+
+type GetAccountsOptionsD = {
+  forSigner?: string;
+  forAsset?: Asset;
+  sponsor?: string;
+  forLiquidityPool: string;
+};
+
+export type GetAccountsOptions = CallBuilderOptions & (
+  GetAccountsOptionsA | GetAccountsOptionsB | GetAccountsOptionsC | GetAccountsOptionsD
+)
 
 export type GetAccountsResult = {
   builder: AccountCallBuilder;
