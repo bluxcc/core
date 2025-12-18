@@ -38,7 +38,7 @@ export interface IWalletConnectMetaData {
 }
 
 export interface IConfig {
-  appId?: string;
+  appId: string;
   appName: string;
   networks: string[];
   defaultNetwork?: string;
@@ -57,6 +57,7 @@ export interface IConfig {
 export interface IInternalConfig extends IConfig {
   explorer: IExplorer;
   appearance: IAppearance;
+  loginMethods: ILoginMethods;
   showWalletUIs: boolean;
   defaultNetwork: string;
   lang: LanguageKey;
@@ -143,7 +144,6 @@ export type SendTransactionResult =
 
 export interface ISendTransaction {
   xdr: string;
-  wallet: IWallet;
   options: ISignOptions;
   result?: SendTransactionResult;
   rejecter: (reason: any) => void;
@@ -151,10 +151,14 @@ export interface ISendTransaction {
 }
 
 export interface ISignMessage {
-  wallet: IWallet;
   message: string;
-  options: ISignOptions;
   result?: string;
+  options: ISignOptions;
   rejecter: (reason: any) => void;
   resolver: (value: string) => void;
+}
+
+export interface AuthenticateApiResponse {
+  isValid: boolean;
+  message: string;
 }

@@ -1,19 +1,32 @@
-import { ITransports, IWallet } from "../types";
-import signTransaction from "./signTransaction";
-import submitTransaction from "./submitTransaction";
+import { IUser } from '../store';
+import { ITransports } from '../types';
+import { walletsConfig } from '../wallets';
+import signTransaction from './signTransaction';
+import submitTransaction from './submitTransaction';
 
 const handleTransactionSigning = async (
-  wallet: IWallet,
   xdr: string,
-  userAddress: string,
+  user: IUser,
   network: string,
   transports: ITransports,
 ) => {
-  const signedXdr = await signTransaction(wallet, xdr, userAddress, network);
+  console.log(user.authMethod, user.authValue);
 
-  const result = await submitTransaction(signedXdr, network, transports || {});
+  if (user.authMethod === 'wallet') {
+    const wallet = walletsConfig[user.authValue];
 
-  return result;
+    console.log(wallet);
+
+    const signedXdr = await signTransaction(wallet, xdr, user.address, network);
+
+    const result = await submitTransaction(
+      signedXdr,
+      network,
+      transports || {},
+    );
+
+    return result;
+  }
 };
 
 export default handleTransactionSigning;

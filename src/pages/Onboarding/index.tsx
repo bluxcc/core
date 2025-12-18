@@ -11,6 +11,7 @@ import { Route, SupportedWallet } from '../../enums';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
+import { apiSendOtp } from '../../utils/api';
 
 const Onboarding = () => {
   const t = useLang();
@@ -58,8 +59,15 @@ const Onboarding = () => {
     }
   };
 
-  const handleConnectEmail = () => {
-    connectEmail(inputValue);
+  const handleConnectEmail = async () => {
+    try {
+      await apiSendOtp(config.appId, inputValue);
+
+      connectEmail(inputValue);
+    } catch (e) {
+      // TODO
+      // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
+    }
   };
 
   const renderDivider = () => (
