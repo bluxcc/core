@@ -13,6 +13,8 @@ const handleTransactionSigning = async (
   console.log(user.authMethod, user.authValue);
 
   if (user.authMethod === 'wallet') {
+    // todo
+    // @ts-ignore
     const wallet = walletsConfig[user.authValue];
 
     console.log(wallet);

@@ -15,6 +15,8 @@ const signMessageProcess = async (store: IStore) => {
 
   try {
     const result = await handleSignMessage(
+      // todo
+      // @ts-ignore
       signMessage.wallet,
       signMessage.message,
       store.user?.address as string,

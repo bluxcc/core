@@ -313,7 +313,7 @@ export const store = createStore<IStore>((set) => ({
     })),
   setBalances: (balances: UseBalancesResult) =>
     set((state) => ({ ...state, balances })),
-  setAuth: (auth: IAuth) => set((state) => ({ ...state, auth }))
+  setAuth: (auth: IAuth) => set((state) => ({ ...state, auth })),
   setTransactions: (transactions: UseTransactionsResult) =>
     set((state) => ({ ...state, transactions })),
   setSelectAsset: (selectAsset: ISelectAsset) =>

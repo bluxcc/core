@@ -15,10 +15,14 @@ const sendTransactionProcess = async (store: IStore) => {
 
   try {
     const result = await handleTransactionSigning(
+      // todo
+      // @ts-ignore
       sendTransaction.wallet,
       sendTransaction.xdr,
       store.user?.address as string,
       sendTransaction.options.network,
+      // todo
+      // @ts-ignore
       store.config.transports || {},
     );
 

@@ -23,6 +23,7 @@ export const exportedStore = createStore<IExportedStore>(() => ({
     networks: [],
     defaultNetwork: '',
     excludeWallets: [],
+    loginMethods: ['wallet'],
     showWalletUIs: true,
     explorer: 'stellarchain',
     isPersistent: false,

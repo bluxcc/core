@@ -71,14 +71,6 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       return;
     }
 
-    // if (user.authMethod === 'email') {
-    //   if (!config.showWalletUIs) {
-    //   } else {
-    //   }
-    //
-    //   return;
-    // }
-
     const transactionObject: ISendTransaction = {
       xdr,
       rejecter: reject,
@@ -133,7 +125,6 @@ export const signMessage = (message: string, options?: { network: string }) =>
 
     const signMessageDetails: ISignMessage = {
       message,
-      wallet: foundWallet,
       options: options || { network },
       rejecter: reject,
       resolver: resolve,
