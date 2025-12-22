@@ -1,6 +1,6 @@
 import * as Str from '@ledgerhq/hw-app-str';
 import * as TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Keypair, StrKey, Transaction, xdr } from '@stellar/stellar-sdk';
+import { Keypair, sign, StrKey, Transaction, xdr } from '@stellar/stellar-sdk';
 
 import { IWallet } from '../types';
 import { SupportedWallet } from '../enums';
@@ -39,8 +39,21 @@ export const ledgerConfig: IWallet = {
     throw new Error('ledger does not support the signAuthEntry function');
   },
 
-  signMessage: async () => {
-    throw new Error('ledger does not support the signMessage function');
+  signMessage: async (message, options) => {
+    try {
+      const messageInBuffer = Buffer.from(message);
+      const transport = await TransportWebUSB.default.create();
+      const app = new Str.default(transport);
+
+      const { signature } = await app.signHash("44'/148'/0'", messageInBuffer);
+
+      console.log('ledger signature using signHash:');
+      console.log(signature);
+
+      return 'hello';
+    } catch (error) {
+      throw new Error('Failed to sign the transaction with Ledger.');
+    }
   },
 
   signTransaction: async (xdrStr: string, options): Promise<string> => {
