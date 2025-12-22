@@ -58,7 +58,7 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   init(element);
 
-  let excludeWallets = config.excludeWallets || ['lobstr', 'albedo'];
+  let excludeWallets = config.excludeWallets || ['lobstr'];
 
   // @ts-ignore
   excludeWallets = excludeWallets.map((x) => x.toLowerCase());
