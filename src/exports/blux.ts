@@ -44,8 +44,15 @@ const profile = () => {
 
 export const sendTransaction = (xdr: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
-    const { modal, authState, config, user, stellar, setSendTransaction } =
-      getState();
+    const {
+      modal,
+      authState,
+      config,
+      wallets,
+      user,
+      stellar,
+      setSendTransaction,
+    } = getState();
 
     if (!authState.isAuthenticated || !stellar || !user) {
       reject(new Error('User is not authenticated.'));
@@ -54,7 +61,7 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
     }
 
     if (modal.isOpen) {
-      reject(new Error('Blux modal is open somewhere.'));
+      reject(new Error('Blux modal is open elsewhere.'));
 
       return;
     }
@@ -71,6 +78,12 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       return;
     }
 
+    const foundWallet = wallets.find((w) => w.name === user.authValue);
+
+    if (!foundWallet) {
+      throw new Error('Could not find the connected wallet.');
+    }
+
     const transactionObject: ISendTransaction = {
       xdr,
       rejecter: reject,
@@ -82,7 +95,13 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
     setSendTransaction(transactionObject, config.showWalletUIs);
 
     if (!config.showWalletUIs) {
-      handleTransactionSigning(xdr, user, network, config.transports || {})
+      handleTransactionSigning(
+        foundWallet,
+        xdr,
+        user.address,
+        network,
+        config.transports || {},
+      )
         .then((result) => {
           resolve(result);
         })
@@ -106,7 +125,7 @@ export const signMessage = (message: string, options?: { network: string }) =>
     }
 
     if (modal.isOpen) {
-      reject(new Error('Blux modal is open somewhere.'));
+      reject(new Error('Blux modal is open elsewhere.'));
 
       return;
     }

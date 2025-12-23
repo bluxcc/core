@@ -1,34 +1,19 @@
-import { IUser } from '../store';
-import { ITransports } from '../types';
-import { walletsConfig } from '../wallets';
+import { ITransports, IWallet } from '../types';
 import signTransaction from './signTransaction';
 import submitTransaction from './submitTransaction';
 
 const handleTransactionSigning = async (
+  wallet: IWallet,
   xdr: string,
-  user: IUser,
+  userAddress: string,
   network: string,
   transports: ITransports,
 ) => {
-  console.log(user.authMethod, user.authValue);
+  const signedXdr = await signTransaction(wallet, xdr, userAddress, network);
 
-  if (user.authMethod === 'wallet') {
-    // todo
-    // @ts-ignore
-    const wallet = walletsConfig[user.authValue];
+  const result = await submitTransaction(signedXdr, network, transports || {});
 
-    console.log(wallet);
-
-    const signedXdr = await signTransaction(wallet, xdr, user.address, network);
-
-    const result = await submitTransaction(
-      signedXdr,
-      network,
-      transports || {},
-    );
-
-    return result;
-  }
+  return result;
 };
 
 export default handleTransactionSigning;

@@ -1,4 +1,4 @@
-import { IWallet } from "../types";
+import { IWallet } from '../types';
 
 const signTransaction = async (
   wallet: IWallet,
@@ -7,7 +7,7 @@ const signTransaction = async (
   network: string,
 ) => {
   if (!wallet?.signTransaction) {
-    throw new Error("Wallet does not support transaction signing.");
+    throw new Error('Wallet does not support transaction signing.');
   }
 
   const signedXdr = await wallet.signTransaction(xdr, {

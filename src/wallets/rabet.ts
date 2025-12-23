@@ -21,7 +21,7 @@ export const rabetConfig: IWallet = {
       if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
 
       window.rabet.disconnect();
-    } catch {}
+    } catch { }
   },
   getNetwork: async () => {
     try {
@@ -44,8 +44,20 @@ export const rabetConfig: IWallet = {
   signAuthEntry: async () => {
     throw new Error('Rabet does not support the signAuthEntry function');
   },
-  signMessage: async () => {
-    throw new Error('Rabet does not support the signMessage function');
+  signMessage: async (message, _) => {
+    try {
+      if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
+
+      const signedMessage = await window.rabet.signMessage(message);
+
+      if (!signedMessage.message || signedMessage.error) {
+        throw new Error('Failed to signMessage from Rabet');
+      }
+
+      return signedMessage.message;
+    } catch (error) {
+      throw new Error('Failed to signMessage from Rabet');
+    }
   },
   signTransaction: async (xdr, options) => {
     try {

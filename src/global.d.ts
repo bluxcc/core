@@ -1,4 +1,4 @@
-declare module "*.css" {
+declare module '*.css' {
   const content: { [className: string]: string };
   export default content;
 }
@@ -84,11 +84,14 @@ declare global {
     rabet?: {
       sign(
         xdr: string,
-        network: "mainnet" | "testnet",
+        network: 'mainnet' | 'testnet',
       ): Promise<{
         xdr: string;
-        network: "mainnet" | "testnet";
+        network: 'mainnet' | 'testnet';
       }>;
+      signMessage(
+        message: string,
+      ): Promise<{ message: string; error?: string }>;
       disconnect(): Promise<void>;
       connect: () => Promise<{ publicKey: string }>;
       getNetwork: () => Promise<{ network: string; passphrase: string }>;
@@ -120,4 +123,4 @@ declare global {
   }
 }
 
-export {};
+export { };

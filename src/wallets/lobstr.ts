@@ -20,7 +20,7 @@ export const lobstrConfig: IWallet = {
       throw new Error('Failed to connect to LOBSTR.');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     throw new Error('Failed to get network from LOBSTR');
   },
