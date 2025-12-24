@@ -433,7 +433,7 @@ export const validateNetworkOptions = (
   defaultNetwork: string | undefined,
   transports: ITransports | undefined,
 ) => {
-  if (networks.length === 0) {
+  if (!networks || networks.length === 0) {
     throw new Error('No network is set in config.networks.');
   }
 

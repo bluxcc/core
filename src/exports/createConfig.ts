@@ -22,16 +22,18 @@ let container: HTMLDivElement | null = null;
 let lastParentElement: HTMLElement | null = null;
 
 const cleanUpBlux = () => {
-  if (root) {
-    queueMicrotask(() => {
-      try {
-        if (root) {
-          root.unmount();
-          root = null;
-        }
-      } catch { }
-    });
-  }
+  // should not be uncommented
+  // if (root) {
+  //   queueMicrotask(() => {
+  //     try {
+  //       if (root) {
+  //         root.unmount();
+  //
+  //         root = null;
+  //       }
+  //     } catch { }
+  //   });
+  // }
 
   if (container && lastParentElement && lastParentElement.contains(container)) {
     lastParentElement.removeChild(container);
@@ -55,6 +57,26 @@ const init = (element: HTMLElement = document.body) => {
 
 export function createConfig(config: IConfig, element?: HTMLElement) {
   isInitiated = true;
+
+  if (!config || Object.keys(config).length === 0) {
+    throw new Error('createConfig must take a config object');
+  }
+
+  if (!config.appId) {
+    throw new Error('createConfig config object must have the appId property.');
+  }
+
+  if (!config.appName) {
+    throw new Error(
+      'createConfig config object must have the appName property.',
+    );
+  }
+
+  if (!config.networks) {
+    throw new Error(
+      'createConfig config object must have the networks property.',
+    );
+  }
 
   init(element);
 
