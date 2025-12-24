@@ -47,7 +47,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch((_e) => {});
+        .catch((_e) => { });
     }
   }, []);
 
@@ -61,9 +61,9 @@ const Onboarding = () => {
 
   const handleConnectEmail = async () => {
     try {
-      await apiSendOtp(config.appId, inputValue);
-
       connectEmail(inputValue);
+
+      await apiSendOtp(config.appId, inputValue);
     } catch (e) {
       // TODO
       // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.

@@ -8,6 +8,7 @@ import Divider from '../../../components/Divider';
 import OTPInput from '../../../components/Input/OTPInput';
 import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 import { Route } from '../../../enums';
+import { BLUX_JWT_STORE } from '../../../constants/consts';
 
 const OTP = () => {
   const t = useLang();
@@ -41,6 +42,8 @@ const OTP = () => {
 
       if (JWT) {
         setError(false);
+
+        localStorage.setItem(BLUX_JWT_STORE, JWT);
         // TODO: setSuccess(true)
 
         store.setAuth({

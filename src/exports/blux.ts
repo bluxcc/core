@@ -1,5 +1,6 @@
 import { Route } from '../enums';
 import { getState } from '../store';
+import { BLUX_JWT_STORE } from '../constants/consts';
 import { ISendTransaction, ISignMessage } from '../types';
 import handleSignMessage from '../stellar/handleSignMessage';
 import getTransactionDetails from '../stellar/getTransactionDetails';
@@ -26,6 +27,8 @@ const logout = () => {
   const { logoutAction } = getState();
 
   logoutAction();
+
+  localStorage.removeItem(BLUX_JWT_STORE);
 };
 
 const profile = () => {
