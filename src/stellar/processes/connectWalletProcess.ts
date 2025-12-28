@@ -15,12 +15,14 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
     if (publicKey && publicKey.trim() !== '') {
       const passphrase = await getWalletNetwork(wallet);
 
-      store.connectWalletSuccessful(publicKey, passphrase);
-
       setRecentConnectionMethod(wallet.name);
 
       setTimeout(() => {
         store.setRoute(Route.SUCCESSFUL);
+
+        setTimeout(() => {
+          store.connectWalletSuccessful(publicKey, passphrase);
+        }, 500);
       }, 500);
     }
   } catch {

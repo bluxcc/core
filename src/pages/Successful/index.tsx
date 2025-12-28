@@ -79,7 +79,7 @@ const Successful = () => {
     <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
       <div
         style={{ background: hexToRgba(appearance.accentColor, 0.1) }}
-        className="bluxcc:mb-6 bluxcc:flex bluxcc:size-[68px] bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full"
+        className="bluxcc:mb-6 bluxcc:flex bluxcc:size-17 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full"
       >
         <GreenCheck fill={appearance.accentColor} />
       </div>
@@ -116,10 +116,7 @@ const Successful = () => {
       <Divider />
 
       {waitingStatus === 'login' ? (
-        <Button
-          state="disabled"
-          variant="outline"
-        >
+        <Button state="disabled" variant="outline">
           {t('loggingIn')}
         </Button>
       ) : (
