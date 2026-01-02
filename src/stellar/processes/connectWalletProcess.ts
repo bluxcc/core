@@ -22,7 +22,7 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
 
         setTimeout(() => {
           store.connectWalletSuccessful(publicKey, passphrase);
-        }, 500);
+        }, 1000);
       }, 500);
     }
   } catch {
