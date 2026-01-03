@@ -1,11 +1,11 @@
-import { useAppStore } from "../../../store";
-import Button from "../../../components/Button";
-import QRCode from "../../../components/QRCode";
-import { LargeCopy } from "../../../assets/Icons";
-import Divider from "../../../components/Divider";
-import { copyText, hexToRgba } from "../../../utils/helpers";
-import { SmallBlux } from "../../../assets/bluxLogo";
-import { useLang } from "../../../hooks/useLang";
+import { useAppStore } from '../../../store';
+import Button from '../../../components/Button';
+import QRCode from '../../../components/QRCode';
+import { LargeCopy } from '../../../assets/Icons';
+import Divider from '../../../components/Divider';
+import { copyText, hexToRgba } from '../../../utils/helpers';
+import { SmallBlux } from '../../../assets/bluxLogo';
+import { useLang } from '../../../hooks/useLang';
 
 const Receive = () => {
   const t = useLang();
@@ -16,18 +16,18 @@ const Receive = () => {
 
   const handleCopyAddress = () => {
     copyText(address);
-    setAlert("info", t("address_copied"));
+    setAlert('copy', t('address_copied'));
     setTimeout(() => {
-      setAlert("none", "");
+      setAlert('none', '');
     }, 1000);
   };
 
   return (
     <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center">
       <div
-        className={`bluxcc:mt-4 bluxcc:flex bluxcc:size-[208px] bluxcc:items-center bluxcc:justify-center`}
+        className={`bluxcc:mt-4 bluxcc:flex bluxcc:size-52 bluxcc:items-center bluxcc:justify-center`}
         style={{
-          position: "relative",
+          position: 'relative',
           borderRadius: appearance.borderRadius,
           color: appearance.textColor,
           borderColor: appearance.borderColor,
@@ -45,10 +45,10 @@ const Receive = () => {
         <div
           className="bluxcc:z-20"
           style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             background: appearance.background,
           }}
         >
@@ -72,7 +72,7 @@ const Receive = () => {
           }}
         >
           <p
-            className="bluxcc:w-[292px] bluxcc:text-sm bluxcc:!leading-[16px] bluxcc:break-all"
+            className="bluxcc:w-73 bluxcc:text-sm bluxcc:leading-4! bluxcc:break-all"
             style={{
               color: hexToRgba(appearance.textColor, 0.7),
             }}
@@ -94,7 +94,7 @@ const Receive = () => {
         onClick={handleCopyAddress}
         endIcon={<LargeCopy fill={appearance.accentColor} />}
       >
-        {t("copy_address")}
+        {t('copy_address')}
       </Button>
     </div>
   );

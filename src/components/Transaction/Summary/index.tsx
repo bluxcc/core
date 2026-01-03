@@ -38,7 +38,7 @@ const Summary = ({
 
   const handleCopyText = (address: string) => {
     copyText(address);
-    setAlert('info', 'Address Copied');
+    setAlert('copy', 'Address Copied');
     setTimeout(() => {
       setAlert('none', '');
     }, 1000);
