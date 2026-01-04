@@ -20,7 +20,7 @@ import {
 } from './types';
 
 export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
-export type AlertType = 'error' | 'success' | 'info' | 'warn' | 'none';
+export type AlertType = 'error' | 'success' | 'warn' | 'none' | 'copy';
 
 export interface IUser {
   address: string;
@@ -119,7 +119,7 @@ export interface IStoreMethods {
   setAuth: (a: IAuth) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 export const store = createStore<IStore>((set) => ({
   auth: undefined,

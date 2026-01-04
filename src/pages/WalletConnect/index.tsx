@@ -28,7 +28,7 @@ const WalletConnect = () => {
   const handleCopyURI = (uri: string) => {
     copyText(uri);
 
-    store.setAlert('info', t('address_copied'));
+    store.setAlert('copy', t('address_copied'));
 
     setTimeout(() => {
       store.setAlert('none', '');
@@ -48,7 +48,7 @@ const WalletConnect = () => {
   return (
     <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:text-center">
       <div
-        className={`bluxcc:mt-4 bluxcc:flex bluxcc:size-[208px] bluxcc:items-center bluxcc:justify-center`}
+        className={`bluxcc:mt-4 bluxcc:flex bluxcc:size-52 bluxcc:items-center bluxcc:justify-center`}
         style={{
           position: 'relative',
           borderRadius: appearance.borderRadius,
