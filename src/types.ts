@@ -31,7 +31,7 @@ interface IServers {
 }
 
 export interface IWalletConnectMetaData {
-  icons: [];
+  icons: string[];
   url: string;
   projectId: string;
   description: string;
@@ -47,7 +47,7 @@ export interface IConfig {
   explorer?: IExplorer;
   isPersistent?: boolean;
   showWalletUIs?: boolean;
-  loginMethods?: ILoginMethods;
+  loginMethods?: ILoginMethods | string[];
   transports?: ITransports;
   excludeWallets?: IWalletNames;
   walletConnect?: IWalletConnectMetaData;
@@ -57,7 +57,7 @@ export interface IConfig {
 export interface IInternalConfig extends IConfig {
   explorer: IExplorer;
   appearance: IAppearance;
-  loginMethods: ILoginMethods;
+  loginMethods: ILoginMethods | string[];
   showWalletUIs: boolean;
   defaultNetwork: string;
   lang: LanguageKey;
