@@ -97,7 +97,7 @@ const InputCard = ({
               bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:text-base!"
           style={{
             color: appearance.textColor,
-            font: appearance.fontFamily,
+            fontFamily: appearance.fontFamily,
             ['--input-text-color' as any]:
               appearance.textColor as React.CSSProperties,
           }}

@@ -17,10 +17,10 @@ const WrongNetwork = () => {
 
   return (
     <div
-      style={{ font: store.config.appearance.fontFamily }}
+      style={{ fontFamily: store.config.appearance.fontFamily }}
       className="bluxcc:mt-4 bluxcc:mb-10 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none"
     >
-      <div className="bluxcc:mb-6 bluxcc:flex bluxcc:size-[68px] bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden">
+      <div className="bluxcc:mb-6 bluxcc:flex bluxcc:size-17 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden">
         <WrongNetworkIcon />
       </div>
 

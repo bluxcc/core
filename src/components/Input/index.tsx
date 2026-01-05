@@ -44,7 +44,7 @@ const CustomButton = ({
         background: appearance.background,
         borderWidth: appearance.borderWidth,
       }}
-      className="bluxcc:border bluxcc:!px-3 bluxcc:!py-1 bluxcc:!text-sm bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"
+      className="bluxcc:border bluxcc:px-3! bluxcc:py-1! bluxcc:text-sm! bluxcc:font-medium bluxcc:transition-all bluxcc:duration-300"
     >
       {button}
     </button>
@@ -137,8 +137,9 @@ const InputField = ({
           autoFocus={autoFocus}
           value={value}
           placeholder={placeholder}
-          className="bluxcc:!mr-2 bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:text-base bluxcc:font-medium"
+          className="bluxcc:mr-2! bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:text-base bluxcc:font-medium"
           style={{
+            fontFamily: appearance.fontFamily,
             color: appearance.textColor,
             width: !button ? '100%' : '90%',
           }}

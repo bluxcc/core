@@ -114,6 +114,7 @@ const SelectAsset = () => {
             }
             className="bluxcc:bg-transparent bluxcc:outline-hidden bluxcc:text-base"
             style={{
+              fontFamily: appearance.fontFamily,
               color: appearance.textColor,
             }}
           />
