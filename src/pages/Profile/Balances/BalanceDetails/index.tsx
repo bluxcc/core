@@ -1,8 +1,8 @@
-import { Copy } from "../../../../assets/Icons";
-import { StellarLogo } from "../../../../assets/Logos";
-import { useLang } from "../../../../hooks/useLang";
-import { useAppStore } from "../../../../store";
-import { hexToRgba, humanizeAmount } from "../../../../utils/helpers";
+import { Copy } from '../../../../assets/Icons';
+import { StellarLogo } from '../../../../assets/Logos';
+import { useLang } from '../../../../hooks/useLang';
+import { useAppStore } from '../../../../store';
+import { hexToRgba, humanizeAmount } from '../../../../utils/helpers';
 
 type DetailsProps = {
   label: string;
@@ -23,11 +23,11 @@ const BalanceDetails = () => {
   };
 
   const details: DetailsProps[] = [
-    { label: t("network"), value: "Stellar", link: true },
-    { label: t("address"), value: "GFGE...MKLW", copyable: true },
-    { label: t("market_cap"), value: "2.45M" },
-    { label: t("total_volume"), value: 323 },
-    { label: t("all_time_high"), value: 323 },
+    { label: t('network'), value: 'Stellar', link: true },
+    { label: t('address'), value: 'GFGE...MKLW', copyable: true },
+    { label: t('market_cap'), value: '2.45M' },
+    { label: t('total_volume'), value: 323 },
+    { label: t('all_time_high'), value: 323 },
   ];
 
   return (
@@ -69,7 +69,7 @@ const BalanceDetails = () => {
                 borderBottom:
                   i < details.length - 1
                     ? `${appearance.borderWidth} dashed ${appearance.borderColor}`
-                    : "none",
+                    : 'none',
               }}
             >
               <span>{item.label}</span>
@@ -87,7 +87,10 @@ const BalanceDetails = () => {
                     href="#"
                     target="_blank"
                     rel="noreferrer"
-                    style={{ color: appearance.accentColor }}
+                    style={{
+                      color: appearance.accentColor,
+                      fontFamily: appearance.fontFamily,
+                    }}
                     className="bluxcc:no-underline"
                   >
                     {item.value}

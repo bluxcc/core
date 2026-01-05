@@ -47,7 +47,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch((_e) => { });
+        .catch((_e) => {});
     }
   }, []);
 
@@ -100,7 +100,7 @@ const Onboarding = () => {
             alt={config.appName}
             width={152}
             height={60}
-            className="bluxcc:max-h-[80px] bluxcc:max-w-[180px] bluxcc:select-none"
+            className="bluxcc:max-h-20 bluxcc:max-w-45 bluxcc:select-none"
             loading="eager"
             decoding="async"
             draggable="false"
@@ -124,7 +124,7 @@ const Onboarding = () => {
           if (method === 'wallet') {
             return (
               <React.Fragment key="wallet">
-                <div className="bluxcc:max-h-[324px] bluxcc:space-y-2 bluxcc:overflow-y-auto overflowStyle">
+                <div className="bluxcc:max-h-81 bluxcc:space-y-2 bluxcc:overflow-y-auto overflowStyle">
                   {visibleWallets.map((checkedWallet) => (
                     <CardItem
                       key={checkedWallet.name}
@@ -199,7 +199,7 @@ const Onboarding = () => {
       </div>
 
       <footer
-        className={`bluxcc:w-full bluxcc:pt-[17px] bluxcc:text-center bluxcc:text-xs bluxcc:font-medium`}
+        className={`bluxcc:w-full bluxcc:pt-4.25 bluxcc:text-center bluxcc:text-xs bluxcc:font-medium`}
       >
         <a
           aria-label="blux website"
@@ -209,7 +209,7 @@ const Onboarding = () => {
           className="bluxcc:no-underline"
           style={{
             color: appearance.textColor,
-            font: appearance.fontFamily,
+            fontFamily: appearance.fontFamily,
           }}
         >
           {t('poweredByBlux')}

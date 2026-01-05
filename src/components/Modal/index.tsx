@@ -17,7 +17,7 @@ interface ModalProps {
 
 const Modal = ({
   isOpen,
-  onClose = () => { },
+  onClose = () => {},
   children,
   isSticky = false,
   appearance,
@@ -57,23 +57,25 @@ const Modal = ({
       {/* backdrop */}
       {!isPersistent && (
         <div
-          className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 ${isClosing && !isSticky
+          className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 ${
+            isClosing && !isSticky
               ? 'bluxcc:animate-fadeOut'
               : 'bluxcc:animate-fadeIn'
-            }`}
+          }`}
           style={{
             backdropFilter: `blur(${appearance.backdropBlur})`,
             WebkitBackdropFilter: `blur(${appearance.backdropBlur})`,
             backgroundColor: appearance.backdropColor,
           }}
-          onClick={isSticky ? () => { } : onClose}
+          onClick={isSticky ? () => {} : onClose}
         />
       )}
 
       {/* modal */}
       <div
-        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
-          }`}
+        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
+          isClosing && !isSticky && 'bluxcc:animate-fadeOut'
+        }`}
         onClick={(e) => {
           if (e.target === e.currentTarget && !isSticky) {
             handleClose(onClose);
@@ -82,20 +84,23 @@ const Modal = ({
       >
         <div
           id="bluxcc-modal"
-          className={`bluxcc:box-border ${isMobile
+          className={`bluxcc:box-border ${
+            isMobile
               ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:rounded-b-none!'
-              : 'bluxcc:relative bluxcc:w-[360px]!'
-            }`}
+              : 'bluxcc:relative bluxcc:w-90!'
+          }`}
           style={{
             height:
               typeof height === 'number'
                 ? `${isMobile ? height + 20 : height}px`
                 : height,
             transition: isHeightReady
-              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${isMobile ? ', transform 250ms ease-out' : ''
-              }`
-              : `border-radius 250ms, opacity 250ms ease-out${isMobile ? ', transform 250ms ease-out' : ''
-              }`,
+              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${
+                  isMobile ? ', transform 250ms ease-out' : ''
+                }`
+              : `border-radius 250ms, opacity 250ms ease-out${
+                  isMobile ? ', transform 250ms ease-out' : ''
+                }`,
             transform: isMobile
               ? isClosing
                 ? 'translateY(100%)'

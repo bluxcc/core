@@ -74,7 +74,10 @@ const Header = ({
   };
 
   return (
-    <header className="bluxcc:flex bluxcc:h-16 bluxcc:w-full bluxcc:items-center bluxcc:justify-between">
+    <header
+      className="bluxcc:flex bluxcc:h-16 bluxcc:w-full bluxcc:items-center bluxcc:justify-between"
+      style={{ fontFamily: config.appearance.fontFamily }}
+    >
       {showLeftIcon()}
 
       <div className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-center">

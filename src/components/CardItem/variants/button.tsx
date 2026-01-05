@@ -56,6 +56,7 @@ const ButtonCard = ({
           }
         `}
       style={{
+        fontFamily: appearance.fontFamily,
         borderRadius: appearance.borderRadius,
         borderColor: isFocused
           ? appearance.accentColor

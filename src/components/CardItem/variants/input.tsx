@@ -58,6 +58,7 @@ const InputCard = ({
     <div
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300 bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2`}
       style={{
+        fontFamily: appearance.fontFamily,
         borderRadius: appearance.borderRadius,
         borderColor: isFocused
           ? appearance.accentColor
@@ -108,12 +109,12 @@ const InputCard = ({
             }
           }}
         />
-        <div className="bluxcc:flex bluxcc:h-10 bluxcc:w-[100px] bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent">
+        <div className="bluxcc:flex bluxcc:h-10 bluxcc:w-25 bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent">
           <button
             id="bluxcc-button"
             disabled={!isValid}
             onClick={() => onSubmit?.(inputValue)}
-            className={`bluxcc:absolute bluxcc:right-0 bluxcc:flex bluxcc:h-8 bluxcc:w-[68px]! bluxcc:items-center bluxcc:justify-center bluxcc:border bluxcc:!text-sm bluxcc:font-medium bluxcc:transition-[border-radius,background,border-color] bluxcc:duration-200`}
+            className={`bluxcc:absolute bluxcc:right-0 bluxcc:flex bluxcc:h-8 bluxcc:w-17! bluxcc:items-center bluxcc:justify-center bluxcc:border bluxcc:text-sm! bluxcc:font-medium bluxcc:transition-[border-radius,background,border-color] bluxcc:duration-200`}
             style={{
               background: appearance.fieldBackground,
               borderRadius: appearance.borderRadius,
