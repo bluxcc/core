@@ -183,7 +183,7 @@ const Onboarding = () => {
             return (
               <button
                 key="passkey"
-                className="bluxcc:mt-6! bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
+                className="bluxcc:mt-6! bluxcc:w-full bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
                 style={{
                   color: appearance.accentColor,
                   fontFamily: appearance.fontFamily,
