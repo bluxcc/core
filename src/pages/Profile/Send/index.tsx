@@ -116,7 +116,10 @@ const SendForm = () => {
               <button
                 id="bluxcc-button"
                 onClick={handleMaxClick}
-                style={{ color: store.config.appearance.accentColor }}
+                style={{
+                  color: store.config.appearance.accentColor,
+                  fontFamily: store.config.appearance.fontFamily,
+                }}
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:bg-transparent"
               >
                 {t('max')}{' '}

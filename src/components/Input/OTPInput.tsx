@@ -4,9 +4,9 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
   ClipboardEvent,
-} from "react";
+} from 'react';
 
-import { useAppStore } from "../../store";
+import { useAppStore } from '../../store';
 
 interface OTPInputProps {
   otp: string[];
@@ -27,9 +27,9 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
 
   const handleChange = (
     index: number,
-    e: ChangeEvent<HTMLInputElement>
+    e: ChangeEvent<HTMLInputElement>,
   ): void => {
-    const value = e.target.value.replace(/\D/g, "");
+    const value = e.target.value.replace(/\D/g, '');
     if (!value) return;
 
     const newOtp = [...otp];
@@ -44,14 +44,14 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>): void => {
     e.preventDefault();
     const pasteData = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
+      .getData('text')
+      .replace(/\D/g, '')
       .slice(0, LENGTH);
     if (!pasteData) return;
 
     const newOtp = [
-      ...pasteData.split(""),
-      ...Array(LENGTH - pasteData.length).fill(""),
+      ...pasteData.split(''),
+      ...Array(LENGTH - pasteData.length).fill(''),
     ];
     setOtp(newOtp);
     setTimeout(() => inputsRef.current[LENGTH - 1]?.focus(), 0);
@@ -59,16 +59,16 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
 
   const handleKeyDown = (
     index: number,
-    e: KeyboardEvent<HTMLInputElement>
+    e: KeyboardEvent<HTMLInputElement>,
   ): void => {
-    if (e.key === "Backspace") {
+    if (e.key === 'Backspace') {
       const newOtp = [...otp];
       if (newOtp[index]) {
-        newOtp[index] = "";
+        newOtp[index] = '';
         setOtp(newOtp);
       } else if (index > 0) {
         inputsRef.current[index - 1]?.focus();
-        newOtp[index - 1] = "";
+        newOtp[index - 1] = '';
         setOtp(newOtp);
       }
     }
@@ -76,17 +76,18 @@ const OTPInput: React.FC<OTPInputProps> = ({ otp, setOtp, error }) => {
 
   const getInputStyle = (digit: string): React.CSSProperties =>
     ({
+      fontFamily: appearance.fontFamily,
       borderRadius: appearance.borderRadius,
       color: appearance.accentColor,
       background: appearance.fieldBackground,
-      "--tw-ring-color": error ? "#FF6666" : appearance.accentColor,
+      '--tw-ring-color': error ? '#FF6666' : appearance.accentColor,
       borderColor: error
-        ? "#FF6666"
+        ? '#FF6666'
         : digit
-        ? appearance.accentColor
-        : appearance.borderColor,
+          ? appearance.accentColor
+          : appearance.borderColor,
       borderWidth: appearance.borderWidth,
-    } as React.CSSProperties);
+    }) as React.CSSProperties;
 
   return (
     <div className="bluxcc:flex bluxcc:gap-1">

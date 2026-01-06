@@ -75,7 +75,7 @@ const Assets = ({ assets }: AssetsProps) => {
                 />
               )}
             </span>
-            <div className="bluxcc:flex bluxcc:flex-col">
+            <div className="bluxcc:flex bluxcc:flex-col bluxcc:justify-start bluxcc:items-start">
               <span className="bluxcc:text-sm bluxcc:font-medium">
                 {asset.title}
               </span>

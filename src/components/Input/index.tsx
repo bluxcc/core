@@ -93,7 +93,10 @@ const InputField = ({
   };
 
   return (
-    <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col">
+    <div
+      className="bluxcc:flex bluxcc:w-full bluxcc:flex-col"
+      style={{ fontFamily: appearance.fontFamily }}
+    >
       {label && (
         <label
           style={{ color: error ? '#ec2929' : appearance.textColor }}

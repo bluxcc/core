@@ -418,6 +418,11 @@ const translations: Translations = {
     es: 'NFTs',
   },
 
+  no_balance_message: {
+    en: 'Looks like there’s nothing here yet.',
+    es: 'Parece que aún no hay nada aquí.',
+  },
+
   sign_permission: {
     en: 'wants your permission to sign the following message:',
     es: 'solicita tu permiso para firmar el siguiente mensaje:',

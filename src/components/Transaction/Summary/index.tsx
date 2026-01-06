@@ -69,7 +69,10 @@ const Summary = ({
   }
 
   return (
-    <div className="bluxcc:w-full bluxcc:text-sm bluxcc:text-gray-800">
+    <div
+      className="bluxcc:w-full bluxcc:text-sm bluxcc:text-gray-800"
+      style={{ fontFamily: appearance.fontFamily }}
+    >
       {details.map(
         ({ label, value, isHighlighted, isCopyable, copyValue }, index) => (
           <div

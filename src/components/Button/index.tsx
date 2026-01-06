@@ -47,6 +47,7 @@ const Button = ({
 
   const baseStyle: React.CSSProperties = {
     borderRadius: appearance.borderRadius,
+    fontFamily: appearance.fontFamily,
     // cursor: state === 'disabled' ? 'not-allowed' : 'auto',
     pointerEvents: state === 'disabled' ? 'none' : undefined,
     ...style,

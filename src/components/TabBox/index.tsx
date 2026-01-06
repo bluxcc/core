@@ -18,7 +18,10 @@ const TabBox = ({ tabs }: TabsProps) => {
 
   return (
     <>
-      <div className="bluxcc:flex bluxcc:gap-3 bluxcc:py-3">
+      <div
+        className="bluxcc:flex bluxcc:gap-3 bluxcc:py-3"
+        style={{ fontFamily: appearance.fontFamily }}
+      >
         {tabs.map((tab, index) => {
           const isActive = activeTab === index;
 
@@ -48,11 +51,11 @@ const TabBox = ({ tabs }: TabsProps) => {
       </div>
 
       <div
-        className="bluxcc:max-h-[312px] bluxcc:h-[312px] w-full bluxcc:overflow-auto overflowStyle"
+        className="bluxcc:max-h-78 bluxcc:h-78 w-full bluxcc:overflow-auto overflowStyle"
         role="tabpanel"
         aria-labelledby={`tab-${activeTab}`}
       >
-        <div className="bluxcc:absolute bluxcc:left-0 bluxcc:right-0 bluxcc:max-h-[312px] bluxcc:h-[312px] bluxcc:overflow-auto overflowStyle">
+        <div className="bluxcc:absolute bluxcc:left-0 bluxcc:right-0 bluxcc:max-h-78 bluxcc:h-78 bluxcc:overflow-auto overflowStyle">
           {tabs[activeTab]?.content}
         </div>
       </div>

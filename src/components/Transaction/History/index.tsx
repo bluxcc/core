@@ -71,7 +71,7 @@ const History = ({ tx }: TransactionProps) => {
       </div>
       <div
         className="bluxcc:flex bluxcc:items-center bluxcc:gap-2 bluxcc:text-xs"
-        style={{ color: hexToRgba(appearance.textColor, 0.6) }}
+        style={{ color: hexToRgba(appearance.textColor, 0.7) }}
       >
         {formatDate(tx.date)}
         <button

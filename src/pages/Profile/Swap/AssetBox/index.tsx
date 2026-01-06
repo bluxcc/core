@@ -18,20 +18,24 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
       onClick={handleOpenAssets}
       className="bluxcc:flex bluxcc:bg-transparent bluxcc:items-center bluxcc:gap-1 bluxcc:p-1 bluxcc:max-h-12"
       style={{
+        fontFamily: appearance.fontFamily,
         borderColor: appearance.borderColor,
         borderWidth: appearance.borderWidth,
         borderRadius: appearance.borderRadius,
         backgroundColor: appearance.fieldBackground,
+        color: appearance.textColor,
       }}
     >
       <div
         style={{
+          fontFamily: appearance.fontFamily,
           background: appearance.background,
           borderRadius: appearance.borderRadius,
           borderColor: appearance.borderColor,
           borderWidth: appearance.borderWidth,
+          color: appearance.textColor,
         }}
-        className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
+        className="bluxcc:flex bluxcc:mr-0.5 bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
       >
         {asset.assetType === 'native' ? (
           <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />

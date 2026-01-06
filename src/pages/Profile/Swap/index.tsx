@@ -297,7 +297,10 @@ const Swap = () => {
               id="bluxcc-button"
               onClick={handleInvertRate}
               className={`bluxcc:transition-transform bluxcc:duration-300 bluxcc:bg-transparent`}
-              style={{ transform: `rotate(${secondRotation}deg)` }}
+              style={{
+                transform: `rotate(${secondRotation}deg)`,
+                fontFamily: appearance.fontFamily,
+              }}
             >
               <SmallSwapIcon fill={hexToRgba(appearance.textColor, 0.7)} />
             </button>
@@ -325,18 +328,20 @@ const Swap = () => {
           borderColor: appearance.borderColor,
           borderRadius: appearance.borderRadius,
           borderWidth: appearance.borderWidth,
+          fontFamily: appearance.fontFamily,
         }}
       >
         <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm bluxcc:select-none">
           <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
             From
           </span>
-          <span>
+          <span style={{ fontFamily: appearance.fontFamily }}>
             <button
               id="bluxcc-button"
               className="bluxcc:bg-transparent bluxcc:border-none"
               style={{
                 color: hexToRgba(appearance.textColor, 0.7),
+                fontFamily: appearance.fontFamily,
               }}
             >
               {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
@@ -344,7 +349,10 @@ const Swap = () => {
             <button
               id="bluxcc-button"
               onClick={handleMax}
-              style={{ color: appearance.accentColor }}
+              style={{
+                color: appearance.accentColor,
+                fontFamily: appearance.fontFamily,
+              }}
               className="bluxcc:mr-2 bluxcc:ml-1.5 bluxcc:inline-flex bluxcc:bg-transparent"
             >
               {t('max')} <ArrowDropUp fill={appearance.accentColor} />
@@ -366,6 +374,7 @@ const Swap = () => {
                 error.field === 'from' || error.field === 'both'
                   ? '#ec2929'
                   : appearance.textColor,
+              fontFamily: appearance.fontFamily,
             }}
           />
           <AssetBox
@@ -439,6 +448,7 @@ const Swap = () => {
                 error.field === 'to' || error.field === 'both'
                   ? '#ec2929'
                   : appearance.textColor,
+              fontFamily: appearance.fontFamily,
             }}
           />
 
@@ -457,7 +467,7 @@ const Swap = () => {
         </div>
       </div>
 
-      <div className="bluxcc:h-3.5 bluxcc:my-[5px] bluxcc:mx-3 bluxcc:text-left bluxcc:text-xs bluxcc:text-alert-error">
+      <div className="bluxcc:h-3.5 bluxcc:my-1.25 bluxcc:mx-3 bluxcc:text-left bluxcc:text-xs bluxcc:text-alert-error">
         {error.message}
       </div>
 

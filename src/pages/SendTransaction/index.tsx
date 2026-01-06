@@ -53,7 +53,10 @@ const SendTransaction = () => {
   const networkTitle = getActiveNetworkTitle(stellar.activeNetwork);
 
   return (
-    <div className="bluxcc:w-full">
+    <div
+      className="bluxcc:w-full"
+      style={{ fontFamily: appearance.fontFamily }}
+    >
       <p className="bluxcc:mx-3 bluxcc:my-4 bluxcc:text-center bluxcc:text-sm bluxcc:font-medium bluxcc:select-none">
         <span className="bluxcc:font-semibold bluxcc:capitalize">
           {store.config.appName}{' '}
@@ -71,7 +74,7 @@ const SendTransaction = () => {
       />
 
       {isLobstr && (
-        <p className="bluxcc:!my-2 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:!text-xs bluxcc:text-alert-error">
+        <p className="bluxcc:my-2! bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:text-center bluxcc:text-xs! bluxcc:text-alert-error">
           {t('lobstrWarning', { network: networkTitle })}
         </p>
       )}
@@ -98,14 +101,14 @@ const SendTransaction = () => {
           </p>
         </div>
         <div
-          className="bluxcc:overflow-hidden bluxcc:px-[10px] bluxcc:py-2"
+          className="bluxcc:overflow-hidden bluxcc:px-2.5 bluxcc:py-2"
           style={{
             borderRadius: appearance.borderRadius,
             backgroundColor: appearance.fieldBackground,
             color: appearance.textColor,
           }}
         >
-          <p className="bluxcc:max-w-[90px] bluxcc:text-xs bluxcc:font-normal">
+          <p className="bluxcc:max-w-22.5 bluxcc:text-xs bluxcc:font-normal">
             {balance ? humanizeAmount(balance) : '0'} XLM
           </p>
         </div>

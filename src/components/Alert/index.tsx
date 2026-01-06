@@ -65,7 +65,10 @@ const Alert: React.FC<AlertProps> = ({ type, message, className = '' }) => {
 
   return (
     <div
-      style={{ borderRadius: appearance.borderRadius }}
+      style={{
+        borderRadius: appearance.borderRadius,
+        fontFamily: appearance.fontFamily,
+      }}
       className={`
         bluxcc:flex bluxcc:items-center bluxcc:gap-2
         bluxcc:px-3 bluxcc:h-10 bluxcc:max-w-46
