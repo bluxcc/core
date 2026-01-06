@@ -19,6 +19,57 @@ import {
   INetworkTransports,
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
+import { HorizonApi } from '@stellar/stellar-sdk/lib/horizon';
+
+export const getAssetTitle = (
+  asset:
+    | HorizonApi.BalanceLineNative
+    | HorizonApi.BalanceLineAsset<'credit_alphanum4'>
+    | HorizonApi.BalanceLineAsset<'credit_alphanum12'>
+    | HorizonApi.BalanceLineLiquidityPool,
+): string => {
+  if (asset.asset_type === 'native') {
+    return 'XLM';
+  }
+
+  if (
+    asset.asset_type === 'credit_alphanum4' ||
+    asset.asset_type === 'credit_alphanum12'
+  ) {
+    return asset.asset_code;
+  }
+
+  if (asset.asset_type === 'liquidity_pool_shares') {
+    return 'LiquidtyPool';
+  }
+
+  return '';
+};
+
+export const getAssetSubtitle = (
+  asset:
+    | HorizonApi.BalanceLineNative
+    | HorizonApi.BalanceLineAsset<'credit_alphanum4'>
+    | HorizonApi.BalanceLineAsset<'credit_alphanum12'>
+    | HorizonApi.BalanceLineLiquidityPool,
+): string => {
+  if (asset.asset_type === 'native') {
+    return 'native';
+  }
+
+  if (
+    asset.asset_type === 'credit_alphanum4' ||
+    asset.asset_type === 'credit_alphanum12'
+  ) {
+    return shortenAddress(asset.asset_issuer, 4);
+  }
+
+  if (asset.asset_type === 'liquidity_pool_shares') {
+    return shortenAddress(asset.liquidity_pool_id, 4);
+  }
+
+  return '';
+};
 
 export const iAssetToAsset = (asset: IAsset): Asset => {
   if (asset.assetType === 'native') {
