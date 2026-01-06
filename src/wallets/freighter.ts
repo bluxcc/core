@@ -43,7 +43,7 @@ export const freighterConfig: IWallet = {
       throw new Error('Failed to connect to Freighter.');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     try {
       if (!(await isConnected())) {

@@ -19,6 +19,57 @@ import {
   INetworkTransports,
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
+import { HorizonApi } from '@stellar/stellar-sdk/lib/horizon';
+
+export const getAssetTitle = (
+  asset:
+    | HorizonApi.BalanceLineNative
+    | HorizonApi.BalanceLineAsset<'credit_alphanum4'>
+    | HorizonApi.BalanceLineAsset<'credit_alphanum12'>
+    | HorizonApi.BalanceLineLiquidityPool,
+): string => {
+  if (asset.asset_type === 'native') {
+    return 'XLM';
+  }
+
+  if (
+    asset.asset_type === 'credit_alphanum4' ||
+    asset.asset_type === 'credit_alphanum12'
+  ) {
+    return asset.asset_code;
+  }
+
+  if (asset.asset_type === 'liquidity_pool_shares') {
+    return 'LiquidtyPool';
+  }
+
+  return '';
+};
+
+export const getAssetSubtitle = (
+  asset:
+    | HorizonApi.BalanceLineNative
+    | HorizonApi.BalanceLineAsset<'credit_alphanum4'>
+    | HorizonApi.BalanceLineAsset<'credit_alphanum12'>
+    | HorizonApi.BalanceLineLiquidityPool,
+): string => {
+  if (asset.asset_type === 'native') {
+    return 'native';
+  }
+
+  if (
+    asset.asset_type === 'credit_alphanum4' ||
+    asset.asset_type === 'credit_alphanum12'
+  ) {
+    return shortenAddress(asset.asset_issuer, 4);
+  }
+
+  if (asset.asset_type === 'liquidity_pool_shares') {
+    return shortenAddress(asset.liquidity_pool_id, 4);
+  }
+
+  return '';
+};
 
 export const iAssetToAsset = (asset: IAsset): Asset => {
   if (asset.assetType === 'native') {
@@ -240,7 +291,7 @@ export const getNetworkRpc = (
   const transport = transports[network];
 
   if (!details && !transport) {
-    throw new Error('Custom network has no transports.');
+    throw new Error('BLUX: Custom network has no transports.');
   } else if (!details && transport) {
     details = {
       name: 'Custom Network',
@@ -321,7 +372,7 @@ export const handleLoadWallets = (
 
 export const hexToRgba = (hex: string, alpha: number = 1) => {
   hex = hex.replace(/^#/, '');
-  let r: number, g: number, b: number;  
+  let r: number, g: number, b: number;
 
   if (hex.length === 3) {
     r = parseInt(hex[0] + hex[0], 16);
@@ -445,19 +496,21 @@ export const validateNetworkOptions = (
   transports: ITransports | undefined,
 ) => {
   if (!networks || networks.length === 0) {
-    throw new Error('No network is set in config.networks.');
+    throw new Error('BLUX: No network is set in config.networks.');
   }
 
   const defaultNetworkOrTheFirstNetwork = defaultNetwork ?? networks[0];
 
   if (!networks.includes(defaultNetworkOrTheFirstNetwork)) {
-    throw new Error('config.defaultNetwork is not listed in config.networks.');
+    throw new Error(
+      'BLUX: config.defaultNetwork is not listed in config.networks.',
+    );
   }
 
   for (const n of networks) {
     if (!DEFAULT_NETWORKS_TRANSPORTS[n]) {
       if (!transports || !transports[n]) {
-        throw new Error(`Must set transports for custom network ${n}`);
+        throw new Error(`BLUX: Must set transports for custom network ${n}`);
       }
     }
   }

@@ -1,10 +1,14 @@
-import { useAppStore } from "../../../store";
-import TabBox from "../../../components/TabBox";
-import { useLang } from "../../../hooks/useLang";
-import { AssetsIcon } from "../../../assets/Icons";
-import Assets from "../../../components/AssetsList";
-import { StellarLogo } from "../../../assets/Logos";
-import { balanceToAsset } from "../../../utils/helpers";
+import { useAppStore } from '../../../store';
+import TabBox from '../../../components/TabBox';
+import { useLang } from '../../../hooks/useLang';
+import { AssetsIcon } from '../../../assets/Icons';
+import Assets from '../../../components/AssetsList';
+import { StellarLogo } from '../../../assets/Logos';
+import {
+  getAssetTitle,
+  balanceToAsset,
+  getAssetSubtitle,
+} from '../../../utils/helpers';
 
 const Balances = () => {
   const t = useLang();
@@ -14,6 +18,8 @@ const Balances = () => {
   const assets = balances.map((b) => ({
     ...balanceToAsset(b),
     logo: <StellarLogo />,
+    title: getAssetTitle(b),
+    subtitle: getAssetSubtitle(b),
   }));
 
   // const { setRoute } = useAppStore((store) => store);
@@ -23,7 +29,7 @@ const Balances = () => {
 
   const tabsContent = [
     {
-      label: t("assets"),
+      label: t('assets'),
       activeIcon: <AssetsIcon fill={appearance.accentColor} />,
       inActiveIcon: <AssetsIcon fill={appearance.textColor} />,
       content: <Assets assets={assets} />,
@@ -61,11 +67,11 @@ const Balances = () => {
   ];
 
   if (loading) {
-    return "Loading";
+    return 'Loading';
   }
 
   if (error) {
-    return "Error, try again.";
+    return 'Error, try again.';
   }
 
   return <TabBox tabs={tabsContent} />;

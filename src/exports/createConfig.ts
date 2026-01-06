@@ -59,22 +59,24 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   isInitiated = true;
 
   if (!config || Object.keys(config).length === 0) {
-    throw new Error('createConfig must take a config object');
+    throw new Error('BLUX: createConfig must take a config object');
   }
 
   if (!config.appId) {
-    throw new Error('createConfig config object must have the appId property.');
+    throw new Error(
+      'BLUX: createConfig config object must have the appId property.',
+    );
   }
 
   if (!config.appName) {
     throw new Error(
-      'createConfig config object must have the appName property.',
+      'BLUX: createConfig config object must have the appName property.',
     );
   }
 
   if (!config.networks) {
     throw new Error(
-      'createConfig config object must have the networks property.',
+      'BLUX: createConfig config object must have the networks property.',
     );
   }
 
@@ -156,9 +158,7 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
       (!result.isValid && conf.loginMethods.includes('email')) ||
       conf.loginMethods.includes('passkey')
     ) {
-      conf.loginMethods = ['wallet'];
-
-      setConfig(conf);
+      throw new Error('BLUX: config.appId is invalid.');
     }
   });
 }

@@ -4,15 +4,21 @@ import { IAsset } from '../../types';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
 import {
-  getContrastColor,
   hexToRgba,
   humanizeAmount,
+  getContrastColor,
 } from '../../utils/helpers';
+
 import { StellarLogo } from '../../assets/Logos';
 import { QuestionMark } from '../../assets/Icons';
 
+type IAssetWithDetails = IAsset & {
+  title: string;
+  subtitle: string;
+};
+
 type AssetsProps = {
-  assets: IAsset[];
+  assets: IAssetWithDetails[];
 };
 
 const Assets = ({ assets }: AssetsProps) => {
@@ -71,13 +77,13 @@ const Assets = ({ assets }: AssetsProps) => {
             </span>
             <div className="bluxcc:flex bluxcc:flex-col">
               <span className="bluxcc:text-sm bluxcc:font-medium">
-                {asset.assetCode}
+                {asset.title}
               </span>
               <span
                 className="bluxcc:font-semibold bluxcc:text-xs"
                 style={{ color: hexToRgba(appearance.textColor, 0.7) }}
               >
-                {asset.assetCode}
+                {asset.subtitle}
               </span>
             </div>
           </div>
@@ -90,7 +96,7 @@ const Assets = ({ assets }: AssetsProps) => {
               className="bluxcc:font-semibold bluxcc:text-xs"
               style={{ color: hexToRgba(appearance.textColor, 0.7) }}
             >
-              {humanizeAmount(asset.valueInCurrency || '0')}$
+              {false && humanizeAmount(asset.valueInCurrency || '0')}
             </span>
           </div>
         </button>
