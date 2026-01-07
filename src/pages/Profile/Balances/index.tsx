@@ -37,7 +37,7 @@ const Balances = () => {
   const NoAssets = () => {
     return (
       <div className="bluxcc:w-full bluxcc:mt-22 bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:flex-col bluxcc:gap-2">
-        {/* <GrayCube /> */}
+        <GrayCube />
         <p
           className="bluxcc:font-medium"
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
