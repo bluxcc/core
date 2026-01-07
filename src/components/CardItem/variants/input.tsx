@@ -118,6 +118,7 @@ const InputCard = ({
             style={{
               background: appearance.fieldBackground,
               borderRadius: appearance.borderRadius,
+              fontFamily: appearance.fontFamily,
               borderColor: isValid
                 ? appearance.accentColor
                 : appearance.borderColor,
