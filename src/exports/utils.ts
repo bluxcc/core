@@ -3,6 +3,18 @@ import { Horizon, rpc } from '@stellar/stellar-sdk';
 import { getState } from '../store';
 import { getNetworkRpc } from '../utils/helpers';
 
+export type Val = [any, string];
+
+export type IContractCall = {
+  address: string;
+  fn: string;
+  args: Val[];
+};
+
+export type CallContractsOptions = {
+  network?: string;
+};
+
 export type CallBuilderOptions = {
   cursor?: string;
   limit?: number;

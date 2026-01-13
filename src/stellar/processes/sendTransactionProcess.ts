@@ -44,6 +44,7 @@ const sendTransactionProcess = async (store: IStore) => {
       store.user?.address as string,
       sendTransaction.options.network,
       store.config.transports || {},
+      sendTransaction.shouldSubmit,
     );
 
     store.setSendTransaction(

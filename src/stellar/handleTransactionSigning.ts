@@ -8,12 +8,21 @@ const handleTransactionSigning = async (
   userAddress: string,
   network: string,
   transports: ITransports,
+  shouldSubmit: boolean,
 ) => {
   const signedXdr = await signTransaction(wallet, xdr, userAddress, network);
 
-  const result = await submitTransaction(signedXdr, network, transports || {});
+  if (shouldSubmit) {
+    const result = await submitTransaction(
+      signedXdr,
+      network,
+      transports || {},
+    );
 
-  return result;
+    return result;
+  }
+
+  return signedXdr;
 };
 
 export default handleTransactionSigning;

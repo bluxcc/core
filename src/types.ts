@@ -140,10 +140,12 @@ export interface ISignOptions {
 }
 
 export type SendTransactionResult =
-  Horizon.HorizonApi.SubmitTransactionResponse;
+  | Horizon.HorizonApi.SubmitTransactionResponse
+  | string;
 
 export interface ISendTransaction {
   xdr: string;
+  shouldSubmit: boolean;
   options: ISignOptions;
   result?: SendTransactionResult;
   rejecter: (reason: any) => void;

@@ -20,7 +20,12 @@ const Successful = () => {
 
   const { sendTransaction } = store;
 
-  const hash = sendTransaction?.result?.hash;
+  let hash = '';
+
+  if (typeof sendTransaction?.result === 'object') {
+    hash = sendTransaction.result.hash;
+  }
+
   const network = sendTransaction?.options?.network || '';
 
   const explorerUrl = hash
@@ -93,8 +98,8 @@ const Successful = () => {
         <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5">
           {waitingStatus === 'login'
             ? t('connectionSuccessfulMessage', {
-                appName: capitalizeFirstLetter(config.appName),
-              })
+              appName: capitalizeFirstLetter(config.appName),
+            })
             : t('transactionSuccessfulMessage')}
         </p>
       </div>

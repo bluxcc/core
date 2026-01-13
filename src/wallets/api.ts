@@ -3,7 +3,7 @@ import { getState } from '../store';
 import { SupportedWallet } from '../enums';
 import { apiSignMessage, apiSignTransaction } from '../utils/api';
 
-export const rabetConfig: IWallet = {
+export const apiConfig: IWallet = {
   name: SupportedWallet.Api,
   website: 'https://blux.cc',
 

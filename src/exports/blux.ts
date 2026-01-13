@@ -45,31 +45,27 @@ const profile = () => {
   }
 };
 
-export const sendTransaction = (xdr: string, options?: { network: string }) =>
+const _signTransaction = (
+  xdr: string,
+  shouldSubmit: boolean,
+  options?: { network: string },
+) =>
   new Promise((resolve, reject) => {
-    const {
-      modal,
-      authState,
-      config,
-      wallets,
-      user,
-      stellar,
-      setSendTransaction,
-    } = getState();
+    const state = getState();
 
-    if (!authState.isAuthenticated || !stellar || !user) {
+    if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
       reject(new Error('User is not authenticated.'));
 
       return;
     }
 
-    if (modal.isOpen) {
+    if (state.modal.isOpen) {
       reject(new Error('Blux modal is open elsewhere.'));
 
       return;
     }
 
-    let network = stellar.activeNetwork;
+    let network = state.stellar.activeNetwork;
 
     if (options && options.network) {
       network = options.network;
@@ -81,7 +77,9 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       return;
     }
 
-    const foundWallet = wallets.find((w) => w.name === user.authValue);
+    const foundWallet = state.wallets.find(
+      (w) => w.name === state.user!.authValue,
+    );
 
     if (!foundWallet) {
       throw new Error('Could not find the connected wallet.');
@@ -92,18 +90,23 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       rejecter: reject,
       resolver: resolve,
       result: undefined,
-      options: options || { network },
+      options: {
+        network,
+        ...options,
+      },
+      shouldSubmit,
     };
 
-    setSendTransaction(transactionObject, config.showWalletUIs);
+    state.setSendTransaction(transactionObject, state.config.showWalletUIs);
 
-    if (!config.showWalletUIs) {
+    if (!state.config.showWalletUIs) {
       handleTransactionSigning(
         foundWallet,
         xdr,
-        user.address,
+        state.user.address,
         network,
-        config.transports || {},
+        state.config.transports || {},
+        transactionObject.shouldSubmit,
       )
         .then((result) => {
           resolve(result);
@@ -115,6 +118,20 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
       return;
     }
   });
+
+export const signTransaction = async (
+  xdr: string,
+  options?: { network: string },
+) => {
+  return await _signTransaction(xdr, false, options);
+};
+
+export const sendTransaction = async (
+  xdr: string,
+  options?: { network: string },
+) => {
+  return await _signTransaction(xdr, true, options);
+};
 
 export const signMessage = (message: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
@@ -174,6 +191,7 @@ export const blux = {
   logout,
   profile,
   signMessage,
+  signTransaction,
   sendTransaction,
   get isReady() {
     const { authState } = getState();
