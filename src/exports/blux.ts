@@ -118,28 +118,29 @@ export const sendTransaction = (xdr: string, options?: { network: string }) =>
 
 export const signMessage = (message: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
-    const { modal, authState, wallets, config, user, stellar, setSignMessage } =
-      getState();
+    const state = getState();
 
-    if (!authState.isAuthenticated || !stellar || !user) {
+    if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
       reject(new Error('User is not authenticated.'));
 
       return;
     }
 
-    if (modal.isOpen) {
+    if (state.modal.isOpen) {
       reject(new Error('Blux modal is open elsewhere.'));
 
       return;
     }
 
-    let network = stellar.activeNetwork;
+    let network = state.stellar.activeNetwork;
 
     if (options && options.network) {
       network = options.network;
     }
 
-    const foundWallet = wallets.find((w) => w.name === user.authValue);
+    const foundWallet = state.wallets.find(
+      (w) => w.name === state.user!.authValue,
+    );
 
     if (!foundWallet) {
       throw new Error('Could not find the connected wallet.');
@@ -153,10 +154,10 @@ export const signMessage = (message: string, options?: { network: string }) =>
       result: undefined,
     };
 
-    setSignMessage(signMessageDetails, config.showWalletUIs);
+    state.setSignMessage(signMessageDetails, state.config.showWalletUIs);
 
-    if (!config.showWalletUIs) {
-      handleSignMessage(foundWallet, message, user.address, network)
+    if (!state.config.showWalletUIs) {
+      handleSignMessage(foundWallet, message, state!.user.address, network)
         .then((result) => {
           resolve(result);
         })

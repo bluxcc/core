@@ -1,6 +1,7 @@
 import { Networks } from '@stellar/stellar-sdk';
 
 export enum SupportedWallet {
+  Api = 'API',
   Rabet = 'Rabet',
   Albedo = 'Albedo',
   Freighter = 'Freighter',

@@ -1,7 +1,6 @@
 import { fetcher } from './helpers';
 import { AuthenticateApiResponse } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
-import { walletsConfig } from '../wallets';
 import { IUser } from '../store';
 
 type AppIdNotFound = {
@@ -186,6 +185,109 @@ export const apiGetUser = async (JWT: string) => {
     }
 
     if (res.status === 200) {
+      return res;
+    }
+
+    throw new Error('Unexpected response from api');
+  } catch (e: any) {
+    throw new Error('Unexpected response from api');
+  }
+};
+
+type ApiSignMessageResponse = {
+  status: number;
+  error?: string;
+  signature?: string;
+};
+
+type ApiSignTransactionResponse = {
+  status: number;
+  error?: string;
+  signed_xdr?: string;
+};
+
+export const apiSignMessage = async (JWT: string, message: string) => {
+  try {
+    const res = await fetcher<ApiSignMessageResponse>(
+      `${BLUX_API}/users/sign-message`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${JWT}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+        }),
+      },
+    );
+
+    if (res.status === 401) {
+      throw new Error('invalid JWT');
+    }
+
+    if (res.status === 500) {
+      throw new Error('server error');
+    }
+
+    if (res.status === 404) {
+      throw new Error('user nout found');
+    }
+
+    if (res.status === 429) {
+      throw new Error('too many requests');
+    }
+
+    if (res.status === 200 && res.signature) {
+      return res;
+    }
+
+    throw new Error('Unexpected response from api');
+  } catch (e: any) {
+    throw new Error('Unexpected response from api');
+  }
+};
+
+export const apiSignTransaction = async (
+  JWT: string,
+  xdr: string,
+  network: string,
+) => {
+  try {
+    const res = await fetcher<ApiSignTransactionResponse>(
+      `${BLUX_API}/users/sign-transaction`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${JWT}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          xdr,
+          network,
+        }),
+      },
+    );
+
+    if (res.status === 401) {
+      throw new Error('invalid JWT');
+    }
+
+    if (res.status === 500) {
+      throw new Error('server error');
+    }
+
+    if (res.status === 404) {
+      throw new Error('user nout found');
+    }
+
+    if (res.status === 429) {
+      throw new Error('too many requests');
+    }
+
+    if (res.status === 200 && res.signed_xdr) {
       return res;
     }
 

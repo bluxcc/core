@@ -24,6 +24,7 @@ export type AlertType = 'error' | 'success' | 'warn' | 'none' | 'copy';
 
 export interface IUser {
   address: string;
+  identifier?: string;
   walletPassphrase: string;
   authValue: string; // rabet, freighter, albedo, abcd@gmail.com, +1 555..., Gmail, Apple, etc..
   authMethod: string; // wallet, email, sms, social, etc..
@@ -119,7 +120,7 @@ export interface IStoreMethods {
   setAuth: (a: IAuth) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods {}
+export interface IStore extends IStoreProperties, IStoreMethods { }
 
 export const store = createStore<IStore>((set) => ({
   auth: undefined,
@@ -290,7 +291,8 @@ export const store = createStore<IStore>((set) => ({
       waitingStatus: 'login',
       user: {
         address: '',
-        authValue: email,
+        authValue: 'api',
+        identifier: email,
         authMethod: 'email',
         walletPassphrase: '',
       },
