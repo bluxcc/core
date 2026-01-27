@@ -63,7 +63,10 @@ const Profile = () => {
         /> */}
         <div
           className="bluxcc:text-center bluxcc:text-2xl bluxcc:h-8 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
-          style={{ color: appearance.accentColor }}
+          style={{
+            color: appearance.accentColor,
+            fontFamily: appearance.fontFamily,
+          }}
         >
           <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
             <p
@@ -71,6 +74,7 @@ const Profile = () => {
               style={{
                 verticalAlign: 'middle',
                 paddingTop: !visible ? '8px' : '0px',
+                fontFamily: appearance.fontFamily,
               }}
             >
               {balance
@@ -105,7 +109,10 @@ const Profile = () => {
           id="bluxcc-button"
           className="bluxcc:mt-4! bluxcc:leading-4 bluxcc:inline-flex bluxcc:bg-transparent bluxcc:text-sm bluxcc:select-none"
           onClick={handleCopyAddress}
-          style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+          style={{
+            color: hexToRgba(appearance.textColor, 0.7),
+            fontFamily: appearance.fontFamily,
+          }}
         >
           <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
             {address ? shortenAddress(address, 5) : ''}
