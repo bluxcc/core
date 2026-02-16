@@ -141,7 +141,7 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
     }
 
     if (res.status === 200) {
-      return res.jwt;
+      return res.result.jwt;
     }
 
     throw new Error('Unexpected response from api');
@@ -185,7 +185,7 @@ export const apiGetUser = async (JWT: string) => {
     }
 
     if (res.status === 200) {
-      return res;
+      return res.result;
     }
 
     throw new Error('Unexpected response from api');
@@ -240,7 +240,7 @@ export const apiSignMessage = async (JWT: string, message: string) => {
     }
 
     if (res.status === 200 && res.signature) {
-      return res;
+      return res.result;
     }
 
     throw new Error('Unexpected response from api');
@@ -288,7 +288,7 @@ export const apiSignTransaction = async (
     }
 
     if (res.status === 200 && res.signed_xdr) {
-      return res;
+      return res.result;
     }
 
     throw new Error('Unexpected response from api');

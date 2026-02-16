@@ -291,8 +291,7 @@ export const store = createStore<IStore>((set) => ({
       waitingStatus: 'login',
       user: {
         address: '',
-        authValue: 'api',
-        identifier: email,
+        authValue: email,
         authMethod: 'email',
         walletPassphrase: '',
       },
