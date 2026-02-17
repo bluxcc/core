@@ -36,6 +36,8 @@ const Successful = () => {
     if (waitingStatus === 'login') {
       setTimeout(() => {
         closeModal();
+
+        store.setIsAuthenticated(true);
       }, 1000);
     }
   }, []);

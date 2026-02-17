@@ -12,19 +12,19 @@ import {
 // Enum?
 // Object?
 
-export type Val = [any, string];
-
-export const writeContracts = async (
-  calls: IContractCall[],
-  options: CallContractsOptions,
-) => {
-  checkConfigCreated();
-
-  const { soroban } = getNetwork(options.network);
-
-  const result = await Promise.all(
-    calls.map((call) => soroban.getTransaction(call)),
-  );
-
-  return result;
-};
+// export type Val = [any, string];
+//
+// export const writeContracts = async (
+//   calls: IContractCall[],
+//   options: CallContractsOptions,
+// ) => {
+//   checkConfigCreated();
+//
+//   const { soroban } = getNetwork(options.network);
+//
+//   const result = await Promise.all(
+//     calls.map((call) => soroban.getTransaction(call)),
+//   );
+//
+//   return result;
+// };

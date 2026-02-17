@@ -3,17 +3,18 @@ import { AuthenticateApiResponse } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
 import { IUser } from '../store';
 
-type AppIdNotFound = {
-  status: 404;
+type ApiErrorResponse = {
+  status: 400 | 401 | 403 | 404 | 429 | 500;
   error: string;
 };
 
-type AppIdIsValid = {
+type ApiSuccessResponse<T> = {
   status: 200;
   message: string;
+  result: T;
 };
 
-type AuthenticateAppIdResponse = AppIdNotFound | AppIdIsValid;
+type ApiResponse<T> = ApiErrorResponse | ApiSuccessResponse<T>;
 
 export const authenticateAppId = async (
   appId: string,
@@ -23,15 +24,12 @@ export const authenticateAppId = async (
   }
 
   try {
-    const res = await fetcher<AuthenticateAppIdResponse>(
-      `${BLUX_API}/auth/validate`,
-      {
-        method: 'POST',
-        headers: {
-          [BLUX_APP_ID_HEADER]: appId,
-        },
+    const res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth/validate`, {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
       },
-    );
+    });
 
     if (res.status === 200) {
       return { isValid: true, message: res.message };
@@ -62,7 +60,7 @@ export const apiSendOtp = async (
   }
 
   try {
-    const res = await fetcher<any>(`${BLUX_API}/auth`, {
+    const res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
       method: 'POST',
       headers: {
         [BLUX_APP_ID_HEADER]: appId,
@@ -98,31 +96,29 @@ export const apiSendOtp = async (
   }
 };
 
-type ApiVerifyOtpResponse = {
-  jwt: string;
-  status: number;
-};
-
 export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
   if (!appId) {
     throw new Error('appId is missing in config.');
   }
 
   try {
-    const res = await fetcher<ApiVerifyOtpResponse>(`${BLUX_API}/auth/code`, {
-      method: 'POST',
-      headers: {
-        [BLUX_APP_ID_HEADER]: appId,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+    const res = await fetcher<ApiResponse<{ jwt: string }>>(
+      `${BLUX_API}/auth/code`,
+      {
+        method: 'POST',
+        headers: {
+          [BLUX_APP_ID_HEADER]: appId,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: otp,
+          wallet: '',
+          auth_method: 'email',
+          auth_value: user.authValue,
+        }),
       },
-      body: JSON.stringify({
-        code: otp,
-        wallet: '',
-        auth_method: 'email',
-        auth_value: user.authValue,
-      }),
-    });
+    );
 
     if (res.status === 400) {
       throw new Error('invalid inputs');
@@ -151,7 +147,6 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
 };
 
 type ApiGetUserResponse = {
-  status: number;
   auth_method: string;
   auth_value: string;
   public_key: string;
@@ -159,14 +154,17 @@ type ApiGetUserResponse = {
 
 export const apiGetUser = async (JWT: string) => {
   try {
-    const res = await fetcher<ApiGetUserResponse>(`${BLUX_API}/users`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${JWT}`,
-        'Content-Type': 'application/json',
+    const res = await fetcher<ApiResponse<ApiGetUserResponse>>(
+      `${BLUX_API}/users`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${JWT}`,
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
 
     if (res.status === 401) {
       throw new Error('invalid JWT');
@@ -195,20 +193,16 @@ export const apiGetUser = async (JWT: string) => {
 };
 
 type ApiSignMessageResponse = {
-  status: number;
-  error?: string;
   signature?: string;
 };
 
 type ApiSignTransactionResponse = {
-  status: number;
-  error?: string;
   signed_xdr?: string;
 };
 
 export const apiSignMessage = async (JWT: string, message: string) => {
   try {
-    const res = await fetcher<ApiSignMessageResponse>(
+    const res = await fetcher<ApiResponse<ApiSignMessageResponse>>(
       `${BLUX_API}/users/sign-message`,
       {
         method: 'POST',
@@ -239,7 +233,7 @@ export const apiSignMessage = async (JWT: string, message: string) => {
       throw new Error('too many requests');
     }
 
-    if (res.status === 200 && res.signature) {
+    if (res.status === 200 && res.result.signature) {
       return res.result;
     }
 
@@ -255,7 +249,7 @@ export const apiSignTransaction = async (
   network: string,
 ) => {
   try {
-    const res = await fetcher<ApiSignTransactionResponse>(
+    const res = await fetcher<ApiResponse<ApiSignTransactionResponse>>(
       `${BLUX_API}/users/sign-transaction`,
       {
         method: 'POST',
@@ -287,7 +281,7 @@ export const apiSignTransaction = async (
       throw new Error('too many requests');
     }
 
-    if (res.status === 200 && res.signed_xdr) {
+    if (res.status === 200 && res.result.signed_xdr) {
       return res.result;
     }
 

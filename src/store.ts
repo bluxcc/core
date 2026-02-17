@@ -118,6 +118,7 @@ export interface IStoreMethods {
   setAppearance: (newAppearance: Partial<IAppearance>) => void;
   setApiResponse: (res: AuthenticateApiResponse) => void;
   setAuth: (a: IAuth) => void;
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
@@ -270,12 +271,17 @@ export const store = createStore<IStore>((set) => ({
             : Route.WAITING,
       },
     })),
+  setIsAuthenticated: (isAuthenticated: boolean) =>
+    set((state) => ({
+      ...state,
+      authState: { ...state.authState, isAuthenticated },
+    })),
   connectWalletSuccessful: (publicKey: string, passphrase: string) =>
     set((state) => ({
       ...state,
       authState: {
         ...state.authState,
-        isAuthenticated: true,
+        // isAuthenticated: true,
       },
       user: {
         ...state.user,

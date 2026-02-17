@@ -12,17 +12,17 @@ import {
 // Enum?
 // Object?
 
-export const readContracts = async (
-  calls: IContractCall[],
-  options: CallContractsOptions,
-) => {
-  checkConfigCreated();
-
-  const { soroban } = getNetwork(options.network);
-
-  const result = await Promise.all(
-    calls.map((call) => soroban.getTransaction(call)),
-  );
-
-  return result;
-};
+// export const readContracts = async (
+//   calls: IContractCall[],
+//   options: CallContractsOptions,
+// ) => {
+//   checkConfigCreated();
+//
+//   const { soroban } = getNetwork(options.network);
+//
+//   const result = await Promise.all(
+//     calls.map((call) => soroban.getTransaction(call)),
+//   );
+//
+//   return result;
+// };

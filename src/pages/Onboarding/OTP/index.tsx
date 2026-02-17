@@ -44,7 +44,6 @@ const OTP = () => {
         setError(false);
 
         localStorage.setItem(BLUX_JWT_STORE, JWT);
-        // TODO: setSuccess(true)
 
         store.setAuth({
           isAuthenticated: true,
