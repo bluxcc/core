@@ -32,8 +32,8 @@ export const apiConfig: IWallet = {
 
       const res = await apiSignMessage(JWT, message);
 
-      if (res.signature) {
-        return res.signature;
+      if (res) {
+        return res;
       }
 
       throw new Error('Failed to sign the message from API');
@@ -53,8 +53,8 @@ export const apiConfig: IWallet = {
 
       const res = await apiSignTransaction(JWT, xdr, options.network);
 
-      if (res.signed_xdr) {
-        return res.signed_xdr;
+      if (res) {
+        return res;
       }
 
       throw new Error('Failed to sign the transaction from API');

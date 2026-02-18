@@ -57,19 +57,19 @@ const config = [
     ],
     plugins: [peerDepsExternal(), ...commonPlugins],
   },
-  {
-    input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.iife.js',
-        format: 'iife',
-        name: 'Blux',
-        sourcemap: false,
-        inlineDynamicImports: true,
-      },
-    ],
-    plugins: [...commonPlugins],
-  },
+  // {
+  //   input: 'src/index.ts',
+  //   output: [
+  //     {
+  //       file: 'dist/index.iife.js',
+  //       format: 'iife',
+  //       name: 'Blux',
+  //       sourcemap: false,
+  //       inlineDynamicImports: true,
+  //     },
+  //   ],
+  //   plugins: [...commonPlugins],
+  // },
 ];
 
 export default config;

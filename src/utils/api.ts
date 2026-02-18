@@ -102,23 +102,20 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
   }
 
   try {
-    const res = await fetcher<ApiResponse<{ jwt: string }>>(
-      `${BLUX_API}/auth/code`,
-      {
-        method: 'POST',
-        headers: {
-          [BLUX_APP_ID_HEADER]: appId,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: otp,
-          wallet: '',
-          auth_method: 'email',
-          auth_value: user.authValue,
-        }),
+    const res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        code: otp,
+        wallet: '',
+        auth_method: 'email',
+        auth_value: user.authValue,
+      }),
+    });
 
     if (res.status === 400) {
       throw new Error('invalid inputs');
@@ -137,7 +134,7 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
     }
 
     if (res.status === 200) {
-      return res.result.jwt;
+      return res.result;
     }
 
     throw new Error('Unexpected response from api');
@@ -192,13 +189,8 @@ export const apiGetUser = async (JWT: string) => {
   }
 };
 
-type ApiSignMessageResponse = {
-  signature?: string;
-};
-
-type ApiSignTransactionResponse = {
-  signed_xdr?: string;
-};
+type ApiSignMessageResponse = string;
+type ApiSignTransactionResponse = string;
 
 export const apiSignMessage = async (JWT: string, message: string) => {
   try {
@@ -233,7 +225,7 @@ export const apiSignMessage = async (JWT: string, message: string) => {
       throw new Error('too many requests');
     }
 
-    if (res.status === 200 && res.result.signature) {
+    if (res.status === 200 && res.result) {
       return res.result;
     }
 
@@ -281,7 +273,7 @@ export const apiSignTransaction = async (
       throw new Error('too many requests');
     }
 
-    if (res.status === 200 && res.result.signed_xdr) {
+    if (res.status === 200 && res.result) {
       return res.result;
     }
 
