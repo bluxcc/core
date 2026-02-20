@@ -8,9 +8,10 @@ import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
+import CDNFiles from '../../../constants/cdnFiles';
+import CDNImage from '../../../components/CDNImage';
 import { sendTransaction } from '../../../exports/blux';
 import swapTransaction from '../../../stellar/swapTransaction';
-import { ArrowDropUp, SmallSwapIcon, SwapIcon } from '../../../assets/Icons';
 import { getStrictReceivePaths, getStrictSendPaths } from '../../../exports';
 import {
   hexToRgba,
@@ -91,7 +92,7 @@ const Swap = () => {
       setTimeout(() => {
         try {
           sendTransaction(xdr);
-        } catch (e) {}
+        } catch (e) { }
       }, 150);
     } catch {
       setError({ field: 'both', message: 'Failed to make transaction.' });
@@ -234,9 +235,9 @@ const Swap = () => {
 
     if (
       store.selectAsset.swapFromAsset.assetCode ===
-        store.selectAsset.swapToAsset.assetCode &&
+      store.selectAsset.swapToAsset.assetCode &&
       store.selectAsset.swapFromAsset.assetIssuer ===
-        store.selectAsset.swapToAsset.assetIssuer
+      store.selectAsset.swapToAsset.assetIssuer
     ) {
       setError({ field: 'both', message: 'FROM and TO assets are the same.' });
 
@@ -302,7 +303,10 @@ const Swap = () => {
                 fontFamily: appearance.fontFamily,
               }}
             >
-              <SmallSwapIcon fill={hexToRgba(appearance.textColor, 0.7)} />
+              <CDNImage
+                name={CDNFiles.SmallSwap}
+                props={{ fill: hexToRgba(appearance.textColor, 0.7) }}
+              />
             </button>
           </span>
         ) : (
@@ -355,7 +359,11 @@ const Swap = () => {
               }}
               className="bluxcc:mr-2 bluxcc:ml-1.5 bluxcc:inline-flex bluxcc:bg-transparent"
             >
-              {t('max')} <ArrowDropUp fill={appearance.accentColor} />
+              {t('max')}{' '}
+              <CDNImage
+                name={CDNFiles.ArrowDropUp}
+                props={{ fill: appearance.accentColor }}
+              />
             </button>
           </span>
         </div>
@@ -418,7 +426,10 @@ const Swap = () => {
               className={`bluxcc:transition-transform bluxcc:duration-300`}
               style={{ transform: `rotate(${rotation}deg)` }}
             >
-              <SwapIcon fill={appearance.accentColor} />
+              <CDNImage
+                name={CDNFiles.Swap}
+                props={{ fill: appearance.accentColor }}
+              />
             </div>
           </div>
         </button>

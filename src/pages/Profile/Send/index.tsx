@@ -8,10 +8,10 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import InputField from '../../../components/Input';
+import CDNFiles from '../../../constants/cdnFiles';
+import CDNImage from '../../../components/CDNImage';
 import { sendTransaction } from '../../../exports/blux';
-import { StellarSmallLogo } from '../../../assets/Logos';
 import { getContrastColor } from '../../../utils/helpers';
-import { ArrowDropUp, SmallQuestionMark } from '../../../assets/Icons';
 import paymentTransaction from '../../../stellar/paymentTransaction';
 
 type SendFormValues = {
@@ -123,7 +123,10 @@ const SendForm = () => {
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:bg-transparent"
               >
                 {t('max')}{' '}
-                <ArrowDropUp fill={store.config.appearance.accentColor} />
+                <CDNImage
+                  name={CDNFiles.ArrowDropUp}
+                  props={{ fill: store.config.appearance.accentColor }}
+                />
               </button>
             }
             onButtonClick={handleOpenAssets}
@@ -131,16 +134,22 @@ const SendForm = () => {
               <span className="bluxcc:flex bluxcc:justify-between bluxcc:gap-1!">
                 <span className="bluxcc:flex bluxcc:items-center">
                   {store.selectAsset.sendAsset.assetType === 'native' ? (
-                    <StellarSmallLogo
-                      fill={getContrastColor(
-                        store.config.appearance.background,
-                      )}
+                    <CDNImage
+                      name={CDNFiles.StellarSmall}
+                      props={{
+                        fill: getContrastColor(
+                          store.config.appearance.fieldBackground,
+                        ),
+                      }}
                     />
                   ) : (
-                    <SmallQuestionMark
-                      fill={getContrastColor(
-                        store.config.appearance.fieldBackground,
-                      )}
+                    <CDNImage
+                      name={CDNFiles.SmallQuestionMark}
+                      props={{
+                        fill: getContrastColor(
+                          store.config.appearance.fieldBackground,
+                        ),
+                      }}
                     />
                   )}
                 </span>

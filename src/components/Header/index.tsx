@@ -1,9 +1,9 @@
-import { useAppStore } from '../../store';
-import { hexToRgba } from '../../utils/helpers';
-import { useLang } from '../../hooks/useLang';
-import { AboutIcon, ArrowLeft, Close } from '../../assets/Icons';
-
 import Alert from '../Alert';
+import CDNImage from '../CDNImage';
+import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
+import { hexToRgba } from '../../utils/helpers';
+import CDNFiles from '../../constants/cdnFiles';
 
 interface HeaderProps {
   icon?: 'info' | 'back';
@@ -51,13 +51,13 @@ const Header = ({
     if (icon === 'info')
       return (
         <IconWrapper onClick={onInfo}>
-          <AboutIcon fill={textColor} />
+          <CDNImage name={CDNFiles.About} props={{ fill: textColor }} />
         </IconWrapper>
       );
     if (icon === 'back')
       return (
         <IconWrapper onClick={onBack}>
-          <ArrowLeft fill={textColor} />
+          <CDNImage name={CDNFiles.ArrowLeft} props={{ fill: textColor }} />
         </IconWrapper>
       );
     return <div className="bluxcc:size-5" />;
@@ -68,7 +68,7 @@ const Header = ({
 
     return (
       <IconWrapper onClick={onClose}>
-        <Close fill={textColor} />
+        <CDNImage name={CDNFiles.Close} props={{ fill: textColor }} />
       </IconWrapper>
     );
   };

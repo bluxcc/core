@@ -1,5 +1,7 @@
 import React from 'react';
-import { CopyIcon, ErrorIcon, SuccessIcon, WarnIcon } from '../../assets/Icons';
+
+import CDNImage from '../CDNImage';
+import CDNFiles from '../../constants/cdnFiles';
 import { AlertType, useAppStore } from '../../store';
 import { isBackgroundDark } from '../../utils/helpers';
 
@@ -24,28 +26,28 @@ const variantStyles: Record<
     darkBg: 'bluxcc:bg-[#D6000033]',
     container: 'bluxcc:border bluxcc:border-alert-error',
     text: 'bluxcc:text-alert-error',
-    icon: <ErrorIcon />,
+    icon: <CDNImage name={CDNFiles.Error} />,
   },
   success: {
     baseBg: 'bluxcc:bg-white',
     darkBg: 'bluxcc:bg-[#00D66E33]',
     container: 'bluxcc:border bluxcc:border-alert-success',
     text: 'bluxcc:text-alert-success',
-    icon: <SuccessIcon />,
+    icon: <CDNImage name={CDNFiles.Success} />,
   },
   copy: {
     baseBg: 'bluxcc:bg-light-blue-50',
     darkBg: 'bluxcc:bg-[#005DF333]',
     container: 'bluxcc:border bluxcc:border-alert-info',
     text: 'bluxcc:text-alert-info',
-    icon: <CopyIcon />,
+    icon: <CDNImage name={CDNFiles.CopyIcon} />,
   },
   warn: {
     baseBg: 'bluxcc:bg-white',
     darkBg: 'bluxcc:bg-[#FA8F0233]',
     container: 'bluxcc:border bluxcc:border-alert-warning',
     text: 'bluxcc:text-alert-warning',
-    icon: <WarnIcon />,
+    icon: <CDNImage name={CDNFiles.Warn} />,
   },
   none: {
     baseBg: '',

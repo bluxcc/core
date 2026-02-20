@@ -6,22 +6,13 @@ import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
 import CardItem from '../../components/CardItem';
 import {
-  Copy,
-  Send,
-  LogOut,
-  History,
-  OpenEye,
-  SwapIcon,
-  CloseEye,
-  ReceiveIcon,
-  BalancesIcon,
-} from '../../assets/Icons';
-import {
   copyText,
   hexToRgba,
   humanizeAmount,
   shortenAddress,
 } from '../../utils/helpers';
+import CDNImage from '../../components/CDNImage';
+import CDNFiles from '../../constants/cdnFiles';
 
 const Profile = () => {
   const t = useLang();
@@ -46,7 +37,7 @@ const Profile = () => {
           setAlert('none', '');
         }, 1000);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const balance =
@@ -92,7 +83,10 @@ const Profile = () => {
                 onClick={() => setVisible(false)}
                 className="bluxcc:bg-transparent"
               >
-                <OpenEye fill={appearance.accentColor} />
+                <CDNImage
+                  name={CDNFiles.OpenEye}
+                  props={{ fill: appearance.accentColor }}
+                />
               </button>
             ) : (
               <button
@@ -100,7 +94,10 @@ const Profile = () => {
                 onClick={() => setVisible(true)}
                 className="bluxcc:bg-transparent"
               >
-                <CloseEye fill={appearance.accentColor} />
+                <CDNImage
+                  name={CDNFiles.CloseEye}
+                  props={{ fill: appearance.accentColor }}
+                />
               </button>
             )}
           </div>
@@ -116,7 +113,10 @@ const Profile = () => {
         >
           <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
             {address ? shortenAddress(address, 5) : ''}
-            <Copy fill={hexToRgba(appearance.textColor, 0.7)} />
+            <CDNImage
+              name={CDNFiles.Copy}
+              props={{ fill: hexToRgba(appearance.textColor, 0.7) }}
+            />
           </span>
         </button>
       </div>
@@ -125,7 +125,12 @@ const Profile = () => {
         <CardItem
           size="small"
           label={t('send')}
-          startIcon={<Send fill={appearance.textColor} />}
+          startIcon={
+            <CDNImage
+              name={CDNFiles.Send}
+              props={{ fill: appearance.textColor }}
+            />
+          }
           onClick={() => {
             setRoute(Route.SEND);
           }}
@@ -134,7 +139,12 @@ const Profile = () => {
         <CardItem
           size="small"
           label={t('receive')}
-          startIcon={<ReceiveIcon fill={appearance.textColor} />}
+          startIcon={
+            <CDNImage
+              name={CDNFiles.Receive}
+              props={{ fill: appearance.textColor }}
+            />
+          }
           onClick={() => {
             setRoute(Route.RECEIVE);
           }}
@@ -143,7 +153,12 @@ const Profile = () => {
         <CardItem
           size="small"
           label={t('swap')}
-          startIcon={<SwapIcon fill={appearance.textColor} />}
+          startIcon={
+            <CDNImage
+              name={CDNFiles.Swap}
+              props={{ fill: appearance.textColor }}
+            />
+          }
           onClick={() => {
             setRoute(Route.SWAP);
           }}
@@ -153,7 +168,12 @@ const Profile = () => {
         <CardItem
           endArrow
           label={t('balances')}
-          startIcon={<BalancesIcon fill={appearance.textColor} />}
+          startIcon={
+            <CDNImage
+              name={CDNFiles.Balances}
+              props={{ fill: appearance.textColor }}
+            />
+          }
           onClick={() => {
             setRoute(Route.BALANCES);
           }}
@@ -162,7 +182,12 @@ const Profile = () => {
         <CardItem
           endArrow
           label={t('activity')}
-          startIcon={<History fill={appearance.textColor} />}
+          startIcon={
+            <CDNImage
+              name={CDNFiles.History}
+              props={{ fill: appearance.textColor }}
+            />
+          }
           onClick={() => {
             setRoute(Route.ACTIVITY);
           }}
@@ -179,7 +204,10 @@ const Profile = () => {
         onClick={handleLogout}
         className="bluxcc:flex bluxcc:h-12 bluxcc:font-medium bluxcc:text-base bluxcc:w-full bluxcc:bg-transparent bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
       >
-        <LogOut fill={hexToRgba(appearance.textColor, 0.9)} />
+        <CDNImage
+          name={CDNFiles.LogOut}
+          props={{ fill: hexToRgba(appearance.textColor, 0.9) }}
+        />
         {t('logout')}
       </button>
     </div>

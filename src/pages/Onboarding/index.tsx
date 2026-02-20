@@ -2,16 +2,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 
 import { IWallet } from '../../types';
 import { useAppStore } from '../../store';
+import { apiSendOtp } from '../../utils/api';
 import { useLang } from '../../hooks/useLang';
-import { StellarLogo } from '../../assets/Logos';
+import CDNFiles from '../../constants/cdnFiles';
 import CardItem from '../../components/CardItem';
+import CDNImage from '../../components/CDNImage';
 import handleLogos from '../../utils/walletLogos';
-import { SmallEmailIcon } from '../../assets/Icons';
 import { Route, SupportedWallet } from '../../enums';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
-import { apiSendOtp } from '../../utils/api';
 
 const Onboarding = () => {
   const t = useLang();
@@ -47,7 +47,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch((_e) => {});
+        .catch((_e) => { });
     }
   }, []);
 
@@ -143,8 +143,11 @@ const Onboarding = () => {
                       endArrow
                       label={t('allStellarWallets')}
                       startIcon={
-                        <StellarLogo
-                          fill={getContrastColor(appearance.background)}
+                        <CDNImage
+                          name={CDNFiles.Stellar}
+                          props={{
+                            fill: getContrastColor(appearance.background),
+                          }}
                         />
                       }
                       onClick={() => {
@@ -166,7 +169,12 @@ const Onboarding = () => {
                     <CardItem
                       inputType="email"
                       variant="input"
-                      startIcon={<SmallEmailIcon fill={appearance.textColor} />}
+                      startIcon={
+                        <CDNImage
+                          name={CDNFiles.SmallEmail}
+                          props={{ fill: appearance.textColor }}
+                        />
+                      }
                       onChange={(value: string) => setInputValue(value)}
                       onEnter={handleConnectEmail}
                       onSubmit={handleConnectEmail}

@@ -3,7 +3,8 @@ import Button from '../../components/Button';
 import { useLang } from '../../hooks/useLang';
 import { walletsConfig } from '../../wallets';
 import Divider from '../../components/Divider';
-import { RedExclamation } from '../../assets/Icons';
+import CDNFiles from '../../constants/cdnFiles';
+import CDNImage from '../../components/CDNImage';
 import signMessageProcess from '../../stellar/processes/signMessageProcess';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import sendTransactionProcess from '../../stellar/processes/sendTransactionProcess';
@@ -31,7 +32,7 @@ const Failed = () => {
       <div
         className={`bluxcc:mb-6 bluxcc:flex bluxcc:items-center bluxcc:justify-center`}
       >
-        <RedExclamation />
+        <CDNImage name={CDNFiles.RedExclamation} props={{}} />
       </div>
 
       <div className="bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
@@ -39,8 +40,8 @@ const Failed = () => {
           {store.waitingStatus === 'login'
             ? t('loginFailed')
             : t('signingFailed', {
-                walletName: store.user?.authValue ?? 'wallet',
-              })}
+              walletName: store.user?.authValue ?? 'wallet',
+            })}
         </p>
 
         <p className="bluxcc:text-sm">

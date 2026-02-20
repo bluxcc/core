@@ -1,6 +1,7 @@
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
-import { WrongNetworkIcon } from '../../assets/Icons';
+import CDNFiles from '../../constants/cdnFiles';
+import CDNImage from '../../components/CDNImage';
 import {
   capitalizeFirstLetter,
   getNetworkByPassphrase,
@@ -21,7 +22,7 @@ const WrongNetwork = () => {
       className="bluxcc:mt-4 bluxcc:mb-10 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none"
     >
       <div className="bluxcc:mb-6 bluxcc:flex bluxcc:size-17 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden">
-        <WrongNetworkIcon />
+        <CDNImage name={CDNFiles.WrongNetwork} props={{}} />
       </div>
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">

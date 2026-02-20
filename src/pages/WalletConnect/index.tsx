@@ -8,8 +8,9 @@ import { SupportedWallet } from '../../enums';
 import { walletsConfig } from '../../wallets';
 import { copyText } from '../../utils/helpers';
 import Divider from '../../components/Divider';
-import { WalletConnectLogo } from '../../assets/Logos';
+import CDNImage from '../../components/CDNImage';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
+import CDNFiles from '../../constants/cdnFiles';
 
 const WalletConnect = () => {
   const t = useLang();
@@ -76,9 +77,12 @@ const WalletConnect = () => {
             background: appearance.background,
           }}
         >
-          <WalletConnectLogo
-            fill={appearance.accentColor}
-            background={appearance.fieldBackground}
+          <CDNImage
+            name={CDNFiles.WalletConnect}
+            props={{
+              fill: appearance.accentColor,
+              background: appearance.fieldBackground,
+            }}
           />
         </div>
       </div>

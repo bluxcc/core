@@ -1,21 +1,15 @@
 import { useAppStore } from '../../../store';
 import TabBox from '../../../components/TabBox';
 import { useLang } from '../../../hooks/useLang';
-import {
-  AssetsIcon,
-  GrayCube,
-  NFTsIcon,
-  TokenIcon,
-} from '../../../assets/Icons';
+import CDNFiles from '../../../constants/cdnFiles';
+import CDNImage from '../../../components/CDNImage';
 import Assets from '../../../components/AssetsList';
-import { StellarLogo } from '../../../assets/Logos';
 import {
+  hexToRgba,
   getAssetTitle,
   balanceToAsset,
   getAssetSubtitle,
-  hexToRgba,
 } from '../../../utils/helpers';
-import Button from '../../../components/Button';
 
 const Balances = () => {
   const t = useLang();
@@ -24,20 +18,16 @@ const Balances = () => {
 
   const assets = balances.map((b) => ({
     ...balanceToAsset(b),
-    logo: <StellarLogo />,
     title: getAssetTitle(b),
     subtitle: getAssetSubtitle(b),
+    logo: <CDNImage name={CDNFiles.Stellar} props={{}} />,
   }));
-
-  // const { setRoute } = useAppStore((store) => store);
-  // const handleAddToken = () => {
-  //   setRoute(Route.ADD_TOKEN);
-  // };
 
   const NoAssets = () => {
     return (
       <div className="bluxcc:w-full bluxcc:mt-22 bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:flex-col bluxcc:gap-2">
-        <GrayCube />
+        <CDNImage name={CDNFiles.GrayCube} props={{}} />
+
         <p
           className="bluxcc:font-medium"
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
@@ -51,14 +41,34 @@ const Balances = () => {
   const tabsContent = [
     {
       label: t('assets'),
-      activeIcon: <AssetsIcon fill={appearance.accentColor} />,
-      inActiveIcon: <AssetsIcon fill={appearance.textColor} />,
+      activeIcon: (
+        <CDNImage
+          name={CDNFiles.Assets}
+          props={{ fill: appearance.accentColor }}
+        />
+      ),
+      inActiveIcon: (
+        <CDNImage
+          name={CDNFiles.Assets}
+          props={{ fill: appearance.textColor }}
+        />
+      ),
       content: !balances.length ? <NoAssets /> : <Assets assets={assets} />,
     },
     {
       label: t('tokens'),
-      activeIcon: <TokenIcon fill={appearance.accentColor} />,
-      inActiveIcon: <TokenIcon fill={appearance.textColor} />,
+      activeIcon: (
+        <CDNImage
+          name={CDNFiles.Token}
+          props={{ fill: appearance.accentColor }}
+        />
+      ),
+      inActiveIcon: (
+        <CDNImage
+          name={CDNFiles.Token}
+          props={{ fill: appearance.textColor }}
+        />
+      ),
       content: (
         <NoAssets />
         // <div className="bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:flex-col bluxcc:w-full bluxcc:relative">
@@ -82,8 +92,15 @@ const Balances = () => {
     },
     {
       label: t('nfts'),
-      activeIcon: <NFTsIcon fill={appearance.accentColor} />,
-      inActiveIcon: <NFTsIcon fill={appearance.textColor} />,
+      activeIcon: (
+        <CDNImage
+          name={CDNFiles.NFTs}
+          props={{ fill: appearance.accentColor }}
+        />
+      ),
+      inActiveIcon: (
+        <CDNImage name={CDNFiles.NFTs} props={{ fill: appearance.textColor }} />
+      ),
       content: <NoAssets />,
     },
   ];

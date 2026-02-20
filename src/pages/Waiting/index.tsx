@@ -1,8 +1,9 @@
 import { useAppStore } from '../../store';
-import { Loading } from '../../assets/Icons';
 import Button from '../../components/Button';
 import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
+import CDNFiles from '../../constants/cdnFiles';
+import CDNImage from '../../components/CDNImage';
 import handleLogos from '../../utils/walletLogos';
 import { isBackgroundDark } from '../../utils/helpers';
 
@@ -35,8 +36,8 @@ const Waiting = () => {
           {waitingStatus === 'login'
             ? t('waitingFor', { walletName: user?.authValue ?? 'wallet' })
             : t('signingWith', {
-                walletName: user?.authValue ?? 'wallet',
-              })}
+              walletName: user?.authValue ?? 'wallet',
+            })}
         </p>
         <p className="bluxcc:text-sm">
           {waitingStatus === 'login'
@@ -50,7 +51,12 @@ const Waiting = () => {
       <Button
         state="disabled"
         variant="outline"
-        startIcon={<Loading fill={appearance.accentColor} />}
+        startIcon={
+          <CDNImage
+            name={CDNFiles.Loading}
+            props={{ fill: appearance.accentColor }}
+          />
+        }
       >
         {waitingStatus === 'login' ? t('connecting') : t('signing')}
       </Button>

@@ -1,12 +1,13 @@
-import { ChipIcon, KeyIcon, ShieldIcon, WalletIcon } from '../../assets/Icons';
-import { useLang } from '../../hooks/useLang';
 import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
+import CDNFiles from '../../constants/cdnFiles';
+import CDNImage from '../../components/CDNImage';
 import AnimatedGradient from '../../utils/animatedGradient';
 
 const About = () => {
   const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
-  const icons = [ShieldIcon, KeyIcon, WalletIcon, ChipIcon];
+  const icons = [CDNFiles.Shield, CDNFiles.Key, CDNFiles.Wallet, CDNFiles.Chip];
 
   return (
     <div
@@ -21,7 +22,7 @@ const About = () => {
       >
         <div className="bluxcc:marquee_outer">
           <div className="bluxcc:marquee_track bluxcc:gap-2.5">
-            {[...icons, ...icons, ...icons, ...icons].map((Icon, idx) => (
+            {[...icons, ...icons, ...icons, ...icons].map((icon, idx) => (
               <div
                 key={idx}
                 style={{
@@ -30,7 +31,7 @@ const About = () => {
                 }}
                 className="bluxcc:size-[82px] bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:bg-primary-500"
               >
-                <Icon fill="#fff" />
+                <CDNImage name={icon} props={{ fill: '#fff' }} />
               </div>
             ))}
           </div>

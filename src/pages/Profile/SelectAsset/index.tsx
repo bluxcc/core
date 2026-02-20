@@ -3,8 +3,8 @@ import React, { useState, MouseEvent, ChangeEvent } from 'react';
 import { IAsset } from '../../../types';
 import { useAppStore } from '../../../store';
 import { useLang } from '../../../hooks/useLang';
-import { StellarLogo } from '../../../assets/Logos';
-import { QuestionMark, Search } from '../../../assets/Icons';
+import CDNFiles from '../../../constants/cdnFiles';
+import CDNImage from '../../../components/CDNImage';
 import {
   hexToRgba,
   humanizeAmount,
@@ -101,7 +101,10 @@ const SelectAsset = () => {
             } as React.CSSProperties
           }
         >
-          <Search fill={appearance.textColor} />
+          <CDNImage
+            name={CDNFiles.Search}
+            props={{ fill: appearance.textColor }}
+          />
 
           <input
             autoFocus
@@ -156,12 +159,18 @@ const SelectAsset = () => {
                 }}
               >
                 {asset.assetType === 'native' ? (
-                  <StellarLogo
-                    fill={getContrastColor(appearance.fieldBackground)}
+                  <CDNImage
+                    name={CDNFiles.Stellar}
+                    props={{
+                      fill: getContrastColor(appearance.fieldBackground),
+                    }}
                   />
                 ) : (
-                  <QuestionMark
-                    fill={getContrastColor(appearance.fieldBackground)}
+                  <CDNImage
+                    name={CDNFiles.QuestionMark}
+                    props={{
+                      fill: getContrastColor(appearance.fieldBackground),
+                    }}
                   />
                 )}
               </span>

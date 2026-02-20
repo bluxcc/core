@@ -1,16 +1,15 @@
 import { useState } from 'react';
 
+import CDNImage from '../CDNImage';
 import { IAsset } from '../../types';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
+import CDNFiles from '../../constants/cdnFiles';
 import {
   hexToRgba,
   humanizeAmount,
   getContrastColor,
 } from '../../utils/helpers';
-
-import { StellarLogo } from '../../assets/Logos';
-import { QuestionMark } from '../../assets/Icons';
 
 type IAssetWithDetails = IAsset & {
   title: string;
@@ -66,12 +65,18 @@ const Assets = ({ assets }: AssetsProps) => {
               }}
             >
               {asset.assetType === 'native' ? (
-                <StellarLogo
-                  fill={getContrastColor(appearance.fieldBackground)}
+                <CDNImage
+                  name={CDNFiles.Stellar}
+                  props={{
+                    fill: getContrastColor(appearance.fieldBackground),
+                  }}
                 />
               ) : (
-                <QuestionMark
-                  fill={getContrastColor(appearance.fieldBackground)}
+                <CDNImage
+                  name={CDNFiles.QuestionMark}
+                  props={{
+                    fill: getContrastColor(appearance.fieldBackground),
+                  }}
                 />
               )}
             </span>

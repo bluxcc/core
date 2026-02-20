@@ -1,7 +1,7 @@
-import { Copy } from '../../../../assets/Icons';
-import { StellarLogo } from '../../../../assets/Logos';
-import { useLang } from '../../../../hooks/useLang';
 import { useAppStore } from '../../../../store';
+import { useLang } from '../../../../hooks/useLang';
+import CDNFiles from '../../../../constants/cdnFiles';
+import CDNImage from '../../../../components/CDNImage';
 import { hexToRgba, humanizeAmount } from '../../../../utils/helpers';
 
 type DetailsProps = {
@@ -14,10 +14,9 @@ type DetailsProps = {
 const BalanceDetails = () => {
   const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
-  // const { setDynamicTitle } = useAppStore((store) => store);
 
   let asset = {
-    logo: <StellarLogo />,
+    logo: <CDNImage name={CDNFiles.Stellar} props={{}} />,
     assetBalance: 0.43332,
     valueInCurrency: 203,
   };
@@ -60,7 +59,6 @@ const BalanceDetails = () => {
 
       <div className="bluxcc:space-y-1">
         {details.map((item, i) => {
-          // setDynamicTitle(item.label);
           return (
             <div
               key={i}
@@ -98,7 +96,12 @@ const BalanceDetails = () => {
                 ) : (
                   item.value
                 )}
-                {item.copyable && <Copy fill={appearance.accentColor} />}
+                {item.copyable && (
+                  <CDNImage
+                    name={CDNFiles.Copy}
+                    props={{ fill: appearance.accentColor }}
+                  />
+                )}
               </span>
             </div>
           );

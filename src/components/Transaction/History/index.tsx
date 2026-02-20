@@ -1,12 +1,8 @@
 import React from 'react';
 
-import {
-  Globe,
-  Upstream,
-  Downstream,
-  MultiOperation,
-} from '../../../assets/Icons';
+import CDNImage from '../../CDNImage';
 import { useAppStore } from '../../../store';
+import CDNFiles from '../../../constants/cdnFiles';
 import { formatDate, getExplorerUrl, hexToRgba } from '../../../utils/helpers';
 
 export type TxDetail = {
@@ -34,11 +30,11 @@ const History = ({ tx }: TransactionProps) => {
   const handleActionLogo = (action: string) => {
     switch (action) {
       case 'Receive':
-        return <Downstream />;
+        return <CDNImage name={CDNFiles.Downstream} />;
       case 'Send':
-        return <Upstream />;
+        return <CDNImage name={CDNFiles.Upstream} />;
       default:
-        return <MultiOperation />;
+        return <CDNImage name={CDNFiles.MultiOperation} />;
     }
   };
 
@@ -82,7 +78,7 @@ const History = ({ tx }: TransactionProps) => {
           style={{ background: appearance.fieldBackground }}
         >
           <span className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
-            <Globe />
+            <CDNImage name={CDNFiles.Globe} />;
           </span>
         </button>
       </div>

@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 
-import { IUser, useAppStore } from '../../../store';
+import { Route } from '../../../enums';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
-import { EmailIcon } from '../../../assets/Icons';
 import Divider from '../../../components/Divider';
+import CDNFiles from '../../../constants/cdnFiles';
+import { IUser, useAppStore } from '../../../store';
+import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
-import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
-import { Route } from '../../../enums';
 import { BLUX_JWT_STORE } from '../../../constants/consts';
+import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 
 const OTP = () => {
   const t = useLang();
@@ -85,7 +86,10 @@ const OTP = () => {
         }}
         className="bluxcc:mb-6 bluxcc:flex bluxcc:h-20 bluxcc:w-20 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full bluxcc:border-2"
       >
-        <EmailIcon fill={appearance.textColor} />
+        <CDNImage
+          name={CDNFiles.Email}
+          props={{ fill: appearance.textColor }}
+        />
       </div>
 
       <div className="bluxcc:flex-col bluxcc:space-y-1 bluxcc:text-center">

@@ -1,11 +1,11 @@
 import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import QRCode from '../../../components/QRCode';
-import { LargeCopy } from '../../../assets/Icons';
-import Divider from '../../../components/Divider';
-import { copyText, hexToRgba } from '../../../utils/helpers';
-import { SmallBlux } from '../../../assets/bluxLogo';
 import { useLang } from '../../../hooks/useLang';
+import Divider from '../../../components/Divider';
+import CDNFiles from '../../../constants/cdnFiles';
+import CDNImage from '../../../components/CDNImage';
+import { copyText, hexToRgba } from '../../../utils/helpers';
 
 const Receive = () => {
   const t = useLang();
@@ -52,9 +52,12 @@ const Receive = () => {
             background: appearance.background,
           }}
         >
-          <SmallBlux
-            fill={appearance.accentColor}
-            background={appearance.fieldBackground}
+          <CDNImage
+            name={CDNFiles.SmallBlux}
+            props={{
+              fill: appearance.accentColor,
+              background: appearance.fieldBackground,
+            }}
           />
         </div>
       </div>
@@ -92,7 +95,14 @@ const Receive = () => {
           color: appearance.accentColor,
         }}
         onClick={handleCopyAddress}
-        endIcon={<LargeCopy fill={appearance.accentColor} />}
+        endIcon={
+          <CDNImage
+            name={CDNFiles.LargeCopy}
+            props={{
+              fill: appearance.accentColor,
+            }}
+          />
+        }
       >
         {t('copy_address')}
       </Button>

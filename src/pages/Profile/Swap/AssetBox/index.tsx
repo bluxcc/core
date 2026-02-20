@@ -1,7 +1,7 @@
 import { IAsset } from '../../../../types';
 import { useAppStore } from '../../../../store';
-import { StellarLogo } from '../../../../assets/Logos';
-import { ArrowDropDown, QuestionMark } from '../../../../assets/Icons';
+import CDNFiles from '../../../../constants/cdnFiles';
+import CDNImage from '../../../../components/CDNImage';
 import { getContrastColor } from '../../../../utils/helpers';
 
 type AssetBoxProps = {
@@ -38,15 +38,24 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
         className="bluxcc:flex bluxcc:mr-0.5 bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
       >
         {asset.assetType === 'native' ? (
-          <StellarLogo fill={getContrastColor(appearance.fieldBackground)} />
+          <CDNImage
+            name={CDNFiles.Stellar}
+            props={{ fill: getContrastColor(appearance.fieldBackground) }}
+          />
         ) : (
-          <QuestionMark fill={getContrastColor(appearance.fieldBackground)} />
+          <CDNImage
+            name={CDNFiles.QuestionMark}
+            props={{ fill: getContrastColor(appearance.fieldBackground) }}
+          />
         )}
       </div>
 
       <span>{asset.assetCode}</span>
 
-      <ArrowDropDown fill={appearance.accentColor} />
+      <CDNImage
+        name={CDNFiles.ArrowDropDown}
+        props={{ fill: appearance.accentColor }}
+      />
     </button>
   );
 };

@@ -1,9 +1,10 @@
 import React, { useState, MouseEvent } from 'react';
 
+import CDNImage from '../../CDNImage';
 import { useAppStore } from '../../../store';
 import { useLang } from '../../../hooks/useLang';
-import { ArrowRight } from '../../../assets/Icons';
 import { hexToRgba } from '../../../utils/helpers';
+import CDNFiles from '../../../constants/cdnFiles';
 
 type ButtonCardProps = {
   size?: 'small' | 'medium';
@@ -49,11 +50,10 @@ const ButtonCard = ({
       id="bluxcc-button"
       onClick={onClick}
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300
-          ${
-            size === 'small'
-              ? 'bluxcc:size-24 bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4'
-              : 'bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2'
-          }
+          ${size === 'small'
+          ? 'bluxcc:size-24 bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4'
+          : 'bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2'
+        }
         `}
       style={{
         fontFamily: appearance.fontFamily,
@@ -81,16 +81,14 @@ const ButtonCard = ({
       </span>
 
       <div
-        className={`${
-          size === 'small' ? 'bluxcc:mt-0' : 'bluxcc:ml-4'
-        } bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
+        className={`${size === 'small' ? 'bluxcc:mt-0' : 'bluxcc:ml-4'
+          } bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
       >
         <span
-          className={`${
-            size === 'small'
+          className={`${size === 'small'
               ? 'bluxcc:text-sm bluxcc:leading-4'
               : 'bluxcc:text-base'
-          } bluxcc:font-medium bluxcc:select-none`}
+            } bluxcc:font-medium bluxcc:select-none`}
         >
           {label}
         </span>
@@ -110,7 +108,10 @@ const ButtonCard = ({
 
       {endArrow && size === 'medium' && (
         <span className="bluxcc:ml-auto bluxcc:flex bluxcc:items-center">
-          <ArrowRight fill={`${hexToRgba(appearance.textColor, 0.7)}`} />
+          <CDNImage
+            name={CDNFiles.ArrowRight}
+            props={{ fill: `${hexToRgba(appearance.textColor, 0.7)}` }}
+          />
         </span>
       )}
     </button>

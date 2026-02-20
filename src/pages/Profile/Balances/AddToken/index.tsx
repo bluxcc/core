@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import InputField from '../../../../components/Input';
+
 import { useAppStore } from '../../../../store';
-import Divider from '../../../../components/Divider';
 import Button from '../../../../components/Button';
-import { humanizeAmount } from '../../../../utils/helpers';
-import { StellarLogo } from '../../../../assets/Logos';
 import { useLang } from '../../../../hooks/useLang';
+import Divider from '../../../../components/Divider';
+import InputField from '../../../../components/Input';
+import CDNImage from '../../../../components/CDNImage';
+import { humanizeAmount } from '../../../../utils/helpers';
+import CDNFiles from '../../../../constants/cdnFiles';
 
 const AddToken = () => {
   const t = useLang();
@@ -15,7 +17,7 @@ const AddToken = () => {
   const [errors, setErrors] = useState({});
 
   let asset = {
-    logo: <StellarLogo />,
+    logo: <CDNImage name={CDNFiles.Stellar} props={{}} />,
     name: 'xlm',
     valueInCurrency: 203,
   };
@@ -27,7 +29,7 @@ const AddToken = () => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
       setErrors((prev) => ({ ...prev, [field]: '' }));
     };
-  const handleButtonClick = () => {};
+  const handleButtonClick = () => { };
 
   return (
     <div>
