@@ -9,18 +9,19 @@ import { defaultLightTheme } from './constants/themes';
 import { UseBalancesResult } from './hooks/useBalances';
 import { syncExportedStore } from './exports/exportedStore';
 import { UseTransactionsResult } from './hooks/useTransactions';
+import Emitter, { BluxEvent, BluxEventMap } from './utils/events';
 import {
   IAsset,
   IWallet,
+  IAppearance,
   ISignMessage,
   IInternalConfig,
   ISendTransaction,
-  IAppearance,
   AuthenticateApiResponse,
 } from './types';
 
-export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
 export type AlertType = 'error' | 'success' | 'warn' | 'none' | 'copy';
+export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
 
 export interface IUser {
   address: string;
@@ -50,7 +51,15 @@ export interface ISelectAsset {
   swapFromAsset: IAsset;
 }
 
+export interface ILoginPromise {
+  isSilent: boolean;
+  promise: Promise<IUser>;
+  rejecter: (reason: any) => void;
+  resolver: (value: IUser) => void;
+}
+
 export interface IStoreProperties {
+  emitter: Emitter<BluxEventMap>;
   auth?: IAuth;
   config: IInternalConfig;
   user?: IUser;
@@ -73,6 +82,7 @@ export interface IStoreProperties {
   stellar?: IStellarConfig;
   sendTransaction?: ISendTransaction;
   signMessage?: ISignMessage;
+  login?: ILoginPromise;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
   selectAsset: ISelectAsset;
@@ -119,11 +129,15 @@ export interface IStoreMethods {
   setApiResponse: (res: AuthenticateApiResponse) => void;
   setAuth: (a: IAuth) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setLogin: (loginDetails: ILoginPromise | undefined) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
 
+const emitter = new Emitter<BluxEventMap>();
+
 export const store = createStore<IStore>((set) => ({
+  emitter,
   auth: undefined,
   config: {
     appId: '',
@@ -145,6 +159,7 @@ export const store = createStore<IStore>((set) => ({
       description: '',
     },
   },
+  login: undefined,
   stellar: undefined,
   signMessage: undefined,
   sendTransaction: undefined,
@@ -222,7 +237,7 @@ export const store = createStore<IStore>((set) => ({
       modal: { ...state.modal, isOpen: true, route: Route.WAITING },
       waitingStatus: 'sendTransaction',
     })),
-  openModal: (route: Route) =>
+  openModal: (route: Route) => {
     set((state) => ({
       ...state,
       modal: {
@@ -230,7 +245,13 @@ export const store = createStore<IStore>((set) => ({
         route,
         isOpen: true,
       },
-    })),
+    }));
+
+    getState().emitter.emit(BluxEvent.ModalOpened, {
+      modal: route,
+      reason: 'openModal',
+    });
+  },
   setDynamicTitle: (dynamicTitle: string) =>
     set((state) => ({
       ...state,
@@ -251,8 +272,16 @@ export const store = createStore<IStore>((set) => ({
       },
     })),
   closeModal: () =>
-    set((state) => ({ ...state, modal: { ...state.modal, isOpen: false } })),
-  connectWallet: (walletName: string) =>
+    set((current) => ({
+      ...current,
+      modal: { ...current.modal, isOpen: false },
+    })),
+  connectWallet: (walletName: string) => {
+    const route =
+      walletName === SupportedWallet.WalletConnect
+        ? Route.WALLET_CONNECT
+        : Route.WAITING;
+
     set((state) => ({
       ...state,
       waitingStatus: 'login',
@@ -265,12 +294,16 @@ export const store = createStore<IStore>((set) => ({
       modal: {
         ...state.modal,
         isOpen: true,
-        route:
-          walletName === SupportedWallet.WalletConnect
-            ? Route.WALLET_CONNECT
-            : Route.WAITING,
+        route,
       },
-    })),
+    }));
+
+    getState().emitter.emit(BluxEvent.ModalOpened, {
+      modal: route,
+      reason: 'connectWallet',
+      meta: { walletName },
+    });
+  },
   setIsAuthenticated: (isAuthenticated: boolean) =>
     set((state) => ({
       ...state,
@@ -308,15 +341,15 @@ export const store = createStore<IStore>((set) => ({
       },
     })),
   logoutAction: () =>
-    set((state) => ({
-      ...state,
+    set((current) => ({
+      ...current,
       user: undefined,
       waitingStatus: 'login',
       authState: {
-        ...state.authState,
+        ...current.authState,
         isAuthenticated: false,
       },
-      modal: { ...state.modal, isOpen: false },
+      modal: { ...current.modal, isOpen: false },
     })),
   setBalances: (balances: UseBalancesResult) =>
     set((state) => ({ ...state, balances })),
@@ -345,6 +378,11 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({
       ...state,
       apiResponse: res,
+    })),
+  setLogin: (loginDetails: ILoginPromise | undefined) =>
+    set((state) => ({
+      ...state,
+      login: loginDetails,
     })),
 }));
 

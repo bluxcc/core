@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { useAppStore } from '../../store';
 import Button from '../../components/Button';
 import { useLang } from '../../hooks/useLang';
@@ -16,32 +14,17 @@ const Successful = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
 
-  const { config, closeModal, waitingStatus } = store;
-  const { appearance } = config;
-
-  const { sendTransaction } = store;
-
   let hash = '';
 
-  if (typeof sendTransaction?.result === 'object') {
-    hash = sendTransaction.result.hash;
+  if (typeof store.sendTransaction?.result === 'object') {
+    hash = store.sendTransaction.result.hash;
   }
 
-  const network = sendTransaction?.options?.network || '';
+  const network = store.sendTransaction?.options?.network || '';
 
   const explorerUrl = hash
-    ? getExplorerUrl(network, config.explorer, 'transactionUrl', hash)
+    ? getExplorerUrl(network, store.config.explorer, 'transactionUrl', hash)
     : null;
-
-  useEffect(() => {
-    if (waitingStatus === 'login') {
-      setTimeout(() => {
-        closeModal();
-
-        store.setIsAuthenticated(true);
-      }, 1000);
-    }
-  }, []);
 
   const handleGoToExplorer = () => {
     if (explorerUrl) {
@@ -50,23 +33,25 @@ const Successful = () => {
   };
 
   const handleDone = () => {
-    closeModal();
+    store.closeModal();
 
-    if (waitingStatus === 'sendTransaction') {
-      if (!sendTransaction) {
+    if (store.waitingStatus === 'sendTransaction') {
+      if (!store.sendTransaction) {
         return;
       }
 
-      const { resolver, result } = sendTransaction;
+      const { resolver, result } = store.sendTransaction;
 
       if (resolver && result) {
         resolver(result);
+
+        // todo: emit event for sign message successful
 
         setTimeout(() => {
           store.cleanUp('signMessage');
         }, 150);
       }
-    } else if (waitingStatus === 'signMessage') {
+    } else if (store.waitingStatus === 'signMessage') {
       if (!store.signMessage) {
         return;
       }
@@ -75,6 +60,8 @@ const Successful = () => {
 
       if (resolver && result) {
         resolver(result);
+
+        // todo: emit event for sign tx successful
 
         setTimeout(() => {
           store.cleanUp('signMessage');
@@ -86,31 +73,33 @@ const Successful = () => {
   return (
     <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
       <div
-        style={{ background: hexToRgba(appearance.accentColor, 0.1) }}
+        style={{
+          background: hexToRgba(store.config.appearance.accentColor, 0.1),
+        }}
         className="bluxcc:mb-6 bluxcc:flex bluxcc:size-17 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full"
       >
         <CDNImage
           name={CDNFiles.GreenCheck}
-          props={{ fill: appearance.accentColor }}
+          props={{ fill: store.config.appearance.accentColor }}
         />
       </div>
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
         <p className="bluxcc:text-xl">
-          {waitingStatus === 'login'
+          {store.waitingStatus === 'login'
             ? t('connectionSuccessfulTitle')
             : t('transactionSuccessfulTitle')}
         </p>
         <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5">
-          {waitingStatus === 'login'
+          {store.waitingStatus === 'login'
             ? t('connectionSuccessfulMessage', {
-              appName: capitalizeFirstLetter(config.appName),
+              appName: capitalizeFirstLetter(store.config.appName),
             })
             : t('transactionSuccessfulMessage')}
         </p>
       </div>
 
-      {waitingStatus === 'sendTransaction' &&
+      {store.waitingStatus === 'sendTransaction' &&
         hash &&
         typeof explorerUrl == 'string' && (
           <Button
@@ -126,7 +115,7 @@ const Successful = () => {
 
       <Divider />
 
-      {waitingStatus === 'login' ? (
+      {store.waitingStatus === 'login' ? (
         <Button state="disabled" variant="outline">
           {t('loggingIn')}
         </Button>

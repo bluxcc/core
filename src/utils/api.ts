@@ -1,7 +1,7 @@
+import { IUser } from '../store';
 import { fetcher } from './helpers';
 import { AuthenticateApiResponse } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
-import { IUser } from '../store';
 
 type ApiErrorResponse = {
   status: 400 | 401 | 403 | 404 | 429 | 500;
@@ -92,6 +92,56 @@ export const apiSendOtp = async (
 
     throw new Error('Unexpected response from api');
   } catch (e: any) {
+    throw new Error('Unexpected response from api');
+  }
+};
+
+export const apiStoreWalletConnection = async (
+  appId: string,
+  walletName: string,
+  walletAddress: string,
+): Promise<boolean> => {
+  if (!appId) {
+    throw new Error('appId is missing in config.');
+  }
+
+  if (!walletAddress) {
+    throw new Error('wallet address is missing.');
+  }
+
+  try {
+    const res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        wallet: walletAddress,
+        auth_method: 'wallet',
+        auth_value: walletName,
+      }),
+    });
+
+    if (res.status === 400) {
+      throw new Error('invalid inputs');
+    }
+
+    if (res.status === 500) {
+      throw new Error('server error');
+    }
+
+    if (res.status === 429) {
+      throw new Error('too many requests');
+    }
+
+    if (res.status === 200) {
+      return true;
+    }
+
+    throw new Error('Unexpected response from api');
+  } catch (_e: any) {
     throw new Error('Unexpected response from api');
   }
 };

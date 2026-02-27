@@ -16,5 +16,6 @@ export { getStrictSendPaths } from './getStrictSendPaths';
 export { getTradeAggregation } from './getTradeAggregation';
 export { getTrades } from './getTrades';
 export { getTransactions } from './getTransactions';
+// export { readContracts } from './readContracts';
 export { networks } from './networks';
 export { switchNetwork } from './switchNetwork';

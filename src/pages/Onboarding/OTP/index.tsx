@@ -5,10 +5,13 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
-import { IUser, useAppStore } from '../../../store';
+import { BluxEvent } from '../../../utils/events';
 import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
 import { BLUX_JWT_STORE } from '../../../constants/consts';
+import { getState, IUser, useAppStore } from '../../../store';
+import loginResolver from '../../../stellar/processes/loginResolver';
+import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 
 const OTP = () => {
@@ -34,6 +37,11 @@ const OTP = () => {
   const verifyOTPRequest = async (otpString: string): Promise<void> => {
     setError(false);
 
+    getState().emitter.emit(BluxEvent.LoginStarted, {
+      method: 'email',
+      authValue: store.user?.authValue,
+    });
+
     try {
       const JWT = await apiVerifyOtp(
         store.config.appId,
@@ -45,6 +53,7 @@ const OTP = () => {
         setError(false);
 
         localStorage.setItem(BLUX_JWT_STORE, JWT);
+        setRecentLoginConfig('email', store.user?.authValue || '');
 
         store.setAuth({
           isAuthenticated: true,
@@ -60,9 +69,28 @@ const OTP = () => {
 
         setTimeout(() => {
           store.setRoute(Route.SUCCESSFUL);
+
+          setTimeout(() => {
+            store.closeModal();
+
+            loginResolver(store);
+
+            store.setIsAuthenticated(true);
+
+            const user = getState().user;
+
+            if (user) {
+              getState().emitter.emit(BluxEvent.Login, { user });
+            }
+          }, 1000);
         });
       }
-    } catch (e) {
+    } catch (cause) {
+      getState().emitter.emit(BluxEvent.LoginFailed, {
+        message: 'Email login failed.',
+        cause,
+      });
+
       setError(true);
 
       setTimeout(() => setOtp(Array(6).fill('')), 1000);

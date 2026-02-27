@@ -1,9 +1,13 @@
-import { Horizon, rpc } from '@stellar/stellar-sdk';
+import { Horizon, rpc, xdr } from '@stellar/stellar-sdk';
 
 import { getState } from '../store';
+import { BluxEvent } from '../utils/events';
 import { getNetworkRpc } from '../utils/helpers';
 
-export type Val = [any, string];
+export type Val =
+  | [value: unknown, type?: any]
+  | { value: unknown; type?: any }
+  | xdr.ScVal;
 
 export type IContractCall = {
   address: string;
@@ -68,6 +72,7 @@ export const getNetwork = (network?: string) => {
 
 export const internalSwitchNetwork = (newNetwork: string) => {
   const store = getState();
+  const previousNetwork = store.stellar?.activeNetwork || '';
 
   if (store.config.networks.length === 0) {
     throw new Error('switchNetwork must be called after createConfig');
@@ -85,4 +90,11 @@ export const internalSwitchNetwork = (newNetwork: string) => {
     activeNetwork: newNetwork,
     servers: store.stellar?.servers,
   });
+
+  if (previousNetwork && previousNetwork !== newNetwork) {
+    getState().emitter.emit(BluxEvent.NetworkChanged, {
+      previousNetwork,
+      network: newNetwork,
+    });
+  }
 };

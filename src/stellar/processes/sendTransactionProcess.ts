@@ -1,12 +1,17 @@
-import { Route, SupportedWallet } from '../../enums';
 import { IStore } from '../../store';
 import { walletsConfig } from '../../wallets';
+import { BluxEvent } from '../../utils/events';
+import { Route, SupportedWallet } from '../../enums';
 import handleTransactionSigning from './../handleTransactionSigning';
 
 const sendTransactionProcess = async (store: IStore) => {
   const sendTransaction = store.sendTransaction;
 
   if (!sendTransaction) {
+    store.emitter.emit(BluxEvent.TransactionFailed, {
+      message: 'Missing sendTransaction request in store.',
+    });
+
     store.setRoute(Route.FAILED);
 
     return;
@@ -15,6 +20,13 @@ const sendTransactionProcess = async (store: IStore) => {
   store.setRoute(Route.WAITING);
 
   if (!store.user) {
+    store.emitter.emit(BluxEvent.TransactionFailed, {
+      message: 'User is missing for transaction signing.',
+      xdr: sendTransaction.xdr,
+      network: sendTransaction.options.network,
+      shouldSubmit: sendTransaction.shouldSubmit,
+    });
+
     store.setRoute(Route.FAILED);
 
     return;
@@ -23,6 +35,13 @@ const sendTransactionProcess = async (store: IStore) => {
   const { authMethod, authValue } = store.user;
 
   if (authMethod !== 'wallet') {
+    store.emitter.emit(BluxEvent.TransactionFailed, {
+      message: 'Only wallet auth method can sign transactions.',
+      xdr: sendTransaction.xdr,
+      network: sendTransaction.options.network,
+      shouldSubmit: sendTransaction.shouldSubmit,
+    });
+
     store.setRoute(Route.FAILED);
 
     return;
@@ -32,6 +51,13 @@ const sendTransactionProcess = async (store: IStore) => {
 
   // TODO: if it's not wallet, then it's email. fix that
   if (!wallet) {
+    store.emitter.emit(BluxEvent.TransactionFailed, {
+      message: 'Could not find wallet config for transaction signing.',
+      xdr: sendTransaction.xdr,
+      network: sendTransaction.options.network,
+      shouldSubmit: sendTransaction.shouldSubmit,
+    });
+
     store.setRoute(Route.FAILED);
 
     return;
@@ -56,10 +82,32 @@ const sendTransactionProcess = async (store: IStore) => {
       Route.WAITING,
     );
 
+    if (sendTransaction.shouldSubmit) {
+      store.emitter.emit(BluxEvent.TransactionSubmitted, {
+        result,
+        xdr: sendTransaction.xdr,
+        network: sendTransaction.options.network,
+      });
+    } else if (typeof result === 'string') {
+      store.emitter.emit(BluxEvent.TransactionSigned, {
+        signedXdr: result,
+        xdr: sendTransaction.xdr,
+        network: sendTransaction.options.network,
+      });
+    }
+
     setTimeout(() => {
       store.setRoute(Route.SUCCESSFUL);
     }, 400);
-  } catch {
+  } catch (cause) {
+    store.emitter.emit(BluxEvent.TransactionFailed, {
+      message: 'Transaction signing failed.',
+      xdr: sendTransaction.xdr,
+      network: sendTransaction.options.network,
+      shouldSubmit: sendTransaction.shouldSubmit,
+      cause,
+    });
+
     setTimeout(() => {
       store.setRoute(Route.FAILED);
     }, 200);

@@ -7,6 +7,7 @@ import { Route } from '../enums';
 import { useAppStore } from '../store';
 import { getModalContent } from '../constants/routes';
 import useUpdateAccount from '../hooks/useUpdateAccount';
+import loginResolver from '../stellar/processes/loginResolver';
 import useCheckWalletNetwork from '../hooks/useCheckWalletNetwork';
 import {
   getNetworkRpc,
@@ -114,6 +115,9 @@ export const Provider = () => {
     const { waitingStatus } = store;
     const isSigning = waitingStatus === 'signMessage';
     const isSending = waitingStatus === 'sendTransaction';
+
+    loginResolver(store);
+
     if (!isSigning && !isSending) return;
 
     const resolverObject = isSigning

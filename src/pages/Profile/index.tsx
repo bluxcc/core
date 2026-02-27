@@ -4,15 +4,17 @@ import { Route } from '../../enums';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
+import { BluxEvent } from '../../utils/events';
 import CardItem from '../../components/CardItem';
+import CDNImage from '../../components/CDNImage';
+import CDNFiles from '../../constants/cdnFiles';
+import { clearRecentLoginConfig } from '../../utils/checkRecentLogins';
 import {
   copyText,
   hexToRgba,
   humanizeAmount,
   shortenAddress,
 } from '../../utils/helpers';
-import CDNImage from '../../components/CDNImage';
-import CDNFiles from '../../constants/cdnFiles';
 
 const Profile = () => {
   const t = useLang();
@@ -26,6 +28,10 @@ const Profile = () => {
 
   const handleLogout = () => {
     logoutAction();
+
+    clearRecentLoginConfig();
+
+    store.emitter.emit(BluxEvent.Logout, undefined);
   };
 
   const handleCopyAddress = () => {
