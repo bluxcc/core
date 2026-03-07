@@ -42,6 +42,9 @@ export enum Route {
   SIGN_MESSAGE = 'SIGN_MESSAGE', // User sign message view
   WALLET_CONNECT = 'WALLET_CONNECT', // User sign message view
   SELECT_ASSET = 'SELECT_ASSET',
+  FUND_ME = 'FUND_ME',
+  FUND_ME_CRYPTO = 'FUND_ME_CRYPTO',
+  ACCEPT_TERMS_AND_PRIVACY = 'ACCEPT_TERMS_AND_PRIVACY',
 }
 
 export enum CDNPreloadImages {

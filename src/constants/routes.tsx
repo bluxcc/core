@@ -20,6 +20,9 @@ import SignMessage from '../pages/SignMessage';
 import Failed from '../pages/Failed';
 import WalletConnect from '../pages/WalletConnect';
 import SelectAsset from '../pages/Profile/SelectAsset';
+import FundMeCrypto from '../pages/FundMe/FundMeCrypto';
+import FundMe from '../pages/FundMe';
+import AcceptTermsAndPrivacy from '../pages/AcceptTermsAndPrivacy';
 
 type IRoute = {
   title?: string;
@@ -104,6 +107,18 @@ export const getModalContent = (): Record<string, IRoute> => {
     [Route.WALLET_CONNECT]: {
       title: 'walletConnect',
       Component: <WalletConnect />,
+    },
+    [Route.FUND_ME]: {
+      title: 'Fund Me',
+      Component: <FundMe />,
+    },
+    [Route.FUND_ME_CRYPTO]: {
+      title: 'Fund Me Crypto',
+      Component: <FundMeCrypto />,
+    },
+    [Route.ACCEPT_TERMS_AND_PRIVACY]: {
+      title: 'ACCEPT TERMS AND PRIVACY',
+      Component: <AcceptTermsAndPrivacy />,
     },
   };
 };
