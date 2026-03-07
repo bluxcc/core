@@ -354,9 +354,28 @@ export const signMessage = (message: string, options?: { network: string }) =>
     }
   });
 
+// todo: check
+const fundMe = () => {
+  const state = getState();
+
+  if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
+    throw new Error('Blux: user is not authenticated yet.');
+  }
+
+  if (state.modal.isOpen) {
+    throw new Error('Blux modal is open elsewhere.');
+  }
+
+  if (!state.modal.isOpen) {
+    state.openModal(Route.FUND_ME);
+  }
+};
+
 export const blux = {
   login,
   logout,
+  // todo: check
+  fundMe,
   profile,
   signMessage,
   signTransaction,

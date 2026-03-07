@@ -16,6 +16,12 @@ type ApiSuccessResponse<T> = {
 
 type ApiResponse<T> = ApiErrorResponse | ApiSuccessResponse<T>;
 
+type ApiResponseAuth = {
+  privacy_policy: string;
+  terms: string;
+};
+
+// todo: double check
 export const authenticateAppId = async (
   appId: string,
 ): Promise<AuthenticateApiResponse> => {
@@ -24,29 +30,46 @@ export const authenticateAppId = async (
   }
 
   try {
-    const res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth/validate`, {
-      method: 'POST',
-      headers: {
-        [BLUX_APP_ID_HEADER]: appId,
+    const res = await fetcher<ApiResponse<ApiResponseAuth>>(
+      `${BLUX_API}/auth/validate`,
+      {
+        method: 'POST',
+        headers: {
+          [BLUX_APP_ID_HEADER]: appId,
+        },
       },
-    });
+    );
 
     if (res.status === 200) {
-      return { isValid: true, message: res.message };
+      return {
+        isValid: true,
+        message: res.message,
+        terms: res.result.terms,
+        privacyPolicy: res.result.privacy_policy,
+      };
     }
 
     if (res.status === 404) {
-      return { isValid: false, message: res.error };
+      return {
+        isValid: false,
+        message: res.error,
+        terms: '',
+        privacyPolicy: '',
+      };
     }
 
     return {
       isValid: false,
       message: 'Unexpected response from api.',
+      terms: '',
+      privacyPolicy: '',
     };
   } catch (e: any) {
     return {
       isValid: false,
       message: 'Unexpected response from api. ' + e.message,
+      terms: '',
+      privacyPolicy: '',
     };
   }
 };

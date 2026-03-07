@@ -28,9 +28,9 @@ export enum BluxEvent {
   // ProfileSwapSucceeded = 'blux:profile_swap_succeeded', // payload: ITransaction & { swap: ISwapDetails }
   // ProfileSwapFailed = 'blux:profile_swap_failed', // payload: IErrorPayload & { swap?: ISwapDetails }
   //
-  // // ApprovalRequested = 'blux:approval_requested', // payload: { token: IToken; spender: string; amount?: string }
-  // // ApprovalSucceeded = 'blux:approval_succeeded', // payload: { token: IToken; spender: string }
-  // // ApprovalFailed = 'blux:approval_failed', // payload: IErrorPayload
+  // ApprovalRequested = 'blux:approval_requested', // payload: { token: IToken; spender: string; amount?: string }
+  // ApprovalSucceeded = 'blux:approval_succeeded', // payload: { token: IToken; spender: string }
+  // ApprovalFailed = 'blux:approval_failed', // payload: IErrorPayload
   //
   SignMessageRequested = 'blux:sign_message_requested', // payload: { message: string; meta?: any }
   SignMessageSucceeded = 'blux:sign_message_succeeded', // payload: { signature: string; meta?: any }

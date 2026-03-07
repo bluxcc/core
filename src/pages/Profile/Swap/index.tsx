@@ -149,13 +149,17 @@ const Swap = () => {
 
         setLoading(false);
 
-        if (result.response.records.length === 0) {
+        const records = result.response.records.filter(
+          (x) => x.path.length < 2,
+        );
+
+        if (records.length === 0) {
           setError({
             field: 'both',
             message: 'Could not find path. Try again.',
           });
         } else {
-          const swapDetails = result.response.records[0];
+          const swapDetails = records[0];
 
           setRate({
             rate:
@@ -188,13 +192,18 @@ const Swap = () => {
 
         setLoading(false);
 
-        if (result.response.records.length === 0) {
+        // todo: double check
+        const records = result.response.records.filter(
+          (x) => x.path.length < 2,
+        );
+
+        if (records.length === 0) {
           setError({
             field: 'both',
             message: 'Could not find path. Try again.',
           });
         } else {
-          const swapDetails = result.response.records[0];
+          const swapDetails = records[0];
 
           setRate({
             rate:
