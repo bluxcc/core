@@ -117,7 +117,7 @@ export const getModalContent = (): Record<string, IRoute> => {
       Component: <FundMeCrypto />,
     },
     [Route.ACCEPT_TERMS_AND_PRIVACY]: {
-      title: 'ACCEPT TERMS AND PRIVACY',
+      title: 'acceptTermsAndPrivacy',
       Component: <AcceptTermsAndPrivacy />,
     },
   };

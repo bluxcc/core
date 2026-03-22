@@ -1,8 +1,14 @@
-import { IStore } from '../../store';
+import { getState } from '../../store';
 
-const loginResolver = (store: IStore) => {
+const loginResolver = () => {
+  const store = getState();
+
   if (store.login) {
-    if (store.user) {
+    if (
+      store.user &&
+      !!store.user.address &&
+      store.authState.isAuthenticated
+    ) {
       store.login.resolver(store.user);
     } else {
       store.login.rejecter('BLUX: Failed to login!');

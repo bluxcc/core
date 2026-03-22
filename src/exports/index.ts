@@ -2,6 +2,7 @@ import { getState as getStoreState } from '../store';
 import { BluxEventMap, ReadOnlyEmitter } from '../utils/events';
 
 export { Asset } from '@stellar/stellar-sdk';
+export * as StellarSdk from '@stellar/stellar-sdk';
 export * from './core';
 export { blux } from './blux';
 export { BluxEvent } from '../utils/events';

@@ -116,7 +116,7 @@ export const Provider = () => {
     const isSigning = waitingStatus === 'signMessage';
     const isSending = waitingStatus === 'sendTransaction';
 
-    loginResolver(store);
+    loginResolver();
 
     if (!isSigning && !isSending) return;
 

@@ -1,30 +1,81 @@
 import {
+  rpc,
+  Contract,
+  BASE_FEE,
+  TimeoutInfinite,
+  TransactionBuilder,
+} from '@stellar/stellar-sdk';
+import {
   getNetwork,
   IContractCall,
   checkConfigCreated,
-  CallContractsOptions,
+  WriteContractsOptions,
 } from '../utils';
 
-// u8, u16, u24, u32, u40, u48, u56, u64, u72, u80, u88, u96, u104, u112, u120, u128
-// i8, i16, i24, i32, i40, i48, i56, i64, i72, i80, i88, i96, i104, i112, i120, i128
-// Address
-// Bytes
-// Enum?
-// Object?
+const NULL_ACCOUNT = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
 
-// export type Val = [any, string];
-//
-// export const writeContracts = async (
-//   calls: IContractCall[],
-//   options: CallContractsOptions,
-// ) => {
-//   checkConfigCreated();
-//
-//   const { soroban } = getNetwork(options.network);
-//
-//   const result = await Promise.all(
-//     calls.map((call) => soroban.getTransaction(call)),
-//   );
-//
-//   return result;
-// };
+// todo: optoin for finalization
+// todo: check if it is possible to write multiple times in a single transaction
+// todo: add caller here.
+export const writeContracts = async (
+  calls: IContractCall[],
+  options: WriteContractsOptions = {},
+) => {
+  if (!checkConfigCreated()) {
+    throw new Error('writeContracts must be called after createConfig');
+  }
+
+  if (!Array.isArray(calls)) {
+    throw new Error('calls must be an array of IContractWriteCall');
+  }
+
+  if (calls.length === 0) {
+    return [];
+  }
+
+  const { soroban, networkPassphrase } = getNetwork(options.network);
+
+  // todo: getState().user.address OR signer in
+  // TODO: fix the TransactionBuilder ..
+  const txBuilder = new TransactionBuilder(NULL_ACCOUNT, {
+    fee: BASE_FEE,
+    networkPassphrase,
+  });
+
+  calls.forEach((call, callIndex) => {
+    if (!call || !call.address) {
+      throw new Error(`calls[${callIndex}].address is required`);
+    }
+    if (!call.fn || call.fn.trim() === '') {
+      throw new Error(`calls[${callIndex}].fn is required`);
+    }
+
+    const contract = new Contract(call.address);
+    const args = call.args || [];
+
+    txBuilder.addOperation(contract.call(call.fn, ...args));
+  });
+
+  txBuilder.setTimeout(TimeoutInfinite);
+  const transaction = txBuilder.build();
+
+  try {
+    const simulation = await soroban.simulateTransaction(transaction);
+
+    if (rpc.Api.isSimulationError(simulation)) {
+      throw new Error(
+        `Contract call simulation failed at calls[${calls.findIndex((c) => simulation.error.includes(c.fn))}].${calls.find((c) => simulation.error.includes(c.fn))?.fn}: ${simulation.error}`,
+      );
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to simulate transaction: ${error.message}`);
+  }
+
+  try {
+    const result = await soroban.sendTransaction(transaction);
+
+    return result;
+  } catch (error: any) {
+    throw new Error(`Failed to send transaction: ${error.message}`);
+  }
+};

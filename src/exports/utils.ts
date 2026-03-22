@@ -4,18 +4,19 @@ import { getState } from '../store';
 import { BluxEvent } from '../utils/events';
 import { getNetworkRpc } from '../utils/helpers';
 
-export type Val =
-  | [value: unknown, type?: any]
-  | { value: unknown; type?: any }
-  | xdr.ScVal;
-
 export type IContractCall = {
   address: string;
   fn: string;
-  args: Val[];
+  args: xdr.ScVal[];
 };
 
-export type CallContractsOptions = {
+export type ReadContractsOptions = {
+  // todo: does it matter who sends the request for a read call?
+  network?: string;
+};
+
+export type WriteContractsOptions = {
+  // todo: more things here?
   network?: string;
 };
 

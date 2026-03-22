@@ -10,7 +10,7 @@ import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
 import { BLUX_JWT_STORE } from '../../../constants/consts';
 import { getState, IUser, useAppStore } from '../../../store';
-import loginResolver from '../../../stellar/processes/loginResolver';
+import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 
@@ -68,20 +68,18 @@ const OTP = () => {
         );
 
         setTimeout(() => {
+          if (!getState().modal.isOpen) {
+            return;
+          }
+
           store.setRoute(Route.SUCCESSFUL);
 
           setTimeout(() => {
-            store.closeModal();
-
-            loginResolver(store);
-
-            store.setIsAuthenticated(true);
-
-            const user = getState().user;
-
-            if (user) {
-              getState().emitter.emit(BluxEvent.Login, { user });
+            if (!getState().modal.isOpen) {
+              return;
             }
+
+            continueLoginProcess();
           }, 1000);
         });
       }

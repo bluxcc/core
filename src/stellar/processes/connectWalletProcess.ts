@@ -1,10 +1,10 @@
 import { Route } from '../../enums';
 import { IWallet } from '../../types';
-import loginResolver from './loginResolver';
 import { getState, IStore } from '../../store';
 import { BluxEvent } from '../../utils/events';
 import { apiStoreWalletConnection } from '../../utils/api';
 import { setRecentLoginConfig } from '../../utils/checkRecentLogins';
+import continueLoginProcess from './continueLoginProcess';
 import {
   getWalletNetwork,
   setRecentConnectionMethod,
@@ -34,21 +34,20 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
       setRecentLoginConfig('wallet', wallet.name);
 
       setTimeout(() => {
+        if (!getState().modal.isOpen) {
+          return;
+        }
+
         store.connectWalletSuccessful(publicKey, passphrase);
 
         store.setRoute(Route.SUCCESSFUL);
 
         setTimeout(() => {
-          store.closeModal();
-
-          loginResolver(store);
-          store.setIsAuthenticated(true);
-
-          const user = getState().user;
-
-          if (user) {
-            getState().emitter.emit(BluxEvent.Login, { user });
+          if (!getState().modal.isOpen) {
+            return;
           }
+
+          continueLoginProcess();
         }, 1000);
       }, 500);
     } else {

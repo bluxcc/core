@@ -66,6 +66,10 @@ const translations: Translations = {
     en: 'Wallet Connect',
     es: 'Conectar billetera',
   },
+  acceptTermsAndPrivacy: {
+    en: 'Terms & Privacy',
+    es: 'Términos y privacidad',
+  },
   // General / Shared
   loading: {
     en: 'Loading',
@@ -112,6 +116,30 @@ const translations: Translations = {
   poweredByBlux: {
     en: 'Powered by Blux.cc',
     es: 'Desarrollado por Blux.cc',
+  },
+  reviewAndAcceptPrompt: {
+    en: 'Review the documents below, then agree to continue.',
+    es: 'Revisa los documentos a continuación y luego acepta para continuar.',
+  },
+  termsOfService: {
+    en: 'Terms of Service',
+    es: 'Términos de servicio',
+  },
+  privacyPolicy: {
+    en: 'Privacy Policy',
+    es: 'Política de privacidad',
+  },
+  openLink: {
+    en: 'Open link',
+    es: 'Abrir enlace',
+  },
+  noLegalLinksProvided: {
+    en: 'No legal links were provided for this app.',
+    es: 'No se proporcionaron enlaces legales para esta aplicación.',
+  },
+  iAgree: {
+    en: 'I agree',
+    es: 'Acepto',
   },
 
   // Success modal
