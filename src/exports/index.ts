@@ -17,5 +17,5 @@ export const setAppearance = getStoreState().setAppearance;
 export const events: ReadOnlyEmitter<BluxEventMap> = {
   on: (event, handler) => getStoreState().emitter.on(event, handler),
   off: (event, handler) => getStoreState().emitter.off(event, handler),
-  once: (event, handler) => getStoreState().emitter.once(event, handler),
+  // once: (event, handler) => getStoreState().emitter.once(event, handler),
 };
