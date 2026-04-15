@@ -108,7 +108,7 @@ const logout = () => {
   localStorage.removeItem(BLUX_JWT_STORE);
   clearRecentLoginConfig();
 
-  getState().emitter.emit(BluxEvent.Logout, undefined);
+  getState().emitter.emit(BluxEvent.LoggedOut, undefined);
 };
 
 const profile = () => {
@@ -134,24 +134,12 @@ const _signTransaction = (
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
-      state.emitter.emit(BluxEvent.TransactionFailed, {
-        message: 'User is not authenticated.',
-        xdr,
-        shouldSubmit,
-      });
-
       reject(new Error('User is not authenticated.'));
 
       return;
     }
 
     if (state.modal.isOpen) {
-      state.emitter.emit(BluxEvent.TransactionFailed, {
-        message: 'Blux modal is open elsewhere.',
-        xdr,
-        shouldSubmit,
-      });
-
       reject(new Error('Blux modal is open elsewhere.'));
 
       return;
@@ -164,13 +152,6 @@ const _signTransaction = (
     }
 
     if (!getTransactionDetails(xdr, network)) {
-      state.emitter.emit(BluxEvent.TransactionFailed, {
-        message: 'Invalid XDR.',
-        xdr,
-        network,
-        shouldSubmit,
-      });
-
       reject('Invalid XDR');
 
       return;
@@ -181,13 +162,6 @@ const _signTransaction = (
     );
 
     if (!foundWallet) {
-      state.emitter.emit(BluxEvent.TransactionFailed, {
-        message: 'Could not find the connected wallet.',
-        xdr,
-        network,
-        shouldSubmit,
-      });
-
       throw new Error('Could not find the connected wallet.');
     }
 
@@ -203,12 +177,6 @@ const _signTransaction = (
       shouldSubmit,
     };
 
-    state.emitter.emit(BluxEvent.SignTransactionRequested, {
-      xdr,
-      network,
-      shouldSubmit,
-    });
-
     state.setSendTransaction(transactionObject, state.config.showWalletUIs);
 
     if (!state.config.showWalletUIs) {
@@ -221,31 +189,9 @@ const _signTransaction = (
         transactionObject.shouldSubmit,
       )
         .then((result) => {
-          if (transactionObject.shouldSubmit) {
-            state.emitter.emit(BluxEvent.TransactionSubmitted, {
-              result,
-              xdr,
-              network,
-            });
-          } else if (typeof result === 'string') {
-            state.emitter.emit(BluxEvent.TransactionSigned, {
-              signedXdr: result,
-              xdr,
-              network,
-            });
-          }
-
           resolve(result);
         })
         .catch((cause) => {
-          state.emitter.emit(BluxEvent.TransactionFailed, {
-            message: 'Transaction signing failed.',
-            xdr,
-            network,
-            shouldSubmit,
-            cause,
-          });
-
           reject(cause);
         });
 
@@ -272,22 +218,12 @@ export const signMessage = (message: string, options?: { network: string }) =>
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
-      state.emitter.emit(BluxEvent.SignMessageFailed, {
-        message: 'User is not authenticated.',
-        messageToSign: message,
-      });
-
       reject(new Error('User is not authenticated.'));
 
       return;
     }
 
     if (state.modal.isOpen) {
-      state.emitter.emit(BluxEvent.SignMessageFailed, {
-        message: 'Blux modal is open elsewhere.',
-        messageToSign: message,
-      });
-
       reject(new Error('Blux modal is open elsewhere.'));
 
       return;
@@ -304,19 +240,8 @@ export const signMessage = (message: string, options?: { network: string }) =>
     );
 
     if (!foundWallet) {
-      state.emitter.emit(BluxEvent.SignMessageFailed, {
-        message: 'Could not find the connected wallet.',
-        messageToSign: message,
-        network,
-      });
-
       throw new Error('Could not find the connected wallet.');
     }
-
-    state.emitter.emit(BluxEvent.SignMessageRequested, {
-      message,
-      network,
-    });
 
     const signMessageDetails: ISignMessage = {
       message,
@@ -331,22 +256,9 @@ export const signMessage = (message: string, options?: { network: string }) =>
     if (!state.config.showWalletUIs) {
       handleSignMessage(foundWallet, message, state!.user.address, network)
         .then((result) => {
-          state.emitter.emit(BluxEvent.SignMessageSucceeded, {
-            signature: result,
-            message,
-            network,
-          });
-
           resolve(result);
         })
         .catch((cause) => {
-          state.emitter.emit(BluxEvent.SignMessageFailed, {
-            message: 'Message signing failed.',
-            messageToSign: message,
-            network,
-            cause,
-          });
-
           reject(cause);
         });
 

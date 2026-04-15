@@ -31,7 +31,7 @@ const Profile = () => {
 
     clearRecentLoginConfig();
 
-    store.emitter.emit(BluxEvent.Logout, undefined);
+    store.emitter.emit(BluxEvent.LoggedOut, undefined);
   };
 
   const handleCopyAddress = () => {

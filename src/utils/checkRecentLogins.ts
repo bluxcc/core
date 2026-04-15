@@ -97,18 +97,9 @@ export const checkRecentLogins = async (): Promise<boolean> => {
   }
 
   try {
-    getState().emitter.emit(BluxEvent.LoginStarted, {
-      method: 'silent',
-      authValue: wallet.name,
-    });
-
     const publicKey = await wallet.connect();
 
     if (!publicKey || publicKey.trim() === '') {
-      getState().emitter.emit(BluxEvent.LoginFailed, {
-        message: 'Silent login returned an empty public key.',
-      });
-
       return false;
     }
 
@@ -130,18 +121,13 @@ export const checkRecentLogins = async (): Promise<boolean> => {
     const user = getState().user;
 
     if (user) {
-      getState().emitter.emit(BluxEvent.Login, { user });
+      getState().emitter.emit(BluxEvent.LoggedIn, { user });
     }
 
     setRecentLoginConfig('wallet', wallet.name as SupportedWallet);
 
     return true;
   } catch (cause) {
-    getState().emitter.emit(BluxEvent.LoginFailed, {
-      message: 'Silent wallet login failed.',
-      cause,
-    });
-
     return false;
   }
 };

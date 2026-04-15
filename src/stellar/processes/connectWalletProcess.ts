@@ -1,21 +1,15 @@
 import { Route } from '../../enums';
 import { IWallet } from '../../types';
 import { getState, IStore } from '../../store';
-import { BluxEvent } from '../../utils/events';
+import continueLoginProcess from './continueLoginProcess';
 import { apiStoreWalletConnection } from '../../utils/api';
 import { setRecentLoginConfig } from '../../utils/checkRecentLogins';
-import continueLoginProcess from './continueLoginProcess';
 import {
   getWalletNetwork,
   setRecentConnectionMethod,
 } from '../../utils/helpers';
 
 const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
-  getState().emitter.emit(BluxEvent.LoginStarted, {
-    method: 'wallet',
-    authValue: wallet.name,
-  });
-
   store.connectWallet(wallet.name);
 
   try {
@@ -50,17 +44,8 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
           continueLoginProcess();
         }, 1000);
       }, 500);
-    } else {
-      getState().emitter.emit(BluxEvent.LoginFailed, {
-        message: 'Wallet returned an empty public key.',
-      });
     }
   } catch (cause) {
-    getState().emitter.emit(BluxEvent.LoginFailed, {
-      message: 'Wallet connection failed.',
-      cause,
-    });
-
     store.setRoute(Route.FAILED);
   }
 };

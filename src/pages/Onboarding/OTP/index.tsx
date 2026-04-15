@@ -5,7 +5,6 @@ import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
-import { BluxEvent } from '../../../utils/events';
 import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
 import { BLUX_JWT_STORE } from '../../../constants/consts';
@@ -36,11 +35,6 @@ const OTP = () => {
 
   const verifyOTPRequest = async (otpString: string): Promise<void> => {
     setError(false);
-
-    getState().emitter.emit(BluxEvent.LoginStarted, {
-      method: 'email',
-      authValue: store.user?.authValue,
-    });
 
     try {
       const JWT = await apiVerifyOtp(
@@ -84,11 +78,6 @@ const OTP = () => {
         });
       }
     } catch (cause) {
-      getState().emitter.emit(BluxEvent.LoginFailed, {
-        message: 'Email login failed.',
-        cause,
-      });
-
       setError(true);
 
       setTimeout(() => setOtp(Array(6).fill('')), 1000);

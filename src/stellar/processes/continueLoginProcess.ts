@@ -14,7 +14,7 @@ export const completeLoginProcess = () => {
   const nextState = getState();
 
   if (nextState.user) {
-    nextState.emitter.emit(BluxEvent.Login, { user: nextState.user });
+    nextState.emitter.emit(BluxEvent.LoggedIn, { user: nextState.user });
   }
 };
 
