@@ -39,19 +39,8 @@ export const ledgerConfig: IWallet = {
     throw new Error('ledger does not support the signAuthEntry function');
   },
 
-  signMessage: async (message, _) => {
-    try {
-      // TODO: complete the ledger signMessage flow using SEP-10
-      const messageInBuffer = Buffer.from(message);
-      const transport = await TransportWebUSB.default.create();
-      const app = new Str.default(transport);
-
-      const { signature } = await app.signHash("44'/148'/0'", messageInBuffer);
-
-      return signature.toString();
-    } catch (error) {
-      throw new Error('Failed to sign the transaction with Ledger.');
-    }
+  signMessage: async (_message, _) => {
+    throw new Error('Failed to sign the transaction with Ledger.');
   },
 
   signTransaction: async (xdrStr: string, options): Promise<string> => {

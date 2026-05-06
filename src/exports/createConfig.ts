@@ -80,6 +80,12 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     );
   }
 
+  if (config.lang && config.lang.trim().toLowerCase() !== 'en') {
+    console.warn(
+      'BLUX: Only EN is currently supported. Falling back to default language.',
+    );
+  }
+
   init(element);
 
   let excludeWallets = config.excludeWallets || ['lobstr'];
@@ -102,7 +108,8 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     },
     defaultNetwork: '',
     promptOnWrongNetwork,
-    lang: config.lang || 'en',
+    // lang: config.lang || 'en',
+    lang: 'en',
     explorer: config.explorer || 'stellarchain',
     loginMethods: config.loginMethods || ['wallet'],
     showWalletUIs:

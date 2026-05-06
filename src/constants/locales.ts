@@ -9,451 +9,432 @@ export type Translations = {
 export type TranslationKey = keyof typeof translations;
 
 const translations: Translations = {
-  // Page titles
   logInOrSignUp: {
     en: 'Log in or Sign up',
-    es: 'Inicia sesión o regístrate',
+    // es: 'Inicia sesión o regístrate',
   },
   profile: {
     en: 'Profile',
-    es: 'Perfil',
+    // es: 'Perfil',
   },
   confirmation: {
     en: 'Confirmation',
-    es: 'Confirmación',
+    // es: 'Confirmación',
   },
   send: {
     en: 'Send',
-    es: 'Enviar',
+    // es: 'Enviar',
   },
   activity: {
     en: 'Activity',
-    es: 'Actividad',
+    // es: 'Actividad',
   },
   swap: {
     en: 'Swap',
-    es: 'Intercambiar',
+    // es: 'Intercambiar',
   },
   receive: {
     en: 'Receive',
-    es: 'Recibir',
+    // es: 'Recibir',
   },
   wrongNetwork: {
     en: 'Wrong Network',
-    es: 'Red incorrecta',
+    // es: 'Red incorrecta',
   },
   balances: {
     en: 'Balances',
-    es: 'Saldos',
+    // es: 'Saldos',
   },
   whatIsBlux: {
     en: 'What is Blux',
-    es: 'Qué es Blux',
+    // es: 'Qué es Blux',
   },
   addToken: {
     en: 'Add Token',
-    es: 'Agregar token',
+    // es: 'Agregar token',
   },
   signMessage: {
     en: 'Sign Message',
-    es: 'Firmar mensaje',
+    // es: 'Firmar mensaje',
   },
   selectAsset: {
     en: 'Select Asset',
-    es: 'Seleccionar activo',
+    // es: 'Seleccionar activo',
   },
   walletConnect: {
     en: 'Wallet Connect',
-    es: 'Conectar billetera',
+    // es: 'Conectar billetera',
   },
   acceptTermsAndPrivacy: {
     en: 'Terms & Privacy',
-    es: 'Términos y privacidad',
+    // es: 'Términos y privacidad',
   },
-  // General / Shared
   loading: {
     en: 'Loading',
-    es: 'Cargando',
+    // es: 'Cargando',
   },
   tryAgain: {
     en: 'Try again',
-    es: 'Intenta de nuevo',
+    // es: 'Intenta de nuevo',
   },
   connecting: {
     en: 'Connecting',
-    es: 'Conectando',
+    // es: 'Conectando',
   },
   signing: {
     en: 'Signing',
-    es: 'Firmando',
+    // es: 'Firmando',
   },
   or: {
     en: 'or',
-    es: 'o',
+    // es: 'o',
   },
   recent: {
     en: 'Recent',
-    es: 'Reciente',
+    // es: 'Reciente',
   },
-
-  // Onboarding Page
   allStellarWallets: {
     en: 'All Stellar wallets',
-    es: 'Todas las carteras Stellar',
+    // es: 'Todas las carteras Stellar',
   },
   email: {
     en: 'Email',
-    es: 'Correo electrónico',
+    // es: 'Correo electrónico',
   },
   logInWithPasskey: {
     en: 'Log in with Passkey',
-    es: 'Iniciar sesión con llave de acceso',
+    // es: 'Iniciar sesión con llave de acceso',
   },
   submit: {
     en: 'Submit',
-    es: 'Enviar',
+    // es: 'Enviar',
   },
   poweredByBlux: {
     en: 'Powered by Blux.cc',
-    es: 'Desarrollado por Blux.cc',
+    // es: 'Desarrollado por Blux.cc',
   },
   reviewAndAcceptPrompt: {
     en: 'Review the documents below, then agree to continue.',
-    es: 'Revisa los documentos a continuación y luego acepta para continuar.',
+    // es: 'Revisa los documentos a continuación y luego acepta para continuar.',
   },
   termsOfService: {
     en: 'Terms of Service',
-    es: 'Términos de servicio',
+    // es: 'Términos de servicio',
   },
   privacyPolicy: {
     en: 'Privacy Policy',
-    es: 'Política de privacidad',
+    // es: 'Política de privacidad',
   },
   openLink: {
     en: 'Open link',
-    es: 'Abrir enlace',
+    // es: 'Abrir enlace',
   },
   noLegalLinksProvided: {
     en: 'No legal links were provided for this app.',
-    es: 'No se proporcionaron enlaces legales para esta aplicación.',
+    // es: 'No se proporcionaron enlaces legales para esta aplicación.',
   },
   iAgree: {
     en: 'I agree',
-    es: 'Acepto',
+    // es: 'Acepto',
   },
-
-  // Success modal
   connectionSuccessfulTitle: {
     en: 'Connection Successful',
-    es: 'Conexión exitosa',
+    // es: 'Conexión exitosa',
   },
   transactionSuccessfulTitle: {
     en: 'Transaction Successful',
-    es: 'Transacción exitosa',
+    // es: 'Transacción exitosa',
   },
   connectionSuccessfulMessage: {
     en: 'Your account has been successfully connected to ${appName}',
-    es: 'Tu cuenta se ha conectado correctamente a ${appName}',
+    // es: 'Tu cuenta se ha conectado correctamente a ${appName}',
   },
   transactionSuccessfulMessage: {
     en: 'Your transaction was successfully completed',
-    es: 'Tu transacción se completó con éxito',
+    // es: 'Tu transacción se completó con éxito',
   },
   seeInExplorer: {
     en: 'See in explorer',
-    es: 'Ver en el explorador',
+    // es: 'Ver en el explorador',
   },
   loggingIn: {
     en: 'Logging In',
-    es: 'Iniciando sesión',
+    // es: 'Iniciando sesión',
   },
   done: {
     en: 'Done',
-    es: 'Hecho',
+    // es: 'Hecho',
   },
-
-  // Sign transaction modal
   signTransactionPrompt: {
     en: 'wants your permission to approve the following transaction.',
-    es: 'quiere tu permiso para aprobar la siguiente transacción.',
+    // es: 'quiere tu permiso para aprobar la siguiente transacción.',
   },
   invalidXdr: {
     en: 'Invalid XDR',
-    es: 'XDR inválido',
+    // es: 'XDR inválido',
   },
   lobstrWarning: {
     en: 'Ensure that your LOBSTR wallet is set to the ${network} network. Otherwise, the transaction will definitely fail.',
-    es: 'Asegúrate de que tu cartera LOBSTR esté configurada en la red ${network}. De lo contrario, la transacción fallará.',
+    // es: 'Asegúrate de que tu cartera LOBSTR esté configurada en la red ${network}. De lo contrario, la transacción fallará.',
   },
   yourWallet: {
     en: 'Your wallet',
-    es: 'Tu cartera',
+    // es: 'Tu cartera',
   },
   noAddressFound: {
     en: 'No address found',
-    es: 'No se encontró ninguna dirección',
+    // es: 'No se encontró ninguna dirección',
   },
   approve: {
     en: 'Approve',
-    es: 'Aprobar',
+    // es: 'Aprobar',
   },
-
-  // Activity Page
   loadingActivity: {
     en: 'Loading activity...',
-    es: 'Cargando actividad...',
+    // es: 'Cargando actividad...',
   },
   noActivityFound: {
     en: 'No activity found',
-    es: 'No se encontró actividad',
+    // es: 'No se encontró actividad',
   },
   multiOperation: {
     en: 'Multi Operation',
-    es: 'Operación múltiple',
+    // es: 'Operación múltiple',
   },
   pathPaymentDescription: {
     en: 'Path payment of ${amount} ${asset}',
-    es: 'Pago por ruta de ${amount} ${asset}',
+    // es: 'Pago por ruta de ${amount} ${asset}',
   },
   seeAllInExplorer: {
     en: 'See all in explorer',
-    es: 'Ver todo en el explorador',
+    // es: 'Ver todo en el explorador',
   },
-
-  // ConfirmCode Page
   enterConfirmationCodeTitle: {
     en: 'Enter confirmation code',
-    es: 'Introduce el código de confirmación',
+    // es: 'Introduce el código de confirmación',
   },
   enterConfirmationCodeHelp: {
     en: 'Please check your email and enter confirmation code below',
-    es: 'Por favor revisa tu correo electrónico e introduce el código de confirmación abajo',
+    // es: 'Por favor revisa tu correo electrónico e introduce el código de confirmación abajo',
   },
   invalidCodeError: {
     en: 'Invalid code, please try again.',
-    es: 'Código inválido, por favor intenta de nuevo.',
+    // es: 'Código inválido, por favor intenta de nuevo.',
   },
   resendCode: {
     en: 'Resend code',
-    es: 'Reenviar código',
+    // es: 'Reenviar código',
   },
-
-  // Profile Page
   copied: {
     en: 'Copied!',
-    es: '¡Copiado!',
+    // es: '¡Copiado!',
   },
   logout: {
     en: 'Logout',
-    es: 'Cerrar sesión',
+    // es: 'Cerrar sesión',
   },
-
-  // SelectAssets Component
   search: {
     en: 'Search',
-    es: 'Buscar',
+    // es: 'Buscar',
   },
   noAssetsFound: {
     en: 'No assets found',
-    es: 'No se encontraron activos',
+    // es: 'No se encontraron activos',
   },
-
-  // SendForm Page
   amount: {
     en: 'Amount',
-    es: 'Cantidad',
+    // es: 'Cantidad',
   },
   max: {
     en: 'Max',
-    es: 'Máx',
+    // es: 'Máx',
   },
   to: {
     en: 'To',
-    es: 'A',
+    // es: 'A',
   },
   enterAddress: {
     en: 'Enter address',
-    es: 'Introduce la dirección',
+    // es: 'Introduce la dirección',
   },
   addressRequired: {
     en: 'Address is required',
-    es: 'La dirección es obligatoria',
+    // es: 'La dirección es obligatoria',
   },
   addressInvalid: {
     en: 'Address is invalid',
-    es: 'La dirección es inválida',
+    // es: 'La dirección es inválida',
   },
   inactiveAccount: {
     en: 'Account is inActive',
-    es: 'La cuenta está inactiva',
+    // es: 'La cuenta está inactiva',
   },
   memo: {
     en: 'Memo',
-    es: 'Memo',
+    // es: 'Memo',
   },
   enterMemo: {
     en: 'Enter Memo',
-    es: 'Introduce una Memo',
+    // es: 'Introduce una Memo',
   },
   optional: {
     en: 'optional',
-    es: 'opcional',
+    // es: 'opcional',
   },
   paste: {
     en: 'Paste',
-    es: 'Pegar',
+    // es: 'Pegar',
   },
   amountRequired: {
     en: 'Amount is required',
-    es: 'La cantidad es obligatoria',
+    // es: 'La cantidad es obligatoria',
   },
   amountExceedsBalance: {
     en: 'Amount is greater than max balance',
-    es: 'La cantidad excede el saldo máximo',
+    // es: 'La cantidad excede el saldo máximo',
   },
   sendButton: {
     en: 'Send',
-    es: 'Enviar',
+    // es: 'Enviar',
   },
-
-  // Waiting Modal
   loginFailed: {
     en: 'Login failed',
-    es: 'Fallo al iniciar sesión',
+    // es: 'Fallo al iniciar sesión',
   },
   signingFailed: {
     en: 'Signing with ${walletName} failed',
-    es: 'La firma con ${walletName} falló',
+    // es: 'La firma con ${walletName} falló',
   },
   waitingFor: {
     en: 'Waiting for ${walletName}',
-    es: 'Esperando a ${walletName}',
+    // es: 'Esperando a ${walletName}',
   },
   signingWith: {
     en: 'Signing with ${walletName}',
-    es: 'Firmando con ${walletName}',
+    // es: 'Firmando con ${walletName}',
   },
   loginRetryMessage: {
     en: 'Please try logging in again.',
-    es: 'Por favor intenta iniciar sesión nuevamente.',
+    // es: 'Por favor intenta iniciar sesión nuevamente.',
   },
   signingRetryMessage: {
     en: 'Please try signing again.',
-    es: 'Por favor intenta firmar nuevamente.',
+    // es: 'Por favor intenta firmar nuevamente.',
   },
   acceptConnection: {
     en: 'Accept connection',
-    es: 'Aceptar conexión',
+    // es: 'Aceptar conexión',
   },
   signRequestInWallet: {
     en: 'Sign the request in your wallet',
-    es: 'Firma la solicitud en tu cartera',
+    // es: 'Firma la solicitud en tu cartera',
   },
 
   // Wrong Network Page
   wrongNetworkMessage: {
     en: 'You’re currently connected to the Stellar ${currentNetwork}. Please switch to the Stellar ${switchNetwork} to continue using this app.',
-    es: 'Actualmente estás conectado a la red de pruebas de Stellar (${currentNetwork}). Por favor cambia a la red principal de Stellar (${switchNetwork}) para continuar usando esta aplicación.',
+    // es: 'Actualmente estás conectado a la red de pruebas de Stellar (${currentNetwork}). Por favor cambia a la red principal de Stellar (${switchNetwork}) para continuar usando esta aplicación.',
   },
 
   wallet_infra: {
     en: 'Wallet Infrastructure for Stellar dapps',
-    es: 'Infraestructura de billeteras para dapps en Stellar',
+    // es: 'Infraestructura de billeteras para dapps en Stellar',
   },
 
   blux_gateway: {
     en: 'Blux is your gateway to Stellar. Create a wallet, manage assets, and sign transactions easily and securely.',
-    es: 'Blux es tu puerta de entrada a Stellar. Crea una billetera, gestiona activos y firma transacciones de manera fácil y segura.',
+    // es: 'Blux es tu puerta de entrada a Stellar. Crea una billetera, gestiona activos y firma transacciones de manera fácil y segura.',
   },
 
   enter_token_address: {
     en: 'Enter token address',
-    es: 'Ingresar dirección del token',
+    // es: 'Ingresar dirección del token',
   },
 
   enter_address: {
     en: 'enter address',
-    es: 'ingresar dirección',
+    // es: 'ingresar dirección',
   },
 
   check: {
     en: 'Check',
-    es: 'Verificar',
+    // es: 'Verificar',
   },
 
   cancel: {
     en: 'Cancel',
-    es: 'Cancelar',
+    // es: 'Cancelar',
   },
 
   add_token: {
     en: 'Add token',
-    es: 'Agregar token',
+    // es: 'Agregar token',
   },
 
   network: {
     en: 'Network',
-    es: 'Red',
+    // es: 'Red',
   },
 
   address: {
     en: 'Address',
-    es: 'Dirección',
+    // es: 'Dirección',
   },
 
   market_cap: {
     en: 'Market cap',
-    es: 'Capitalización de mercado',
+    // es: 'Capitalización de mercado',
   },
 
   total_volume: {
     en: 'Total volume',
-    es: 'Volumen total',
+    // es: 'Volumen total',
   },
 
   all_time_high: {
     en: 'All time high',
-    es: 'Máximo histórico',
+    // es: 'Máximo histórico',
   },
 
   copy_address: {
     en: 'Copy address',
-    es: 'Copiar dirección',
+    // es: 'Copiar dirección',
   },
 
   address_copied: {
     en: 'Address copied',
-    es: 'Dirección copiada',
+    // es: 'Dirección copiada',
   },
 
   add_new_token: {
     en: 'Add new token',
-    es: 'Agregar nuevo token',
+    // es: 'Agregar nuevo token',
   },
 
   assets: {
     en: 'Assets',
-    es: 'Activos',
+    // es: 'Activos',
   },
 
   tokens: {
     en: 'Tokens',
-    es: 'Tokens',
+    // es: 'Tokens',
   },
 
   nfts: {
     en: 'NFTs',
-    es: 'NFTs',
+    // es: 'NFTs',
   },
 
   no_balance_message: {
     en: 'Looks like there’s nothing here yet.',
-    es: 'Parece que aún no hay nada aquí.',
+    // es: 'Parece que aún no hay nada aquí.',
   },
 
   sign_permission: {
     en: 'wants your permission to sign the following message:',
-    es: 'solicita tu permiso para firmar el siguiente mensaje:',
+    // es: 'solicita tu permiso para firmar el siguiente mensaje:',
   },
 };
+
 export default translations;

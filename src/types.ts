@@ -2,7 +2,7 @@ import { Horizon } from '@stellar/stellar-sdk';
 
 import { SupportedWallet } from './enums';
 
-export type LanguageKey = 'en' | 'es';
+export type LanguageKey = 'en';
 
 export type ITransports = Record<string, IServers>;
 

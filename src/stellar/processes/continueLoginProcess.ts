@@ -1,7 +1,7 @@
 import { Route } from '../../enums';
 import { getState } from '../../store';
-import { BluxEvent } from '../../utils/events';
 import loginResolver from './loginResolver';
+import { BluxEvent } from '../../utils/events';
 
 export const completeLoginProcess = () => {
   const state = getState();
