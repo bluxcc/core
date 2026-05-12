@@ -5,7 +5,7 @@ import { getWalletNetwork } from './helpers';
 import { getState, setState } from '../store';
 
 const RECENT_LOGIN_CONFIG = '__BLUX__RECENT_LOGIN_CONFIG';
-const RECENT_LOGIN_WINDOW_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+const RECENT_LOGIN_WINDOW_MS = 1000 * 60 * 60;
 
 type StoredRecentLogin = {
   authMethod: string;
