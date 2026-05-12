@@ -15,12 +15,8 @@ import {
 export const _login = (isSilent: boolean) => {
   const store = getState();
 
-  if (store.user) {
+  if (store.user && store.user.address) {
     return Promise.resolve(store.user);
-  }
-
-  if (store.login?.promise) {
-    return store.login.promise;
   }
 
   let resolver: (value: IUser) => void;
