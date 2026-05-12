@@ -23,6 +23,16 @@ import {
 export type AlertType = 'error' | 'success' | 'warn' | 'none' | 'copy';
 export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
 
+export interface ILogo {
+  id: number;
+  name: string;
+  content: string;
+  default_values?: {
+    name: string;
+    value: string;
+  }[];
+}
+
 export interface IUser {
   address: string;
   identifier?: string;
@@ -59,6 +69,7 @@ export interface ILoginPromise {
 }
 
 export interface IStoreProperties {
+  logos: ILogo[] | null;
   emitter: Emitter<BluxEventMap>;
   auth?: IAuth;
   config: IInternalConfig;
@@ -130,6 +141,7 @@ export interface IStoreMethods {
   setAuth: (a: IAuth) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setLogin: (loginDetails: ILoginPromise | undefined) => void;
+  setLogos: (logos: ILogo[]) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
@@ -137,6 +149,7 @@ export interface IStore extends IStoreProperties, IStoreMethods { }
 const emitter = new Emitter<BluxEventMap>();
 
 export const store = createStore<IStore>((set) => ({
+  logos: null,
   emitter,
   auth: undefined,
   config: {
@@ -383,6 +396,11 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({
       ...state,
       login: loginDetails,
+    })),
+  setLogos: (logos: ILogo[]) =>
+    set((state) => ({
+      ...state,
+      logos,
     })),
 }));
 

@@ -53,6 +53,7 @@ const Waiting = () => {
         variant="outline"
         startIcon={
           <CDNImage
+            className="bluxcc:animate-spin"
             name={CDNFiles.Loading}
             props={{ fill: appearance.accentColor }}
           />

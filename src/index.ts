@@ -1,6 +1,6 @@
-import preloadImages from './utils/preloadImages';
+import { preloadLogos } from './utils/preloadImages';
 
 export * from './exports';
 export { createConfig } from './exports/createConfig';
 
-preloadImages();
+preloadLogos();
