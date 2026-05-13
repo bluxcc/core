@@ -66,7 +66,7 @@ const translations: Translations = {
     // es: 'Conectar billetera',
   },
   acceptTermsAndPrivacy: {
-    en: 'Terms & Privacy',
+    en: 'By creating an account, you confirm that you’ve read and agree to our Terms and condition',
     // es: 'Términos y privacidad',
   },
   loading: {
@@ -133,9 +133,12 @@ const translations: Translations = {
     en: 'No legal links were provided for this app.',
     // es: 'No se proporcionaron enlaces legales para esta aplicación.',
   },
-  iAgree: {
-    en: 'I agree',
+  agree: {
+    en: 'Accept & Continue',
     // es: 'Acepto',
+  },
+  disagree: {
+    en: 'No thanks',
   },
   connectionSuccessfulTitle: {
     en: 'Connection Successful',

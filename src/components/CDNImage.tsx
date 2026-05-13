@@ -56,14 +56,23 @@ const CDNImage = ({ className, name, props = {}, ...rest }: ImageProps) => {
   }, [logo, props]);
 
   if (!svgContent) {
-    return <div style={{ width: 50, height: 50, background: '#f0f0f0' }} />;
+    return (
+      <div
+        style={{
+          width: 50,
+          height: 50,
+          background: 'transparent',
+          objectFit: 'contain',
+        }}
+      />
+    );
   }
 
   return (
     <div
-      className={className}
       dangerouslySetInnerHTML={{ __html: svgContent }}
       {...rest}
+      className={className}
     />
   );
 };

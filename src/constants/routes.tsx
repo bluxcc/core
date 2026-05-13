@@ -109,15 +109,15 @@ export const getModalContent = (): Record<string, IRoute> => {
       Component: <WalletConnect />,
     },
     [Route.FUND_ME]: {
-      title: 'Fund Me',
+      title: 'Receive Funds',
       Component: <FundMe />,
     },
     [Route.FUND_ME_CRYPTO]: {
-      title: 'Fund Me Crypto',
+      title: 'Add Funds',
       Component: <FundMeCrypto />,
     },
     [Route.ACCEPT_TERMS_AND_PRIVACY]: {
-      title: 'acceptTermsAndPrivacy',
+      title: 'Terms and conditions',
       Component: <AcceptTermsAndPrivacy />,
     },
   };

@@ -28,6 +28,7 @@ const Waiting = () => {
         {handleLogos(
           user?.authValue ?? '',
           isBackgroundDark(appearance.background),
+          'large',
         )}
       </div>
 
@@ -36,8 +37,8 @@ const Waiting = () => {
           {waitingStatus === 'login'
             ? t('waitingFor', { walletName: user?.authValue ?? 'wallet' })
             : t('signingWith', {
-              walletName: user?.authValue ?? 'wallet',
-            })}
+                walletName: user?.authValue ?? 'wallet',
+              })}
         </p>
         <p className="bluxcc:text-sm">
           {waitingStatus === 'login'
