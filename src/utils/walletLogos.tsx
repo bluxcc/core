@@ -29,7 +29,7 @@ const handleLogos = (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
           name={CDNFiles.Freighter}
-          props={{ fill: '#3"10px"CCC' }}
+          props={{ fill: '#310CCC' }}
         />
       );
     case 'Albedo':
