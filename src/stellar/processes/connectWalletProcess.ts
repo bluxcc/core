@@ -25,7 +25,7 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
       ).catch(() => { });
 
       setRecentConnectionMethod(wallet.name);
-      setRecentLoginConfig('wallet', wallet.name);
+      setRecentLoginConfig('wallet', wallet.name, Date.now(), '');
 
       setTimeout(() => {
         if (!getState().modal.isOpen) {

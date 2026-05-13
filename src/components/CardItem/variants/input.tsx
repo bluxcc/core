@@ -90,9 +90,10 @@ const InputCard = ({
           id="bluxcc-input"
           type={inputType}
           value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
+          autoComplete="off"
           placeholder={t('email')}
+          onKeyDown={handleKeyDown}
+          onChange={handleInputChange}
           className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden
               bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:text-base!"
           style={{
