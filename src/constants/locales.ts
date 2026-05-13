@@ -66,9 +66,15 @@ const translations: Translations = {
     // es: 'Conectar billetera',
   },
   acceptTermsAndPrivacy: {
-    en: 'By creating an account, you confirm that you’ve read and agree to our Terms and condition',
+    en: 'By signing in or creating an account, you agree to our Terms and Conditions and Privacy Policy.',
     // es: 'Términos y privacidad',
   },
+  receiveFunds: { en: 'Receive Funds' },
+
+  addFunds: { en: 'Add Funds' },
+
+  termsAndConditions: { en: 'Terms and Conditions' },
+
   loading: {
     en: 'Loading',
     // es: 'Cargando',

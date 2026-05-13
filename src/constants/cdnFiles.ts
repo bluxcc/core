@@ -21,6 +21,7 @@ enum CDNFiles {
   Downstream = 'downstream.svg',
   Globe = 'globe.svg',
   SmallEmail = 'smallemail.svg',
+  MoonPayLogo = 'moonpaylogo.svg',
   Email = 'email.svg',
   RedExclamation = 'redexclamation.svg',
   WrongNetwork = 'wrongnetwork.svg',

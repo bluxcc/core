@@ -63,7 +63,6 @@ export const getModalContent = (): Record<string, IRoute> => {
       title: 'activity',
       Component: <Activity />,
     },
-
     [Route.RECEIVE]: {
       title: 'receive',
       Component: <Receive />,
@@ -109,15 +108,15 @@ export const getModalContent = (): Record<string, IRoute> => {
       Component: <WalletConnect />,
     },
     [Route.FUND_ME]: {
-      title: 'Receive Funds',
+      title: 'addFunds',
       Component: <FundMe />,
     },
     [Route.FUND_ME_CRYPTO]: {
-      title: 'Add Funds',
+      title: 'receiveFunds',
       Component: <FundMeCrypto />,
     },
     [Route.ACCEPT_TERMS_AND_PRIVACY]: {
-      title: 'Terms and conditions',
+      title: 'termsAndConditions',
       Component: <AcceptTermsAndPrivacy />,
     },
   };

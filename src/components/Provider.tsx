@@ -52,6 +52,7 @@ export const Provider = () => {
       Route.ABOUT,
       Route.ADD_TOKEN,
       Route.WALLET_CONNECT,
+      Route.FUND_ME_CRYPTO,
     ].includes(route);
 
   const modalIcon = shouldShowBackButton
@@ -97,6 +98,10 @@ export const Provider = () => {
 
     if ([Route.BALANCE_DETAILS, Route.ADD_TOKEN].includes(route)) {
       store.setRoute(Route.BALANCES);
+      return;
+    }
+    if (route === Route.FUND_ME_CRYPTO) {
+      store.setRoute(Route.FUND_ME);
       return;
     }
 
