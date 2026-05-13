@@ -18,10 +18,15 @@ import {
   IInternalConfig,
   ISendTransaction,
   AuthenticateApiResponse,
+  ISignAuthEntry,
 } from './types';
 
 export type AlertType = 'error' | 'success' | 'warn' | 'none' | 'copy';
-export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
+export type WaitingStatus =
+  | 'login'
+  | 'sendTransaction'
+  | 'signMessage'
+  | 'signAuthEntry';
 
 export interface ILogo {
   id: number;
@@ -93,6 +98,7 @@ export interface IStoreProperties {
   stellar?: IStellarConfig;
   sendTransaction?: ISendTransaction;
   signMessage?: ISignMessage;
+  signAuthEntry?: ISignAuthEntry;
   login?: ILoginPromise;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
@@ -123,6 +129,11 @@ export interface IStoreMethods {
   ) => void;
   setSignMessage: (
     messageDetails: ISignMessage,
+    isOpen: boolean,
+    route?: Route,
+  ) => void;
+  setSignAuthEntry: (
+    authEntry: ISignAuthEntry,
     isOpen: boolean,
     route?: Route,
   ) => void;
@@ -175,6 +186,7 @@ export const store = createStore<IStore>((set) => ({
   login: undefined,
   stellar: undefined,
   signMessage: undefined,
+  signAuthEntry: undefined,
   sendTransaction: undefined,
   wallets: [],
   waitingStatus: 'login',
@@ -241,6 +253,17 @@ export const store = createStore<IStore>((set) => ({
       signMessage,
       modal: { ...state.modal, isOpen, route },
       waitingStatus: 'signMessage',
+    })),
+  setSignAuthEntry: (
+    authEntry: ISignAuthEntry,
+    isOpen: boolean,
+    route: Route = Route.SIGN_MESSAGE,
+  ) =>
+    set((state) => ({
+      ...state,
+      signAuthEntry: authEntry,
+      modal: { ...state.modal, isOpen, route },
+      waitingStatus: 'signAuthEntry',
     })),
   setStellar: (stellar: IStellarConfig) =>
     set((state) => ({ ...state, stellar })),

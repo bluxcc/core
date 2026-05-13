@@ -150,16 +150,32 @@ const translations: Translations = {
     en: 'Connection Successful',
     // es: 'Conexión exitosa',
   },
-  transactionSuccessfulTitle: {
-    en: 'Transaction Successful',
-    // es: 'Transacción exitosa',
-  },
   connectionSuccessfulMessage: {
     en: 'Your account has been successfully connected to ${appName}',
     // es: 'Tu cuenta se ha conectado correctamente a ${appName}',
   },
+  transactionSuccessfulTitle: {
+    en: 'Transaction Successful',
+    // es: 'Transacción exitosa',
+  },
   transactionSuccessfulMessage: {
     en: 'Your transaction was successfully completed',
+    // es: 'Tu transacción se completó con éxito',
+  },
+  messageSignedTitle: {
+    en: 'Message Signed',
+    // es: 'Transacción exitosa',
+  },
+  messageSignedMessage: {
+    en: 'Your message has been signed successfully.',
+    // es: 'Tu transacción se completó con éxito',
+  },
+  authEntrySignedTitle: {
+    en: 'Authorization Signed',
+    // es: 'Transacción exitosa',
+  },
+  authEntrySignedMessage: {
+    en: 'Authorization has been signed successfully.',
     // es: 'Tu transacción se completó con éxito',
   },
   seeInExplorer: {
