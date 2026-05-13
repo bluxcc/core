@@ -160,6 +160,14 @@ export interface ISignMessage {
   resolver: (value: string) => void;
 }
 
+export interface ISignAuthEntry {
+  result?: string;
+  authEntry: string;
+  options: ISignOptions;
+  rejecter: (reason: any) => void;
+  resolver: (value: string) => void;
+}
+
 // todo: check
 export interface AuthenticateApiResponse {
   isValid: boolean;

@@ -27,10 +27,7 @@ const OTP = () => {
   const handleResendCode = async () => {
     try {
       await apiSendOtp(store.config.appId, store.user?.authValue || '');
-    } catch (e) {
-      // TODO
-      // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
-    }
+    } catch { }
   };
 
   const verifyOTPRequest = async (otpString: string): Promise<void> => {

@@ -1,12 +1,12 @@
 import { IStore } from '../../store';
 import { walletsConfig } from '../../wallets';
 import { Route, SupportedWallet } from '../../enums';
-import handleSignMessage from '../handleSignMessage';
+import handleSignAuthEntry from '../handleSignAuthEntry';
 
-const signMessageProcess = async (store: IStore) => {
-  const signMessage = store.signMessage;
+const signAuthEntryProcess = async (store: IStore) => {
+  const signAuthEntry = store.signAuthEntry;
 
-  if (!signMessage) {
+  if (!signAuthEntry) {
     store.setRoute(Route.FAILED);
 
     return;
@@ -37,16 +37,16 @@ const signMessageProcess = async (store: IStore) => {
   }
 
   try {
-    const result = await handleSignMessage(
+    const result = await handleSignAuthEntry(
       wallet,
-      signMessage.message,
+      signAuthEntry.authEntry,
       store.user?.address as string,
-      signMessage.options.network,
+      signAuthEntry.options.network,
     );
 
-    store.setSignMessage(
+    store.setSignAuthEntry(
       {
-        ...signMessage,
+        ...signAuthEntry,
         result,
       },
       true,
@@ -63,4 +63,4 @@ const signMessageProcess = async (store: IStore) => {
   }
 };
 
-export default signMessageProcess;
+export default signAuthEntryProcess;

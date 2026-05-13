@@ -3,7 +3,7 @@ import { timeout } from '../utils/helpers';
 import { getState, IUser } from '../store';
 import { BluxEvent } from '../utils/events';
 import { BLUX_JWT_STORE } from '../constants/consts';
-import { ISendTransaction, ISignMessage } from '../types';
+import { ISendTransaction, ISignAuthEntry, ISignMessage } from '../types';
 import handleSignMessage from '../stellar/handleSignMessage';
 import getTransactionDetails from '../stellar/getTransactionDetails';
 import handleTransactionSigning from '../stellar/handleTransactionSigning';
@@ -11,6 +11,7 @@ import {
   checkRecentLogins,
   clearRecentLoginConfig,
 } from '../utils/checkRecentLogins';
+import handleSignAuthEntry from '../stellar/handleSignAuthEntry';
 
 export const _login = (isSilent: boolean) => {
   const store = getState();
@@ -279,6 +280,62 @@ const fundMe = () => {
   }
 };
 
+export const signAuthEntry = (
+  authEntry: string,
+  options?: { network: string },
+) =>
+  new Promise((resolve, reject) => {
+    const state = getState();
+
+    if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
+      reject(new Error('User is not authenticated.'));
+
+      return;
+    }
+
+    if (state.modal.isOpen) {
+      reject(new Error('Blux modal is open elsewhere.'));
+
+      return;
+    }
+
+    let network = state.stellar.activeNetwork;
+
+    if (options && options.network) {
+      network = options.network;
+    }
+
+    const foundWallet = state.wallets.find(
+      (w) => w.name === state.user!.authValue,
+    );
+
+    if (!foundWallet) {
+      throw new Error('Could not find the connected wallet.');
+    }
+
+    const signAuthEntryDetails: ISignAuthEntry = {
+      authEntry,
+      options: options || { network },
+      rejecter: reject,
+      resolver: resolve,
+      result: undefined,
+    };
+
+    state.setSignAuthEntry(signAuthEntryDetails, state.config.showWalletUIs);
+
+    if (!state.config.showWalletUIs) {
+      handleSignAuthEntry(foundWallet, authEntry, state!.user.address, network)
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((cause) => {
+          reject(cause);
+        });
+
+      return;
+    }
+  });
+
 export const blux = {
   login,
   logout,
@@ -286,6 +343,7 @@ export const blux = {
   fundMe,
   profile,
   signMessage,
+  signAuthEntry,
   signTransaction,
   sendTransaction,
   get isReady() {
