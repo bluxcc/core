@@ -13,8 +13,6 @@ export const onekeyConfig: IWallet = {
 
       const address = await window.$onekey!.stellar!.getPublicKey();
 
-      console.log(address);
-
       return address;
     } catch (error: any) {
       throw new Error('Failed to connect to Onekey.');
@@ -22,6 +20,19 @@ export const onekeyConfig: IWallet = {
   },
   disconnect: async () => { },
   getNetwork: async () => {
+    // Onekey wallet does have a getNetwork function but it always returns the public network
+    // even when the network is changed inside the wallet.
+    // try {
+    //   const network = await window.$onekey!.stellar!.getNetwork();
+    //
+    //   return {
+    //     network: network.network,
+    //     passphrase: network.networkPassphrase,
+    //   };
+    // } catch {
+    //   throw new Error('Failed to get network from Onekey');
+    // }
+    //
     throw new Error('Failed to get network from Onekey');
   },
 
@@ -39,9 +50,7 @@ export const onekeyConfig: IWallet = {
         networkPassphrase: options.network,
       });
 
-      console.log(result);
-
-      return result;
+      return result.signedAuthEntry;
     } catch (error) {
       throw new Error('Failed to sign auth entry with Onekey.');
     }
@@ -57,9 +66,7 @@ export const onekeyConfig: IWallet = {
         networkPassphrase: options.network,
       });
 
-      console.log(result);
-
-      return result;
+      return result.signedMessage;
     } catch (error) {
       throw new Error('Failed to sign message with Onekey.');
     }
@@ -71,13 +78,12 @@ export const onekeyConfig: IWallet = {
       }
 
       const result = await window.$onekey!.stellar!.signTransaction(xdr, {
+        submit: false,
         address: options.address,
         networkPassphrase: options.network,
       });
 
-      console.log(result);
-
-      return result;
+      return result.signedTxXdr;
     } catch (error) {
       throw new Error('Failed to sign the transaction with Onekey.');
     }

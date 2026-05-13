@@ -5,7 +5,8 @@ import { getWalletNetwork } from './helpers';
 import { getState, setState } from '../store';
 
 const RECENT_LOGIN_CONFIG = '__BLUX__RECENT_LOGIN_CONFIG';
-const RECENT_LOGIN_WINDOW_MS = 1000 * 60 * 60;
+const RECENT_LOGIN_WINDOW_MS_WALLETS = 1000 * 60 * 30;
+const RECENT_LOGIN_WINDOW_MS_WEB2 = 1000 * 60 * 60 * 6;
 
 type StoredRecentLogin = {
   authMethod: string;
@@ -42,7 +43,7 @@ const getStoredRecentLogin = (): StoredRecentLogin | null => {
 };
 
 const isRecentLogin = (timestamp: number) =>
-  Date.now() - timestamp <= RECENT_LOGIN_WINDOW_MS;
+  Date.now() - timestamp <= RECENT_LOGIN_WINDOW_MS_WALLETS;
 
 export const setRecentLoginConfig = (
   authMethod: string,

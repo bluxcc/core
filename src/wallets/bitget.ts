@@ -13,8 +13,6 @@ export const bitgetConfig: IWallet = {
 
       const address = await window.bitkeep!.stellar!.connect();
 
-      console.log(address);
-
       return address;
     } catch (error: any) {
       throw new Error('Failed to connect to Bitget.');
@@ -24,9 +22,7 @@ export const bitgetConfig: IWallet = {
   getNetwork: async () => {
     const network = await window.bitkeep!.stellar!.network();
 
-    console.log(network);
-
-    return network;
+    return { network: network.network, passphrase: network.networkPassphrase };
   },
 
   isAvailable: async () => {
@@ -41,14 +37,19 @@ export const bitgetConfig: IWallet = {
         throw new Error('Bitkeep Wallet is not installed or connected.');
       }
 
-      const result = await window.bitkeep!.stellar!.signMessage(
+      const signedHex = await window.bitkeep!.stellar!.signMessage(
         message,
         options.address,
       );
 
-      console.log(result);
+      const bytes = new Uint8Array(
+        // @ts-ignore
+        signedHex.match(/.{1,2}/g).map((b) => parseInt(b, 16)),
+      );
+      // @ts-ignore
+      const signedMessage = btoa(String.fromCharCode(...bytes));
 
-      return result;
+      return signedMessage;
     } catch (error) {
       throw new Error('Failed to sign message with Bitkeep.');
     }
@@ -63,8 +64,6 @@ export const bitgetConfig: IWallet = {
         address: options.address,
         networkPassphrase: options.network,
       });
-
-      console.log(result);
 
       return result;
     } catch (error) {
