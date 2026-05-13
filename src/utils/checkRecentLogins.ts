@@ -113,7 +113,11 @@ export const checkRecentLogins = async (): Promise<boolean> => {
       },
     }));
 
-    const passphrase = await getWalletNetwork(wallet);
+    let passphrase = '';
+
+    try {
+      passphrase = await getWalletNetwork(wallet);
+    } catch { }
 
     store.connectWalletSuccessful(publicKey, passphrase);
     store.setIsAuthenticated(true);

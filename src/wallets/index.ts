@@ -11,6 +11,8 @@ import { freighterConfig } from './freighter';
 import { walletConnectConfig } from './walletConnect';
 import { ledgerConfig } from './ledger';
 import { apiConfig } from './api';
+import { onekeyConfig } from './onekey';
+import { bitgetConfig } from './bitget';
 
 export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Freighter]: freighterConfig,
@@ -24,4 +26,6 @@ export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Ledger]: ledgerConfig,
   [SupportedWallet.Albedo]: albedoConfig,
   [SupportedWallet.Klever]: kleverConfig,
+  [SupportedWallet.Onekey]: onekeyConfig,
+  [SupportedWallet.Bitget]: bitgetConfig,
 };

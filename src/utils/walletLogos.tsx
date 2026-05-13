@@ -50,6 +50,12 @@ const handleLogos = (walletName: string, isDark: boolean) => {
       );
     case 'Klever':
       return <CDNImage name={CDNFiles.Klever} props={{}} />;
+    //todo
+    case 'Bitget':
+      return <CDNImage name={CDNFiles.Klever} props={{}} />;
+    //todo
+    case 'Onekey':
+      return <CDNImage name={CDNFiles.Klever} props={{}} />;
     case 'Ledger':
       return (
         <CDNImage

@@ -3,6 +3,12 @@ declare module '*.css' {
   export default content;
 }
 
+// todo
+interface OneKeyapi { }
+
+// todo
+interface Bitget { }
+
 interface KleverApi {
   getAddress(params?: {
     path?: string;

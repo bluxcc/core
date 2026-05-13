@@ -12,6 +12,8 @@ export enum SupportedWallet {
   Hot = 'Hot',
   Klever = 'Klever',
   Ledger = 'Ledger',
+  Bitget = 'Bitget',
+  Onekey = 'Onekey',
 }
 
 export enum StellarNetwork {
