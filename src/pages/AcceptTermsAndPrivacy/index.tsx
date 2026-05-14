@@ -1,13 +1,19 @@
-import Button from '../../components/Button';
-import Divider from '../../components/Divider';
-import { useLang } from '../../hooks/useLang';
-import { useAppStore } from '../../store';
-import CDNFiles from '../../constants/cdnFiles';
-import CDNImage from '../../components/CDNImage';
-import { hexToRgba } from '../../utils/helpers';
-import { completeLoginProcess } from '../../stellar/processes/continueLoginProcess';
+import { JSX } from 'react';
+
 import Link from '../../components/Link';
+import { useAppStore } from '../../store';
+import Button from '../../components/Button';
+import { useLang } from '../../hooks/useLang';
+import Divider from '../../components/Divider';
+import { hexToRgba } from '../../utils/helpers';
 import { ArrowOutward, Terms } from '../../assets';
+import { completeLoginProcess } from '../../stellar/processes/continueLoginProcess';
+
+type ILink = {
+  href: string;
+  label: string;
+  icon: JSX.Element;
+};
 
 const AcceptTermsAndPrivacy = () => {
   const t = useLang();
@@ -17,31 +23,23 @@ const AcceptTermsAndPrivacy = () => {
   const terms = store.apiResponse?.terms;
   const privacyPolicy = store.apiResponse?.privacyPolicy;
 
-  {
-    /* todo: if legal link were not provided do not show this page at all */
-  }
-  {
-    /* {conditions.length === 0 && (
-        <p
-          className="bluxcc:mt-2 bluxcc:text-center bluxcc:text-sm"
-          style={{ color: hexToRgba(appearance.textColor, 0.75) }}
-        >
-          {t('noLegalLinksProvided')}
-        </p>
-      )} */
-  }
-  const Links = [
-    {
+  const links: ILink[] = [];
+
+  if (terms) {
+    links.push({
       label: 'Terms of Service',
       icon: <ArrowOutward />,
       href: terms,
-    },
-    {
+    });
+  }
+
+  if (privacyPolicy) {
+    links.push({
       label: 'Privacy Policy',
       icon: <ArrowOutward />,
       href: privacyPolicy,
-    },
-  ];
+    });
+  }
 
   const handleAgree = () => {
     completeLoginProcess();
@@ -55,10 +53,6 @@ const AcceptTermsAndPrivacy = () => {
           background: hexToRgba(appearance.accentColor, 0.12),
         }}
       >
-        {/* <CDNImage
-          name={CDNFiles.Shield}
-          props={{ fill: appearance.accentColor }}
-        /> */}
         <Terms fill={appearance.accentColor} />
       </div>
       <div className="bluxcc:mb-10 bluxcc:w-full bluxcc:text-center">
@@ -70,7 +64,7 @@ const AcceptTermsAndPrivacy = () => {
         </p>
       </div>
 
-      {Links.map((item) => (
+      {links.map((item) => (
         <Link key={item.label} {...item} />
       ))}
 

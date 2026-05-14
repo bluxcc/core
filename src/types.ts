@@ -168,7 +168,6 @@ export interface ISignAuthEntry {
   resolver: (value: string) => void;
 }
 
-// todo: check
 export interface AuthenticateApiResponse {
   isValid: boolean;
   message: string;

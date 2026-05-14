@@ -46,7 +46,7 @@ export const preloadLogos = async () => {
     const db = await openIndexedDb();
 
     await storeInIndexedDb(db, freshLogos);
-  } catch { }
+  } catch (e) { }
 };
 
 const refreshLogosInBackground = async () => {
@@ -85,13 +85,21 @@ const openIndexedDb = (): Promise<IDBDatabase> => {
 
     request.onupgradeneeded = () => {
       const db = request.result;
+
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
     };
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    request.onsuccess = (_) => {
+      resolve(request.result);
+    };
+
+    request.onerror = () => {
+      reject(request.error);
+    };
+
+    request.onblocked = (_) => { };
   });
 };
 

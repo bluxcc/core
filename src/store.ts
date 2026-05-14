@@ -410,10 +410,10 @@ export const store = createStore<IStore>((set) => ({
         },
       },
     })),
-  setApiResponse: (res: AuthenticateApiResponse) =>
+  setApiResponse: (apiResponse: AuthenticateApiResponse) =>
     set((state) => ({
       ...state,
-      apiResponse: res,
+      apiResponse,
     })),
   setLogin: (loginDetails: ILoginPromise | undefined) =>
     set((state) => ({

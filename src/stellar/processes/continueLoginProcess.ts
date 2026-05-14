@@ -21,7 +21,14 @@ export const completeLoginProcess = () => {
 const continueLoginProcess = () => {
   const state = getState();
 
-  state.setRoute(Route.ACCEPT_TERMS_AND_PRIVACY);
+  if (
+    state.apiResponse &&
+    (state.apiResponse.privacyPolicy || state.apiResponse.terms)
+  ) {
+    state.setRoute(Route.ACCEPT_TERMS_AND_PRIVACY);
+  } else {
+    completeLoginProcess();
+  }
 };
 
 export default continueLoginProcess;
