@@ -104,6 +104,7 @@ export const OneKeyLogo = () => {
     </svg>
   );
 };
+
 // todo: this should be CDNFiles.MoonPayLogo
 export const MoonPayLogo = () => {
   return (

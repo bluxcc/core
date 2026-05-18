@@ -1,19 +1,21 @@
+import { JSX } from 'react';
+
 import { Route } from '../../enums';
 import { useAppStore } from '../../store';
 import CDNFiles from '../../constants/cdnFiles';
 import CDNImage from '../../components/CDNImage';
 import { hexToRgba } from '../../utils/helpers';
 import CardItem from '../../components/CardItem';
-import { Terms } from '../../assets';
-import React from 'react';
+import { MoonPayLogo, Terms } from '../../assets';
 
 type IFundOption = {
   id: 'moonpay' | 'crypto';
   title: string;
   route?: Route;
-  logo: CDNFiles;
   url?: string;
+  logo?: CDNFiles;
   disabled?: boolean;
+  logoElement?: JSX.Element;
 };
 
 function FundMe() {
@@ -23,16 +25,16 @@ function FundMe() {
 
   const moonpayUrl = address
     ? `https://buy.moonpay.com?${new URLSearchParams({
-        currencyCode: 'xlm',
-        network: 'stellar',
-        walletAddress: address,
-      }).toString()}`
+      currencyCode: 'xlm',
+      network: 'stellar',
+      walletAddress: address,
+    }).toString()}`
     : undefined;
 
   const fundOptions: IFundOption[] = [
     {
       id: 'moonpay',
-      logo: CDNFiles.MoonPayLogo,
+      logoElement: <MoonPayLogo />,
       title: 'Moonpay',
       url: moonpayUrl,
       disabled: !moonpayUrl,
@@ -90,12 +92,18 @@ function FundMe() {
             endArrow
             label={f.title}
             startIcon={
-              <CDNImage
-                name={f.logo}
-                props={{
-                  fill: appearance.accentColor,
-                }}
-              />
+              f.logo ? (
+                <CDNImage
+                  // @ts-ignore
+                  name={f.logo}
+                  props={{
+                    fill: appearance.accentColor,
+                  }}
+                />
+              ) : (
+                // todo: move moonpay to cdn
+                <MoonPayLogo />
+              )
             }
             onClick={() => handleFundRoute(f)}
           />
