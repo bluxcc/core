@@ -47,7 +47,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch((_e) => {});
+        .catch((_e) => { });
     }
   }, []);
 
@@ -68,6 +68,9 @@ const Onboarding = () => {
       // TODO
       // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
     }
+  };
+  const handleRedirectToOnboardingPasskey = () => {
+    store.setRoute(Route.PASSKEY_ONBOARDING);
   };
 
   const renderDivider = () => (
@@ -191,6 +194,7 @@ const Onboarding = () => {
             return (
               <button
                 key="passkey"
+                onClick={handleRedirectToOnboardingPasskey}
                 className="bluxcc:mt-6! bluxcc:w-full bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
                 style={{
                   color: appearance.accentColor,

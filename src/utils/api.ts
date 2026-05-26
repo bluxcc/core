@@ -1,7 +1,8 @@
 import { IUser } from '../store';
-import { fetcher } from './helpers';
+import { bufferToBase64Url, fetcher } from './helpers';
 import { AuthenticateApiResponse } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
+import { PasskeyFlowResult } from '../pages/Onboarding/Passkey';
 
 type ApiErrorResponse = {
   status: 400 | 401 | 403 | 404 | 429 | 500;
@@ -19,6 +20,12 @@ type ApiResponse<T> = ApiErrorResponse | ApiSuccessResponse<T>;
 type ApiResponseAuth = {
   privacy_policy: string;
   terms: string;
+};
+
+type ApiPasskeyChallenge = {
+  user_id: string;
+  challenge: string;
+  challenge_id: number;
 };
 
 // todo: double check
@@ -71,6 +78,124 @@ export const authenticateAppId = async (
       terms: '',
       privacyPolicy: '',
     };
+  }
+};
+
+export const apiRegisterPasskeyChallenge = async (
+  appId: string,
+): Promise<ApiPasskeyChallenge> => {
+  if (!appId) {
+    throw new Error('appId is missing in config.');
+  }
+
+  try {
+    const res = await fetcher<ApiResponse<ApiPasskeyChallenge>>(
+      `${BLUX_API}/auth`,
+      {
+        method: 'POST',
+        headers: {
+          [BLUX_APP_ID_HEADER]: appId,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wallet: '',
+          auth_method: 'passkey',
+          auth_value: '',
+        }),
+      },
+    );
+
+    if (res.status === 400) {
+      throw new Error('invalid inputs');
+    }
+
+    if (res.status === 500) {
+      throw new Error('server error');
+    }
+
+    if (res.status === 429) {
+      throw new Error('too many requests');
+    }
+
+    if (res.status === 200) {
+      return res.result;
+    }
+
+    throw new Error('Unexpected response from api');
+  } catch (e: any) {
+    throw new Error('Unexpected response from api');
+  }
+};
+
+export const apiRegisterPasskey = async (
+  appId: string,
+  challenge: ApiPasskeyChallenge,
+  passkeyResult: PasskeyFlowResult,
+): Promise<string> => {
+  if (!appId) {
+    throw new Error('appId is missing in config.');
+  }
+
+  try {
+    const res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        auth_method: 'passkey',
+        auth_value: passkeyResult.credential.id,
+        code: JSON.stringify({
+          challenge_id: challenge.challenge_id,
+          id: passkeyResult.credential.id,
+          rawId: bufferToBase64Url(passkeyResult.credential.rawId),
+          type: passkeyResult.credential.type,
+          response: {
+            authenticatorData: bufferToBase64Url(
+              // @ts-ignore
+              passkeyResult.credential.response.authenticatorData,
+            ),
+            clientDataJSON: bufferToBase64Url(
+              passkeyResult.credential.response.clientDataJSON,
+            ),
+            signature: bufferToBase64Url(
+              // @ts-ignore
+              passkeyResult.credential.response.signature,
+            ),
+            // @ts-ignore
+            userHandle: passkeyResult.credential.response.userHandle
+              ? bufferToBase64Url(
+                // @ts-ignore
+                passkeyResult.credential.response.userHandle,
+              )
+              : null,
+          },
+        }),
+      }),
+    });
+
+    if (res.status === 400) {
+      throw new Error('invalid inputs');
+    }
+
+    if (res.status === 500) {
+      throw new Error('server error');
+    }
+
+    if (res.status === 429) {
+      throw new Error('too many requests');
+    }
+
+    if (res.status === 200) {
+      return res.result;
+    }
+
+    throw new Error('Unexpected response from api');
+  } catch (e: any) {
+    throw new Error('Unexpected response from api');
   }
 };
 

@@ -23,6 +23,7 @@ import SelectAsset from '../pages/Profile/SelectAsset';
 import FundMeCrypto from '../pages/FundMe/FundMeCrypto';
 import FundMe from '../pages/FundMe';
 import AcceptTermsAndPrivacy from '../pages/AcceptTermsAndPrivacy';
+import PasskeyOnboardingPage from '../pages/Onboarding/Passkey';
 
 type IRoute = {
   title?: string;
@@ -82,6 +83,10 @@ export const getModalContent = (): Record<string, IRoute> => {
     [Route.OTP]: {
       title: '',
       Component: <OTP />,
+    },
+    [Route.PASSKEY_ONBOARDING]: {
+      title: '',
+      Component: <PasskeyOnboardingPage />,
     },
     [Route.WRONG_NETWORK]: {
       title: '',
