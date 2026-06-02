@@ -66,9 +66,15 @@ const translations: Translations = {
     // es: 'Conectar billetera',
   },
   acceptTermsAndPrivacy: {
-    en: 'Terms & Privacy',
+    en: 'By signing in or creating an account, you agree to our Terms and Conditions and Privacy Policy.',
     // es: 'Términos y privacidad',
   },
+  receiveFunds: { en: 'Receive Funds' },
+
+  addFunds: { en: 'Add Funds' },
+
+  termsAndConditions: { en: 'Terms and Conditions' },
+
   loading: {
     en: 'Loading',
     // es: 'Cargando',
@@ -133,24 +139,43 @@ const translations: Translations = {
     en: 'No legal links were provided for this app.',
     // es: 'No se proporcionaron enlaces legales para esta aplicación.',
   },
-  iAgree: {
-    en: 'I agree',
+  agree: {
+    en: 'Accept & Continue',
     // es: 'Acepto',
+  },
+  disagree: {
+    en: 'No thanks',
   },
   connectionSuccessfulTitle: {
     en: 'Connection Successful',
     // es: 'Conexión exitosa',
   },
-  transactionSuccessfulTitle: {
-    en: 'Transaction Successful',
-    // es: 'Transacción exitosa',
-  },
   connectionSuccessfulMessage: {
     en: 'Your account has been successfully connected to ${appName}',
     // es: 'Tu cuenta se ha conectado correctamente a ${appName}',
   },
+  transactionSuccessfulTitle: {
+    en: 'Transaction Successful',
+    // es: 'Transacción exitosa',
+  },
   transactionSuccessfulMessage: {
     en: 'Your transaction was successfully completed',
+    // es: 'Tu transacción se completó con éxito',
+  },
+  messageSignedTitle: {
+    en: 'Message Signed',
+    // es: 'Transacción exitosa',
+  },
+  messageSignedMessage: {
+    en: 'Your message has been signed successfully.',
+    // es: 'Tu transacción se completó con éxito',
+  },
+  authEntrySignedTitle: {
+    en: 'Authorization Signed',
+    // es: 'Transacción exitosa',
+  },
+  authEntrySignedMessage: {
+    en: 'Authorization has been signed successfully.',
     // es: 'Tu transacción se completó con éxito',
   },
   seeInExplorer: {

@@ -4,11 +4,7 @@ const loginResolver = () => {
   const store = getState();
 
   if (store.login) {
-    if (
-      store.user &&
-      !!store.user.address &&
-      store.authState.isAuthenticated
-    ) {
+    if (store.user && store.user.address && store.authState.isAuthenticated) {
       store.login.resolver(store.user);
     } else {
       store.login.rejecter('BLUX: Failed to login!');

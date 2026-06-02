@@ -9,9 +9,9 @@ import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
 import { BLUX_JWT_STORE } from '../../../constants/consts';
 import { getState, IUser, useAppStore } from '../../../store';
-import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
+import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 
 const OTP = () => {
   const t = useLang();
@@ -27,10 +27,7 @@ const OTP = () => {
   const handleResendCode = async () => {
     try {
       await apiSendOtp(store.config.appId, store.user?.authValue || '');
-    } catch (e) {
-      // TODO
-      // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
-    }
+    } catch { }
   };
 
   const verifyOTPRequest = async (otpString: string): Promise<void> => {
@@ -47,7 +44,12 @@ const OTP = () => {
         setError(false);
 
         localStorage.setItem(BLUX_JWT_STORE, JWT);
-        setRecentLoginConfig('email', store.user?.authValue || '');
+        setRecentLoginConfig(
+          'email',
+          store.user?.authValue || '',
+          Date.now(),
+          JWT,
+        );
 
         store.setAuth({
           isAuthenticated: true,

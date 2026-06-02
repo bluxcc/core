@@ -18,10 +18,25 @@ import {
   IInternalConfig,
   ISendTransaction,
   AuthenticateApiResponse,
+  ISignAuthEntry,
 } from './types';
 
 export type AlertType = 'error' | 'success' | 'warn' | 'none' | 'copy';
-export type WaitingStatus = 'login' | 'sendTransaction' | 'signMessage';
+export type WaitingStatus =
+  | 'login'
+  | 'sendTransaction'
+  | 'signMessage'
+  | 'signAuthEntry';
+
+export interface ILogo {
+  id: number;
+  name: string;
+  content: string;
+  default_values?: {
+    name: string;
+    value: string;
+  }[];
+}
 
 export interface IUser {
   address: string;
@@ -59,6 +74,7 @@ export interface ILoginPromise {
 }
 
 export interface IStoreProperties {
+  logos: ILogo[] | null;
   emitter: Emitter<BluxEventMap>;
   auth?: IAuth;
   config: IInternalConfig;
@@ -82,6 +98,7 @@ export interface IStoreProperties {
   stellar?: IStellarConfig;
   sendTransaction?: ISendTransaction;
   signMessage?: ISignMessage;
+  signAuthEntry?: ISignAuthEntry;
   login?: ILoginPromise;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
@@ -115,6 +132,11 @@ export interface IStoreMethods {
     isOpen: boolean,
     route?: Route,
   ) => void;
+  setSignAuthEntry: (
+    authEntry: ISignAuthEntry,
+    isOpen: boolean,
+    route?: Route,
+  ) => void;
   setStellar: (stellar: IStellarConfig) => void;
   setWallets: (wallets: IWallet[]) => void;
   setAlert: (alert: AlertType, message: string) => void;
@@ -130,6 +152,7 @@ export interface IStoreMethods {
   setAuth: (a: IAuth) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setLogin: (loginDetails: ILoginPromise | undefined) => void;
+  setLogos: (logos: ILogo[]) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
@@ -137,6 +160,7 @@ export interface IStore extends IStoreProperties, IStoreMethods { }
 const emitter = new Emitter<BluxEventMap>();
 
 export const store = createStore<IStore>((set) => ({
+  logos: null,
   emitter,
   auth: undefined,
   config: {
@@ -162,6 +186,7 @@ export const store = createStore<IStore>((set) => ({
   login: undefined,
   stellar: undefined,
   signMessage: undefined,
+  signAuthEntry: undefined,
   sendTransaction: undefined,
   wallets: [],
   waitingStatus: 'login',
@@ -228,6 +253,17 @@ export const store = createStore<IStore>((set) => ({
       signMessage,
       modal: { ...state.modal, isOpen, route },
       waitingStatus: 'signMessage',
+    })),
+  setSignAuthEntry: (
+    authEntry: ISignAuthEntry,
+    isOpen: boolean,
+    route: Route = Route.SIGN_MESSAGE,
+  ) =>
+    set((state) => ({
+      ...state,
+      signAuthEntry: authEntry,
+      modal: { ...state.modal, isOpen, route },
+      waitingStatus: 'signAuthEntry',
     })),
   setStellar: (stellar: IStellarConfig) =>
     set((state) => ({ ...state, stellar })),
@@ -374,15 +410,20 @@ export const store = createStore<IStore>((set) => ({
         },
       },
     })),
-  setApiResponse: (res: AuthenticateApiResponse) =>
+  setApiResponse: (apiResponse: AuthenticateApiResponse) =>
     set((state) => ({
       ...state,
-      apiResponse: res,
+      apiResponse,
     })),
   setLogin: (loginDetails: ILoginPromise | undefined) =>
     set((state) => ({
       ...state,
       login: loginDetails,
+    })),
+  setLogos: (logos: ILogo[]) =>
+    set((state) => ({
+      ...state,
+      logos,
     })),
 }));
 

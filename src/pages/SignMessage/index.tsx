@@ -1,23 +1,44 @@
+import { Route } from '../../enums';
 import { useAppStore } from '../../store';
 import Button from '../../components/Button';
 import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
 import { hexToRgba, shortenAddress } from '../../utils/helpers';
 import signMessageProcess from '../../stellar/processes/signMessageProcess';
+import signAuthEntryProcess from '../../stellar/processes/signAuthEntryProcess';
 
 const SignMessage = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
   const appearance = store.config.appearance;
-  const signMessage = store.signMessage;
 
-  if (!signMessage) {
+  if (
+    store.waitingStatus !== 'signMessage' &&
+    store.waitingStatus !== 'signAuthEntry'
+  ) {
+    store.setRoute(Route.FAILED);
+
     return null;
   }
 
-  const signMessageClicked = async () => {
-    signMessageProcess(store);
+  const isSignMessage = store.waitingStatus === 'signMessage';
+  const data = isSignMessage ? store.signMessage : store.signAuthEntry;
+
+  if (!data) {
+    return null;
+  }
+
+  const handleSign = async () => {
+    if (isSignMessage) {
+      signMessageProcess(store);
+    } else {
+      signAuthEntryProcess(store);
+    }
   };
+
+  const displayMessage = isSignMessage
+    ? (data as any).message
+    : (data as any).authEntry; // adjust according to your actual data structure
 
   return (
     <div>
@@ -34,7 +55,7 @@ const SignMessage = () => {
           borderRadius: appearance.borderRadius,
         }}
       >
-        {signMessage.message}
+        {displayMessage}
       </div>
       <div
         className="bluxcc:inline-flex bluxcc:mt-4 bluxcc:h-14 bluxcc:w-full bluxcc:items-center bluxcc:justify-between bluxcc:border bluxcc:px-4"
@@ -69,12 +90,7 @@ const SignMessage = () => {
 
       <Divider />
 
-      <Button
-        size="large"
-        state="enabled"
-        variant="fill"
-        onClick={signMessageClicked}
-      >
+      <Button size="large" state="enabled" variant="fill" onClick={handleSign}>
         {t('approve')}
       </Button>
     </div>

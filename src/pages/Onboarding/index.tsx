@@ -69,6 +69,9 @@ const Onboarding = () => {
       // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
     }
   };
+  const handleRedirectToOnboardingPasskey = () => {
+    store.setRoute(Route.PASSKEY_ONBOARDING);
+  };
 
   const renderDivider = () => (
     <div className="bluxcc:my-1 bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center">
@@ -191,6 +194,7 @@ const Onboarding = () => {
             return (
               <button
                 key="passkey"
+                onClick={handleRedirectToOnboardingPasskey}
                 className="bluxcc:mt-6! bluxcc:w-full bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
                 style={{
                   color: appearance.accentColor,

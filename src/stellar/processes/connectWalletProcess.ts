@@ -18,14 +18,14 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
     if (publicKey && publicKey.trim() !== '') {
       const passphrase = await getWalletNetwork(wallet);
 
-      void apiStoreWalletConnection(
+      apiStoreWalletConnection(
         store.config.appId,
         wallet.name,
         publicKey,
       ).catch(() => { });
 
       setRecentConnectionMethod(wallet.name);
-      setRecentLoginConfig('wallet', wallet.name);
+      setRecentLoginConfig('wallet', wallet.name, Date.now(), '');
 
       setTimeout(() => {
         if (!getState().modal.isOpen) {

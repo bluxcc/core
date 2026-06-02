@@ -3,6 +3,52 @@ declare module '*.css' {
   export default content;
 }
 
+interface OneKeyApi {
+  getPublicKey(): Promise<string>;
+  signMessage(
+    msg: string,
+    options?: { networkPassphrase: string; address: string },
+  ): Promise<{ signedMessage: string }>;
+
+  signTransaction(
+    xdr: string,
+    options?: {
+      submit: boolean;
+      address: string;
+      networkPassphrase: string;
+    },
+  ): Promise<{ signedTxXdr: string }>;
+
+  signAuthEntry(
+    xdr: string,
+    options?: { networkPassphrase: string; address: string },
+  ): Promise<{ signedAuthEntry: string }>;
+
+  getNetwork(): Promise<{
+    network: string;
+    networkPassphrase: string;
+  }>;
+}
+
+interface BitgetApi {
+  connect(): Promise<string>;
+
+  network(): Promise<{
+    network: string;
+    networkPassphrase: string;
+  }>;
+
+  signMessage(msg: string, address?: string): Promise<string>;
+
+  signTransaction(
+    xdr: string,
+    options?: {
+      address: string;
+      networkPassphrase: string;
+    },
+  ): Promise<string>;
+}
+
 interface KleverApi {
   getAddress(params?: {
     path?: string;
@@ -55,6 +101,12 @@ interface FreighterApi {
 
 declare global {
   interface Window {
+    bitkeep?: {
+      stellar?: BitgetApi;
+    };
+    $onekey?: {
+      stellar?: OneKeyApi;
+    };
     kleverWallet?: {
       stellar?: KleverApi;
     };

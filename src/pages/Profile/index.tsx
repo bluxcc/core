@@ -43,7 +43,7 @@ const Profile = () => {
           setAlert('none', '');
         }, 1000);
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   const balance =
@@ -207,6 +207,7 @@ const Profile = () => {
           color: hexToRgba(appearance.textColor, 0.9),
           fontFamily: appearance.fontFamily,
         }}
+        id="bluxcc-button"
         onClick={handleLogout}
         className="bluxcc:flex bluxcc:h-12 bluxcc:font-medium bluxcc:text-base bluxcc:w-full bluxcc:bg-transparent bluxcc:items-center bluxcc:justify-center bluxcc:gap-2"
       >

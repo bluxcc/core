@@ -23,6 +23,7 @@ import SelectAsset from '../pages/Profile/SelectAsset';
 import FundMeCrypto from '../pages/FundMe/FundMeCrypto';
 import FundMe from '../pages/FundMe';
 import AcceptTermsAndPrivacy from '../pages/AcceptTermsAndPrivacy';
+import PasskeyOnboardingPage from '../pages/Onboarding/Passkey';
 
 type IRoute = {
   title?: string;
@@ -63,7 +64,6 @@ export const getModalContent = (): Record<string, IRoute> => {
       title: 'activity',
       Component: <Activity />,
     },
-
     [Route.RECEIVE]: {
       title: 'receive',
       Component: <Receive />,
@@ -83,6 +83,10 @@ export const getModalContent = (): Record<string, IRoute> => {
     [Route.OTP]: {
       title: '',
       Component: <OTP />,
+    },
+    [Route.PASSKEY_ONBOARDING]: {
+      title: '',
+      Component: <PasskeyOnboardingPage />,
     },
     [Route.WRONG_NETWORK]: {
       title: '',
@@ -109,15 +113,15 @@ export const getModalContent = (): Record<string, IRoute> => {
       Component: <WalletConnect />,
     },
     [Route.FUND_ME]: {
-      title: 'Fund Me',
+      title: 'addFunds',
       Component: <FundMe />,
     },
     [Route.FUND_ME_CRYPTO]: {
-      title: 'Fund Me Crypto',
+      title: 'receiveFunds',
       Component: <FundMeCrypto />,
     },
     [Route.ACCEPT_TERMS_AND_PRIVACY]: {
-      title: 'acceptTermsAndPrivacy',
+      title: 'termsAndConditions',
       Component: <AcceptTermsAndPrivacy />,
     },
   };

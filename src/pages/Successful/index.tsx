@@ -15,13 +15,14 @@ const Successful = () => {
   const store = useAppStore((store) => store);
 
   let hash = '';
-
-  if (typeof store.sendTransaction?.result === 'object') {
+  if (
+    typeof store.sendTransaction?.result === 'object' &&
+    store.sendTransaction.result.hash
+  ) {
     hash = store.sendTransaction.result.hash;
   }
 
   const network = store.sendTransaction?.options?.network || '';
-
   const explorerUrl = hash
     ? getExplorerUrl(network, store.config.explorer, 'transactionUrl', hash)
     : null;
@@ -33,42 +34,61 @@ const Successful = () => {
   };
 
   const handleDone = () => {
-    store.closeModal();
+    const currentStatus = store.waitingStatus;
 
-    if (store.waitingStatus === 'sendTransaction') {
-      if (!store.sendTransaction) {
-        return;
-      }
-
+    if (currentStatus === 'sendTransaction' && store.sendTransaction) {
       const { resolver, result } = store.sendTransaction;
-
-      if (resolver && result) {
-        resolver(result);
-
-        // todo: emit event for sign message successful
-
-        setTimeout(() => {
-          store.cleanUp('signMessage');
-        }, 150);
-      }
-    } else if (store.waitingStatus === 'signMessage') {
-      if (!store.signMessage) {
-        return;
-      }
-
+      if (resolver && result) resolver(result);
+    } else if (currentStatus === 'signMessage' && store.signMessage) {
       const { resolver, result } = store.signMessage;
+      if (resolver && result) resolver(result);
+    } else if (currentStatus === 'signAuthEntry' && store.signAuthEntry) {
+      const { resolver, result } = store.signAuthEntry;
+      if (resolver && result) resolver(result);
+    } else if (currentStatus === 'login') {
+    }
 
-      if (resolver && result) {
-        resolver(result);
+    setTimeout(() => {
+      // @ts-ignore
+      store.cleanUp(currentStatus);
 
-        // todo: emit event for sign tx successful
-
-        setTimeout(() => {
-          store.cleanUp('signMessage');
-        }, 150);
-      }
+      store.closeModal();
+    }, 150);
+  };
+  //
+  const getSuccessContent = () => {
+    switch (store.waitingStatus) {
+      case 'login':
+        return {
+          title: t('connectionSuccessfulTitle'),
+          message: t('connectionSuccessfulMessage', {
+            appName: capitalizeFirstLetter(store.config.appName),
+          }),
+        };
+      case 'signMessage':
+        return {
+          title: t('messageSignedTitle') || 'Message Signed',
+          message:
+            t('messageSignedMessage') ||
+            'Your message has been signed successfully.',
+        };
+      case 'signAuthEntry':
+        return {
+          title: t('authEntrySignedTitle') || 'Authorization Signed',
+          message:
+            t('authEntrySignedMessage') ||
+            'Authorization has been signed successfully.',
+        };
+      case 'sendTransaction':
+      default:
+        return {
+          title: t('transactionSuccessfulTitle'),
+          message: t('transactionSuccessfulMessage'),
+        };
     }
   };
+
+  const { title, message } = getSuccessContent();
 
   return (
     <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
@@ -85,17 +105,9 @@ const Successful = () => {
       </div>
 
       <div className="bluxcc:w-full bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
-        <p className="bluxcc:text-xl">
-          {store.waitingStatus === 'login'
-            ? t('connectionSuccessfulTitle')
-            : t('transactionSuccessfulTitle')}
-        </p>
+        <p className="bluxcc:text-xl">{title}</p>
         <p className="bluxcc:text-center bluxcc:text-sm bluxcc:leading-5">
-          {store.waitingStatus === 'login'
-            ? t('connectionSuccessfulMessage', {
-              appName: capitalizeFirstLetter(store.config.appName),
-            })
-            : t('transactionSuccessfulMessage')}
+          {message}
         </p>
       </div>
 

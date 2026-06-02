@@ -21,6 +21,20 @@ import {
 } from '../constants/networkDetails';
 import { HorizonApi } from '@stellar/stellar-sdk/lib/horizon';
 
+export const bufferToBase64Url = (buf: ArrayBuffer) => {
+  const bytes = new Uint8Array(buf);
+
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+};
+
 export const getAssetTitle = (
   asset:
     | HorizonApi.BalanceLineNative

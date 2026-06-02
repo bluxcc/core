@@ -1,16 +1,18 @@
 import { IWallet } from '../types';
 import { BluxEvent } from './events';
-import { SupportedWallet } from '../enums';
 import { getWalletNetwork } from './helpers';
 import { getState, setState } from '../store';
+import { apiGetUser } from './api';
 
 const RECENT_LOGIN_CONFIG = '__BLUX__RECENT_LOGIN_CONFIG';
-const RECENT_LOGIN_WINDOW_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+const RECENT_LOGIN_WINDOW_MS_WALLETS = 1000 * 60 * 40; // 40 minutes
+const RECENT_LOGIN_WINDOW_MS_WEB2 = 1000 * 60 * 60 * 6; // 6 hours
 
 type StoredRecentLogin = {
   authMethod: string;
   authValue: string;
   timestamp: number;
+  jwt?: string;
 };
 
 const getStoredRecentLogin = (): StoredRecentLogin | null => {
@@ -41,13 +43,14 @@ const getStoredRecentLogin = (): StoredRecentLogin | null => {
   }
 };
 
-const isRecentLogin = (timestamp: number) =>
-  Date.now() - timestamp <= RECENT_LOGIN_WINDOW_MS;
+const isRecentLogin = (timestamp: number, threshold: number) =>
+  Date.now() - timestamp <= threshold;
 
 export const setRecentLoginConfig = (
   authMethod: string,
   authValue: string,
   timestamp = Date.now(),
+  jwt: string,
 ) => {
   if (typeof window === 'undefined') {
     return;
@@ -59,6 +62,7 @@ export const setRecentLoginConfig = (
       authMethod,
       authValue,
       timestamp,
+      jwt,
     } satisfies StoredRecentLogin),
   );
 };
@@ -80,11 +84,56 @@ export const checkRecentLogins = async (): Promise<boolean> => {
 
   const recentLogin = getStoredRecentLogin();
 
-  if (!recentLogin || !isRecentLogin(recentLogin.timestamp)) {
+  if (
+    !recentLogin ||
+    !isRecentLogin(recentLogin.timestamp, RECENT_LOGIN_WINDOW_MS_WEB2)
+  ) {
     return false;
   }
 
-  if (recentLogin.authMethod !== 'wallet') {
+  if (recentLogin.authMethod === 'email' && recentLogin.jwt) {
+    try {
+      const user = await apiGetUser(recentLogin.jwt);
+
+      setState((state) => ({
+        ...state,
+        user: {
+          address: user.public_key,
+          walletPassphrase: '',
+          authMethod: 'email',
+          authValue: user.auth_value,
+        },
+      }));
+
+      store.connectWalletSuccessful(
+        user.public_key,
+        store.stellar?.activeNetwork || '',
+      );
+      store.setIsAuthenticated(true);
+
+      const userStore = getState().user;
+
+      if (userStore) {
+        getState().emitter.emit(BluxEvent.LoggedIn, { user: userStore });
+      }
+
+      setRecentLoginConfig(
+        'email',
+        store.user?.authValue || '',
+        Date.now(),
+        recentLogin.jwt,
+      );
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  if (
+    !recentLogin ||
+    !isRecentLogin(recentLogin.timestamp, RECENT_LOGIN_WINDOW_MS_WALLETS)
+  ) {
     return false;
   }
 
@@ -113,7 +162,11 @@ export const checkRecentLogins = async (): Promise<boolean> => {
       },
     }));
 
-    const passphrase = await getWalletNetwork(wallet);
+    let passphrase = '';
+
+    try {
+      passphrase = await getWalletNetwork(wallet);
+    } catch { }
 
     store.connectWalletSuccessful(publicKey, passphrase);
     store.setIsAuthenticated(true);
@@ -124,7 +177,7 @@ export const checkRecentLogins = async (): Promise<boolean> => {
       getState().emitter.emit(BluxEvent.LoggedIn, { user });
     }
 
-    setRecentLoginConfig('wallet', wallet.name as SupportedWallet);
+    setRecentLoginConfig('wallet', wallet.name, Date.now(), '');
 
     return true;
   } catch (cause) {
