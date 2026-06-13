@@ -23,7 +23,7 @@ const swapTransaction = async (
 
   try {
     sourceAccount = await server.loadAccount(sourceAddress);
-  } catch {}
+  } catch { }
 
   if (!sourceAccount) {
     throw new Error('BLUX: Inactive account cannot send a transaction.');
@@ -37,7 +37,7 @@ const swapTransaction = async (
   if (isChangeTrustNeeded) {
     transaction = transaction.addOperation(
       Operation.changeTrust({
-        limit: '999999999999',
+        limit: '9999999',
         asset: iAssetToAsset(toAsset),
       }),
     );

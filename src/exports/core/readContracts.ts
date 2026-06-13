@@ -71,9 +71,24 @@ export const readContracts = async (
         return null;
       }
 
-      return scValToNative(simulation.result.retval);
+      let rawValue = scValToNative(simulation.result.retval);
+
+      if (typeof rawValue === 'bigint') {
+        rawValue = rawValue.toString();
+      }
+
+      return {
+        raw: simulation,
+        value: rawValue,
+      };
     }),
   );
 
-  return results;
+  const raws = results.map((x) => x?.raw);
+  const values = results.map((x) => x?.value);
+
+  return {
+    raws,
+    values,
+  };
 };

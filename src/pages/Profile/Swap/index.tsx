@@ -7,6 +7,7 @@ import { IAsset } from '../../../types';
 import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
+import useMaxAmount from '../../../hooks/useMaxAmount';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
@@ -53,6 +54,11 @@ const Swap = () => {
     store.balances.balances,
   );
 
+  // Most the account can actually swap away: balance minus selling liabilities,
+  // and for XLM also minus the reserve and fee buffer. Only the source side is
+  // constrained; the destination is being received, not spent.
+  const fromMax = useMaxAmount(store.selectAsset.swapFromAsset);
+
   const handleOpenAssets = (field: 'swapFrom' | 'swapTo') => {
     store.setSelectAsset({
       ...store.selectAsset,
@@ -75,7 +81,7 @@ const Swap = () => {
     setLastFieldChanged('from');
     setShouldCheckAgain(!shouldCheckAgain);
 
-    setFrom(fromBalance);
+    setFrom(fromMax);
   };
 
   // When the user lands here with the untouched defaults (XLM -> XLM), offer
@@ -101,12 +107,12 @@ const Swap = () => {
           `${suggestion.assetCode}:${suggestion.assetIssuer}`,
         )
           ? store.balances.balances.find(
-              (b) =>
-                // @ts-ignore
-                b.asset_code === suggestion.assetCode &&
-                // @ts-ignore
-                b.asset_issuer === suggestion.assetIssuer,
-            )
+            (b) =>
+              // @ts-ignore
+              b.asset_code === suggestion.assetCode &&
+              // @ts-ignore
+              b.asset_issuer === suggestion.assetIssuer,
+          )
           : undefined;
 
         store.setSelectAsset({
@@ -144,6 +150,8 @@ const Swap = () => {
         store.balances.balances,
       );
 
+      console.log(isNeeded);
+
       const xdr = await swapTransaction(
         from,
         to,
@@ -157,12 +165,17 @@ const Swap = () => {
         isNeeded,
       );
 
+      console.log(xdr);
+
+      store.closeModal();
+
       setTimeout(() => {
         try {
           sendTransaction(xdr);
         } catch (e) { }
-      }, 150);
-    } catch {
+      }, 400);
+    } catch (e) {
+      console.log(e);
       setError({ field: 'both', message: t('failedToMakeTransaction') });
     }
   };
@@ -335,7 +348,7 @@ const Swap = () => {
       return;
     }
 
-    if (Number(from) > Number(fromBalance)) {
+    if (Number(from) > Number(fromMax)) {
       setError({ field: 'from', message: t('insufficientBalance') });
 
       return;
@@ -348,7 +361,7 @@ const Swap = () => {
     setError({ field: '', message: '' });
 
     findSwapRoute();
-  }, [store.selectAsset, shouldCheckAgain]);
+  }, [store.selectAsset, shouldCheckAgain, fromMax]);
 
   const { appearance } = store.config;
 
@@ -525,9 +538,7 @@ const Swap = () => {
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
           <span>{t('to')}</span>
-          <span className="bluxcc:mr-2">
-            {humanizeAmount(toBalance)}
-          </span>
+          <span className="bluxcc:mr-2">{humanizeAmount(toBalance)}</span>
         </div>
         <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
           <input

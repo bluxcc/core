@@ -164,6 +164,105 @@ export const getLiveAssetBalance = (
   return line?.balance || '0';
 };
 
+const STROOPS_PER_UNIT = 10000000; // 1 XLM (and every asset unit) = 10^7 stroops
+const BASE_RESERVE_STROOPS = 5000000; // 0.5 XLM reserved per ledger entry
+// Every account permanently locks two base reserves (1 XLM) for its own entry.
+const BASE_ENTRY_COUNT = 2;
+// The fee is paid in XLM, so the native max keeps a buffer back to cover it.
+// 100000 stroops = 0.01 XLM, comfortably above a single operation's fee.
+const FEE_BUFFER_STROOPS = 100000;
+
+// The slice of the account needed to compute the XLM minimum balance. Loaded
+// once per account rather than read from a balance line, which doesn't carry it.
+export interface IReserveInfo {
+  subentryCount: number;
+  numSponsoring: number;
+  numSponsored: number;
+}
+
+// Parses a Stellar decimal amount ("123.4567890") into an integer number of
+// stroops so the reserve math never drifts on floating point. Extra precision
+// is truncated, which keeps the resulting max on the safe (lower) side.
+const amountToStroops = (amount: string): number => {
+  if (!amount) {
+    return 0;
+  }
+
+  const negative = amount.trim().startsWith('-');
+  const [whole, fraction = ''] = amount.replace('-', '').split('.');
+  const paddedFraction = (fraction + '0000000').slice(0, 7);
+
+  const stroops =
+    Number(whole || '0') * STROOPS_PER_UNIT + Number(paddedFraction);
+
+  return negative ? -stroops : stroops;
+};
+
+// Formats an integer stroop amount back into a trimmed decimal string.
+const stroopsToAmount = (stroops: number): string => {
+  const rounded = Math.round(stroops);
+  const negative = rounded < 0;
+  const abs = Math.abs(rounded);
+
+  const whole = Math.floor(abs / STROOPS_PER_UNIT);
+  const fraction = (abs % STROOPS_PER_UNIT)
+    .toString()
+    .padStart(7, '0')
+    .replace(/0+$/, '');
+
+  return `${negative ? '-' : ''}${whole}${fraction ? `.${fraction}` : ''}`;
+};
+
+// Maximum amount of `asset` the account can actually send. For every asset the
+// balance committed to open offers (selling liabilities) is subtracted. XLM
+// additionally has to keep its minimum balance —
+// (2 + subentry_count + num_sponsoring − num_sponsored) × 0.5 XLM, which already
+// accounts for trustlines, offers, data entries and extra signers — plus a
+// buffer for the transaction fee. Buying liabilities cap how much can be
+// received, not sent, so they are intentionally left out. `reserve` is null
+// until the account has loaded; the native max stays optimistic until then.
+export const getMaxSpendableAmount = (
+  asset: IAsset,
+  balances: Horizon.HorizonApi.BalanceLine[],
+  reserve: IReserveInfo | null,
+): string => {
+  const line = balances.find((b) =>
+    asset.assetType === 'native'
+      ? b.asset_type === 'native'
+      : // @ts-ignore - liquidity pool lines carry no asset_code/asset_issuer
+        b.asset_code === asset.assetCode &&
+        // @ts-ignore
+        b.asset_issuer === asset.assetIssuer,
+  );
+
+  if (!line) {
+    return '0';
+  }
+
+  const sellingLiabilities =
+    'selling_liabilities' in line ? line.selling_liabilities : '0';
+
+  let available =
+    amountToStroops(line.balance) - amountToStroops(sellingLiabilities);
+
+  if (asset.assetType === 'native') {
+    if (reserve) {
+      const entryCount =
+        BASE_ENTRY_COUNT +
+        reserve.subentryCount +
+        reserve.numSponsoring -
+        reserve.numSponsored;
+
+      available -= entryCount * BASE_RESERVE_STROOPS + FEE_BUFFER_STROOPS;
+    } else {
+      // Reserve structure not loaded yet; only the fee buffer is known for sure.
+      available -= FEE_BUFFER_STROOPS;
+    }
+  }
+
+  return available > 0 ? stroopsToAmount(available) : '0';
+};
+
 export const balanceToAsset = (
   balance: Horizon.HorizonApi.BalanceLine,
 ): IAsset => {

@@ -10,8 +10,9 @@ import Divider from '../../../components/Divider';
 import InputField from '../../../components/Input';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
+import useMaxAmount from '../../../hooks/useMaxAmount';
 import { sendTransaction } from '../../../exports/blux';
-import { getContrastColor, getLiveAssetBalance } from '../../../utils/helpers';
+import { getContrastColor } from '../../../utils/helpers';
 import paymentTransaction from '../../../stellar/paymentTransaction';
 
 type SendFormValues = {
@@ -45,17 +46,12 @@ const SendForm = () => {
     store.setRoute(Route.SELECT_ASSET);
   };
 
-  // Live balance for the selected asset; the snapshot stored at pick time
-  // goes stale after network switches or balance refreshes.
-  const sendAssetBalance = getLiveAssetBalance(
-    store.selectAsset.sendAsset,
-    store.balances.balances,
-  );
+  // Most the account can actually send for the selected asset: balance minus
+  // selling liabilities, and for XLM also minus the reserve and fee buffer.
+  const maxAmount = useMaxAmount(store.selectAsset.sendAsset);
 
   const handleMaxClick = () => {
-    const balance = Number(sendAssetBalance).toString();
-
-    setForm((prev) => ({ ...prev, amount: balance }));
+    setForm((prev) => ({ ...prev, amount: maxAmount }));
   };
 
   const handlePasteClick = async () => {
@@ -69,7 +65,7 @@ const SendForm = () => {
 
     if (!form.amount) {
       errorMessages.amount = t('amountRequired');
-    } else if (Number(form.amount) > Number(sendAssetBalance)) {
+    } else if (Number(form.amount) > Number(maxAmount)) {
       errorMessages.amount = t('amountExceedsBalance');
     }
 
@@ -93,9 +89,11 @@ const SendForm = () => {
           store.stellar?.activeNetwork || '',
         );
 
+        store.closeModal();
+
         setTimeout(() => {
           sendTransaction(xdr, { network: store.stellar?.activeNetwork || '' });
-        }, 150);
+        }, 400);
       } catch (e: any) {
         errorMessages.address = e.message;
 
