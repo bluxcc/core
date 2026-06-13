@@ -22,11 +22,11 @@
 //   options: WriteContractsOptions = {},
 // ) => {
 //   if (!checkConfigCreated()) {
-//     throw new Error('writeContracts must be called after createConfig');
+//     throw new Error('BLUX: writeContracts must be called after createConfig');
 //   }
 //
 //   if (!Array.isArray(calls)) {
-//     throw new Error('calls must be an array of IContractWriteCall');
+//     throw new Error('BLUX: calls must be an array of IContractWriteCall');
 //   }
 //
 //   if (calls.length === 0) {
@@ -44,10 +44,10 @@
 //
 //   calls.forEach((call, callIndex) => {
 //     if (!call || !call.address) {
-//       throw new Error(`calls[${callIndex}].address is required`);
+//       throw new Error(`BLUX: calls[${callIndex}].address is required`);
 //     }
 //     if (!call.fn || call.fn.trim() === '') {
-//       throw new Error(`calls[${callIndex}].fn is required`);
+//       throw new Error(`BLUX: calls[${callIndex}].fn is required`);
 //     }
 //
 //     const contract = new Contract(call.address);
@@ -68,7 +68,7 @@
 //       );
 //     }
 //   } catch (error: any) {
-//     throw new Error(`Failed to simulate transaction: ${error.message}`);
+//     throw new Error(`BLUX: Failed to simulate transaction: ${error.message}`);
 //   }
 //
 //   try {
@@ -76,6 +76,6 @@
 //
 //     return result;
 //   } catch (error: any) {
-//     throw new Error(`Failed to send transaction: ${error.message}`);
+//     throw new Error(`BLUX: Failed to send transaction: ${error.message}`);
 //   }
 // };

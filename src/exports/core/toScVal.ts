@@ -41,7 +41,7 @@ const bigintToBuffer = (
 
   if (hex.length > requiredHexLength) {
     throw new Error(
-      `BigNumber ${bn} overflows ${bitLength}-bit representation`,
+      `BLUX: BigNumber ${bn} overflows ${bitLength}-bit representation`,
     );
   }
 
@@ -85,7 +85,7 @@ const safeBigintToNumber = (bn: bigint): number => {
     bn < BigInt(Number.MIN_SAFE_INTEGER)
   ) {
     throw new Error(
-      `BigInt ${bn} is outside the safe integer range for Number type.`,
+      `BLUX: BigInt ${bn} is outside the safe integer range for Number type.`,
     );
   }
   return Number(bn);

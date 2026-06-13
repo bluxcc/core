@@ -55,7 +55,7 @@ const InputField = ({
   label,
   autoFocus,
   type = 'text',
-  placeholder = 'Input',
+  placeholder = '',
   error,
   iconRight,
   iconLeft,

@@ -2,14 +2,19 @@ import React from 'react';
 
 import CDNImage from '../../CDNImage';
 import { useAppStore } from '../../../store';
+import { useLang } from '../../../hooks/useLang';
 import CDNFiles from '../../../constants/cdnFiles';
 import { formatDate, getExplorerUrl, hexToRgba } from '../../../utils/helpers';
+
+export type TxAction = 'send' | 'receive' | 'swap' | 'multi' | 'other';
 
 export type TxDetail = {
   hash: string;
   date: string;
   title: string;
   description: string;
+  // Language-independent kind used to pick the icon.
+  action?: TxAction;
 };
 
 interface TransactionProps {
@@ -17,6 +22,7 @@ interface TransactionProps {
 }
 
 const History = ({ tx }: TransactionProps) => {
+  const t = useLang();
   const store = useAppStore((store) => store);
   const appearance = store.config.appearance;
 
@@ -27,11 +33,11 @@ const History = ({ tx }: TransactionProps) => {
     tx.hash,
   );
 
-  const handleActionLogo = (action: string) => {
+  const handleActionLogo = (action?: TxAction) => {
     switch (action) {
-      case 'Receive':
+      case 'receive':
         return <CDNImage name={CDNFiles.Downstream} />;
-      case 'Send':
+      case 'send':
         return <CDNImage name={CDNFiles.Upstream} />;
       default:
         return <CDNImage name={CDNFiles.MultiOperation} />;
@@ -53,7 +59,7 @@ const History = ({ tx }: TransactionProps) => {
             background: appearance.background,
           }}
         >
-          {handleActionLogo(tx.title)}
+          {handleActionLogo(tx.action)}
         </div>
         <div className="bluxcc:flex bluxcc:flex-col bluxcc:justify-start">
           <p
@@ -73,7 +79,7 @@ const History = ({ tx }: TransactionProps) => {
         <button
           id="bluxcc-button"
           className="bluxcc:flex bluxcc:size-8 bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full"
-          title="View transaction details"
+          title={t('viewTransactionDetails')}
           onClick={handleGoToExplorer}
           style={{ background: appearance.fieldBackground }}
         >

@@ -62,7 +62,7 @@ const refreshLogosInBackground = async () => {
 const getLogosFromCloudflare = async (url: string): Promise<ArrayBuffer> => {
   const res = await fetch(url);
 
-  if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+  if (!res.ok) throw new Error(`BLUX: Failed to fetch: ${res.status}`);
 
   return await res.arrayBuffer();
 };

@@ -64,6 +64,9 @@ export interface ISelectAsset {
   sendAsset: IAsset;
   swapToAsset: IAsset;
   swapFromAsset: IAsset;
+  // True once the user has explicitly picked an asset in SelectAsset. Used to
+  // suppress the same-asset swap error for the untouched defaults.
+  userPicked?: boolean;
 }
 
 export interface ILoginPromise {
@@ -103,6 +106,7 @@ export interface IStoreProperties {
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
   selectAsset: ISelectAsset;
+  detailsAsset?: IAsset;
   walletConnect?: {
     connection: any;
     client: SignClient;
@@ -113,6 +117,7 @@ export interface IStoreProperties {
 
 export interface IStoreMethods {
   connectEmail: (email: string) => void;
+  connectSocial: (provider: string) => void;
   connectWallet: (walletName: string) => void;
   connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
   closeModal: () => void;
@@ -143,6 +148,7 @@ export interface IStoreMethods {
   setDynamicTitle: (title: string) => void;
   setBalances: (balances: UseBalancesResult) => void;
   setSelectAsset: (selectAsset: ISelectAsset) => void;
+  setDetailsAsset: (asset: IAsset | undefined) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
   cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
@@ -158,6 +164,16 @@ export interface IStoreMethods {
 export interface IStore extends IStoreProperties, IStoreMethods { }
 
 const emitter = new Emitter<BluxEventMap>();
+
+// Asset selections reference network-specific balances/issuers, so they are
+// restored to this whenever the active network changes or the user logs out.
+const DEFAULT_SELECT_ASSET: ISelectAsset = {
+  field: 'send',
+  sendAsset: XLM,
+  swapToAsset: XLM,
+  swapFromAsset: XLM,
+  userPicked: false,
+};
 
 export const store = createStore<IStore>((set) => ({
   logos: null,
@@ -215,12 +231,8 @@ export const store = createStore<IStore>((set) => ({
     loading: false,
     transactions: [],
   },
-  selectAsset: {
-    field: 'send',
-    sendAsset: XLM,
-    swapToAsset: XLM,
-    swapFromAsset: XLM,
-  },
+  selectAsset: { ...DEFAULT_SELECT_ASSET },
+  detailsAsset: undefined,
   walletConnectClient: undefined,
   networkSyncDisabled: false,
   setConfig: (config: IInternalConfig) =>
@@ -266,7 +278,25 @@ export const store = createStore<IStore>((set) => ({
       waitingStatus: 'signAuthEntry',
     })),
   setStellar: (stellar: IStellarConfig) =>
-    set((state) => ({ ...state, stellar })),
+    set((state) => {
+      // A network switch invalidates the picked assets (their issuers and
+      // balances belong to the previous network); reset to defaults so pages
+      // like Swap don't keep showing stale data.
+      const networkChanged =
+        !!state.stellar &&
+        state.stellar.activeNetwork !== stellar.activeNetwork;
+
+      return {
+        ...state,
+        stellar,
+        ...(networkChanged
+          ? {
+              selectAsset: { ...DEFAULT_SELECT_ASSET },
+              detailsAsset: undefined,
+            }
+          : {}),
+      };
+    }),
   approveSendTransaction: () =>
     set((state) => ({
       ...state,
@@ -376,11 +406,29 @@ export const store = createStore<IStore>((set) => ({
         route: Route.OTP,
       },
     })),
+  connectSocial: (provider: string) =>
+    set((state) => ({
+      ...state,
+      waitingStatus: 'login',
+      user: {
+        address: '',
+        authValue: '',
+        authMethod: provider,
+        walletPassphrase: '',
+      },
+      modal: {
+        ...state.modal,
+        isOpen: true,
+        route: Route.SOCIALS_ONBOARDING,
+      },
+    })),
   logoutAction: () =>
     set((current) => ({
       ...current,
       user: undefined,
       waitingStatus: 'login',
+      selectAsset: { ...DEFAULT_SELECT_ASSET },
+      detailsAsset: undefined,
       authState: {
         ...current.authState,
         isAuthenticated: false,
@@ -394,6 +442,8 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, transactions })),
   setSelectAsset: (selectAsset: ISelectAsset) =>
     set((state) => ({ ...state, selectAsset })),
+  setDetailsAsset: (detailsAsset: IAsset | undefined) =>
+    set((state) => ({ ...state, detailsAsset })),
   setWalletConnectClient: (client: SignClient, connection: any) =>
     set((state) => ({ ...state, walletConnect: { client, connection } })),
   cleanUp: (prop) => set((state) => ({ ...state, [prop]: undefined })),

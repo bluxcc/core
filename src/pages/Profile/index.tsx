@@ -38,12 +38,23 @@ const Profile = () => {
     copyText(address)
       .then(() => {
         copyText(address);
-        setAlert('copy', 'Address Copied');
+        setAlert('copy', t('address_copied'));
         setTimeout(() => {
           setAlert('none', '');
         }, 1000);
       })
       .catch(() => {});
+  };
+
+  const handleOpenSwap = () => {
+    // Entering the swap page fresh: forget previous asset picks so the
+    // untouched same-asset defaults don't trigger an error.
+    store.setSelectAsset({
+      ...store.selectAsset,
+      userPicked: false,
+    });
+
+    setRoute(Route.SWAP);
   };
 
   const balance =
@@ -165,9 +176,7 @@ const Profile = () => {
               props={{ fill: appearance.textColor }}
             />
           }
-          onClick={() => {
-            setRoute(Route.SWAP);
-          }}
+          onClick={handleOpenSwap}
         />
       </div>
       <div className="bluxcc:mt-4 bluxcc:w-full bluxcc:space-y-2">

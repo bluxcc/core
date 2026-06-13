@@ -29,11 +29,11 @@ const paymentTransaction = async (
   } catch { }
 
   if (!sourceAccount) {
-    throw new Error("Inactive account cannot send a transaction.");
+    throw new Error("BLUX: Inactive account cannot send a transaction.");
   }
 
   if (!destinationAccount && asset.assetType !== "native") {
-    throw new Error("Cannot send non-native asset to an inactive account.");
+    throw new Error("BLUX: Cannot send non-native asset to an inactive account.");
   }
 
   let transaction = new TransactionBuilder(sourceAccount, {

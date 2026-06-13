@@ -21,11 +21,11 @@ export const readContracts = async (
   options: ReadContractsOptions = {},
 ) => {
   if (!checkConfigCreated()) {
-    throw new Error('readContracts must be called after createConfig');
+    throw new Error('BLUX: readContracts must be called after createConfig');
   }
 
   if (!Array.isArray(calls)) {
-    throw new Error('calls must be an array of IContractCall');
+    throw new Error('BLUX: calls must be an array of IContractCall');
   }
 
   if (calls.length === 0) {
@@ -37,11 +37,11 @@ export const readContracts = async (
   const results = await Promise.all(
     calls.map(async (call, callIndex) => {
       if (!call || !call.address) {
-        throw new Error(`calls[${callIndex}].address is required`);
+        throw new Error(`BLUX: calls[${callIndex}].address is required`);
       }
 
       if (!call.fn || call.fn.trim() === '') {
-        throw new Error(`calls[${callIndex}].fn is required`);
+        throw new Error(`BLUX: calls[${callIndex}].fn is required`);
       }
 
       const contract = new Contract(call.address);
@@ -63,7 +63,7 @@ export const readContracts = async (
 
       if (rpc.Api.isSimulationError(simulation)) {
         throw new Error(
-          `Contract call failed at calls[${callIndex}] (${call.address}.${call.fn}): ${simulation.error}`,
+          `BLUX: Contract call failed at calls[${callIndex}] (${call.address}.${call.fn}): ${simulation.error}`,
         );
       }
 

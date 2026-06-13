@@ -26,7 +26,7 @@ const swapTransaction = async (
   } catch {}
 
   if (!sourceAccount) {
-    throw new Error('Inactive account cannot send a transaction.');
+    throw new Error('BLUX: Inactive account cannot send a transaction.');
   }
 
   let transaction = new TransactionBuilder(sourceAccount, {

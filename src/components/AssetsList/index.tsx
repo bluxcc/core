@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import CDNImage from '../CDNImage';
+import { Route } from '../../enums';
 import { IAsset } from '../../types';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
@@ -23,20 +24,21 @@ type AssetsProps = {
 const Assets = ({ assets }: AssetsProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const appearance = useAppStore((store) => store.config.appearance);
+  const store = useAppStore((store) => store);
   const t = useLang();
 
-  // TODO: Implement asset detail page
-  // const { setRoute } = useAppStore((store) => store);
-  // const handleClickAsset = () => {
-  //   setRoute(Route.BALANCE_DETAILS);
-  // };
+  const handleClickAsset = (asset: IAssetWithDetails) => {
+    store.setDetailsAsset(asset);
+    store.setDynamicTitle(asset.title);
+    store.setRoute(Route.BALANCE_DETAILS);
+  };
 
   return (
     <div className="bluxcc:h-full bluxcc:w-full bluxcc:overflow-auto overflowStyle">
       {assets.map((asset, index) => (
         <button
           id="bluxcc-button"
-          // onClick={handleClickAsset}
+          onClick={() => handleClickAsset(asset)}
           key={asset.assetType + asset.assetIssuer}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}

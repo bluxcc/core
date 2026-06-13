@@ -2,7 +2,16 @@ import { Horizon } from '@stellar/stellar-sdk';
 
 import { SupportedWallet } from './enums';
 
-export type LanguageKey = 'en';
+export type LanguageKey =
+  | 'en'
+  | 'es'
+  | 'pt'
+  | 'fr'
+  | 'de'
+  | 'ru'
+  | 'zh'
+  | 'ja'
+  | 'ko';
 
 export type ITransports = Record<string, IServers>;
 
@@ -12,7 +21,11 @@ export type IExplorer =
   | 'stellarexpert'
   | 'lumenscan';
 
-export type ILoginMethods = Array<'wallet' | 'sms' | 'email' | 'passkey'>;
+export type ISocialProvider = 'google';
+
+export type ILoginMethods = Array<
+  'wallet' | 'sms' | 'email' | 'passkey' | ISocialProvider
+>;
 
 export type IWalletNames = Array<
   | 'rabet'
@@ -23,6 +36,9 @@ export type IWalletNames = Array<
   | 'hana'
   | 'hot'
   | 'klever'
+  | 'cactuslink'
+  | 'fordefi'
+  | 'trezor'
 >;
 
 interface IServers {
@@ -35,6 +51,11 @@ export interface IWalletConnectMetaData {
   url: string;
   projectId: string;
   description: string;
+}
+
+export interface ITrezorMetaData {
+  email: string;
+  appUrl?: string;
 }
 
 export interface IConfig {
@@ -50,7 +71,9 @@ export interface IConfig {
   loginMethods?: ILoginMethods | string[];
   transports?: ITransports;
   excludeWallets?: IWalletNames;
+  orderWallets?: IWalletNames | string[];
   walletConnect?: IWalletConnectMetaData;
+  trezor?: ITrezorMetaData;
   promptOnWrongNetwork?: boolean;
 }
 
@@ -62,6 +85,7 @@ export interface IInternalConfig extends IConfig {
   defaultNetwork: string;
   lang: LanguageKey;
   excludeWallets: IWalletNames;
+  orderWallets?: string[];
   promptOnWrongNetwork: boolean;
 }
 
@@ -168,9 +192,20 @@ export interface ISignAuthEntry {
   resolver: (value: string) => void;
 }
 
+// Public OAuth parameters of a provider the project owner enabled in the
+// dashboard. The client secret never leaves the backend.
+export interface ISocialConfigEntry {
+  provider: string;
+  displayName: string;
+  clientId: string;
+  redirectUri: string;
+}
+
 export interface AuthenticateApiResponse {
   isValid: boolean;
   message: string;
   privacyPolicy: string;
   terms: string;
+  socials: string[];
+  socialsConfig: ISocialConfigEntry[];
 }

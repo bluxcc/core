@@ -14,6 +14,9 @@ export enum SupportedWallet {
   Ledger = 'Ledger',
   Bitget = 'Bitget',
   Onekey = 'Onekey',
+  CactusLink = 'Cactus Link',
+  Fordefi = 'Fordefi',
+  Trezor = 'Trezor',
 }
 
 export enum StellarNetwork {
@@ -27,6 +30,7 @@ export enum StellarNetwork {
 export enum Route {
   ONBOARDING = 'ONBOARDING', // View for selecting a wallet
   PASSKEY_ONBOARDING = 'PASSKEY_ONBOARDING',
+  SOCIALS_ONBOARDING = 'SOCIALS_ONBOARDING', // Social (OAuth) login popup flow
   WRONG_NETWORK = 'WRONG_NETWORK', // View for selecting a wallet
   WAITING = 'WAITING', // View for connection process
   SUCCESSFUL = 'SUCCESSFUL', // View for connection success process

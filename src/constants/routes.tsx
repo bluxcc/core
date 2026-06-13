@@ -24,6 +24,7 @@ import FundMeCrypto from '../pages/FundMe/FundMeCrypto';
 import FundMe from '../pages/FundMe';
 import AcceptTermsAndPrivacy from '../pages/AcceptTermsAndPrivacy';
 import PasskeyOnboardingPage from '../pages/Onboarding/Passkey';
+import SocialsOnboarding from '../pages/Onboarding/Socials';
 
 type IRoute = {
   title?: string;
@@ -87,6 +88,10 @@ export const getModalContent = (): Record<string, IRoute> => {
     [Route.PASSKEY_ONBOARDING]: {
       title: '',
       Component: <PasskeyOnboardingPage />,
+    },
+    [Route.SOCIALS_ONBOARDING]: {
+      title: '',
+      Component: <SocialsOnboarding />,
     },
     [Route.WRONG_NETWORK]: {
       title: '',

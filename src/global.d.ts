@@ -84,6 +84,38 @@ interface KleverApi {
   disconnect?(): Promise<void>;
 }
 
+interface CactusLinkApi {
+  isConnected(): Promise<{ isConnected: boolean; error?: string }>;
+  requestAccess(): Promise<{ error?: string }>;
+  getAddress(): Promise<{ address: string; error?: string }>;
+  signTransaction(
+    xdr: string,
+    opts?: {
+      networkPassphrase?: string;
+      address?: string;
+    },
+  ): Promise<{ signedTxXdr: string }>;
+  signAuthEntry(
+    authEntry: string,
+    opts?: {
+      networkPassphrase?: string;
+      address?: string;
+    },
+  ): Promise<{ signedAuthEntry: string }>;
+  signMessage(
+    message: string,
+    opts?: {
+      networkPassphrase?: string;
+      address?: string;
+    },
+  ): Promise<{ signedMessage: string }>;
+  getNetwork(): Promise<{
+    network: string;
+    networkPassphrase: string;
+    error?: string;
+  }>;
+}
+
 interface FreighterApi {
   isConnected: () => Promise<{ isConnected: boolean }>;
   requestAccess: () => Promise<{ address: string }>;
@@ -109,6 +141,11 @@ declare global {
     };
     kleverWallet?: {
       stellar?: KleverApi;
+    };
+    cactuslink_stellar?: CactusLinkApi;
+    isFordefi?: boolean;
+    FordefiProviders?: {
+      StellarProvider?: unknown;
     };
     xBullSDK?: {
       connect(params?: {

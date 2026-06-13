@@ -15,6 +15,7 @@ const commonPlugins = [
     values: {
       'Buffer.alloc': 'require("buffer").Buffer.alloc',
       'Buffer.concat': 'require("buffer").Buffer.concat',
+      'Buffer.from': 'require("buffer").Buffer.from',
     },
   }),
   replace({

@@ -54,7 +54,7 @@ export const getAssetTitle = (
   }
 
   if (asset.asset_type === 'liquidity_pool_shares') {
-    return 'LiquidtyPool';
+    return 'Liquidity Pool';
   }
 
   return '';
@@ -143,6 +143,25 @@ export const isChangeTrustNeeded = (
   }
 
   return false;
+};
+
+// Resolves an asset's balance from the CURRENT balances instead of the
+// snapshot stored when the asset was picked. Assets absent from the active
+// network's balances (e.g. suggested assets) resolve to '0'.
+export const getLiveAssetBalance = (
+  asset: IAsset,
+  balances: Horizon.HorizonApi.BalanceLine[],
+): string => {
+  const line = balances.find((b) =>
+    asset.assetType === 'native'
+      ? b.asset_type === 'native'
+      : // @ts-ignore
+        b.asset_code === asset.assetCode &&
+        // @ts-ignore
+        b.asset_issuer === asset.assetIssuer,
+  );
+
+  return line?.balance || '0';
 };
 
 export const balanceToAsset = (
@@ -250,7 +269,7 @@ export const getMappedWallets = async (
     Object.values(walletsConfig).map(async (wallet) => {
       try {
         // @ts-ignore
-        if (walletNames.includes(wallet.name.toLowerCase())) {
+        if (walletNames.includes(wallet.name.toLowerCase().replace(/\s+/g, ''))) {
           return { wallet, isAvailable: false };
         }
 
@@ -290,7 +309,7 @@ export const getNetworkByPassphrase = (passphrase: string) => {
   );
 
   if (!networkEntry) {
-    throw new Error(`Unknown network passphrase: ${passphrase}`);
+    throw new Error(`BLUX: Unknown network passphrase: ${passphrase}`);
   }
 
   return networkEntry[0].toLowerCase();
@@ -327,7 +346,16 @@ export const getNetworkRpc = (
   return details;
 };
 
-export const getSortedCheckedWallets = (wallets: IWallet[]): IWallet[] => {
+export const canonicalWalletName = (name: string) =>
+  name.toLowerCase().replace(/\s+/g, '');
+
+// Display order: recently used wallets first (most recent on top), then the
+// dev-prioritized ones from config.orderWallets, then everything else in the
+// default order.
+export const getSortedCheckedWallets = (
+  wallets: IWallet[],
+  priorityNames: string[] = [],
+): IWallet[] => {
   const recentNames = getRecentConnectionMethod();
 
   const walletMap = new Map(wallets.map((w) => [w.name, w]));
@@ -343,14 +371,27 @@ export const getSortedCheckedWallets = (wallets: IWallet[]): IWallet[] => {
     }
   }
 
+  const priorityWallets: IWallet[] = [];
+
+  for (const priorityName of priorityNames) {
+    const wallet = wallets.find(
+      (w) => canonicalWalletName(w.name) === canonicalWalletName(priorityName),
+    );
+
+    if (wallet && !seen.has(wallet.name)) {
+      priorityWallets.push(wallet);
+      seen.add(wallet.name);
+    }
+  }
+
   const remainingWallets = wallets.filter((w) => !seen.has(w.name));
 
-  const result = [...recentWallets, ...remainingWallets];
+  const result = [...recentWallets, ...priorityWallets, ...remainingWallets];
 
   const walletsWithIsRecent = result.map((w, i) => {
     return {
       ...w,
-      isRecent: i === 0,
+      isRecent: i === 0 && recentWallets.length > 0,
     };
   });
 
@@ -369,15 +410,16 @@ export const getWalletNetwork = async (wallet: IWallet) => {
 
 export const handleLoadWallets = (
   walletNames: IWalletNames,
+  orderWallets: string[] = [],
 ): Promise<IWallet[]> =>
   new Promise((res) => {
     if (document.readyState === 'complete') {
-      loadWallets(walletNames).then((wallets) => {
+      loadWallets(walletNames, orderWallets).then((wallets) => {
         res(wallets);
       });
     } else {
       window.addEventListener('load', () => {
-        loadWallets(walletNames).then((wallets) => {
+        loadWallets(walletNames, orderWallets).then((wallets) => {
           res(wallets);
         });
       });
@@ -397,7 +439,7 @@ export const hexToRgba = (hex: string, alpha: number = 1) => {
     g = parseInt(hex.substring(2, 4), 16);
     b = parseInt(hex.substring(4, 6), 16);
   } else {
-    throw new Error(`Invalid hex color: ${hex}`);
+    throw new Error(`BLUX: Invalid hex color: ${hex}`);
   }
 
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
@@ -446,12 +488,15 @@ export const isBackgroundDark = (bgColor: string): boolean => {
   return luminance > 0.5 ? false : true;
 };
 
-export const loadWallets = async (excludedWallets: IWalletNames) => {
+export const loadWallets = async (
+  excludedWallets: IWalletNames,
+  orderWallets: string[] = [],
+) => {
   initializeRabetMobile();
 
   const wallets = await getMappedWallets(excludedWallets);
 
-  const sortAvailableWallets = getSortedCheckedWallets(wallets);
+  const sortAvailableWallets = getSortedCheckedWallets(wallets, orderWallets);
 
   return sortAvailableWallets;
 };
@@ -490,7 +535,10 @@ export const translate = (
   lang: LanguageKey,
   vars: Record<string, string> = {},
 ): string => {
-  const template = translations[key]?.[lang] || translations[key]?.en || '';
+  // Fall back to English, then to the key itself so dynamic titles (e.g. an
+  // asset code in the modal header) pass through unchanged.
+  const template =
+    translations[key]?.[lang] || translations[key]?.en || String(key);
   return interpolate(template, vars);
 };
 
@@ -500,6 +548,42 @@ export const getNetworkNamesFromPassphrase = (
   const result = Object.entries(networks)
     .filter((n) => userNetworks.includes(n[1]))
     .map((n) => capitalizeFirstLetter(n[0]));
+
+  return result;
+};
+
+// Normalizes config.orderWallets to canonical names (lowercase, no spaces)
+// and drops unknown entries with a warning.
+export const validateOrderWallets = (
+  orderWallets: string[] | undefined,
+): string[] => {
+  if (!orderWallets) {
+    return [];
+  }
+
+  if (!Array.isArray(orderWallets)) {
+    throw new Error('BLUX: config.orderWallets must be an array of wallet names.');
+  }
+
+  const knownNames = new Set(
+    Object.values(SupportedWallet).map((name) => canonicalWalletName(name)),
+  );
+
+  const result: string[] = [];
+
+  for (const name of orderWallets) {
+    const canonical = canonicalWalletName(String(name));
+
+    if (!knownNames.has(canonical)) {
+      console.warn(`BLUX: unknown wallet '${name}' in config.orderWallets.`);
+
+      continue;
+    }
+
+    if (!result.includes(canonical)) {
+      result.push(canonical);
+    }
+  }
 
   return result;
 };

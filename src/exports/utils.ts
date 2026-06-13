@@ -37,7 +37,7 @@ export const getAddress = (address?: string) => {
   const { user } = getState();
 
   if (!user && !address) {
-    throw new Error('Address not found');
+    throw new Error('BLUX: Address not found');
   }
 
   if (address) {
@@ -59,7 +59,7 @@ export const getNetwork = (network?: string) => {
       };
     }
 
-    throw new Error('Custom network has no transports.');
+    throw new Error('BLUX: Custom network has no transports.');
   }
 
   const { horizon, soroban } = getNetworkRpc(network, config.transports ?? {});
@@ -76,15 +76,15 @@ export const internalSwitchNetwork = (newNetwork: string) => {
   const previousNetwork = store.stellar?.activeNetwork || '';
 
   if (store.config.networks.length === 0) {
-    throw new Error('switchNetwork must be called after createConfig');
+    throw new Error('BLUX: switchNetwork must be called after createConfig');
   }
 
   if (!store.config.networks.includes(newNetwork)) {
-    throw new Error('New network must be defined in config.networks');
+    throw new Error('BLUX: New network must be defined in config.networks');
   }
 
   if (!store.stellar) {
-    throw new Error('Could not find the current activeNetwork');
+    throw new Error('BLUX: Could not find the current activeNetwork');
   }
 
   store.setStellar({

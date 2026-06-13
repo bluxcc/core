@@ -17,9 +17,18 @@ type ApiSuccessResponse<T> = {
 
 type ApiResponse<T> = ApiErrorResponse | ApiSuccessResponse<T>;
 
+type ApiSocialConfigEntry = {
+  provider: string;
+  display_name?: string;
+  client_id?: string;
+  redirect_uri?: string;
+};
+
 type ApiResponseAuth = {
   privacy_policy: string;
   terms: string;
+  socials?: string[];
+  socials_config?: ApiSocialConfigEntry[];
 };
 
 type ApiPasskeyChallenge = {
@@ -33,7 +42,7 @@ export const authenticateAppId = async (
   appId: string,
 ): Promise<AuthenticateApiResponse> => {
   if (!appId) {
-    throw new Error('appId is missing in config.');
+    throw new Error('BLUX: appId is missing in config.');
   }
 
   try {
@@ -53,6 +62,13 @@ export const authenticateAppId = async (
         message: res.message,
         terms: res.result.terms,
         privacyPolicy: res.result.privacy_policy,
+        socials: (res.result.socials ?? []).map((s) => s.toLowerCase()),
+        socialsConfig: (res.result.socials_config ?? []).map((entry) => ({
+          provider: (entry.provider || '').toLowerCase(),
+          displayName: entry.display_name || entry.provider || '',
+          clientId: entry.client_id || '',
+          redirectUri: entry.redirect_uri || '',
+        })),
       };
     }
 
@@ -62,6 +78,8 @@ export const authenticateAppId = async (
         message: res.error,
         terms: '',
         privacyPolicy: '',
+        socials: [],
+        socialsConfig: [],
       };
     }
 
@@ -70,6 +88,8 @@ export const authenticateAppId = async (
       message: 'Unexpected response from api.',
       terms: '',
       privacyPolicy: '',
+      socials: [],
+      socialsConfig: [],
     };
   } catch (e: any) {
     return {
@@ -77,15 +97,56 @@ export const authenticateAppId = async (
       message: 'Unexpected response from api. ' + e.message,
       terms: '',
       privacyPolicy: '',
+      socials: [],
+      socialsConfig: [],
     };
   }
+};
+
+export const apiSocialLogin = async (
+  appId: string,
+  provider: string,
+  code: string,
+): Promise<string> => {
+  if (!appId) {
+    throw new Error('BLUX: appId is missing in config.');
+  }
+
+  let res: ApiResponse<string>;
+
+  try {
+    res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/social`, {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        provider,
+        code,
+      }),
+    });
+  } catch (_e: any) {
+    throw new Error('BLUX: Could not reach the Blux API.');
+  }
+
+  if (res.status === 200 && res.result) {
+    return res.result;
+  }
+
+  // Surface the backend message (e.g. provider not enabled, account not
+  // allowed by the restriction list) instead of a generic error.
+  throw new Error(
+    'BLUX: ' + ((res as ApiErrorResponse).error || 'Unexpected response from api'),
+  );
 };
 
 export const apiRegisterPasskeyChallenge = async (
   appId: string,
 ): Promise<ApiPasskeyChallenge> => {
   if (!appId) {
-    throw new Error('appId is missing in config.');
+    throw new Error('BLUX: appId is missing in config.');
   }
 
   try {
@@ -107,24 +168,24 @@ export const apiRegisterPasskeyChallenge = async (
     );
 
     if (res.status === 400) {
-      throw new Error('invalid inputs');
+      throw new Error('BLUX: invalid inputs');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200) {
       return res.result;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
@@ -134,7 +195,7 @@ export const apiRegisterPasskey = async (
   passkeyResult: PasskeyFlowResult,
 ): Promise<string> => {
   if (!appId) {
-    throw new Error('appId is missing in config.');
+    throw new Error('BLUX: appId is missing in config.');
   }
 
   try {
@@ -178,24 +239,24 @@ export const apiRegisterPasskey = async (
     });
 
     if (res.status === 400) {
-      throw new Error('invalid inputs');
+      throw new Error('BLUX: invalid inputs');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200) {
       return res.result;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
@@ -204,7 +265,7 @@ export const apiSendOtp = async (
   authValue: string,
 ): Promise<boolean> => {
   if (!appId) {
-    throw new Error('appId is missing in config.');
+    throw new Error('BLUX: appId is missing in config.');
   }
 
   try {
@@ -223,24 +284,24 @@ export const apiSendOtp = async (
     });
 
     if (res.status === 400) {
-      throw new Error('invalid inputs');
+      throw new Error('BLUX: invalid inputs');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200) {
       return true;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
@@ -250,11 +311,11 @@ export const apiStoreWalletConnection = async (
   walletAddress: string,
 ): Promise<boolean> => {
   if (!appId) {
-    throw new Error('appId is missing in config.');
+    throw new Error('BLUX: appId is missing in config.');
   }
 
   if (!walletAddress) {
-    throw new Error('wallet address is missing.');
+    throw new Error('BLUX: wallet address is missing.');
   }
 
   try {
@@ -273,30 +334,30 @@ export const apiStoreWalletConnection = async (
     });
 
     if (res.status === 400) {
-      throw new Error('invalid inputs');
+      throw new Error('BLUX: invalid inputs');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200) {
       return true;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (_e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
 export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
   if (!appId) {
-    throw new Error('appId is missing in config.');
+    throw new Error('BLUX: appId is missing in config.');
   }
 
   try {
@@ -316,28 +377,28 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
     });
 
     if (res.status === 400) {
-      throw new Error('invalid inputs');
+      throw new Error('BLUX: invalid inputs');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 404) {
-      throw new Error('invalid code');
+      throw new Error('BLUX: invalid code');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200) {
       return res.result;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
@@ -362,28 +423,28 @@ export const apiGetUser = async (JWT: string) => {
     );
 
     if (res.status === 401) {
-      throw new Error('invalid JWT');
+      throw new Error('BLUX: invalid JWT');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 404) {
-      throw new Error('user nout found');
+      throw new Error('BLUX: user nout found');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200) {
       return res.result;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
@@ -408,28 +469,28 @@ export const apiSignMessage = async (JWT: string, message: string) => {
     );
 
     if (res.status === 401) {
-      throw new Error('invalid JWT');
+      throw new Error('BLUX: invalid JWT');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 404) {
-      throw new Error('user nout found');
+      throw new Error('BLUX: user nout found');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200 && res.result) {
       return res.result;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };
 
@@ -456,27 +517,27 @@ export const apiSignTransaction = async (
     );
 
     if (res.status === 401) {
-      throw new Error('invalid JWT');
+      throw new Error('BLUX: invalid JWT');
     }
 
     if (res.status === 500) {
-      throw new Error('server error');
+      throw new Error('BLUX: server error');
     }
 
     if (res.status === 404) {
-      throw new Error('user nout found');
+      throw new Error('BLUX: user nout found');
     }
 
     if (res.status === 429) {
-      throw new Error('too many requests');
+      throw new Error('BLUX: too many requests');
     }
 
     if (res.status === 200 && res.result) {
       return res.result;
     }
 
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
-    throw new Error('Unexpected response from api');
+    throw new Error('BLUX: Unexpected response from api');
   }
 };

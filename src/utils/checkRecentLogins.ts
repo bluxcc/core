@@ -91,7 +91,9 @@ export const checkRecentLogins = async (): Promise<boolean> => {
     return false;
   }
 
-  if (recentLogin.authMethod === 'email' && recentLogin.jwt) {
+  // Any JWT-backed login (email, social providers, passkey) restores the
+  // same way: the JWT proves the session, the API returns the user.
+  if (recentLogin.authMethod !== 'wallet' && recentLogin.jwt) {
     try {
       const user = await apiGetUser(recentLogin.jwt);
 
@@ -100,7 +102,7 @@ export const checkRecentLogins = async (): Promise<boolean> => {
         user: {
           address: user.public_key,
           walletPassphrase: '',
-          authMethod: 'email',
+          authMethod: user.auth_method || recentLogin.authMethod,
           authValue: user.auth_value,
         },
       }));
@@ -110,6 +112,10 @@ export const checkRecentLogins = async (): Promise<boolean> => {
         store.stellar?.activeNetwork || '',
       );
       store.setIsAuthenticated(true);
+      store.setAuth({
+        isAuthenticated: true,
+        JWT: recentLogin.jwt,
+      });
 
       const userStore = getState().user;
 
@@ -118,8 +124,8 @@ export const checkRecentLogins = async (): Promise<boolean> => {
       }
 
       setRecentLoginConfig(
-        'email',
-        store.user?.authValue || '',
+        recentLogin.authMethod,
+        user.auth_value || '',
         Date.now(),
         recentLogin.jwt,
       );

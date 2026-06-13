@@ -14,11 +14,12 @@ import {
 
 const handleAssetText = (
   op: Horizon.ServerApi.PaymentOperationRecord | any,
+  poolLabel: string,
 ) => {
   if (op.asset_type === 'native') {
     return 'XLM';
   }
-  return op.asset_code || 'Pool';
+  return op.asset_code || poolLabel;
 };
 
 const Activity = () => {
@@ -57,21 +58,26 @@ const Activity = () => {
         hash: tx.hash,
         description: '',
         date: tx.created_at,
+        action: 'other',
         title: toTitleFormat(op.type),
       };
 
       if (tx.operations.length > 1) {
         details.title = t('multiOperation');
+        details.action = 'multi';
       } else if (op.type === 'payment') {
         let title = t('send');
+        details.action = 'send';
 
         if (op.to.toLowerCase() === userAddress.toLowerCase()) {
           title = t('receive');
+          details.action = 'receive';
         }
 
         details.title = title;
         details.description = `${humanizeAmount(op.amount)} ${handleAssetText(
           op,
+          t('pool'),
         )}`;
       } else if (
         op.type ===
@@ -79,7 +85,10 @@ const Activity = () => {
         op.type === Horizon.HorizonApi.OperationResponseType.pathPayment
       ) {
         details.title = t('swap');
-        details.description = `Received ${handleAssetText(op)}`;
+        details.action = 'swap';
+        details.description = t('receivedAsset', {
+          asset: handleAssetText(op, t('pool')),
+        });
       }
 
       result.push(details);

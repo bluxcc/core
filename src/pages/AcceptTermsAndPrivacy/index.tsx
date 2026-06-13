@@ -27,7 +27,7 @@ const AcceptTermsAndPrivacy = () => {
 
   if (terms) {
     links.push({
-      label: 'Terms of Service',
+      label: t('termsOfService'),
       icon: <ArrowOutward />,
       href: terms,
     });
@@ -35,7 +35,7 @@ const AcceptTermsAndPrivacy = () => {
 
   if (privacyPolicy) {
     links.push({
-      label: 'Privacy Policy',
+      label: t('privacyPolicy'),
       icon: <ArrowOutward />,
       href: privacyPolicy,
     });

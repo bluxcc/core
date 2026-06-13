@@ -1,37 +1,118 @@
+import { useEffect } from 'react';
+
+import { Route } from '../../../../enums';
 import { useAppStore } from '../../../../store';
 import { useLang } from '../../../../hooks/useLang';
 import CDNFiles from '../../../../constants/cdnFiles';
 import CDNImage from '../../../../components/CDNImage';
-import { hexToRgba, humanizeAmount } from '../../../../utils/helpers';
-
-type DetailsProps = {
-  label: string;
-  value: string | number;
-  copyable?: boolean;
-  link?: boolean;
-};
+import { DEFAULT_NETWORKS_TRANSPORTS } from '../../../../constants/networkDetails';
+import {
+  copyText,
+  hexToRgba,
+  shortenAddress,
+  humanizeAmount,
+  getExplorerUrl,
+  getContrastColor,
+} from '../../../../utils/helpers';
 
 const BalanceDetails = () => {
   const t = useLang();
-  const appearance = useAppStore((store) => store.config.appearance);
+  const store = useAppStore((store) => store);
+  const appearance = store.config.appearance;
 
-  let asset = {
-    logo: <CDNImage name={CDNFiles.Stellar} props={{}} />,
-    assetBalance: 0.43332,
-    valueInCurrency: 203,
+  const asset = store.detailsAsset;
+  const activeNetwork = store.stellar?.activeNetwork || '';
+
+  // The asset code is shown as the modal title; clear it when leaving.
+  useEffect(() => {
+    return () => {
+      store.setDynamicTitle('');
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!asset) {
+      store.setRoute(Route.BALANCES);
+    }
+  }, [asset]);
+
+  if (!asset) {
+    return null;
+  }
+
+  const isNative = asset.assetType === 'native';
+  const networkName =
+    DEFAULT_NETWORKS_TRANSPORTS[activeNetwork]?.name || t('network');
+  const issuerExplorerUrl = isNative
+    ? null
+    : getExplorerUrl(
+        activeNetwork,
+        store.config.explorer,
+        'accountUrl',
+        asset.assetIssuer,
+      );
+
+  const handleCopyIssuer = () => {
+    copyText(asset.assetIssuer)
+      .then(() => {
+        store.setAlert('copy', t('address_copied'));
+
+        setTimeout(() => {
+          store.setAlert('none', '');
+        }, 1000);
+      })
+      .catch(() => { });
   };
 
-  const details: DetailsProps[] = [
-    { label: t('network'), value: 'Stellar', link: true },
-    { label: t('address'), value: 'GFGE...MKLW', copyable: true },
-    { label: t('market_cap'), value: '2.45M' },
-    { label: t('total_volume'), value: 323 },
-    { label: t('all_time_high'), value: 323 },
+  const details = [
+    { label: t('network'), value: <span>{networkName}</span> },
+    ...(isNative || !asset.assetIssuer
+      ? []
+      : [
+          {
+            label: t('issuer'),
+            value: (
+              <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
+                {issuerExplorerUrl ? (
+                  <a
+                    href={issuerExplorerUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bluxcc:no-underline"
+                    style={{
+                      color: appearance.accentColor,
+                      fontFamily: appearance.fontFamily,
+                    }}
+                  >
+                    {shortenAddress(asset.assetIssuer, 5)}
+                  </a>
+                ) : (
+                  shortenAddress(asset.assetIssuer, 5)
+                )}
+
+                <button
+                  id="bluxcc-button"
+                  onClick={handleCopyIssuer}
+                  className="bluxcc:flex bluxcc:items-center bluxcc:bg-transparent"
+                >
+                  <CDNImage
+                    name={CDNFiles.Copy}
+                    props={{ fill: appearance.accentColor }}
+                  />
+                </button>
+              </span>
+            ),
+          },
+        ]),
+    {
+      label: t('balance'),
+      value: <span>{`${humanizeAmount(asset.assetBalance)} ${asset.assetCode}`}</span>,
+    },
   ];
 
   return (
     <div>
-      <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:my-4">
+      <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-3 bluxcc:my-4">
         <div
           className="bluxcc:size-14 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full bluxcc:border"
           style={{
@@ -39,20 +120,34 @@ const BalanceDetails = () => {
             borderWidth: appearance.borderWidth,
           }}
         >
-          {asset.logo}
+          {isNative ? (
+            <CDNImage
+              name={CDNFiles.Stellar}
+              props={{ fill: getContrastColor(appearance.background) }}
+            />
+          ) : (
+            <CDNImage
+              name={CDNFiles.QuestionMark}
+              props={{ fill: getContrastColor(appearance.background) }}
+            />
+          )}
         </div>
         <div className="bluxcc:flex bluxcc:flex-col">
           <span
             className="bluxcc:text-2xl bluxcc:font-medium"
             style={{ color: appearance.accentColor }}
           >
-            ${humanizeAmount(asset.valueInCurrency)}
+            {humanizeAmount(asset.assetBalance)} {asset.assetCode}
           </span>
           <span
             className="bluxcc:text-sm bluxcc:font-medium"
             style={{ color: hexToRgba(appearance.textColor, 0.7) }}
           >
-            {humanizeAmount(asset.assetBalance)} XLM
+            {isNative
+              ? 'Stellar Lumens'
+              : asset.assetIssuer
+                ? shortenAddress(asset.assetIssuer, 4)
+                : asset.assetCode}
           </span>
         </div>
       </div>
@@ -61,9 +156,10 @@ const BalanceDetails = () => {
         {details.map((item, i) => {
           return (
             <div
-              key={i}
+              key={item.label}
               className="bluxcc:flex bluxcc:font-medium bluxcc:items-center bluxcc:justify-between bluxcc:text-xs bluxcc:h-8 bluxcc:px-4"
               style={{
+                color: appearance.textColor,
                 borderBottom:
                   i < details.length - 1
                     ? `${appearance.borderWidth} dashed ${appearance.borderColor}`
@@ -73,35 +169,9 @@ const BalanceDetails = () => {
               <span>{item.label}</span>
               <span
                 className="bluxcc:flex bluxcc:items-center bluxcc:gap-1 bluxcc:text-xs"
-                style={{
-                  color:
-                    item.copyable || item.link
-                      ? appearance.accentColor
-                      : hexToRgba(appearance.textColor, 0.7),
-                }}
+                style={{ color: hexToRgba(appearance.textColor, 0.7) }}
               >
-                {item.link ? (
-                  <a
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      color: appearance.accentColor,
-                      fontFamily: appearance.fontFamily,
-                    }}
-                    className="bluxcc:no-underline"
-                  >
-                    {item.value}
-                  </a>
-                ) : (
-                  item.value
-                )}
-                {item.copyable && (
-                  <CDNImage
-                    name={CDNFiles.Copy}
-                    props={{ fill: appearance.accentColor }}
-                  />
-                )}
+                {item.value}
               </span>
             </div>
           );

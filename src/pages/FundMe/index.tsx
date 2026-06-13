@@ -2,6 +2,7 @@ import { JSX } from 'react';
 
 import { Route } from '../../enums';
 import { useAppStore } from '../../store';
+import { useLang } from '../../hooks/useLang';
 import CDNFiles from '../../constants/cdnFiles';
 import CDNImage from '../../components/CDNImage';
 import { hexToRgba } from '../../utils/helpers';
@@ -19,6 +20,7 @@ type IFundOption = {
 };
 
 function FundMe() {
+  const t = useLang();
   const store = useAppStore((state) => state);
   const { appearance } = store.config;
   const address = store.user?.address;
@@ -42,7 +44,7 @@ function FundMe() {
     {
       id: 'crypto',
       logo: CDNFiles.Receive,
-      title: 'Receive Funds',
+      title: t('receiveFunds'),
       route: Route.FUND_ME_CRYPTO,
     },
   ];

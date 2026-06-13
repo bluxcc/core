@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "@hot-wallet/sdk": "^1.0.11",
-    "@ledgerhq/hw-transport-webusb": "^6.29.12"
+    "@ledgerhq/hw-transport-webusb": "^6.29.12",
+    "@trezor/connect-web": "^10.0.0-alpha.1"
   }
 }

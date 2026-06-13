@@ -6,26 +6,31 @@ import {
   apiRegisterPasskeyChallenge,
 } from '../../../utils/api';
 import { getState, useAppStore } from '../../../store';
+import { useLang } from '../../../hooks/useLang';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { Route } from '../../../enums';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 
 type PasskeyStatus = 'loading' | 'failed' | 'success';
 
-const texts: Record<PasskeyStatus, { title: string; content: string }> = {
+const textKeys: Record<
+  PasskeyStatus,
+  {
+    title: 'passkeyWaitingTitle' | 'passkeyFailedTitle' | 'passkeySuccessTitle';
+    content: 'passkeyWaitingHelp' | 'passkeyFailedHelp' | 'passkeySuccessHelp';
+  }
+> = {
   loading: {
-    title: 'Waiting for passkey',
-    content:
-      'Please follow prompts to verify your passkey. You will have to sign up with another method first to register a passkey for your account.',
+    title: 'passkeyWaitingTitle',
+    content: 'passkeyWaitingHelp',
   },
   failed: {
-    title: 'Something went wrong',
-    content:
-      'Passkey request timed out or rejected by user. You will have to sign up with another method first to register a passkey for your account.',
+    title: 'passkeyFailedTitle',
+    content: 'passkeyFailedHelp',
   },
   success: {
-    title: 'Successful!',
-    content: 'You are being redirected now.',
+    title: 'passkeySuccessTitle',
+    content: 'passkeySuccessHelp',
   },
 };
 
@@ -41,22 +46,22 @@ export type PasskeyFlowResult =
 
 async function ensurePasskeySupport(): Promise<void> {
   if (typeof window === 'undefined') {
-    throw new Error('Passkeys require a browser environment.');
+    throw new Error('BLUX: Passkeys require a browser environment.');
   }
 
   if (!('credentials' in navigator)) {
-    throw new Error('WebAuthn is not supported in this browser.');
+    throw new Error('BLUX: WebAuthn is not supported in this browser.');
   }
 
   if (!('PublicKeyCredential' in window)) {
-    throw new Error('Passkeys are not supported in this browser.');
+    throw new Error('BLUX: Passkeys are not supported in this browser.');
   }
 
   if (
     typeof PublicKeyCredential.isConditionalMediationAvailable !== 'function'
   ) {
     throw new Error(
-      'Conditional passkey mediation is not supported in this browser.',
+      'BLUX: Conditional passkey mediation is not supported in this browser.',
     );
   }
 
@@ -64,7 +69,7 @@ async function ensurePasskeySupport(): Promise<void> {
     await PublicKeyCredential.isConditionalMediationAvailable();
   if (!conditional) {
     throw new Error(
-      'Conditional passkey mediation is not available in this browser.',
+      'BLUX: Conditional passkey mediation is not available in this browser.',
     );
   }
 }
@@ -77,8 +82,6 @@ async function continueWithPasskey(
 
   const challengeInBuffer = new TextEncoder().encode(challenge).buffer;
 
-  console.log('io0');
-
   try {
     const assertion = await navigator.credentials.get({
       publicKey: {
@@ -89,12 +92,7 @@ async function continueWithPasskey(
       },
     });
 
-    console.log('io1');
-    console.log(assertion);
-
     if (assertion instanceof PublicKeyCredential) {
-      console.log('io2');
-
       return {
         step: 'login',
         credential: assertion,
@@ -103,10 +101,6 @@ async function continueWithPasskey(
   } catch (error) {
     throw error;
   }
-
-  console.log('io3');
-
-  console.log('io4');
 
   const created = await navigator.credentials.create({
     publicKey: {
@@ -135,13 +129,9 @@ async function continueWithPasskey(
     },
   });
 
-  console.log('io5');
-
   if (!(created instanceof PublicKeyCredential)) {
-    throw new Error('Passkey registration was not completed.');
+    throw new Error('BLUX: Passkey registration was not completed.');
   }
-
-  console.log('io6');
 
   return {
     step: 'register',
@@ -150,6 +140,7 @@ async function continueWithPasskey(
 }
 
 const PasskeyOnboardingPage = () => {
+  const t = useLang();
   const store = useAppStore((store) => store);
   const [status, setStatus] = useState<PasskeyStatus>('loading');
 
@@ -174,8 +165,6 @@ const PasskeyOnboardingPage = () => {
 
       await completePasskeyAuthentication(jwt);
     } catch (e: any) {
-      console.log('failed', e.message);
-
       setStatus('failed');
     }
   };
@@ -236,14 +225,14 @@ const PasskeyOnboardingPage = () => {
       <PasskeyFingerLogo />
 
       <div>
-        <p>{texts[status].title}</p>
+        <p>{t(textKeys[status].title)}</p>
 
-        <p>{texts[status].content}</p>
+        <p>{t(textKeys[status].content)}</p>
       </div>
 
       {status === 'failed' && (
         <button type="button" onClick={handlePasskeyRetry}>
-          Retry
+          {t('tryAgain')}
         </button>
       )}
     </div>

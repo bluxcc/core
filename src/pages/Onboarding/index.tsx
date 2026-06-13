@@ -12,6 +12,11 @@ import { Route, SupportedWallet } from '../../enums';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
+import {
+  SOCIAL_PROVIDERS,
+  beginSocialLogin,
+  getEnabledSocials,
+} from '../../utils/socialLogin';
 
 const Onboarding = () => {
   const t = useLang();
@@ -23,6 +28,13 @@ const Onboarding = () => {
   const loginMethods = config.loginMethods || [];
 
   const isPassKeyEnabled = loginMethods.includes('passkey');
+
+  // Socials the dev listed in loginMethods AND the owner enabled in the
+  // dashboard (delivered by /auth/validate). Empty until apiResponse arrives.
+  const enabledSocials = useMemo(
+    () => getEnabledSocials(loginMethods, store.apiResponse),
+    [loginMethods, store.apiResponse],
+  );
 
   const orderedLoginMethods = useMemo(() => {
     const methods = [...loginMethods].filter((method) => method !== 'passkey');
@@ -69,6 +81,14 @@ const Onboarding = () => {
       // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
     }
   };
+
+  const handleConnectSocial = (provider: string) => {
+    // The popup must open synchronously inside the click gesture, otherwise
+    // the browser blocks it. The SocialsOnboarding page picks the session up.
+    beginSocialLogin(provider, store.apiResponse?.socialsConfig || []);
+
+    store.connectSocial(provider);
+  };
   const handleRedirectToOnboardingPasskey = () => {
     store.setRoute(Route.PASSKEY_ONBOARDING);
   };
@@ -114,15 +134,21 @@ const Onboarding = () => {
 
       <div className="">
         {orderedLoginMethods.map((method, index) => {
+          const normalizeMethod = (m?: string) =>
+            String(m || '').toLowerCase().trim();
+          const socialProvider = normalizeMethod(method);
           const nextMethod = orderedLoginMethods[index + 1];
-          const prevMethod = orderedLoginMethods[index - 1];
           const walletExists = orderedLoginMethods.includes('wallet');
+          // Rows that are rendered as non-wallet login options. A divider
+          // separates the wallet block from those rows on either side.
+          const isAuthRow = (m?: string) =>
+            m === 'email' || enabledSocials.includes(normalizeMethod(m));
           const shouldRenderDivider =
             (walletExists &&
               !store.showAllWallets &&
               method === 'wallet' &&
-              nextMethod === 'email') ||
-            (walletExists && method === 'email' && prevMethod !== 'wallet');
+              isAuthRow(nextMethod)) ||
+            (walletExists && isAuthRow(method) && nextMethod === 'wallet');
 
           if (method === 'wallet') {
             return (
@@ -160,6 +186,39 @@ const Onboarding = () => {
                   )}
                   {shouldRenderDivider && renderDivider()}
                 </div>
+              </React.Fragment>
+            );
+          }
+
+          if (
+            !store.showAllWallets &&
+            enabledSocials.includes(socialProvider)
+          ) {
+            // Render only the first occurrence of a provider so duplicate
+            // entries in loginMethods don't produce duplicate buttons.
+            const firstIndex = orderedLoginMethods.findIndex(
+              (m) => normalizeMethod(m) === socialProvider,
+            );
+
+            if (firstIndex !== index) {
+              return null;
+            }
+
+            const providerMeta = SOCIAL_PROVIDERS[socialProvider];
+
+            return (
+              <React.Fragment key={socialProvider}>
+                <div className="bluxcc:mb-2">
+                  <CardItem
+                    label={t('continueWith', {
+                      provider: providerMeta.displayName,
+                    })}
+                    startIcon={<CDNImage name={providerMeta.icon} />}
+                    onClick={() => handleConnectSocial(socialProvider)}
+                  />
+                </div>
+
+                {shouldRenderDivider && renderDivider()}
               </React.Fragment>
             );
           }

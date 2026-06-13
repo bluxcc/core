@@ -7,11 +7,14 @@ import { authenticateAppId } from '../utils/api';
 import { Provider } from '../components/Provider';
 import { IConfig, IInternalConfig } from '../types';
 import { defaultLightTheme } from '../constants/themes';
+import { initializeTrezor } from '../utils/initializeTrezor';
 import { initializeWalletConnect } from '../utils/initializeWalletConnect';
+import { getEnabledSocials, isSocialProvider } from '../utils/socialLogin';
 import {
   getNetworkRpc,
   handleLoadWallets,
   validateNetworkOptions,
+  validateOrderWallets,
 } from '../utils/helpers';
 
 import '../tailwind.css';
@@ -80,10 +83,15 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     );
   }
 
-  if (config.lang && config.lang.trim().toLowerCase() !== 'en') {
+  const SUPPORTED_LANGS = ['en', 'es', 'pt', 'fr', 'de', 'ru', 'zh', 'ja', 'ko'];
+  let lang = (config.lang || 'en').trim().toLowerCase();
+
+  if (!SUPPORTED_LANGS.includes(lang)) {
     console.warn(
-      'BLUX: Only EN is currently supported. Falling back to default language.',
+      `BLUX: '${config.lang}' is not a supported language (${SUPPORTED_LANGS.join(', ')}). Falling back to English.`,
     );
+
+    lang = 'en';
   }
 
   init(element);
@@ -91,7 +99,9 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   let excludeWallets = config.excludeWallets || ['lobstr'];
 
   // @ts-ignore
-  excludeWallets = excludeWallets.map((x) => x.toLowerCase());
+  excludeWallets = excludeWallets.map((x) => x.toLowerCase().replace(/\s+/g, ''));
+
+  const orderWallets = validateOrderWallets(config.orderWallets);
 
   let promptOnWrongNetwork = true;
 
@@ -102,14 +112,14 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   const conf: IInternalConfig = {
     ...config,
     excludeWallets,
+    orderWallets,
     appearance: {
       ...defaultLightTheme,
       ...config?.appearance,
     },
     defaultNetwork: '',
     promptOnWrongNetwork,
-    // lang: config.lang || 'en',
-    lang: 'en',
+    lang: lang as IInternalConfig['lang'],
     explorer: config.explorer || 'stellarchain',
     loginMethods: config.loginMethods || ['wallet'],
     showWalletUIs:
@@ -143,11 +153,11 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   setConfig(conf);
 
-  handleLoadWallets(excludeWallets).then((wallets) => {
+  handleLoadWallets(excludeWallets, orderWallets).then((wallets) => {
     const includedWallets = wallets.filter(
       (w) =>
         // @ts-ignore
-        !excludeWallets.includes(w.name.toLowerCase()),
+        !excludeWallets.includes(w.name.toLowerCase().replace(/\s+/g, '')),
     );
 
     setWallets(includedWallets);
@@ -158,14 +168,30 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     initializeWalletConnect(config.walletConnect, config.appName);
   }
 
+  if (config.trezor) {
+    initializeTrezor(config.trezor, config.appName);
+  }
+
   authenticateAppId(config.appId).then((result) => {
     setApiResponse(result);
 
+    const requestedSocials = conf.loginMethods.filter((m) =>
+      isSocialProvider(String(m)),
+    );
+
+    // Email, passkey, and social logins all go through the Blux API, so they
+    // need a valid appId.
     if (
-      (!result.isValid && conf.loginMethods.includes('email')) ||
-      conf.loginMethods.includes('passkey')
+      !result.isValid &&
+      (conf.loginMethods.includes('email') ||
+        conf.loginMethods.includes('passkey') ||
+        requestedSocials.length > 0)
     ) {
       throw new Error('BLUX: config.appId is invalid.');
     }
+
+    // Triggers a one-time warning for every social in loginMethods that the
+    // owner has not enabled in the dashboard; those entries are ignored.
+    getEnabledSocials(conf.loginMethods, result);
   });
 }

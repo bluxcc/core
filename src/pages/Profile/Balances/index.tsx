@@ -1,5 +1,4 @@
 import { useAppStore } from '../../../store';
-import TabBox from '../../../components/TabBox';
 import { useLang } from '../../../hooks/useLang';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
@@ -11,6 +10,9 @@ import {
   getAssetSubtitle,
 } from '../../../utils/helpers';
 
+// Stellar classic has no on-chain marker that separates NFTs from regular
+// assets (NFT-ness is only a convention: tiny fixed supply plus off-chain
+// TOML/IPFS metadata), so everything is shown in a single list.
 const Balances = () => {
   const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
@@ -38,82 +40,31 @@ const Balances = () => {
     );
   };
 
-  const tabsContent = [
-    {
-      label: t('assets'),
-      activeIcon: (
-        <CDNImage
-          name={CDNFiles.Assets}
-          props={{ fill: appearance.accentColor }}
-        />
-      ),
-      inActiveIcon: (
-        <CDNImage
-          name={CDNFiles.Assets}
-          props={{ fill: appearance.textColor }}
-        />
-      ),
-      content: !balances.length ? <NoAssets /> : <Assets assets={assets} />,
-    },
-    {
-      label: t('tokens'),
-      activeIcon: (
-        <CDNImage
-          name={CDNFiles.Token}
-          props={{ fill: appearance.accentColor }}
-        />
-      ),
-      inActiveIcon: (
-        <CDNImage
-          name={CDNFiles.Token}
-          props={{ fill: appearance.textColor }}
-        />
-      ),
-      content: (
-        <NoAssets />
-        // <div className="bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:flex-col bluxcc:w-full bluxcc:relative">
-        //   <Assets assets={assets} />
-        //   <div className="bluxcc:absolute bluxcc:bottom-3">
-        //     <Button
-        //       size="large"
-        //       state="enabled"
-        //       variant="tonal"
-        //       onClick={handleAddToken}
-        //       style={{
-        //         color: appearance.accentColor,
-        //       }}
-        //       startIcon={<PlusIcon fill={appearance.accentColor} />}
-        //     >
-        //       {t('add_new_token')}
-        //     </Button>
-        //   </div>
-        // </div>
-      ),
-    },
-    {
-      label: t('nfts'),
-      activeIcon: (
-        <CDNImage
-          name={CDNFiles.NFTs}
-          props={{ fill: appearance.accentColor }}
-        />
-      ),
-      inActiveIcon: (
-        <CDNImage name={CDNFiles.NFTs} props={{ fill: appearance.textColor }} />
-      ),
-      content: <NoAssets />,
-    },
-  ];
+  const StatusMessage = ({ text }: { text: string }) => (
+    <div
+      className="bluxcc:flex bluxcc:h-[355px] bluxcc:items-center bluxcc:justify-center bluxcc:text-center"
+      style={{
+        color: hexToRgba(appearance.textColor, 0.7),
+        fontFamily: appearance.fontFamily,
+      }}
+    >
+      {text}
+    </div>
+  );
 
   if (loading) {
-    return 'Loading';
+    return <StatusMessage text={`${t('loading')}...`} />;
   }
 
   if (error) {
-    return 'Error, try again.';
+    return <StatusMessage text={t('errorTryAgain')} />;
   }
 
-  return <TabBox tabs={tabsContent} />;
+  return (
+    <div className="bluxcc:h-[355px] bluxcc:py-3">
+      {!balances.length ? <NoAssets /> : <Assets assets={assets} />}
+    </div>
+  );
 };
 
 export default Balances;

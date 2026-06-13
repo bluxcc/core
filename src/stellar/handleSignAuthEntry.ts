@@ -7,7 +7,7 @@ const handleSignAuthEntry = async (
   network: string,
 ) => {
   if (!wallet?.signAuthEntry) {
-    throw new Error('Wallet does not support signAuthEntry.');
+    throw new Error('BLUX: Wallet does not support signAuthEntry.');
   }
 
   const signedAuthEntry = await wallet.signAuthEntry(authEntry, {

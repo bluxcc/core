@@ -12,7 +12,7 @@ Horizon.HorizonApi.SubmitTransactionResponse> {
   const { horizon } = getNetworkRpc(network, transports);
 
   if (!horizon) {
-    throw new Error("Horizon RPC was not found.");
+    throw new Error("BLUX: Horizon RPC was not found.");
   }
 
   const server = new Horizon.Server(horizon);

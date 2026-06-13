@@ -12,6 +12,7 @@ import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import { sendTransaction } from '../../../exports/blux';
 import swapTransaction from '../../../stellar/swapTransaction';
+import { getSuggestedAssets } from '../../../constants/assets';
 import { getStrictReceivePaths, getStrictSendPaths } from '../../../exports';
 import {
   hexToRgba,
@@ -19,7 +20,11 @@ import {
   humanizeAmount,
   balanceToAsset,
   isChangeTrustNeeded,
+  getLiveAssetBalance,
 } from '../../../utils/helpers';
+
+const isSameAsset = (a: IAsset, b: IAsset) =>
+  a.assetCode === b.assetCode && a.assetIssuer === b.assetIssuer;
 
 const Swap = () => {
   const t = useLang();
@@ -35,6 +40,17 @@ const Swap = () => {
   const [rate, setRate] = useState({ rate: 0, isInverted: false });
   const [lastFieldChanged, setLastFieldChanged] = useState<'from' | 'to'>(
     'from',
+  );
+
+  // Balances are read live from the store instead of the snapshot taken when
+  // the asset was picked, so network switches and refreshes stay accurate.
+  const fromBalance = getLiveAssetBalance(
+    store.selectAsset.swapFromAsset,
+    store.balances.balances,
+  );
+  const toBalance = getLiveAssetBalance(
+    store.selectAsset.swapToAsset,
+    store.balances.balances,
   );
 
   const handleOpenAssets = (field: 'swapFrom' | 'swapTo') => {
@@ -59,13 +75,65 @@ const Swap = () => {
     setLastFieldChanged('from');
     setShouldCheckAgain(!shouldCheckAgain);
 
-    setFrom(store.selectAsset.swapFromAsset.assetBalance);
+    setFrom(fromBalance);
   };
+
+  // When the user lands here with the untouched defaults (XLM -> XLM), offer
+  // a well-known asset as the destination instead of an instant error.
+  useEffect(() => {
+    const { swapFromAsset, swapToAsset, userPicked } = store.selectAsset;
+
+    if (!userPicked && isSameAsset(swapFromAsset, swapToAsset)) {
+      const held = new Set(
+        store.balances.balances
+          .filter((b) => b.asset_type !== 'native')
+          // @ts-ignore
+          .map((b) => `${b.asset_code}:${b.asset_issuer}`),
+      );
+
+      const suggestion = getSuggestedAssets(
+        store.stellar?.activeNetwork || '',
+      ).find((s) => !isSameAsset(s, swapFromAsset));
+
+      if (suggestion) {
+        // Use the real balance when the user already holds the suggestion.
+        const balanceLine = held.has(
+          `${suggestion.assetCode}:${suggestion.assetIssuer}`,
+        )
+          ? store.balances.balances.find(
+              (b) =>
+                // @ts-ignore
+                b.asset_code === suggestion.assetCode &&
+                // @ts-ignore
+                b.asset_issuer === suggestion.assetIssuer,
+            )
+          : undefined;
+
+        store.setSelectAsset({
+          ...store.selectAsset,
+          swapToAsset: balanceLine ? balanceToAsset(balanceLine) : suggestion,
+        });
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (error.message !== '') {
+      return;
+    }
+
+    // The same-asset state stays silent until the user actually tries to
+    // swap; surface it now instead of submitting.
+    if (
+      isSameAsset(
+        store.selectAsset.swapFromAsset,
+        store.selectAsset.swapToAsset,
+      )
+    ) {
+      setError({ field: 'both', message: t('sameAssetError') });
+
       return;
     }
 
@@ -95,7 +163,7 @@ const Swap = () => {
         } catch (e) { }
       }, 150);
     } catch {
-      setError({ field: 'both', message: 'Failed to make transaction.' });
+      setError({ field: 'both', message: t('failedToMakeTransaction') });
     }
   };
 
@@ -156,7 +224,7 @@ const Swap = () => {
         if (records.length === 0) {
           setError({
             field: 'both',
-            message: 'Could not find path. Try again.',
+            message: t('couldNotFindPath'),
           });
         } else {
           const swapDetails = records[0];
@@ -177,7 +245,7 @@ const Swap = () => {
         }
       } catch {
         setLoading(false);
-        setError({ field: 'both', message: 'Could not find path. Try again.' });
+        setError({ field: 'both', message: t('couldNotFindPath') });
       }
     } else {
       try {
@@ -200,7 +268,7 @@ const Swap = () => {
         if (records.length === 0) {
           setError({
             field: 'both',
-            message: 'Could not find path. Try again.',
+            message: t('couldNotFindPath'),
           });
         } else {
           const swapDetails = records[0];
@@ -222,7 +290,7 @@ const Swap = () => {
       } catch {
         setLoading(false);
 
-        setError({ field: 'both', message: 'Could not find path. Try again.' });
+        setError({ field: 'both', message: t('couldNotFindPath') });
       }
     }
   };
@@ -231,36 +299,44 @@ const Swap = () => {
     cleanup();
 
     if (isNaN(Number(from)) || from === '' || Number(from) < 0) {
-      setError({ field: 'from', message: 'Invalid value for FROM field.' });
+      setError({ field: 'from', message: t('invalidFromValue') });
 
       return;
     }
 
     if (isNaN(Number(to)) || to === '' || Number(to) < 0) {
-      setError({ field: 'to', message: 'Invalid value for TO field.' });
+      setError({ field: 'to', message: t('invalidToValue') });
 
       return;
     }
 
     if (
-      store.selectAsset.swapFromAsset.assetCode ===
-      store.selectAsset.swapToAsset.assetCode &&
-      store.selectAsset.swapFromAsset.assetIssuer ===
-      store.selectAsset.swapToAsset.assetIssuer
+      isSameAsset(
+        store.selectAsset.swapFromAsset,
+        store.selectAsset.swapToAsset,
+      )
     ) {
-      setError({ field: 'both', message: 'FROM and TO assets are the same.' });
+      // Untouched defaults (e.g. an account that only holds XLM) should not
+      // greet the user with an error: only complain once they have picked an
+      // asset themselves or entered an amount.
+      const hasInteracted =
+        store.selectAsset.userPicked || Number(from) > 0 || Number(to) > 0;
+
+      if (hasInteracted) {
+        setError({ field: 'both', message: t('sameAssetError') });
+      }
 
       return;
     }
 
-    if (isNaN(Number(store.selectAsset.swapFromAsset.assetBalance))) {
-      setError({ field: 'from', message: 'FROM asset has invalid balance.' });
+    if (isNaN(Number(fromBalance))) {
+      setError({ field: 'from', message: t('fromAssetInvalidBalance') });
 
       return;
     }
 
-    if (Number(from) > Number(store.selectAsset.swapFromAsset.assetBalance)) {
-      setError({ field: 'from', message: 'Insufficient balance.' });
+    if (Number(from) > Number(fromBalance)) {
+      setError({ field: 'from', message: t('insufficientBalance') });
 
       return;
     }
@@ -298,7 +374,7 @@ const Swap = () => {
 
   const SwapDetails = [
     {
-      label: 'Rate',
+      label: t('rate'),
       value:
         rate.rate !== 0 && isToValid ? (
           <span className="bluxcc:flex bluxcc:gap-1.5 bluxcc:items-center">
@@ -323,11 +399,11 @@ const Swap = () => {
         ),
     },
     {
-      label: 'Path',
+      label: t('path'),
       value: path?.length ? path.map((x) => x.assetCode).join(' > ') : '—',
     },
     {
-      label: 'Minimum Received',
+      label: t('minimumReceived'),
       value: isToValid ? minimumReceived : '—',
     },
   ];
@@ -346,7 +422,7 @@ const Swap = () => {
       >
         <div className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm bluxcc:select-none">
           <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
-            From
+            {t('from')}
           </span>
           <span style={{ fontFamily: appearance.fontFamily }}>
             <button
@@ -357,7 +433,7 @@ const Swap = () => {
                 fontFamily: appearance.fontFamily,
               }}
             >
-              {humanizeAmount(store.selectAsset.swapFromAsset.assetBalance)}
+              {humanizeAmount(fromBalance)}
             </button>
             <button
               id="bluxcc-button"
@@ -448,9 +524,9 @@ const Swap = () => {
           className="bluxcc:flex bluxcc:justify-between bluxcc:text-sm bluxcc:select-none"
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
         >
-          <span>To</span>
+          <span>{t('to')}</span>
           <span className="bluxcc:mr-2">
-            {humanizeAmount(store.selectAsset.swapToAsset.assetBalance)}
+            {humanizeAmount(toBalance)}
           </span>
         </div>
         <div className="bluxcc:mt-2 bluxcc:flex bluxcc:items-center bluxcc:justify-between">
@@ -506,7 +582,7 @@ const Swap = () => {
                 {item.label}
               </span>
               <span style={{ color: hexToRgba(appearance.textColor, 0.7) }}>
-                {loading ? 'LOADING...' : item.value}
+                {loading ? `${t('loading')}...` : item.value}
               </span>
             </div>
 
@@ -532,7 +608,7 @@ const Swap = () => {
         type="submit"
         disabled={error.message !== ''}
       >
-        Swap
+        {t('swap')}
       </Button>
     </form>
   );

@@ -18,7 +18,7 @@ export const getBalances = async (
   const { horizon } = getNetwork(options.network);
 
   if (!StrKey.isValidEd25519PublicKey(address)) {
-    throw new Error('Invalid address');
+    throw new Error('BLUX: Invalid address');
   }
 
   try {

@@ -105,6 +105,60 @@ export const OneKeyLogo = () => {
   );
 };
 
+export const CactusLinkLogo = ({ fill = '#3FA76E' }: { fill?: string }) => {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="9.25" y="2.5" width="5.5" height="16" rx="2.75" fill={fill} />
+      <rect x="3" y="7.5" width="3" height="7" rx="1.5" fill={fill} />
+      <rect x="3" y="11.5" width="9" height="3" rx="1.5" fill={fill} />
+      <rect x="18" y="5.5" width="3" height="7" rx="1.5" fill={fill} />
+      <rect x="13" y="9.5" width="8" height="3" rx="1.5" fill={fill} />
+      <rect x="5.5" y="19.5" width="13" height="2.5" rx="1.25" fill={fill} />
+    </svg>
+  );
+};
+export const FordefiLogo = () => {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="32" height="32" rx="8" fill="#2E27F6" />
+      <path
+        d="M8 24V8h16l-4.2 4.8H13v3h8.4L17.2 20H13v4H8Z"
+        fill="#ffffff"
+      />
+    </svg>
+  );
+};
+export const TrezorLogo = ({ fill = '#171717' }: { fill?: string }) => {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm3 8V7a3 3 0 1 0-6 0v3h6Zm-3 4a1.75 1.75 0 0 0-.75 3.33V19.5a.75.75 0 0 0 1.5 0v-2.17A1.75 1.75 0 0 0 12 14Z"
+        fill={fill}
+      />
+    </svg>
+  );
+};
+
 // todo: this should be CDNFiles.MoonPayLogo
 export const MoonPayLogo = () => {
   return (

@@ -11,7 +11,7 @@ import InputField from '../../../components/Input';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import { sendTransaction } from '../../../exports/blux';
-import { getContrastColor } from '../../../utils/helpers';
+import { getContrastColor, getLiveAssetBalance } from '../../../utils/helpers';
 import paymentTransaction from '../../../stellar/paymentTransaction';
 
 type SendFormValues = {
@@ -45,8 +45,15 @@ const SendForm = () => {
     store.setRoute(Route.SELECT_ASSET);
   };
 
+  // Live balance for the selected asset; the snapshot stored at pick time
+  // goes stale after network switches or balance refreshes.
+  const sendAssetBalance = getLiveAssetBalance(
+    store.selectAsset.sendAsset,
+    store.balances.balances,
+  );
+
   const handleMaxClick = () => {
-    const balance = Number(store.selectAsset.sendAsset.assetBalance).toString();
+    const balance = Number(sendAssetBalance).toString();
 
     setForm((prev) => ({ ...prev, amount: balance }));
   };
@@ -62,10 +69,7 @@ const SendForm = () => {
 
     if (!form.amount) {
       errorMessages.amount = t('amountRequired');
-    } else if (
-      Number(form.amount) >
-      Number(store.selectAsset.sendAsset.assetBalance || '0')
-    ) {
+    } else if (Number(form.amount) > Number(sendAssetBalance)) {
       errorMessages.amount = t('amountExceedsBalance');
     }
 

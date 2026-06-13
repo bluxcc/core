@@ -5,6 +5,7 @@ import {
 } from '../../../utils/helpers';
 import { DEFAULT_NETWORKS_TRANSPORTS } from '../../../constants/networkDetails';
 import { useAppStore } from '../../../store';
+import { useLang } from '../../../hooks/useLang';
 
 interface TransactionDetail {
   label: string;
@@ -31,6 +32,7 @@ const Summary = ({
   estimatedFee,
   action,
 }: SummaryProps) => {
+  const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
 
   const store = useAppStore((store) => store);
@@ -38,29 +40,29 @@ const Summary = ({
 
   const handleCopyText = (address: string) => {
     copyText(address);
-    setAlert('copy', 'Address Copied');
+    setAlert('copy', t('address_copied'));
     setTimeout(() => {
       setAlert('none', '');
     }, 1000);
   };
 
   const details: TransactionDetail[] = [
-    { label: 'Action', value: capitalizeFirstLetter(action) },
-    { label: 'Operations', value: operationsCount.toString() },
+    { label: t('action'), value: capitalizeFirstLetter(action) },
+    { label: t('operations'), value: operationsCount.toString() },
     {
-      label: 'Sender',
+      label: t('sender'),
       value: shortenAddress(sender, 5),
       isHighlighted: true,
       isCopyable: true,
       copyValue: sender,
     },
-    { label: 'Network', value: DEFAULT_NETWORKS_TRANSPORTS[network].name },
-    { label: 'Estimated Fee', value: `${estimatedFee} XLM` },
+    { label: t('network'), value: DEFAULT_NETWORKS_TRANSPORTS[network]?.name || network },
+    { label: t('estimatedFee'), value: `${estimatedFee} XLM` },
   ];
 
   if (receiver) {
     details.splice(3, 0, {
-      label: 'To',
+      label: t('to'),
       value: shortenAddress(receiver, 5),
       isHighlighted: true,
       isCopyable: true,

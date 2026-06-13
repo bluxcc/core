@@ -140,7 +140,7 @@ export const Provider = () => {
         store.cleanUp(waitingStatus);
       }, 200);
     } else if (isFailed && rejecter) {
-      rejecter('User rejected the transaction');
+      rejecter('BLUX: User rejected the transaction');
 
       setTimeout(() => {
         store.cleanUp(waitingStatus);
@@ -153,13 +153,13 @@ export const Provider = () => {
       if (store.signMessage) {
         store.cleanUp('signMessage');
 
-        store.signMessage.rejecter('User logged out during the process.');
+        store.signMessage.rejecter('BLUX: User logged out during the process.');
       }
 
       if (store.sendTransaction) {
         store.cleanUp('sendTransaction');
 
-        store.sendTransaction.rejecter('User logged out during the process.');
+        store.sendTransaction.rejecter('BLUX: User logged out during the process.');
       }
     }
   }, [store.authState]);

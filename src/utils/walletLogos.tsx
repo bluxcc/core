@@ -1,4 +1,10 @@
-import { BitGetLogo, OneKeyLogo } from '../assets';
+import {
+  BitGetLogo,
+  OneKeyLogo,
+  CactusLinkLogo,
+  FordefiLogo,
+  TrezorLogo,
+} from '../assets';
 import CDNImage from '../components/CDNImage';
 import CDNFiles from '../constants/cdnFiles';
 
@@ -116,6 +122,15 @@ const handleLogos = (
           props={{ fill: isDark ? '#ffffff' : '#000000' }}
         />
       );
+    //todo
+    case 'Cactus Link':
+      return <CactusLinkLogo />;
+    //todo
+    case 'Fordefi':
+      return <FordefiLogo />;
+    //todo
+    case 'Trezor':
+      return <TrezorLogo fill={isDark ? '#ffffff' : '#171717'} />;
     default:
       return null;
   }

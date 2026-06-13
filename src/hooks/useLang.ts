@@ -1,10 +1,11 @@
-import { translate } from "../utils/helpers";
-import { TranslationKey } from "../constants/locales";
+import { useAppStore } from '../store';
+import { LanguageKey } from '../types';
+import { translate } from '../utils/helpers';
+import { TranslationKey } from '../constants/locales';
 
 export const useLang = () => {
-  // const { value } = useProvider();
-  // const lang = value.config.lang as LanguageKey;
+  const lang = useAppStore((store) => store.config.lang) as LanguageKey;
 
   return (key: TranslationKey, vars?: Record<string, string>) =>
-    translate(key, "en", vars || {});
+    translate(key, lang || 'en', vars || {});
 };

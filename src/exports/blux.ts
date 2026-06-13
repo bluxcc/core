@@ -114,7 +114,7 @@ const profile = () => {
   const { isAuthenticated } = authState;
 
   if (!isAuthenticated) {
-    throw new Error('User is not authenticated.');
+    throw new Error('BLUX: User is not authenticated.');
   }
 
   if (!modal.isOpen) {
@@ -131,13 +131,13 @@ const _signTransaction = (
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
-      reject(new Error('User is not authenticated.'));
+      reject(new Error('BLUX: User is not authenticated.'));
 
       return;
     }
 
     if (state.modal.isOpen) {
-      reject(new Error('Blux modal is open elsewhere.'));
+      reject(new Error('BLUX: Blux modal is open elsewhere.'));
 
       return;
     }
@@ -149,7 +149,7 @@ const _signTransaction = (
     }
 
     if (!getTransactionDetails(xdr, network)) {
-      reject('Invalid XDR');
+      reject('BLUX: Invalid XDR');
 
       return;
     }
@@ -159,7 +159,7 @@ const _signTransaction = (
     );
 
     if (!foundWallet) {
-      throw new Error('Could not find the connected wallet.');
+      throw new Error('BLUX: Could not find the connected wallet.');
     }
 
     const transactionObject: ISendTransaction = {
@@ -215,13 +215,13 @@ export const signMessage = (message: string, options?: { network: string }) =>
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
-      reject(new Error('User is not authenticated.'));
+      reject(new Error('BLUX: User is not authenticated.'));
 
       return;
     }
 
     if (state.modal.isOpen) {
-      reject(new Error('Blux modal is open elsewhere.'));
+      reject(new Error('BLUX: Blux modal is open elsewhere.'));
 
       return;
     }
@@ -237,7 +237,7 @@ export const signMessage = (message: string, options?: { network: string }) =>
     );
 
     if (!foundWallet) {
-      throw new Error('Could not find the connected wallet.');
+      throw new Error('BLUX: Could not find the connected wallet.');
     }
 
     const signMessageDetails: ISignMessage = {
@@ -268,11 +268,11 @@ const fundMe = () => {
   const state = getState();
 
   if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
-    throw new Error('Blux: user is not authenticated yet.');
+    throw new Error('BLUX: Blux: user is not authenticated yet.');
   }
 
   if (state.modal.isOpen) {
-    throw new Error('Blux modal is open elsewhere.');
+    throw new Error('BLUX: Blux modal is open elsewhere.');
   }
 
   if (!state.modal.isOpen) {
@@ -288,13 +288,13 @@ export const signAuthEntry = (
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
-      reject(new Error('User is not authenticated.'));
+      reject(new Error('BLUX: User is not authenticated.'));
 
       return;
     }
 
     if (state.modal.isOpen) {
-      reject(new Error('Blux modal is open elsewhere.'));
+      reject(new Error('BLUX: Blux modal is open elsewhere.'));
 
       return;
     }
@@ -310,7 +310,7 @@ export const signAuthEntry = (
     );
 
     if (!foundWallet) {
-      throw new Error('Could not find the connected wallet.');
+      throw new Error('BLUX: Could not find the connected wallet.');
     }
 
     const signAuthEntryDetails: ISignAuthEntry = {
