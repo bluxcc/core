@@ -8,21 +8,21 @@ export const hanaConfig: IWallet = {
   connect: async () => {
     try {
       if (!(await window.hanaWallet!.stellar!.getPublicKey())) {
-        throw new Error('Hana Wallet is not installed or connected.');
+        throw new Error('BLUX: Hana Wallet is not installed or connected.');
       }
 
       const publicKey = await window.hanaWallet!.stellar!.getPublicKey();
 
       return publicKey;
     } catch (error) {
-      throw new Error('Failed to connect to HanaWallet.');
+      throw new Error('BLUX: Failed to connect to HanaWallet.');
     }
   },
   disconnect: async () => {},
   getNetwork: async () => {
     try {
       if (!window.hanaWallet?.stellar)
-        throw new Error('Hana Wallet is not installed.');
+        throw new Error('BLUX: Hana Wallet is not installed.');
 
       const networkDetails =
         await window.hanaWallet.stellar.getNetworkDetails();
@@ -32,7 +32,7 @@ export const hanaConfig: IWallet = {
         passphrase: networkDetails.networkPassphrase,
       };
     } catch {
-      throw new Error('Failed to getNetwork using HanaWallet');
+      throw new Error('BLUX: Failed to getNetwork using HanaWallet');
     }
   },
   isAvailable: async () => {
@@ -43,7 +43,7 @@ export const hanaConfig: IWallet = {
       typeof window !== 'undefined' && !!window.hanaWallet?.stellar;
 
     if (!isAvailable) {
-      throw new Error('Failed to signAuthEntry using HanaWallet');
+      throw new Error('BLUX: Failed to signAuthEntry using HanaWallet');
     }
 
     try {
@@ -54,7 +54,7 @@ export const hanaConfig: IWallet = {
 
       return signedAuthEntry;
     } catch {
-      throw new Error('Failed to signAuthEntry using HanaWallet');
+      throw new Error('BLUX: Failed to signAuthEntry using HanaWallet');
     }
   },
   signMessage: async (message, options) => {
@@ -62,7 +62,7 @@ export const hanaConfig: IWallet = {
       typeof window !== 'undefined' && !!window.hanaWallet?.stellar;
 
     if (!isAvailable) {
-      throw new Error('Failed to signMessage using HanaWallet');
+      throw new Error('BLUX: Failed to signMessage using HanaWallet');
     }
 
     try {
@@ -73,7 +73,7 @@ export const hanaConfig: IWallet = {
 
       return signedMessage;
     } catch {
-      throw new Error('Failed to signMessage using HanaWallet');
+      throw new Error('BLUX: Failed to signMessage using HanaWallet');
     }
   },
   signTransaction: async (xdr, options) => {
@@ -81,14 +81,14 @@ export const hanaConfig: IWallet = {
       typeof window !== 'undefined' && !!window.hanaWallet?.stellar;
 
     if (!isAvailable) {
-      throw new Error('Failed to signTransaction using HanaWallet');
+      throw new Error('BLUX: Failed to signTransaction using HanaWallet');
     }
 
     try {
       const signFn = window?.hanaWallet?.stellar?.signTransaction;
 
       if (typeof signFn !== 'function') {
-        throw new Error('Failed to signTransaction using HanaWallet');
+        throw new Error('BLUX: Failed to signTransaction using HanaWallet');
       }
 
       return await signFn({
@@ -97,7 +97,7 @@ export const hanaConfig: IWallet = {
         networkPassphrase: options.network,
       });
     } catch (error) {
-      throw new Error('Failed to signTransaction using HanaWallet');
+      throw new Error('BLUX: Failed to signTransaction using HanaWallet');
     }
   },
 };

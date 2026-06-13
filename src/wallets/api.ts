@@ -8,17 +8,17 @@ export const apiConfig: IWallet = {
   website: 'https://blux.cc',
 
   connect: async () => {
-    throw new Error('API wallet is not defined.');
+    throw new Error('BLUX: API wallet is not defined.');
   },
   disconnect: async () => { },
   getNetwork: async () => {
-    throw new Error('API wallet is not defined.');
+    throw new Error('BLUX: API wallet is not defined.');
   },
   isAvailable: async () => {
     return false;
   },
   signAuthEntry: async () => {
-    throw new Error('API does not support the signAuthEntry function');
+    throw new Error('BLUX: API does not support the signAuthEntry function');
   },
   signMessage: async (message, _) => {
     try {
@@ -27,7 +27,7 @@ export const apiConfig: IWallet = {
       const JWT = store.auth?.JWT;
 
       if (!JWT) {
-        throw new Error('Failed to sign the message from API');
+        throw new Error('BLUX: Failed to sign the message from API');
       }
 
       const res = await apiSignMessage(JWT, message);
@@ -36,9 +36,9 @@ export const apiConfig: IWallet = {
         return res;
       }
 
-      throw new Error('Failed to sign the message from API');
+      throw new Error('BLUX: Failed to sign the message from API');
     } catch (error) {
-      throw new Error('Failed to sign the message from API');
+      throw new Error('BLUX: Failed to sign the message from API');
     }
   },
   signTransaction: async (xdr, options) => {
@@ -48,7 +48,7 @@ export const apiConfig: IWallet = {
       const JWT = store.auth?.JWT;
 
       if (!JWT) {
-        throw new Error('Failed to sign the transaction from API');
+        throw new Error('BLUX: Failed to sign the transaction from API');
       }
 
       const res = await apiSignTransaction(JWT, xdr, options.network);
@@ -57,9 +57,9 @@ export const apiConfig: IWallet = {
         return res;
       }
 
-      throw new Error('Failed to sign the transaction from API');
+      throw new Error('BLUX: Failed to sign the transaction from API');
     } catch (error) {
-      throw new Error('Failed to sign the transaction from API.');
+      throw new Error('BLUX: Failed to sign the transaction from API.');
     }
   },
 };

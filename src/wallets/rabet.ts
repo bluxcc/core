@@ -7,31 +7,31 @@ export const rabetConfig: IWallet = {
 
   connect: async () => {
     try {
-      if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
+      if (!window.rabet) throw new Error('BLUX: Rabet Wallet is not installed.');
 
       const result = await window.rabet.connect();
 
       return result.publicKey;
     } catch {
-      throw new Error('Failed to connect to Rabet.');
+      throw new Error('BLUX: Failed to connect to Rabet.');
     }
   },
   disconnect: async () => {
     try {
-      if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
+      if (!window.rabet) throw new Error('BLUX: Rabet Wallet is not installed.');
 
       window.rabet.disconnect();
     } catch { }
   },
   getNetwork: async () => {
     try {
-      if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
+      if (!window.rabet) throw new Error('BLUX: Rabet Wallet is not installed.');
 
       const network = await window.rabet.getNetwork();
 
       return network;
     } catch (error) {
-      throw new Error('Failed to getNetwork from Rabet');
+      throw new Error('BLUX: Failed to getNetwork from Rabet');
     }
   },
   isAvailable: () =>
@@ -42,26 +42,26 @@ export const rabetConfig: IWallet = {
       );
     }),
   signAuthEntry: async () => {
-    throw new Error('Rabet does not support the signAuthEntry function');
+    throw new Error('BLUX: Rabet does not support the signAuthEntry function');
   },
   signMessage: async (message, _) => {
     try {
-      if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
+      if (!window.rabet) throw new Error('BLUX: Rabet Wallet is not installed.');
 
       const signedMessage = await window.rabet.signMessage(message);
 
       if (!signedMessage.message || signedMessage.error) {
-        throw new Error('Failed to signMessage from Rabet');
+        throw new Error('BLUX: Failed to signMessage from Rabet');
       }
 
       return signedMessage.message;
     } catch (error) {
-      throw new Error('Failed to signMessage from Rabet');
+      throw new Error('BLUX: Failed to signMessage from Rabet');
     }
   },
   signTransaction: async (xdr, options) => {
     try {
-      if (!window.rabet) throw new Error('Rabet Wallet is not installed.');
+      if (!window.rabet) throw new Error('BLUX: Rabet Wallet is not installed.');
 
       const result = await window.rabet.sign(
         xdr,
@@ -70,7 +70,7 @@ export const rabetConfig: IWallet = {
 
       return result.xdr;
     } catch (error) {
-      throw new Error('Failed to sign the transaction with Rabet.');
+      throw new Error('BLUX: Failed to sign the transaction with Rabet.');
     }
   },
 };

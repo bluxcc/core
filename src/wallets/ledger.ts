@@ -20,13 +20,13 @@ export const ledgerConfig: IWallet = {
 
       return publicKey;
     } catch (error) {
-      throw new Error('Failed to connect to Ledger.');
+      throw new Error('BLUX: Failed to connect to Ledger.');
     }
   },
   disconnect: async () => { },
 
   getNetwork: async () => {
-    throw new Error('Failed to get network from ledger');
+    throw new Error('BLUX: Failed to get network from ledger');
   },
 
   isAvailable: async () => {
@@ -36,11 +36,11 @@ export const ledgerConfig: IWallet = {
   },
 
   signAuthEntry: async () => {
-    throw new Error('ledger does not support the signAuthEntry function');
+    throw new Error('BLUX: ledger does not support the signAuthEntry function');
   },
 
   signMessage: async (_message, _) => {
-    throw new Error('Failed to sign the transaction with Ledger.');
+    throw new Error('BLUX: Failed to sign the transaction with Ledger.');
   },
 
   signTransaction: async (xdrStr: string, options): Promise<string> => {
@@ -67,7 +67,7 @@ export const ledgerConfig: IWallet = {
 
       return tx.toXDR();
     } catch (error) {
-      throw new Error('Failed to sign the transaction with Ledger.');
+      throw new Error('BLUX: Failed to sign the transaction with Ledger.');
     }
   },
 };

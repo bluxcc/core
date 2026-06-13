@@ -10,8 +10,11 @@ import { lobstrConfig } from './lobstr';
 import { onekeyConfig } from './onekey';
 import { bitgetConfig } from './bitget';
 import { ledgerConfig } from './ledger';
+import { trezorConfig } from './trezor';
 import { SupportedWallet } from '../enums';
+import { fordefiConfig } from './fordefi';
 import { freighterConfig } from './freighter';
+import { cactusLinkConfig } from './cactuslink';
 import { walletConnectConfig } from './walletConnect';
 
 export const walletsConfig: Record<SupportedWallet, IWallet> = {
@@ -28,4 +31,7 @@ export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Klever]: kleverConfig,
   [SupportedWallet.Bitget]: bitgetConfig,
   [SupportedWallet.Onekey]: onekeyConfig,
+  [SupportedWallet.CactusLink]: cactusLinkConfig,
+  [SupportedWallet.Fordefi]: fordefiConfig,
+  [SupportedWallet.Trezor]: trezorConfig,
 };

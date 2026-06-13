@@ -8,14 +8,14 @@ export const bitgetConfig: IWallet = {
   connect: async () => {
     try {
       if (typeof window === 'undefined' || !window.bitkeep?.stellar) {
-        throw new Error('Bitget Wallet is not installed or connected.');
+        throw new Error('BLUX: Bitget Wallet is not installed or connected.');
       }
 
       const address = await window.bitkeep!.stellar!.connect();
 
       return address;
     } catch (error: any) {
-      throw new Error('Failed to connect to Bitget.');
+      throw new Error('BLUX: Failed to connect to Bitget.');
     }
   },
   disconnect: async () => { },
@@ -29,12 +29,12 @@ export const bitgetConfig: IWallet = {
     return typeof window !== 'undefined' && !!window.bitkeep?.stellar;
   },
   signAuthEntry: async (_authEntry, _options) => {
-    throw new Error('Failed to sign auth entry with Bitget');
+    throw new Error('BLUX: Failed to sign auth entry with Bitget');
   },
   signMessage: async (message, options) => {
     try {
       if (typeof window === 'undefined' || !window.bitkeep?.stellar) {
-        throw new Error('Bitkeep Wallet is not installed or connected.');
+        throw new Error('BLUX: Bitkeep Wallet is not installed or connected.');
       }
 
       const signedHex = await window.bitkeep!.stellar!.signMessage(
@@ -51,13 +51,13 @@ export const bitgetConfig: IWallet = {
 
       return signedMessage;
     } catch (error) {
-      throw new Error('Failed to sign message with Bitkeep.');
+      throw new Error('BLUX: Failed to sign message with Bitkeep.');
     }
   },
   signTransaction: async (xdr, options) => {
     try {
       if (typeof window === 'undefined' || !window.bitkeep?.stellar) {
-        throw new Error('Bitget Wallet is not installed or connected.');
+        throw new Error('BLUX: Bitget Wallet is not installed or connected.');
       }
 
       const result = await window.bitkeep!.stellar!.signTransaction(xdr, {
@@ -67,7 +67,7 @@ export const bitgetConfig: IWallet = {
 
       return result;
     } catch (error) {
-      throw new Error('Failed to sign the transaction with Bitget.');
+      throw new Error('BLUX: Failed to sign the transaction with Bitget.');
     }
   },
 };

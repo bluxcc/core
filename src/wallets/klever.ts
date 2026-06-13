@@ -11,7 +11,7 @@ export const kleverConfig: IWallet = {
 
       return result.address;
     } catch {
-      throw new Error('Failed to connect to Klever');
+      throw new Error('BLUX: Failed to connect to Klever');
     }
   },
   disconnect: async () => {},
@@ -24,7 +24,7 @@ export const kleverConfig: IWallet = {
         passphrase: result.networkPassphrase,
       };
     } catch {
-      throw new Error('Failed to getNetwork from Klever');
+      throw new Error('BLUX: Failed to getNetwork from Klever');
     }
   },
   isAvailable: async () => {
@@ -42,7 +42,7 @@ export const kleverConfig: IWallet = {
 
       return result.signedAuthEntry;
     } catch {
-      throw new Error('Failed to signAuthEntry using Klever');
+      throw new Error('BLUX: Failed to signAuthEntry using Klever');
     }
   },
   signMessage: async (message, options) => {
@@ -54,7 +54,7 @@ export const kleverConfig: IWallet = {
 
       return result.signedMessage;
     } catch {
-      throw new Error('Failed to signMessage using Klever');
+      throw new Error('BLUX: Failed to signMessage using Klever');
     }
   },
   signTransaction: async (xdr, options) => {
@@ -66,7 +66,7 @@ export const kleverConfig: IWallet = {
 
       return result.signedTxXdr;
     } catch {
-      throw new Error('Failed to signTransaction using Klever');
+      throw new Error('BLUX: Failed to signTransaction using Klever');
     }
   },
 };

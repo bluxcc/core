@@ -15,12 +15,12 @@ export const hotConfig: IWallet = {
 
       return result.address;
     } catch {
-      throw new Error('Failed to connect to Hana wallet.');
+      throw new Error('BLUX: Failed to connect to Hana wallet.');
     }
   },
   disconnect: async () => { },
   getNetwork: async () => {
-    throw new Error('HotWallet does not support the getNetwork function');
+    throw new Error('BLUX: HotWallet does not support the getNetwork function');
   },
   isAvailable: async () => {
     return typeof window !== 'undefined' && !!window.hotExtension;
@@ -34,7 +34,7 @@ export const hotConfig: IWallet = {
 
       return result.signedAuthEntry;
     } catch {
-      throw new Error('Failed to signAuthEntry using HotWallet');
+      throw new Error('BLUX: Failed to signAuthEntry using HotWallet');
     }
   },
   signMessage: async (message, options) => {
@@ -46,7 +46,7 @@ export const hotConfig: IWallet = {
 
       return result.signedMessage;
     } catch {
-      throw new Error('Failed to signMessage using HotWallet');
+      throw new Error('BLUX: Failed to signMessage using HotWallet');
     }
   },
   signTransaction: async (
@@ -61,7 +61,7 @@ export const hotConfig: IWallet = {
 
       return result.signedTxXdr;
     } catch {
-      throw new Error('Failed to signTransaction using HotWallet');
+      throw new Error('BLUX: Failed to signTransaction using HotWallet');
     }
   },
 };

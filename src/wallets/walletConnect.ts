@@ -18,7 +18,7 @@ export const walletConnectConfig: IWallet = {
 
     if (!walletConnect || !walletConnect.client) {
       throw new Error(
-        'WalletConnect client is not set up. Please check your store configuration.',
+        'BLUX: WalletConnect client is not set up. Please check your store configuration.',
       );
     }
 
@@ -29,7 +29,7 @@ export const walletConnectConfig: IWallet = {
 
       if (!stellarNamespace || !stellarNamespace.accounts[0]) {
         throw new Error(
-          'Wallet did not approve the required Stellar namespace/account.',
+          'BLUX: Wallet did not approve the required Stellar namespace/account.',
         );
       }
 
@@ -38,7 +38,7 @@ export const walletConnectConfig: IWallet = {
       return account as string;
     } catch (e) {
       throw new Error(
-        'Failed to connect to Wallet. Ensure your wallet supports Stellar WalletConnect.',
+        'BLUX: Failed to connect to Wallet. Ensure your wallet supports Stellar WalletConnect.',
       );
     }
   },
@@ -47,7 +47,7 @@ export const walletConnectConfig: IWallet = {
     const { walletConnect } = getState();
 
     if (!walletConnect || !walletConnect.client) {
-      throw new Error('WalletConnect client is not set up.');
+      throw new Error('BLUX: WalletConnect client is not set up.');
     }
 
     try {
@@ -65,14 +65,14 @@ export const walletConnectConfig: IWallet = {
       });
     } catch (e) {
       throw new Error(
-        'Failed to disconnect from Wallet Connect. Try closing the session in your mobile wallet.',
+        'BLUX: Failed to disconnect from Wallet Connect. Try closing the session in your mobile wallet.',
       );
     }
   },
 
   getNetwork: async () => {
     throw new Error(
-      'Cannot reliably get the active network from WalletConnect without a specific session request.',
+      'BLUX: Cannot reliably get the active network from WalletConnect without a specific session request.',
     );
   },
 
@@ -80,13 +80,13 @@ export const walletConnectConfig: IWallet = {
     const { walletConnect } = getState();
 
     if (!walletConnect || !walletConnect.client) {
-      throw new Error('WalletConnect client is not set up.');
+      throw new Error('BLUX: WalletConnect client is not set up.');
     }
 
     try {
       const activeSessions = walletConnect.client.session.getAll();
       if (activeSessions.length === 0) {
-        throw new Error('WalletConnect not connected. Please connect first.');
+        throw new Error('BLUX: WalletConnect not connected. Please connect first.');
       }
       const session = activeSessions[0];
 
@@ -109,7 +109,7 @@ export const walletConnectConfig: IWallet = {
       return response as string;
     } catch (e) {
       throw new Error(
-        'Failed to sign and submit the transaction with Wallet Connect.',
+        'BLUX: Failed to sign and submit the transaction with Wallet Connect.',
       );
     }
   },
@@ -118,13 +118,13 @@ export const walletConnectConfig: IWallet = {
     const { walletConnect } = getState();
 
     if (!walletConnect || !walletConnect.client) {
-      throw new Error('WalletConnect client is not set up.');
+      throw new Error('BLUX: WalletConnect client is not set up.');
     }
 
     try {
       const activeSessions = walletConnect.client.session.getAll();
       if (activeSessions.length === 0) {
-        throw new Error('WalletConnect not connected. Please connect first.');
+        throw new Error('BLUX: WalletConnect not connected. Please connect first.');
       }
       const session = activeSessions[0];
 
@@ -148,13 +148,13 @@ export const walletConnectConfig: IWallet = {
 
       return response as string;
     } catch (e) {
-      throw new Error('Failed to sign message with Wallet Connect.');
+      throw new Error('BLUX: Failed to sign message with Wallet Connect.');
     }
   },
 
   signAuthEntry: async () => {
     throw new Error(
-      'Stellar Auth Entry signing is not supported via standard WalletConnect methods.',
+      'BLUX: Stellar Auth Entry signing is not supported via standard WalletConnect methods.',
     );
   },
 };

@@ -8,14 +8,14 @@ export const onekeyConfig: IWallet = {
   connect: async () => {
     try {
       if (typeof window === 'undefined' || !window.$onekey?.stellar) {
-        throw new Error('Onekey Wallet is not installed or connected.');
+        throw new Error('BLUX: Onekey Wallet is not installed or connected.');
       }
 
       const address = await window.$onekey!.stellar!.getPublicKey();
 
       return address;
     } catch (error: any) {
-      throw new Error('Failed to connect to Onekey.');
+      throw new Error('BLUX: Failed to connect to Onekey.');
     }
   },
   disconnect: async () => { },
@@ -30,10 +30,10 @@ export const onekeyConfig: IWallet = {
     //     passphrase: network.networkPassphrase,
     //   };
     // } catch {
-    //   throw new Error('Failed to get network from Onekey');
+    //   throw new Error('BLUX: Failed to get network from Onekey');
     // }
     //
-    throw new Error('Failed to get network from Onekey');
+    throw new Error('BLUX: Failed to get network from Onekey');
   },
 
   isAvailable: async () => {
@@ -42,7 +42,7 @@ export const onekeyConfig: IWallet = {
   signAuthEntry: async (authEntry, options) => {
     try {
       if (typeof window === 'undefined' || !window.$onekey?.stellar) {
-        throw new Error('Onekey Wallet is not installed or connected.');
+        throw new Error('BLUX: Onekey Wallet is not installed or connected.');
       }
 
       const result = await window.$onekey!.stellar!.signAuthEntry(authEntry, {
@@ -52,13 +52,13 @@ export const onekeyConfig: IWallet = {
 
       return result.signedAuthEntry;
     } catch (error) {
-      throw new Error('Failed to sign auth entry with Onekey.');
+      throw new Error('BLUX: Failed to sign auth entry with Onekey.');
     }
   },
   signMessage: async (message, options) => {
     try {
       if (typeof window === 'undefined' || !window.$onekey?.stellar) {
-        throw new Error('Onekey Wallet is not installed or connected.');
+        throw new Error('BLUX: Onekey Wallet is not installed or connected.');
       }
 
       const result = await window.$onekey!.stellar!.signMessage(message, {
@@ -68,13 +68,13 @@ export const onekeyConfig: IWallet = {
 
       return result.signedMessage;
     } catch (error) {
-      throw new Error('Failed to sign message with Onekey.');
+      throw new Error('BLUX: Failed to sign message with Onekey.');
     }
   },
   signTransaction: async (xdr, options) => {
     try {
       if (typeof window === 'undefined' || !window.$onekey?.stellar) {
-        throw new Error('Onekey Wallet is not installed or connected.');
+        throw new Error('BLUX: Onekey Wallet is not installed or connected.');
       }
 
       const result = await window.$onekey!.stellar!.signTransaction(xdr, {
@@ -85,7 +85,7 @@ export const onekeyConfig: IWallet = {
 
       return result.signedTxXdr;
     } catch (error) {
-      throw new Error('Failed to sign the transaction with Onekey.');
+      throw new Error('BLUX: Failed to sign the transaction with Onekey.');
     }
   },
 };
