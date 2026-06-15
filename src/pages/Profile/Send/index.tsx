@@ -117,6 +117,7 @@ const SendForm = () => {
             customLabel={
               <button
                 id="bluxcc-button"
+                type="button"
                 onClick={handleMaxClick}
                 style={{
                   color: store.config.appearance.accentColor,

@@ -192,13 +192,12 @@ export interface ISignAuthEntry {
   resolver: (value: string) => void;
 }
 
-// Public OAuth parameters of a provider the project owner enabled in the
-// dashboard. The client secret never leaves the backend.
+// Public info about a provider the project owner enabled in the dashboard.
+// All OAuth credentials (client id, secret, redirect URI) stay on the backend;
+// the kit never sees them.
 export interface ISocialConfigEntry {
   provider: string;
   displayName: string;
-  clientId: string;
-  redirectUri: string;
 }
 
 export interface AuthenticateApiResponse {

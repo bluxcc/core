@@ -15,6 +15,26 @@ interface HeaderProps {
   onClose: () => void;
 }
 
+// Defined at module scope (not inside Header) so its component identity stays
+// stable across renders. Declaring it inside Header would make React unmount
+// and remount the icon subtree on every render, resetting CDNImage and causing
+// the icons to flicker.
+const IconWrapper = ({
+  onClick,
+  children,
+}: {
+  onClick?: () => void;
+  children: React.ReactNode;
+}) => (
+  <button
+    id="bluxcc-button"
+    onClick={onClick}
+    className="bluxcc:flex bluxcc:size-5 bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent"
+  >
+    {children}
+  </button>
+);
+
 const Header = ({
   icon,
   onInfo,
@@ -30,22 +50,6 @@ const Header = ({
   const t = useLang();
   const textColor = hexToRgba(config.appearance.textColor, 0.7);
   const showAlert = modal.alert.type !== 'none';
-
-  const IconWrapper = ({
-    onClick,
-    children,
-  }: {
-    onClick?: () => void;
-    children: React.ReactNode;
-  }) => (
-    <button
-      id="bluxcc-button"
-      onClick={onClick}
-      className="bluxcc:flex bluxcc:size-5 bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent"
-    >
-      {children}
-    </button>
-  );
 
   const showLeftIcon = () => {
     if (icon === 'info')

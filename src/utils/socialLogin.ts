@@ -1,30 +1,21 @@
 import CDNFiles from '../constants/cdnFiles';
-import {
-  ILoginMethods,
-  ISocialConfigEntry,
-  AuthenticateApiResponse,
-} from '../types';
+import { BLUX_API } from '../constants/consts';
+import { ILoginMethods, AuthenticateApiResponse } from '../types';
 
-// Mirror of the backend provider registry (api config.SocialProviders): the
-// kit must know each provider's authorization endpoint to open the popup. The
-// code -> token exchange happens server-side with the project's secret.
+// Display metadata for each social provider. The whole OAuth dance — building
+// the provider authorization URL, the (fixed) redirect URI, and the
+// code -> token exchange with the project's secret — now happens on the Blux
+// API, so the kit only needs each provider's label and icon to render the
+// button and the result screen.
 type SocialProviderMeta = {
   displayName: string;
-  authUrl: string;
-  scopes: string[];
   icon: CDNFiles;
-  extraParams?: Record<string, string>;
 };
 
 export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
   google: {
     displayName: 'Google',
-    authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-    scopes: ['openid', 'email', 'profile'],
     icon: CDNFiles.Google,
-    extraParams: {
-      prompt: 'select_account',
-    },
   },
 };
 
@@ -94,8 +85,6 @@ export const getEnabledSocials = (
 export type ISocialSession = {
   provider: string;
   popup: Window | null;
-  state: string;
-  redirectUri: string;
   error?: string;
 };
 
@@ -113,45 +102,44 @@ export const cancelActiveSocialSession = () => {
   activeSession = null;
 };
 
-const randomState = () => {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-};
+// The Blux API serves the whole OAuth flow from its own origin and posts the
+// result back to us; we only trust messages that come from there.
+const BLUX_ORIGIN = (() => {
+  try {
+    return new URL(BLUX_API).origin;
+  } catch (_) {
+    return '';
+  }
+})();
 
 // Must be called synchronously inside a click handler, otherwise the browser
-// blocks the popup.
+// blocks the popup. Opens the Blux-hosted OAuth starter, which redirects to the
+// provider, handles the callback server-side with the project's secret and the
+// fixed redirect URI, and posts the resulting JWT back to this window. The
+// `origin` tells the API where to post the result; the `app_id` selects the
+// project whose credentials to use, so the same OAuth app works on every site
+// that embeds this kit with that appId.
 export const beginSocialLogin = (
   provider: string,
-  socialsConfig: ISocialConfigEntry[],
+  appId: string,
 ): ISocialSession => {
   cancelActiveSocialSession();
 
   const meta = SOCIAL_PROVIDERS[provider];
-  const cfg = socialsConfig.find((s) => s.provider === provider);
 
-  if (!meta || !cfg || !cfg.clientId || !cfg.redirectUri) {
+  if (!meta || !appId) {
     activeSession = {
       provider,
       popup: null,
-      state: '',
-      redirectUri: '',
       error: `BLUX: '${provider}' login is not fully configured for this app.`,
     };
 
     return activeSession;
   }
 
-  const state = randomState();
-
   const params = new URLSearchParams({
-    client_id: cfg.clientId,
-    redirect_uri: cfg.redirectUri,
-    response_type: 'code',
-    scope: meta.scopes.join(' '),
-    state,
-    ...(meta.extraParams || {}),
+    app_id: appId,
+    origin: window.location.origin,
   });
 
   const width = 480;
@@ -160,7 +148,7 @@ export const beginSocialLogin = (
   const top = window.screenY + Math.max(0, (window.outerHeight - height) / 2);
 
   const popup = window.open(
-    `${meta.authUrl}?${params.toString()}`,
+    `${BLUX_API}/auth/social/${encodeURIComponent(provider)}/start?${params.toString()}`,
     'bluxcc-social-login',
     `popup=yes,width=${width},height=${height},left=${left},top=${top}`,
   );
@@ -168,23 +156,30 @@ export const beginSocialLogin = (
   activeSession = {
     provider,
     popup,
-    state,
-    redirectUri: cfg.redirectUri,
   };
 
   return activeSession;
 };
 
-const POLL_INTERVAL_MS = 300;
+const POLL_INTERVAL_MS = 400;
 const FLOW_TIMEOUT_MS = 5 * 60 * 1000;
+// After the popup closes, give a brief grace period for a success message that
+// may still be in flight before treating the close as a cancellation.
+const CLOSE_GRACE_MS = 700;
 
-// Waits for the provider to redirect the popup back to the owner-configured
-// redirect_uri carrying ?code=. While the popup is on the provider's origin,
-// reading its location throws and we keep polling; once it is back on an
-// origin we can read, we pull the query params and close it. The redirect
-// page itself does not need to exist (a 404 there is fine) - only its URL
-// matters.
-export const awaitSocialAuthCode = (session: ISocialSession): Promise<string> =>
+type SocialAuthMessage = {
+  source?: string;
+  type?: string;
+  status?: string;
+  jwt?: string;
+  error?: string;
+};
+
+// Waits for the Blux-hosted callback page to post the login result back to this
+// window via postMessage ({ source:'blux', type:'social-auth', status, jwt }).
+// The API closes the popup itself once it has posted, so a popup that closes
+// without a message means the user dismissed it.
+export const awaitSocialLogin = (session: ISocialSession): Promise<string> =>
   new Promise<string>((resolve, reject) => {
     if (session.error) {
       reject(new Error(session.error));
@@ -201,76 +196,83 @@ export const awaitSocialAuthCode = (session: ISocialSession): Promise<string> =>
     }
 
     const startedAt = Date.now();
+    let settled = false;
+    let timer: ReturnType<typeof setInterval>;
+    let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const timer = setInterval(() => {
-      const popup = session.popup;
+    const cleanup = () => {
+      settled = true;
+      clearInterval(timer);
 
-      const stop = () => {
-        clearInterval(timer);
+      if (closeTimer) {
+        clearTimeout(closeTimer);
+      }
 
-        try {
-          popup?.close();
-        } catch (_) { }
-      };
+      window.removeEventListener('message', onMessage);
 
-      if (!popup || popup.closed) {
-        clearInterval(timer);
-        reject(new Error('BLUX: The login window was closed.'));
+      try {
+        session.popup?.close();
+      } catch (_) { }
+    };
 
+    const succeed = (jwt: string) => {
+      if (settled) return;
+      cleanup();
+      resolve(jwt);
+    };
+
+    const fail = (message: string) => {
+      if (settled) return;
+      cleanup();
+      reject(new Error(message));
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      // Only accept the result from the Blux API origin.
+      if (BLUX_ORIGIN && event.origin !== BLUX_ORIGIN) {
+        return;
+      }
+
+      const data = (event.data || {}) as SocialAuthMessage;
+
+      if (data.source !== 'blux' || data.type !== 'social-auth') {
+        return;
+      }
+
+      if (data.status === 'success' && data.jwt) {
+        succeed(data.jwt);
+      } else {
+        fail(
+          data.error
+            ? `BLUX: ${data.error}`
+            : 'BLUX: Login failed. Please try again.',
+        );
+      }
+    };
+
+    window.addEventListener('message', onMessage);
+
+    timer = setInterval(() => {
+      if (settled) {
         return;
       }
 
       if (Date.now() - startedAt > FLOW_TIMEOUT_MS) {
-        stop();
-        reject(new Error('BLUX: Login timed out. Please try again.'));
+        fail('BLUX: Login timed out. Please try again.');
 
         return;
       }
 
-      let href = '';
+      const popup = session.popup;
 
-      try {
-        href = popup.location.href;
-      } catch (_) {
-        // Cross-origin (still on the provider's page) - keep polling.
-        return;
-      }
+      if (!popup || popup.closed) {
+        // The success message may still be queued; wait briefly before
+        // treating the closed popup as a cancellation.
+        clearInterval(timer);
 
-      if (!href || href === 'about:blank') {
-        return;
-      }
-
-      let url: URL;
-
-      try {
-        url = new URL(href);
-      } catch (_) {
-        return;
-      }
-
-      const code = url.searchParams.get('code');
-      const errorParam = url.searchParams.get('error');
-
-      if (!code && !errorParam) {
-        return;
-      }
-
-      const returnedState = url.searchParams.get('state');
-
-      stop();
-
-      if (errorParam) {
-        reject(
-          new Error(
-            errorParam === 'access_denied'
-              ? 'BLUX: Login was cancelled.'
-              : `BLUX: Provider returned an error: ${errorParam}`,
-          ),
-        );
-      } else if (returnedState !== session.state) {
-        reject(new Error('BLUX: Login state mismatch. Please try again.'));
-      } else {
-        resolve(code as string);
+        closeTimer = setTimeout(() => {
+          fail('BLUX: The login window was closed.');
+        }, CLOSE_GRACE_MS);
       }
     }, POLL_INTERVAL_MS);
   });

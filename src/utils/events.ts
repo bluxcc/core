@@ -1,5 +1,4 @@
 import type { IUser } from '../store';
-import type { SendTransactionResult } from '../types';
 
 export type IErrorPayload = {
   message: string;
@@ -26,48 +25,6 @@ export type BluxEventMap = {
   [BluxEvent.NetworkChanged]: INetwork;
   [BluxEvent.ModalOpened]: { modal: string; reason?: string; meta?: any };
   [BluxEvent.ModalClosed]: { modal: string; reason?: string; meta?: any };
-  //
-  // [BluxEvent.ProfileSendInitiated]: {
-  //   token: IToken;
-  //   to: string;
-  //   amount: string;
-  // };
-  // [BluxEvent.ProfileSendSucceeded]: ITransaction;
-  // [BluxEvent.ProfileSendFailed]: IErrorPayload;
-  //
-  // [BluxEvent.ProfileSwapInitiated]: ISwapDetails;
-  // [BluxEvent.ProfileSwapSucceeded]: ITransaction & { swap: ISwapDetails };
-  // [BluxEvent.ProfileSwapFailed]: IErrorPayload & { swap?: ISwapDetails };
-  //
-  // [BluxEvent.ApprovalRequested]: {
-  //   token: IToken;
-  //   spender: string;
-  //   amount?: string;
-  // };
-  // [BluxEvent.ApprovalSucceeded]: { token: IToken; spender: string };
-  // [BluxEvent.ApprovalFailed]: IErrorPayload;
-  //
-  // [BluxEvent.SignMessageRequested]: { message: string; network: string };
-  // [BluxEvent.SignMessageSucceeded]: {
-  //   signature: string;
-  //   message: string;
-  //   network: string;
-  // };
-  // [BluxEvent.SignMessageFailed]: IErrorPayload & {
-  //   messageToSign?: string;
-  //   network?: string;
-  // };
-  // //
-  // [BluxEvent.SignTransactionRequested]: {
-  //   xdr: string;
-  //   network: string;
-  //   shouldSubmit: boolean;
-  // };
-  // [BluxEvent.TransactionSigned]: {
-  //   signedXdr: string;
-  //   xdr: string;
-  //   network: string;
-  // };
   // [BluxEvent.TransactionSubmitted]: {
   //   result: SendTransactionResult;
   //   xdr: string;

@@ -8,7 +8,7 @@ import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import { BLUX_JWT_STORE } from '../../../constants/consts';
 import { getState, setState, useAppStore } from '../../../store';
-import { apiGetUser, apiSocialLogin } from '../../../utils/api';
+import { apiGetUser } from '../../../utils/api';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { capitalizeFirstLetter } from '../../../utils/helpers';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
@@ -16,7 +16,7 @@ import {
   ISocialSession,
   SOCIAL_PROVIDERS,
   beginSocialLogin,
-  awaitSocialAuthCode,
+  awaitSocialLogin,
   getActiveSocialSession,
   cancelActiveSocialSession,
 } from '../../../utils/socialLogin';
@@ -56,15 +56,11 @@ const SocialsOnboarding = () => {
       if (!session || session.provider !== provider) {
         // Retry path: this runs synchronously inside the Retry click, so the
         // popup is allowed to open.
-        session = beginSocialLogin(
-          provider,
-          store.apiResponse?.socialsConfig || [],
-        );
+        session = beginSocialLogin(provider, store.config.appId);
       }
 
-      const code = await awaitSocialAuthCode(session);
-
-      const jwt = await apiSocialLogin(store.config.appId, provider, code);
+      // The Blux API runs the OAuth flow in the popup and posts the JWT back.
+      const jwt = await awaitSocialLogin(session);
 
       localStorage.setItem(BLUX_JWT_STORE, jwt);
 
@@ -126,9 +122,7 @@ const SocialsOnboarding = () => {
   }, []);
 
   const handleRetry = () => {
-    runSocialFlow(
-      beginSocialLogin(provider, store.apiResponse?.socialsConfig || []),
-    );
+    runSocialFlow(beginSocialLogin(provider, store.config.appId));
   };
 
   const handleBack = () => {

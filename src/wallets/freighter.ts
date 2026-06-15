@@ -16,7 +16,9 @@ export const freighterConfig: IWallet = {
   connect: async () => {
     try {
       if (!(await isConnected())) {
-        throw new Error('BLUX: Freighter Wallet is not installed or connected.');
+        throw new Error(
+          'BLUX: Freighter Wallet is not installed or connected.',
+        );
       }
 
       const result = await requestAccess();
@@ -47,7 +49,9 @@ export const freighterConfig: IWallet = {
   getNetwork: async () => {
     try {
       if (!(await isConnected())) {
-        throw new Error('BLUX: Freighter Wallet is not installed or connected.');
+        throw new Error(
+          'BLUX: Freighter Wallet is not installed or connected.',
+        );
       }
 
       const network = await freighterApi.getNetwork();
@@ -101,7 +105,9 @@ export const freighterConfig: IWallet = {
   signAuthEntry: async (authEntry, options) => {
     try {
       if (!(await isConnected())) {
-        throw new Error('BLUX: Freighter Wallet is not installed or connected.');
+        throw new Error(
+          'BLUX: Freighter Wallet is not installed or connected.',
+        );
       }
 
       const { error, signedAuthEntry } = await signAuthEntry(authEntry, {
@@ -139,7 +145,9 @@ export const freighterConfig: IWallet = {
   signTransaction: async (xdr, options) => {
     try {
       if (!(await isConnected())) {
-        throw new Error('BLUX: Freighter Wallet is not installed or connected.');
+        throw new Error(
+          'BLUX: Freighter Wallet is not installed or connected.',
+        );
       }
 
       const result = await signTransaction(xdr, {

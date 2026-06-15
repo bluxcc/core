@@ -31,6 +31,7 @@ npm i @bluxcc/core
 <script>
   Blux.createConfig({
     appName: 'My App',
+    appId: 'GET_FROM_BLUX_DASHBOARD',
     networks: [Blux.core.networks.mainnet],
   });
 
@@ -45,6 +46,7 @@ import { blux, core, createConfig } from '@bluxcc/core';
 
 createConfig({
   appName: 'My App',
+  appId: 'GET_FROM_BLUX_DASHBOARD',
   networks: [core.networks.mainnet],
 });
 
@@ -61,4 +63,3 @@ For support, licensing, or inquiries, reach out via:
 - **X (Twitter)**: [@BluxOfficial](https://twitter.com/BluxOfficial)
 
 Follow for more updates at [X (Twitter)](https://twitter.com/BluxOfficial).
-

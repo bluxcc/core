@@ -395,6 +395,7 @@ const Swap = () => {
             <button
               id="bluxcc-button"
               onClick={handleInvertRate}
+              type="button"
               className={`bluxcc:transition-transform bluxcc:duration-300 bluxcc:bg-transparent`}
               style={{
                 transform: `rotate(${secondRotation}deg)`,
@@ -449,6 +450,7 @@ const Swap = () => {
               {humanizeAmount(fromBalance)}
             </button>
             <button
+              type="button"
               id="bluxcc-button"
               onClick={handleMax}
               style={{
@@ -498,6 +500,7 @@ const Swap = () => {
         </div>
         {/* Swap Icon */}
         <button
+          type="button"
           id="bluxcc-button"
           className="bluxcc:flex bluxcc:h-8 bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent"
         >

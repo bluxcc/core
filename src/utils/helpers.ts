@@ -35,6 +35,29 @@ export const bufferToBase64Url = (buf: ArrayBuffer) => {
     .replace(/=+$/, '');
 };
 
+// Inverse of bufferToBase64Url. The Blux API hands back challenges as base64url
+// (base64.RawURLEncoding, no padding), and WebAuthn echoes whatever bytes we
+// pass back as base64url in clientDataJSON.challenge — which the server then
+// compares for plain string equality. So the challenge has to be decoded to its
+// original bytes here, not re-encoded as UTF-8 text, or that equality fails.
+// Accepts both base64url (-,_, unpadded) and standard base64 (+,/, padded).
+export const base64UrlToBuffer = (value: string): ArrayBuffer => {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(
+    base64.length + ((4 - (base64.length % 4)) % 4),
+    '=',
+  );
+
+  const binary = atob(padded);
+
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+};
+
 export const getAssetTitle = (
   asset:
     | HorizonApi.BalanceLineNative
@@ -104,7 +127,15 @@ export const addXLMToBalances = (balances: IAsset[]) => {
 export const fetcher = async <T>(url: string, options: RequestInit) => {
   const response = await fetch(url, options);
 
-  const result = await response.json();
+  // Error responses don't always carry a JSON body; parsing one unconditionally
+  // would throw a SyntaxError that masks the real HTTP status. Fall back to an
+  // empty object so callers still see the status code.
+  let result: Record<string, unknown> = {};
+  try {
+    result = await response.json();
+  } catch (_) {
+    result = {};
+  }
 
   const returnValue = {
     status: response.status,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import CDNFiles from '../constants/cdnFiles';
 import { BLUX_CDN_PATH } from '../constants/consts';
@@ -13,26 +13,19 @@ type ImageProps = {
 const CDNImage = ({ className, name, props = {}, ...rest }: ImageProps) => {
   const logos = useAppStore((state) => state.logos);
 
-  const [svgContent, setSvgContent] = useState<string>('');
-
   const logo = useMemo(
     () => logos?.find((l: ILogo) => l.name === name),
     [logos, name],
   );
 
-  if (!logos || !logo) {
-    const url = `${BLUX_CDN_PATH}/${encodeURIComponent(name)}`;
+  // Serialize props to a stable string so the memo below only recomputes when
+  // the actual values change — not on every render (the inline `props={{...}}`
+  // passed by callers is a new object reference each render).
+  const propsKey = JSON.stringify(props);
 
-    const qs = Object.entries(props)
-      .map((x) => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
-      .join('&');
+  const svgContent = useMemo(() => {
+    if (!logo) return '';
 
-    const src = `${url}?${qs}`;
-
-    return <img src={src} alt={name} />;
-  }
-
-  useEffect(() => {
     let processedContent = logo.content;
 
     const valueMap = new Map<string, string>();
@@ -52,8 +45,22 @@ const CDNImage = ({ className, name, props = {}, ...rest }: ImageProps) => {
       processedContent = processedContent.replace(regex, value);
     });
 
-    setSvgContent(processedContent);
-  }, [logo, props]);
+    return processedContent;
+    // `props` is intentionally tracked via the stable `propsKey` string.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logo, propsKey]);
+
+  if (!logos || !logo) {
+    const url = `${BLUX_CDN_PATH}/${encodeURIComponent(name)}`;
+
+    const qs = Object.entries(props)
+      .map((x) => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
+      .join('&');
+
+    const src = `${url}?${qs}`;
+
+    return <img src={src} alt={name} />;
+  }
 
   if (!svgContent) {
     return (

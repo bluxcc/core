@@ -1,5 +1,5 @@
 import TrezorConnect from '@trezor/connect-web';
-import { Networks, Transaction } from '@stellar/stellar-sdk';
+import { Transaction } from '@stellar/stellar-sdk';
 
 import { IWallet } from '../types';
 import { getState } from '../store';

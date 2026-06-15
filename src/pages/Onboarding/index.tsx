@@ -85,7 +85,7 @@ const Onboarding = () => {
   const handleConnectSocial = (provider: string) => {
     // The popup must open synchronously inside the click gesture, otherwise
     // the browser blocks it. The SocialsOnboarding page picks the session up.
-    beginSocialLogin(provider, store.apiResponse?.socialsConfig || []);
+    beginSocialLogin(provider, store.config.appId);
 
     store.connectSocial(provider);
   };

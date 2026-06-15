@@ -1,21 +1,6 @@
 import { IWallet } from '../types';
 import { SupportedWallet } from '../enums';
 
-/**
- * The Fordefi browser extension can optionally impersonate the Freighter
- * wallet (controlled by a user-facing toggle in extension settings). When
- * impersonation is enabled, the extension listens for the standard Freighter
- * postMessage protocol (FREIGHTER_EXTERNAL_MSG_REQUEST /
- * FREIGHTER_EXTERNAL_MSG_RESPONSE) so that dapps using
- * @stellar/freighter-api work transparently.
- *
- * This config reuses that same postMessage protocol to communicate with the
- * extension, while detecting Fordefi specifically via window.FordefiProviders
- * (which the extension always injects regardless of impersonation settings).
- * This allows showing "Fordefi" as a distinct wallet option even when
- * Freighter impersonation is active.
- */
-
 const FREIGHTER_EXTERNAL_MSG_REQUEST = 'FREIGHTER_EXTERNAL_MSG_REQUEST';
 const FREIGHTER_EXTERNAL_MSG_RESPONSE = 'FREIGHTER_EXTERNAL_MSG_RESPONSE';
 
@@ -31,7 +16,6 @@ const sendFordefiMessage = <T>(
     const handler = (event: MessageEvent) => {
       if (event.source !== window) return;
       if (event.data?.source !== FREIGHTER_EXTERNAL_MSG_RESPONSE) return;
-      // Freighter uses "messagedId" (typo with an extra 'd') in responses
       if (event.data?.messagedId !== messageId) return;
 
       window.removeEventListener('message', handler);
@@ -105,7 +89,9 @@ export const fordefiConfig: IWallet = {
     return isFordefiInstalled();
   },
   signAuthEntry: async () => {
-    throw new Error('BLUX: Fordefi does not support the signAuthEntry function');
+    throw new Error(
+      'BLUX: Fordefi does not support the signAuthEntry function',
+    );
   },
   signMessage: async (message, options) => {
     try {

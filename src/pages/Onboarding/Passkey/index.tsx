@@ -6,6 +6,7 @@ import {
   apiRegisterPasskeyChallenge,
 } from '../../../utils/api';
 import { getState, useAppStore } from '../../../store';
+import { base64UrlToBuffer } from '../../../utils/helpers';
 import { useLang } from '../../../hooks/useLang';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { Route } from '../../../enums';
@@ -56,22 +57,6 @@ async function ensurePasskeySupport(): Promise<void> {
   if (!('PublicKeyCredential' in window)) {
     throw new Error('BLUX: Passkeys are not supported in this browser.');
   }
-
-  if (
-    typeof PublicKeyCredential.isConditionalMediationAvailable !== 'function'
-  ) {
-    throw new Error(
-      'BLUX: Conditional passkey mediation is not supported in this browser.',
-    );
-  }
-
-  const conditional =
-    await PublicKeyCredential.isConditionalMediationAvailable();
-  if (!conditional) {
-    throw new Error(
-      'BLUX: Conditional passkey mediation is not available in this browser.',
-    );
-  }
 }
 
 async function continueWithPasskey(
@@ -80,10 +65,18 @@ async function continueWithPasskey(
 ): Promise<PasskeyFlowResult> {
   await ensurePasskeySupport();
 
-  const challengeInBuffer = new TextEncoder().encode(challenge).buffer;
+  // The API sends the challenge as a base64url string; decode it back to the
+  // original random bytes so clientDataJSON.challenge round-trips to the exact
+  // string the server stored (it checks plain string equality).
+  const challengeInBuffer = base64UrlToBuffer(challenge);
 
+  // Returning users already have a discoverable passkey for this rpId, so try a
+  // login first. A first-time user has none, in which case get() rejects (e.g.
+  // NotAllowedError) — that's expected, so swallow it and fall through to
+  // registration below instead of failing the whole flow.
+  let assertion: Credential | null = null;
   try {
-    const assertion = await navigator.credentials.get({
+    assertion = await navigator.credentials.get({
       publicKey: {
         challenge: challengeInBuffer,
         userVerification: 'required',
@@ -91,15 +84,15 @@ async function continueWithPasskey(
         timeout: 60000,
       },
     });
+  } catch (_) {
+    assertion = null;
+  }
 
-    if (assertion instanceof PublicKeyCredential) {
-      return {
-        step: 'login',
-        credential: assertion,
-      };
-    }
-  } catch (error) {
-    throw error;
+  if (assertion instanceof PublicKeyCredential) {
+    return {
+      step: 'login',
+      credential: assertion,
+    };
   }
 
   const created = await navigator.credentials.create({
@@ -165,20 +158,23 @@ const PasskeyOnboardingPage = () => {
 
       await completePasskeyAuthentication(jwt);
     } catch (e: any) {
+      console.error('BLUX: passkey login failed:', e?.message || e);
       setStatus('failed');
     }
   };
 
   const completePasskeyAuthentication = async (jwt: string) => {
-    // @ts-ignore
-    setRecentLoginConfig('passkey', store.user?.authValue, Date.now(), jwt);
-
     store.setAuth({
       isAuthenticated: true,
       JWT: jwt,
     });
 
     const result = await apiGetUser(jwt);
+
+    // Persist the credential id the server resolved for this passkey (store.user
+    // isn't populated yet at this point, so reading it here would store
+    // undefined and silently break recent-login restore).
+    setRecentLoginConfig('passkey', result.auth_value, Date.now(), jwt);
 
     store.connectWalletSuccessful(
       result.public_key,
