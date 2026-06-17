@@ -4,6 +4,12 @@ export { getAssets } from './getAssets';
 export { getBalances } from './getBalances';
 export { getClaimableBalances } from './getClaimableBalances';
 export { getEffects } from './getEffects';
+export {
+  fundAccount,
+  type FundAccountOptions,
+  type FundAccountResult,
+  type FundAccountStatus,
+} from './fundAccount';
 export { getLedgers } from './getLedgers';
 export { getLiquidityPools } from './getLiquidityPools';
 export { getNetwork } from './getNetwork';
@@ -21,3 +27,8 @@ export { writeContract } from './writeContract';
 export { networks } from './networks';
 export { switchNetwork } from './switchNetwork';
 export { type Numberish, numberish, ToScVal } from './toScVal';
+export type {
+  ISubmittedTransaction,
+  TransactionReturnValue,
+  SendTransactionResult,
+} from '../../types';

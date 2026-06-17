@@ -12,11 +12,12 @@ import {
   WriteContractsOptions,
 } from '../utils';
 import { sendTransaction } from '../blux';
+import { ISubmittedTransaction } from '../../types';
 
 export const writeContract = async (
   call: IContractCall,
   options: WriteContractsOptions = {},
-) => {
+): Promise<ISubmittedTransaction> => {
   if (!checkConfigCreated()) {
     throw new Error('BLUX: writeContract must be called after createConfig');
   }
@@ -57,5 +58,7 @@ export const writeContract = async (
   // transaction is valid once signed.
   const assembled = rpc.assembleTransaction(transaction, simulation).build();
 
-  return sendTransaction(assembled.toXDR(), { network: networkPassphrase });
+  return sendTransaction(assembled.toXDR(), {
+    network: networkPassphrase,
+  }) as Promise<ISubmittedTransaction>;
 };
