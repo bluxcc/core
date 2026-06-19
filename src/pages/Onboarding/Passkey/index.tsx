@@ -190,7 +190,6 @@ const PasskeyOnboardingPage = () => {
 
       await completePasskeyAuthentication(jwt);
     } catch (e: any) {
-      console.error('BLUX: passkey login failed:', e?.message || e);
       setStatus('failed');
     }
   };

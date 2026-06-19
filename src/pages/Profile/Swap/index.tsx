@@ -150,8 +150,6 @@ const Swap = () => {
         store.balances.balances,
       );
 
-      console.log(isNeeded);
-
       const xdr = await swapTransaction(
         from,
         to,
@@ -165,8 +163,6 @@ const Swap = () => {
         isNeeded,
       );
 
-      console.log(xdr);
-
       store.closeModal();
 
       setTimeout(() => {
@@ -175,7 +171,6 @@ const Swap = () => {
         } catch (e) { }
       }, 400);
     } catch (e) {
-      console.log(e);
       setError({ field: 'both', message: t('failedToMakeTransaction') });
     }
   };
