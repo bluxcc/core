@@ -11,6 +11,7 @@ import { getState, setState, useAppStore } from '../../../store';
 import { apiGetUser } from '../../../utils/api';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { capitalizeFirstLetter } from '../../../utils/helpers';
+import { isAccessDenied, looksLikeAccessDenied } from '../../../utils/errors';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 import {
   ISocialSession,
@@ -32,6 +33,7 @@ const SocialsOnboarding = () => {
 
   const [status, setStatus] = useState<SocialStatus>('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isDenied, setIsDenied] = useState(false);
   const isRunning = useRef(false);
 
   const appearance = store.config.appearance;
@@ -49,6 +51,7 @@ const SocialsOnboarding = () => {
 
     setStatus('loading');
     setErrorMessage('');
+    setIsDenied(false);
 
     try {
       let session = existingSession ?? getActiveSocialSession();
@@ -100,12 +103,15 @@ const SocialsOnboarding = () => {
     } catch (cause: any) {
       cancelActiveSocialSession();
 
-      setStatus('failed');
       // Errors carry the BLUX: prefix for developers; keep the modal clean.
-      setErrorMessage(
-        (cause?.message || '').replace(/^BLUX:\s*/, '') ||
-          t('loginRetryMessage'),
-      );
+      const message = (cause?.message || '').replace(/^BLUX:\s*/, '');
+      // The social popup posts the API's message back as a plain string, so
+      // detect the allowlist/blocklist rejection by its wording too.
+      const denied = isAccessDenied(cause) || looksLikeAccessDenied(message);
+
+      setStatus('failed');
+      setIsDenied(denied);
+      setErrorMessage(message || t('loginRetryMessage'));
     } finally {
       isRunning.current = false;
     }
@@ -163,7 +169,8 @@ const SocialsOnboarding = () => {
           {status === 'loading' &&
             t('waitingFor', { walletName: displayName })}
           {status === 'success' && t('connectionSuccessfulTitle')}
-          {status === 'failed' && t('loginFailed')}
+          {status === 'failed' &&
+            (isDenied ? t('accessDeniedTitle') : t('loginFailed'))}
         </p>
 
         <p
@@ -177,6 +184,15 @@ const SocialsOnboarding = () => {
           {status === 'success' && t('connectionSuccessfulMessage')}
           {status === 'failed' && (errorMessage || t('loginRetryMessage'))}
         </p>
+
+        {status === 'failed' && isDenied && (
+          <p
+            className="bluxcc:text-sm bluxcc:opacity-70"
+            style={{ color: appearance.textColor }}
+          >
+            {t('accessDeniedHelp')}
+          </p>
+        )}
       </div>
 
       <Divider />
@@ -203,25 +219,32 @@ const SocialsOnboarding = () => {
         </Button>
       )}
 
-      {status === 'failed' && (
-        <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:gap-2">
-          <Button state="enabled" variant="fill" onClick={handleRetry}>
-            {t('tryAgain')}
-          </Button>
-
-          <Button
-            size="medium"
-            state="enabled"
-            variant="text"
-            onClick={handleBack}
-            style={{
-              color: appearance.accentColor,
-            }}
-          >
+      {status === 'failed' &&
+        (isDenied ? (
+          // Retrying the same account would just be blocked again; offer only a
+          // way back to pick a different login method.
+          <Button state="enabled" variant="fill" onClick={handleBack}>
             {t('back')}
           </Button>
-        </div>
-      )}
+        ) : (
+          <div className="bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:gap-2">
+            <Button state="enabled" variant="fill" onClick={handleRetry}>
+              {t('tryAgain')}
+            </Button>
+
+            <Button
+              size="medium"
+              state="enabled"
+              variant="text"
+              onClick={handleBack}
+              style={{
+                color: appearance.accentColor,
+              }}
+            >
+              {t('back')}
+            </Button>
+          </div>
+        ))}
     </div>
   );
 };

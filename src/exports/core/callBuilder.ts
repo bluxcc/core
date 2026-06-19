@@ -54,6 +54,15 @@ type CallBuilderMap = {
   ];
 };
 
+/**
+ * Internal helper: creates the Horizon call builder named `callName`, applies the
+ * shared cursor/limit/order paging from `params`, and returns it ready to call.
+ *
+ * @param callName - Which Horizon collection to query.
+ * @param args - Positional arguments specific to that collection (already resolved to `Asset`s / account ids).
+ * @param params - Pagination and network options.
+ * @returns The configured Horizon call builder for `callName`.
+ */
 export const callBuilder = <C extends keyof CallBuilderMap>(
   callName: C,
   args: CallBuilderMap[C][0],

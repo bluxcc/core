@@ -16,6 +16,19 @@ import {
 
 const NULL_ACCOUNT = 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
 
+/**
+ * Reads from one or more Soroban contracts by simulating the calls — no
+ * transaction is submitted and no account is required, so this is free and
+ * read-only. Each call's return value is decoded to a native JS value (`bigint`
+ * results are stringified).
+ *
+ * @param calls - The contract calls to simulate; build `args` with {@link ToScVal}.
+ * @param options - Network to simulate against.
+ * @returns `{ raws, values }` aligned to `calls` — `raws` holds the full
+ *   simulation per call, `values` the decoded return values (`null` for a call
+ *   that returned nothing). An empty array is returned when `calls` is empty.
+ * @throws If called before {@link createConfig}, if `calls` is not an array, or if any simulation fails.
+ */
 export const readContracts = async (
   calls: IContractCall[],
   options: ReadContractsOptions = {},

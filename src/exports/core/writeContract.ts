@@ -14,6 +14,16 @@ import {
 import { sendTransaction } from '../blux';
 import { ISubmittedTransaction } from '../../types';
 
+/**
+ * Invokes a state-changing Soroban contract function: builds the call, simulates
+ * it to attach resource fees / footprint / auth, then signs and submits it with
+ * the logged-in account. Requires a logged-in user.
+ *
+ * @param call - The contract call to make; build `args` with {@link ToScVal}.
+ * @param options - Network to submit on.
+ * @returns The submitted transaction, whose `returnValue()` resolves to the contract's decoded return value.
+ * @throws If called before {@link createConfig}, if `call.address`/`call.fn` are missing, or if simulation fails.
+ */
 export const writeContract = async (
   call: IContractCall,
   options: WriteContractsOptions = {},
@@ -54,8 +64,6 @@ export const writeContract = async (
     );
   }
 
-  // Attach the resource fees, footprint, and auth from the simulation so the
-  // transaction is valid once signed.
   const assembled = rpc.assembleTransaction(transaction, simulation).build();
 
   return sendTransaction(assembled.toXDR(), {

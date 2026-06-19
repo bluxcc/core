@@ -58,6 +58,15 @@ const init = (element: HTMLElement = document.body) => {
   root.render(createElement(Provider));
 };
 
+/**
+ * Initializes the Blux SDK: validates the config, mounts the Blux UI, loads
+ * available wallets, wires up integrations (WalletConnect, Trezor), and
+ * authenticates the app id. Call this once before any other Blux function.
+ *
+ * @param config - The app configuration — see {@link IConfig}.
+ * @param element - DOM element to mount the Blux UI into. Defaults to `document.body`.
+ * @throws If `config` is empty or missing `appId`, `appName`, or `networks`, or if the network options are invalid.
+ */
 export function createConfig(config: IConfig, element?: HTMLElement) {
   isInitiated = true;
 
@@ -179,8 +188,6 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
       isSocialProvider(String(m)),
     );
 
-    // Email, passkey, and social logins all go through the Blux API, so they
-    // need a valid appId.
     if (
       !result.isValid &&
       (conf.loginMethods.includes('email') ||
@@ -190,8 +197,6 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
       throw new Error('BLUX: config.appId is invalid.');
     }
 
-    // Triggers a one-time warning for every social in loginMethods that the
-    // owner has not enabled in the dashboard; those entries are ignored.
     getEnabledSocials(conf.loginMethods, result);
   });
 }

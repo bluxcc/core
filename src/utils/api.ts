@@ -1,4 +1,5 @@
 import { IUser } from '../store';
+import { BluxAccessDeniedError } from './errors';
 import { bufferToBase64Url, fetcher } from './helpers';
 import { AuthenticateApiResponse } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
@@ -234,8 +235,10 @@ export const apiSendOtp = async (
     throw new Error('BLUX: appId is missing in config.');
   }
 
+  let res: ApiResponse<null>;
+
   try {
-    const res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
+    res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
       method: 'POST',
       headers: {
         [BLUX_APP_ID_HEADER]: appId,
@@ -248,27 +251,32 @@ export const apiSendOtp = async (
         auth_value: authValue,
       }),
     });
-
-    if (res.status === 400) {
-      throw new Error('BLUX: invalid inputs');
-    }
-
-    if (res.status === 500) {
-      throw new Error('BLUX: server error');
-    }
-
-    if (res.status === 429) {
-      throw new Error('BLUX: too many requests');
-    }
-
-    if (res.status === 200) {
-      return true;
-    }
-
-    throw new Error('BLUX: Unexpected response from api');
   } catch (e: any) {
     throw new Error('BLUX: Unexpected response from api');
   }
+
+  // The project restricts access (allowlist/blocklist) and this email is blocked.
+  if (res.status === 403) {
+    throw new BluxAccessDeniedError(res.error);
+  }
+
+  if (res.status === 400) {
+    throw new Error('BLUX: invalid inputs');
+  }
+
+  if (res.status === 500) {
+    throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 429) {
+    throw new Error('BLUX: too many requests');
+  }
+
+  if (res.status === 200) {
+    return true;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
 };
 
 export const apiStoreWalletConnection = async (
@@ -284,8 +292,10 @@ export const apiStoreWalletConnection = async (
     throw new Error('BLUX: wallet address is missing.');
   }
 
+  let res: ApiResponse<null>;
+
   try {
-    const res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
+    res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
       method: 'POST',
       headers: {
         [BLUX_APP_ID_HEADER]: appId,
@@ -298,27 +308,33 @@ export const apiStoreWalletConnection = async (
         auth_value: walletName,
       }),
     });
-
-    if (res.status === 400) {
-      throw new Error('BLUX: invalid inputs');
-    }
-
-    if (res.status === 500) {
-      throw new Error('BLUX: server error');
-    }
-
-    if (res.status === 429) {
-      throw new Error('BLUX: too many requests');
-    }
-
-    if (res.status === 200) {
-      return true;
-    }
-
-    throw new Error('BLUX: Unexpected response from api');
   } catch (_e: any) {
     throw new Error('BLUX: Unexpected response from api');
   }
+
+  // The project restricts access (allowlist/blocklist) and this address is
+  // blocked.
+  if (res.status === 403) {
+    throw new BluxAccessDeniedError(res.error);
+  }
+
+  if (res.status === 400) {
+    throw new Error('BLUX: invalid inputs');
+  }
+
+  if (res.status === 500) {
+    throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 429) {
+    throw new Error('BLUX: too many requests');
+  }
+
+  if (res.status === 200) {
+    return true;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
 };
 
 export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {

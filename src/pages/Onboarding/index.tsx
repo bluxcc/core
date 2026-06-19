@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { IWallet } from '../../types';
 import { useAppStore } from '../../store';
 import { apiSendOtp } from '../../utils/api';
+import { isAccessDenied } from '../../utils/errors';
 import { useLang } from '../../hooks/useLang';
 import CDNFiles from '../../constants/cdnFiles';
 import CardItem from '../../components/CardItem';
@@ -72,13 +73,20 @@ const Onboarding = () => {
   };
 
   const handleConnectEmail = async () => {
+    store.setLoginError(undefined);
+
     try {
       connectEmail(inputValue);
 
       await apiSendOtp(config.appId, inputValue);
     } catch (e) {
-      // TODO
-      // SHOW ERROR, SOMETHING FAILED AND IT IS THERE IN e.message.
+      // The project restricts access and this email is blocked: surface the
+      // reason on the Failed screen. Other (network/server) errors leave the
+      // user on the OTP step, where the resend action is available.
+      if (isAccessDenied(e)) {
+        store.setLoginError(e.message);
+        store.setRoute(Route.FAILED);
+      }
     }
   };
 

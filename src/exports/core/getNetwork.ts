@@ -1,5 +1,11 @@
 import { getState } from '../../store';
 
+/**
+ * Returns the passphrase of the currently active network.
+ *
+ * @returns The active network passphrase, or an empty string if none is set.
+ * @throws If called before {@link createConfig}.
+ */
 export const getNetwork = () => {
   const store = getState();
 

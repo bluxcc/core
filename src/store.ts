@@ -103,6 +103,9 @@ export interface IStoreProperties {
   signMessage?: ISignMessage;
   signAuthEntry?: ISignAuthEntry;
   login?: ILoginPromise;
+  // User-facing message shown when a login is rejected because the project
+  // restricts access (allowlist/blocklist). Set only for that case.
+  loginError?: string;
   balances: UseBalancesResult;
   transactions: UseTransactionsResult;
   selectAsset: ISelectAsset;
@@ -158,6 +161,7 @@ export interface IStoreMethods {
   setAuth: (a: IAuth) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setLogin: (loginDetails: ILoginPromise | undefined) => void;
+  setLoginError: (message?: string) => void;
   setLogos: (logos: ILogo[]) => void;
 }
 
@@ -200,6 +204,7 @@ export const store = createStore<IStore>((set) => ({
     },
   },
   login: undefined,
+  loginError: undefined,
   stellar: undefined,
   signMessage: undefined,
   signAuthEntry: undefined,
@@ -350,6 +355,7 @@ export const store = createStore<IStore>((set) => ({
 
     set((state) => ({
       ...state,
+      loginError: undefined,
       waitingStatus: 'login',
       user: {
         address: '',
@@ -393,6 +399,7 @@ export const store = createStore<IStore>((set) => ({
   connectEmail: (email: string) =>
     set((state) => ({
       ...state,
+      loginError: undefined,
       waitingStatus: 'login',
       user: {
         address: '',
@@ -409,6 +416,7 @@ export const store = createStore<IStore>((set) => ({
   connectSocial: (provider: string) =>
     set((state) => ({
       ...state,
+      loginError: undefined,
       waitingStatus: 'login',
       user: {
         address: '',
@@ -426,6 +434,7 @@ export const store = createStore<IStore>((set) => ({
     set((current) => ({
       ...current,
       user: undefined,
+      loginError: undefined,
       waitingStatus: 'login',
       selectAsset: { ...DEFAULT_SELECT_ASSET },
       detailsAsset: undefined,
@@ -465,6 +474,8 @@ export const store = createStore<IStore>((set) => ({
       ...state,
       apiResponse,
     })),
+  setLoginError: (message?: string) =>
+    set((state) => ({ ...state, loginError: message })),
   setLogin: (loginDetails: ILoginPromise | undefined) =>
     set((state) => ({
       ...state,

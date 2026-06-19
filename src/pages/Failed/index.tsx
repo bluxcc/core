@@ -1,3 +1,4 @@
+import { Route } from '../../enums';
 import { useAppStore } from '../../store';
 import Button from '../../components/Button';
 import { useLang } from '../../hooks/useLang';
@@ -13,6 +14,11 @@ const Failed = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
 
+  // Set only when a login was rejected by the project's allowlist/blocklist.
+  // Retrying the same identity is pointless, so we explain why and send the
+  // user back to pick a different account instead of offering "Try again".
+  const isAccessDenied = store.waitingStatus === 'login' && !!store.loginError;
+
   const handleRetry = () => {
     if (store.waitingStatus === 'signMessage') {
       signMessageProcess(store);
@@ -26,6 +32,37 @@ const Failed = () => {
       );
     }
   };
+
+  const handleBackToLogin = () => {
+    store.setLoginError(undefined);
+    store.setRoute(Route.ONBOARDING);
+  };
+
+  if (isAccessDenied) {
+    return (
+      <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
+        <div className="bluxcc:mb-6 bluxcc:flex bluxcc:items-center bluxcc:justify-center">
+          <CDNImage name={CDNFiles.RedExclamation} props={{}} />
+        </div>
+
+        <div className="bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
+          <p className="bluxcc:text-xl">{t('accessDeniedTitle')}</p>
+
+          <p className="bluxcc:text-sm">{store.loginError}</p>
+
+          <p className="bluxcc:text-sm bluxcc:opacity-70">
+            {t('accessDeniedHelp')}
+          </p>
+        </div>
+
+        <Divider />
+
+        <Button onClick={handleBackToLogin} state="enabled" variant="outline">
+          {t('back')}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">

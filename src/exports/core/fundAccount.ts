@@ -1,6 +1,7 @@
-import { Networks, StrKey } from '@stellar/stellar-sdk';
+import { Networks } from '@stellar/stellar-sdk';
 
 import { getAddress } from '../utils';
+import { resolveAddress } from './helpers';
 import { fetcher } from '../../utils/helpers';
 
 const FRIENDBOT_URLS: Record<string, string> = {
@@ -18,17 +19,30 @@ const PASSPHRASE_TO_NAME: Record<string, string> = {
   [Networks.FUTURENET]: 'futurenet',
 };
 
+/** Outcome of a single Friendbot funding attempt. */
 export type FundAccountStatus = 'funded' | 'already_funded' | 'failed';
 
+/** Options for {@link fundAccount}. */
 export type FundAccountOptions = {
+  /**
+   * Network(s) to fund on, by passphrase or friendly name (`testnet` /
+   * `futurenet`). Defaults to both testnet and futurenet. Friendbot is only
+   * available on those networks.
+   */
   network?: string | string[];
 };
 
+/** Result of funding one network. */
 export type FundAccountResult = {
+  /** Friendly network name (e.g. `testnet`), or the passphrase if unnamed. */
   network: string;
+  /** Network passphrase that was funded. */
   passphrase: string;
+  /** Whether the account was funded, was already funded, or the attempt failed. */
   status: FundAccountStatus;
+  /** Hash of the funding transaction, when Friendbot returned one. */
   hash?: string;
+  /** Failure reason, present only when `status` is `failed`. */
   error?: string;
 };
 
@@ -107,15 +121,20 @@ const fundOne = async (
   }
 };
 
+/**
+ * Funds an account with test lumens via Friendbot. Resolves federated addresses
+ * first and funds each requested network independently.
+ *
+ * @param address - Account to fund (address or federated address). Defaults to the logged-in account.
+ * @param options - Which network(s) to fund on.
+ * @returns One {@link FundAccountResult} per requested network.
+ * @throws If the address cannot be resolved, or a requested network is not fundable by Friendbot.
+ */
 export const fundAccount = async (
   address?: string,
   options: FundAccountOptions = {},
 ): Promise<FundAccountResult[]> => {
-  const target = getAddress(address);
-
-  if (!StrKey.isValidEd25519PublicKey(target)) {
-    throw new Error('BLUX: Invalid address');
-  }
+  const { publicKey: target } = await resolveAddress(getAddress(address));
 
   let requested: string[];
 

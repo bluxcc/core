@@ -1,7 +1,8 @@
-import { Horizon } from '@stellar/stellar-sdk';
+import { Horizon, rpc } from '@stellar/stellar-sdk';
 
 import { SupportedWallet } from './enums';
 
+/** Supported UI language codes (ISO 639-1). */
 export type LanguageKey =
   | 'en'
   | 'es'
@@ -13,20 +14,25 @@ export type LanguageKey =
   | 'ja'
   | 'ko';
 
+/** Custom RPC endpoints keyed by network passphrase. */
 export type ITransports = Record<string, IServers>;
 
+/** Block explorer used to build account/transaction links. */
 export type IExplorer =
   | 'steexp'
   | 'stellarchain'
   | 'stellarexpert'
   | 'lumenscan';
 
+/** Social login providers supported by Blux. */
 export type ISocialProvider = 'google';
 
+/** Login methods to offer in the modal. */
 export type ILoginMethods = Array<
   'wallet' | 'sms' | 'email' | 'passkey' | ISocialProvider
 >;
 
+/** Canonical names of the wallets Blux can integrate with. */
 export type IWalletNames = Array<
   | 'rabet'
   | 'albedo'
@@ -41,39 +47,67 @@ export type IWalletNames = Array<
   | 'trezor'
 >;
 
+/** RPC endpoints for a single network. */
 interface IServers {
+  /** Horizon base URL. */
   horizon: string;
+  /** Soroban RPC base URL. */
   soroban: string;
 }
 
+/** WalletConnect project metadata shown to users during pairing. */
 export interface IWalletConnectMetaData {
+  /** Icon URLs for your app. */
   icons: string[];
+  /** Your app URL. */
   url: string;
+  /** WalletConnect Cloud project id. */
   projectId: string;
+  /** Short description of your app. */
   description: string;
 }
 
+/** Trezor Connect manifest metadata. */
 export interface ITrezorMetaData {
+  /** Contact email required by Trezor Connect. */
   email: string;
+  /** Optional app URL for the Trezor manifest. */
   appUrl?: string;
 }
 
+/** Configuration passed to {@link createConfig}. */
 export interface IConfig {
+  /** Your Blux app id, from the Blux dashboard. Required for email/passkey/social login. */
   appId: string;
+  /** Display name of your app, shown in wallet prompts and UI. */
   appName: string;
+  /** Network passphrases your app supports (e.g. from {@link networks}). */
   networks: string[];
+  /** Which of `networks` to start on. Defaults to the first entry. */
   defaultNetwork?: string;
+  /** Theme overrides for the Blux UI. */
   appearance?: Partial<IAppearance>;
+  /** UI language. Defaults to `'en'`. */
   lang?: LanguageKey;
+  /** Block explorer used for links. Defaults to `'stellarchain'`. */
   explorer?: IExplorer;
+  /** Persist the session across reloads. Defaults to `false`. */
   isPersistent?: boolean;
+  /** Show Blux's built-in signing/approval UIs. When `false`, signing happens headlessly. Defaults to `true`. */
   showWalletUIs?: boolean;
+  /** Login methods to offer. Defaults to `['wallet']`. */
   loginMethods?: ILoginMethods | string[];
+  /** Custom Horizon/Soroban endpoints per network; required for custom networks. */
   transports?: ITransports;
+  /** Wallets to hide from the picker. */
   excludeWallets?: IWalletNames;
+  /** Wallets to surface first in the picker, in the given order. */
   orderWallets?: IWalletNames | string[];
+  /** WalletConnect metadata; required to enable WalletConnect. */
   walletConnect?: IWalletConnectMetaData;
+  /** Trezor manifest metadata; required to enable Trezor. */
   trezor?: ITrezorMetaData;
+  /** Prompt the user when their wallet is on a different network. Defaults to `true`. */
   promptOnWrongNetwork?: boolean;
 }
 
@@ -89,22 +123,38 @@ export interface IInternalConfig extends IConfig {
   promptOnWrongNetwork: boolean;
 }
 
+/** Theme tokens for the Blux modal and components. */
 export interface IAppearance {
-  background: string; // Modal or component background color/image
-  fieldBackground: string; // Background color for input fields or UI sections
-  accentColor: string; // Primary accent or highlight color
-  textColor: string; // Main text color
-  fontFamily: string; // Font family or style
-  outlineWidth?: string; // Optional outline width (e.g., '2px') (falls back to borderColor)
-  outlineColor?: string; // Optional outline color (falls back to borderColor)
-  outlineRadius?: string; // Optional Corner radius for modal (falls back to borderRadius)
-  borderRadius: string; // Corner radius for UI elements
-  borderColor: string; // Border color for elements
-  borderWidth: string; // Border width (e.g., '1px', '0', etc.)
-  logo: string; // App logo URL
-  backdropBlur: string; // Blur level for backdrop (e.g., '8px')
-  backdropColor: string; // Backdrop color behind modal or overlay
-  boxShadow: string; // Box shadow style for modal
+  /** Modal or component background color/image. */
+  background: string;
+  /** Background color for input fields or UI sections. */
+  fieldBackground: string;
+  /** Primary accent or highlight color. */
+  accentColor: string;
+  /** Main text color. */
+  textColor: string;
+  /** Font family or style. */
+  fontFamily: string;
+  /** Outline width (e.g. `'2px'`); falls back to `borderWidth`. */
+  outlineWidth?: string;
+  /** Outline color; falls back to `borderColor`. */
+  outlineColor?: string;
+  /** Modal corner radius; falls back to `borderRadius`. */
+  outlineRadius?: string;
+  /** Corner radius for UI elements. */
+  borderRadius: string;
+  /** Border color for elements. */
+  borderColor: string;
+  /** Border width (e.g. `'1px'`, `'0'`). */
+  borderWidth: string;
+  /** App logo URL. */
+  logo: string;
+  /** Blur level for the backdrop (e.g. `'8px'`). */
+  backdropBlur: string;
+  /** Backdrop color behind the modal/overlay. */
+  backdropColor: string;
+  /** Box shadow style for the modal. */
+  boxShadow: string;
 }
 
 export interface IWallet {
@@ -163,9 +213,30 @@ export interface ISignOptions {
   network: string;
 }
 
-export type SendTransactionResult =
-  | Horizon.HorizonApi.SubmitTransactionResponse
-  | string;
+/**
+ * Lazily resolves to the value the invoked contract function returned, decoded
+ * to a native JS value. Resolves to `null` for classic transactions and for
+ * Soroban calls whose function returns nothing.
+ */
+export type TransactionReturnValue = () => Promise<unknown>;
+
+/** A transaction that has been submitted to (and accepted by) the network. */
+export interface ISubmittedTransaction {
+  /** The transaction hash. */
+  hash: string;
+  /** Resolves the invoked contract function's return value; see {@link TransactionReturnValue}. */
+  returnValue: TransactionReturnValue;
+  /**
+   * The underlying response: a Horizon submit response for classic
+   * transactions, or the finalized Soroban RPC transaction for contract calls.
+   */
+  raw:
+    | Horizon.HorizonApi.SubmitTransactionResponse
+    | rpc.Api.GetSuccessfulTransactionResponse;
+}
+
+/** Result of a sign-and-send: the submitted transaction, or the signed XDR when not submitting. */
+export type SendTransactionResult = ISubmittedTransaction | string;
 
 export interface ISendTransaction {
   xdr: string;
