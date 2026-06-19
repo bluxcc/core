@@ -8,6 +8,7 @@ import { useLang } from '../../hooks/useLang';
 import CDNFiles from '../../constants/cdnFiles';
 import {
   hexToRgba,
+  formatUsd,
   humanizeAmount,
   getContrastColor,
 } from '../../utils/helpers';
@@ -99,12 +100,14 @@ const Assets = ({ assets }: AssetsProps) => {
             <span className="bluxcc:font-medium">
               {humanizeAmount(asset.assetBalance)}
             </span>
-            <span
-              className="bluxcc:font-semibold bluxcc:text-xs"
-              style={{ color: hexToRgba(appearance.textColor, 0.7) }}
-            >
-              {false && humanizeAmount(asset.valueInCurrency || '0')}
-            </span>
+            {Number(asset.valueInCurrency) > 0 && (
+              <span
+                className="bluxcc:font-semibold bluxcc:text-xs"
+                style={{ color: hexToRgba(appearance.textColor, 0.7) }}
+              >
+                {formatUsd(asset.valueInCurrency || '0')}
+              </span>
+            )}
           </div>
         </button>
       ))}

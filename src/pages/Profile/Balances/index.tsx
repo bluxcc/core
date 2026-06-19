@@ -3,6 +3,7 @@ import { useLang } from '../../../hooks/useLang';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import Assets from '../../../components/AssetsList';
+import { balanceLineKey } from '../../../utils/prices';
 import {
   hexToRgba,
   getAssetTitle,
@@ -17,9 +18,11 @@ const Balances = () => {
   const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
   const { loading, error, balances } = useAppStore((store) => store.balances);
+  const balanceValues = useAppStore((store) => store.balanceValues);
 
   const assets = balances.map((b) => ({
     ...balanceToAsset(b),
+    valueInCurrency: balanceValues[balanceLineKey(b)] ?? '0',
     title: getAssetTitle(b),
     subtitle: getAssetSubtitle(b),
     logo: <CDNImage name={CDNFiles.Stellar} props={{}} />,

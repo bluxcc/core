@@ -14,6 +14,17 @@ export const networks = {
   standalone: Networks.STANDALONE,
 };
 
+// Human-readable name for every known network passphrase. Unlike
+// DEFAULT_NETWORKS_TRANSPORTS this also covers Standalone and Sandbox, which
+// have no default transports but still need a display label.
+export const NETWORK_DISPLAY_NAMES: Record<string, string> = {
+  [networks.mainnet]: "Mainnet",
+  [networks.testnet]: "Testnet",
+  [networks.futurenet]: "Futurenet",
+  [networks.standalone]: "Standalone",
+  [networks.sandbox]: "Sandbox",
+};
+
 export const DEFAULT_NETWORKS_TRANSPORTS: Record<string, INetworkTransports> = {
   [networks.mainnet]: {
     name: "Mainnet",

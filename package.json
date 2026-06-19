@@ -1,6 +1,6 @@
 {
   "name": "@bluxcc/core",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "homepage": "https://blux.cc",
   "description": "Blux is a wallet infra for the Stellar network",
   "type": "module",
@@ -73,6 +73,7 @@
   "dependencies": {
     "@hot-wallet/sdk": "^1.0.11",
     "@ledgerhq/hw-transport-webusb": "^6.29.12",
-    "@trezor/connect-web": "^10.0.0-alpha.1"
+    "@trezor/connect-web": "^10.0.0-alpha.1",
+    "bignumber.js": "^9.3.1"
   }
 }

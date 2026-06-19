@@ -6,8 +6,12 @@ import {
   apiRegisterPasskeyChallenge,
 } from '../../../utils/api';
 import { getState, useAppStore } from '../../../store';
-import { base64UrlToBuffer } from '../../../utils/helpers';
+import { hexToRgba } from '../../../utils/helpers';
 import { useLang } from '../../../hooks/useLang';
+import Button from '../../../components/Button';
+import Divider from '../../../components/Divider';
+import CDNFiles from '../../../constants/cdnFiles';
+import CDNImage from '../../../components/CDNImage';
 import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { Route } from '../../../enums';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
@@ -65,10 +69,10 @@ async function continueWithPasskey(
 ): Promise<PasskeyFlowResult> {
   await ensurePasskeySupport();
 
-  // The API sends the challenge as a base64url string; decode it back to the
-  // original random bytes so clientDataJSON.challenge round-trips to the exact
-  // string the server stored (it checks plain string equality).
-  const challengeInBuffer = base64UrlToBuffer(challenge);
+  // The server stores the challenge as a plain string and validates it as the
+  // UTF-8 text of clientDataJSON.challenge, so the bytes handed to the
+  // authenticator must be that string encoded as UTF-8 (not base64url-decoded).
+  const challengeInBuffer = new TextEncoder().encode(challenge).buffer;
 
   // Returning users already have a discoverable passkey for this rpId, so try a
   // login first. A first-time user has none, in which case get() rejects (e.g.
@@ -135,6 +139,7 @@ async function continueWithPasskey(
 const PasskeyOnboardingPage = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
+  const appearance = store.config.appearance;
   const [status, setStatus] = useState<PasskeyStatus>('loading');
 
   const passkeyLoginFlow = async () => {
@@ -208,28 +213,82 @@ const PasskeyOnboardingPage = () => {
     passkeyLoginFlow();
   };
 
+  const renderIcon = () => {
+    if (status === 'success') {
+      return (
+        <div
+          className="bluxcc:mb-6 bluxcc:flex bluxcc:size-17 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full"
+          style={{ background: hexToRgba(appearance.accentColor, 0.1) }}
+        >
+          <CDNImage
+            name={CDNFiles.GreenCheck}
+            props={{ fill: appearance.accentColor }}
+          />
+        </div>
+      );
+    }
+
+    if (status === 'failed') {
+      return (
+        <div className="bluxcc:mb-6 bluxcc:flex bluxcc:items-center bluxcc:justify-center">
+          <CDNImage name={CDNFiles.RedExclamation} props={{}} />
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className="bluxcc:mb-6 bluxcc:flex bluxcc:size-17 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full"
+        style={{
+          background: hexToRgba(appearance.accentColor, 0.1),
+          color: appearance.accentColor,
+        }}
+      >
+        <PasskeyFingerLogo />
+      </div>
+    );
+  };
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
-      <PasskeyFingerLogo />
+    <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
+      {renderIcon()}
 
-      <div>
-        <p>{t(textKeys[status].title)}</p>
+      <div className="bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
+        <p className="bluxcc:text-xl">{t(textKeys[status].title)}</p>
 
-        <p>{t(textKeys[status].content)}</p>
+        <p className="bluxcc:text-sm bluxcc:leading-5">
+          {t(textKeys[status].content)}
+        </p>
       </div>
 
+      <Divider />
+
+      {status === 'loading' && (
+        <Button
+          state="disabled"
+          variant="outline"
+          startIcon={
+            <CDNImage
+              className="bluxcc:animate-spin"
+              name={CDNFiles.Loading}
+              props={{ fill: appearance.accentColor }}
+            />
+          }
+        >
+          {t('passkeyVerifying')}
+        </Button>
+      )}
+
+      {status === 'success' && (
+        <Button state="disabled" variant="outline">
+          {t('loggingIn')}
+        </Button>
+      )}
+
       {status === 'failed' && (
-        <button type="button" onClick={handlePasskeyRetry}>
+        <Button onClick={handlePasskeyRetry} state="enabled" variant="outline">
           {t('tryAgain')}
-        </button>
+        </Button>
       )}
     </div>
   );

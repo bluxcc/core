@@ -154,22 +154,21 @@ export const apiRegisterPasskey = async (
 
   const { credential } = passkeyResult;
 
-  // The /auth/code handler unmarshals `code` into a flat map and reads
-  // top-level snake_case keys: for registration challenge_id +
-  // attestation_object + client_data_json + transports; for login challenge_id
-  // + authenticator_data + client_data_json + signature. A registration
-  // (create()) gives an AuthenticatorAttestationResponse, a login (get()) an
-  // AuthenticatorAssertionResponse — they share no response fields, so build
-  // the right flat shape per step.
-  let codeObject: Record<string, unknown>;
+  // The server parses `code` as a standard WebAuthn credential JSON:
+  // `{ id, rawId, type, response: { ... } }`. A login (get()) yields an
+  // AuthenticatorAssertionResponse (authenticatorData/signature/userHandle);
+  // a registration (create()) yields an AuthenticatorAttestationResponse
+  // (attestationObject/transports). They share clientDataJSON but no other
+  // response fields, so the `response` payload is built per step while the
+  // outer envelope stays identical.
+  let response: Record<string, unknown>;
 
   if (passkeyResult.step === 'register') {
     const attestation = credential.response as AuthenticatorAttestationResponse;
 
-    codeObject = {
-      challenge_id: challenge.challenge_id,
-      attestation_object: bufferToBase64Url(attestation.attestationObject),
-      client_data_json: bufferToBase64Url(attestation.clientDataJSON),
+    response = {
+      attestationObject: bufferToBase64Url(attestation.attestationObject),
+      clientDataJSON: bufferToBase64Url(attestation.clientDataJSON),
       transports:
         typeof attestation.getTransports === 'function'
           ? attestation.getTransports()
@@ -178,13 +177,23 @@ export const apiRegisterPasskey = async (
   } else {
     const assertion = credential.response as AuthenticatorAssertionResponse;
 
-    codeObject = {
-      challenge_id: challenge.challenge_id,
-      authenticator_data: bufferToBase64Url(assertion.authenticatorData),
-      client_data_json: bufferToBase64Url(assertion.clientDataJSON),
+    response = {
+      authenticatorData: bufferToBase64Url(assertion.authenticatorData),
+      clientDataJSON: bufferToBase64Url(assertion.clientDataJSON),
       signature: bufferToBase64Url(assertion.signature),
+      userHandle: assertion.userHandle
+        ? bufferToBase64Url(assertion.userHandle)
+        : null,
     };
   }
+
+  const codeObject: Record<string, unknown> = {
+    challenge_id: challenge.challenge_id,
+    id: credential.id,
+    rawId: bufferToBase64Url(credential.rawId),
+    type: credential.type,
+    response,
+  };
 
   const res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
     method: 'POST',

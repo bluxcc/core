@@ -107,6 +107,10 @@ export interface IStoreProperties {
   // restricts access (allowlist/blocklist). Set only for that case.
   loginError?: string;
   balances: UseBalancesResult;
+  // USD value of each balance, keyed by `balanceLineKey` (see utils/prices).
+  // Populated asynchronously after balances load; absent keys mean "not priced
+  // yet" and the UI falls back to showing no value.
+  balanceValues: Record<string, string>;
   transactions: UseTransactionsResult;
   selectAsset: ISelectAsset;
   detailsAsset?: IAsset;
@@ -150,6 +154,7 @@ export interface IStoreMethods {
   setAlert: (alert: AlertType, message: string) => void;
   setDynamicTitle: (title: string) => void;
   setBalances: (balances: UseBalancesResult) => void;
+  setBalanceValues: (balanceValues: Record<string, string>) => void;
   setSelectAsset: (selectAsset: ISelectAsset) => void;
   setDetailsAsset: (asset: IAsset | undefined) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
@@ -230,6 +235,7 @@ export const store = createStore<IStore>((set) => ({
     loading: false,
     balances: [],
   },
+  balanceValues: {},
   apiResponse: undefined,
   transactions: {
     error: null,
@@ -298,6 +304,7 @@ export const store = createStore<IStore>((set) => ({
           ? {
               selectAsset: { ...DEFAULT_SELECT_ASSET },
               detailsAsset: undefined,
+              balanceValues: {},
             }
           : {}),
       };
@@ -438,6 +445,7 @@ export const store = createStore<IStore>((set) => ({
       waitingStatus: 'login',
       selectAsset: { ...DEFAULT_SELECT_ASSET },
       detailsAsset: undefined,
+      balanceValues: {},
       authState: {
         ...current.authState,
         isAuthenticated: false,
@@ -446,6 +454,8 @@ export const store = createStore<IStore>((set) => ({
     })),
   setBalances: (balances: UseBalancesResult) =>
     set((state) => ({ ...state, balances })),
+  setBalanceValues: (balanceValues: Record<string, string>) =>
+    set((state) => ({ ...state, balanceValues })),
   setAuth: (auth: IAuth) => set((state) => ({ ...state, auth })),
   setTransactions: (transactions: UseTransactionsResult) =>
     set((state) => ({ ...state, transactions })),
