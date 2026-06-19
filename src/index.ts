@@ -1,7 +1,6 @@
 import { _login } from './exports/blux';
-import { getState } from './store';
-import { timeout } from './utils/helpers';
 import { preloadLogos } from './utils/preloadImages';
+import { isAppValid, waitForBluxReady } from './utils/appValidity';
 
 export * from './exports';
 export { createConfig } from './exports/createConfig';
@@ -9,12 +8,11 @@ export { createConfig } from './exports/createConfig';
 preloadLogos();
 
 (async () => {
-  while (true) {
-    const s = getState();
+  await waitForBluxReady();
 
-    if (s.authState.isReady) break;
-
-    await timeout(50);
+  // Never auto-restore a session when the appId is invalid — Blux is disabled.
+  if (!isAppValid()) {
+    return;
   }
 
   _login(true);

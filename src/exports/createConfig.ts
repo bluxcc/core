@@ -9,7 +9,7 @@ import { IConfig, IInternalConfig } from '../types';
 import { defaultLightTheme } from '../constants/themes';
 import { initializeTrezor } from '../utils/initializeTrezor';
 import { initializeWalletConnect } from '../utils/initializeWalletConnect';
-import { getEnabledSocials, isSocialProvider } from '../utils/socialLogin';
+import { getEnabledSocials } from '../utils/socialLogin';
 import {
   getNetworkRpc,
   handleLoadWallets,
@@ -184,17 +184,19 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   authenticateAppId(config.appId).then((result) => {
     setApiResponse(result);
 
-    const requestedSocials = conf.loginMethods.filter((m) =>
-      isSocialProvider(String(m)),
-    );
+    if (!result.isValid) {
+      // The appId could not be validated — missing, wrong, deleted, used from a
+      // disallowed origin, or the Blux API was unreachable. Blux is now
+      // disabled: login() and every signing entry point throw via
+      // assertAppIsValid(). Throwing here would only surface as an unhandled
+      // promise rejection (this runs in an un-awaited .then), so log loudly and
+      // let the public methods do the enforcing.
+      console.error(
+        `BLUX: appId is invalid${result.message ? ` — ${result.message}` : ''}.` +
+          ' Login and signing are disabled.',
+      );
 
-    if (
-      !result.isValid &&
-      (conf.loginMethods.includes('email') ||
-        conf.loginMethods.includes('passkey') ||
-        requestedSocials.length > 0)
-    ) {
-      throw new Error('BLUX: config.appId is invalid.');
+      return;
     }
 
     getEnabledSocials(conf.loginMethods, result);

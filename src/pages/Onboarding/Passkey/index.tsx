@@ -2,11 +2,16 @@ import { useEffect, useState } from 'react';
 import { PasskeyFingerLogo } from '../../../assets';
 import {
   apiGetUser,
-  apiRegisterPasskey,
-  apiRegisterPasskeyChallenge,
+  apiPasskeyVerify,
+  apiPasskeyChallenge,
 } from '../../../utils/api';
 import { getState, useAppStore } from '../../../store';
-import { hexToRgba } from '../../../utils/helpers';
+import { base64UrlToBuffer, hexToRgba } from '../../../utils/helpers';
+import {
+  getStoredPasskeyCredentialId,
+  setStoredPasskeyCredentialId,
+  createPasskeyRegistrationHandle,
+} from '../../../utils/passkeyCredentials';
 import { useLang } from '../../../hooks/useLang';
 import Button from '../../../components/Button';
 import Divider from '../../../components/Divider';
@@ -63,48 +68,57 @@ async function ensurePasskeySupport(): Promise<void> {
   }
 }
 
-async function continueWithPasskey(
+async function runPasskeyCeremony(
   challenge: string,
   userId: string,
+  mode: 'login' | 'register',
+  credentialId?: string,
 ): Promise<PasskeyFlowResult> {
   await ensurePasskeySupport();
 
-  // The server stores the challenge as a plain string and validates it as the
-  // UTF-8 text of clientDataJSON.challenge, so the bytes handed to the
-  // authenticator must be that string encoded as UTF-8 (not base64url-decoded).
-  const challengeInBuffer = new TextEncoder().encode(challenge).buffer;
+  // The API issues the challenge as base64url. The authenticator must sign the
+  // raw bytes so the browser re-encodes them to the exact string the server
+  // stored and matches against clientDataJSON.challenge. (UTF-8-encoding the
+  // string instead would sign a different value and fail verification.)
+  const challengeBytes = base64UrlToBuffer(challenge);
+  const rpId = window.location.hostname;
 
-  // Returning users already have a discoverable passkey for this rpId, so try a
-  // login first. A first-time user has none, in which case get() rejects (e.g.
-  // NotAllowedError) — that's expected, so swallow it and fall through to
-  // registration below instead of failing the whole flow.
-  let assertion: Credential | null = null;
-  try {
-    assertion = await navigator.credentials.get({
+  // Returning user: we already know which credential to assert, and the
+  // challenge was bound to that credential's owner, so target it explicitly
+  // rather than relying on discoverable-credential selection.
+  if (mode === 'login' && credentialId) {
+    const assertion = await navigator.credentials.get({
       publicKey: {
-        challenge: challengeInBuffer,
-        userVerification: 'required',
-        rpId: window.location.hostname,
+        challenge: challengeBytes,
+        rpId,
+        userVerification: 'preferred',
         timeout: 60000,
+        allowCredentials: [
+          {
+            id: base64UrlToBuffer(credentialId),
+            type: 'public-key',
+          },
+        ],
       },
     });
-  } catch (_) {
-    assertion = null;
-  }
 
-  if (assertion instanceof PublicKeyCredential) {
+    if (!(assertion instanceof PublicKeyCredential)) {
+      throw new Error('BLUX: Passkey login was not completed.');
+    }
+
     return {
       step: 'login',
       credential: assertion,
     };
   }
 
+  // First-time user on this browser: enroll a new passkey.
   const created = await navigator.credentials.create({
     publicKey: {
-      challenge: challengeInBuffer,
+      challenge: challengeBytes,
       rp: {
         name: 'BLUX',
-        id: window.location.hostname,
+        id: rpId,
       },
       user: {
         id: new TextEncoder().encode(userId),
@@ -119,7 +133,7 @@ async function continueWithPasskey(
       ],
       authenticatorSelection: {
         residentKey: 'required',
-        userVerification: 'required',
+        userVerification: 'preferred',
       },
       timeout: 60000,
       attestation: 'none',
@@ -144,20 +158,33 @@ const PasskeyOnboardingPage = () => {
 
   const passkeyLoginFlow = async () => {
     try {
-      const passkeyRegistrationResult = await apiRegisterPasskeyChallenge(
-        store.config.appId,
+      const appId = store.config.appId;
+
+      // Identifier-first: a stored credential id means this browser already
+      // registered a passkey for this app, so log it in; otherwise enroll a new
+      // one. The challenge's auth_value must identify the right user row — the
+      // credential id for login, a fresh unique handle for registration.
+      const storedCredentialId = getStoredPasskeyCredentialId(appId);
+      const mode: 'login' | 'register' = storedCredentialId
+        ? 'login'
+        : 'register';
+      const challengeAuthValue =
+        storedCredentialId ?? createPasskeyRegistrationHandle();
+
+      const challenge = await apiPasskeyChallenge(appId, challengeAuthValue);
+
+      const passkeyResult = await runPasskeyCeremony(
+        challenge.challenge,
+        String(challenge.user_id),
+        mode,
+        storedCredentialId ?? undefined,
       );
 
-      const passkeyResult = await continueWithPasskey(
-        passkeyRegistrationResult.challenge,
-        passkeyRegistrationResult.user_id,
-      );
+      const jwt = await apiPasskeyVerify(appId, challenge, passkeyResult);
 
-      const jwt = await apiRegisterPasskey(
-        store.config.appId,
-        passkeyRegistrationResult,
-        passkeyResult,
-      );
+      // Remember the real credential id so the next visit logs in instead of
+      // attempting to register again (which the server rejects as a duplicate).
+      setStoredPasskeyCredentialId(appId, passkeyResult.credential.id);
 
       setStatus('success');
 

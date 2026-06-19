@@ -1,7 +1,7 @@
 import { Route } from '../enums';
-import { timeout } from '../utils/helpers';
 import { getState, IUser } from '../store';
 import { BluxEvent } from '../utils/events';
+import { assertAppIsValid, waitForBluxReady } from '../utils/appValidity';
 import { BLUX_JWT_STORE } from '../constants/consts';
 import { ISendTransaction, ISignAuthEntry, ISignMessage } from '../types';
 import handleSignMessage from '../stellar/handleSignMessage';
@@ -98,13 +98,12 @@ export const _login = (isSilent: boolean) => {
  * @returns The authenticated user.
  */
 export const login = async (): Promise<IUser> => {
-  while (true) {
-    const s = getState();
+  await waitForBluxReady();
 
-    if (s.authState.isReady) break;
-
-    await timeout(50);
-  }
+  // A bad appId (missing, wrong, deleted, used from a disallowed origin, or an
+  // unreachable Blux API) disables login entirely — throw before the onboarding
+  // modal can ever open.
+  assertAppIsValid();
 
   return _login(false);
 };
@@ -127,6 +126,8 @@ const logout = () => {
  * @throws If no user is authenticated.
  */
 const profile = () => {
+  assertAppIsValid();
+
   const { openModal, authState, modal } = getState();
 
   const { isAuthenticated } = authState;
@@ -154,6 +155,9 @@ const _signTransaction = (
   options?: { network: string },
 ) =>
   new Promise((resolve, reject) => {
+    // Throwing inside the executor rejects the returned promise.
+    assertAppIsValid();
+
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
@@ -262,6 +266,9 @@ export const sendTransaction = async (
  */
 export const signMessage = (message: string, options?: { network: string }) =>
   new Promise((resolve, reject) => {
+    // Throwing inside the executor rejects the returned promise.
+    assertAppIsValid();
+
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
@@ -319,6 +326,8 @@ export const signMessage = (message: string, options?: { network: string }) =>
  * @throws If no user is authenticated or the modal is already open elsewhere.
  */
 const fundMe = () => {
+  assertAppIsValid();
+
   const state = getState();
 
   if (!state.authState.isAuthenticated || !state.stellar || !state.user) {
@@ -347,6 +356,9 @@ export const signAuthEntry = (
   options?: { network: string },
 ) =>
   new Promise((resolve, reject) => {
+    // Throwing inside the executor rejects the returned promise.
+    assertAppIsValid();
+
     const state = getState();
 
     if (!state.authState.isAuthenticated || !state.stellar || !state.user) {

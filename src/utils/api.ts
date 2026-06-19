@@ -100,8 +100,13 @@ export const authenticateAppId = async (
   }
 };
 
-export const apiRegisterPasskeyChallenge = async (
+// Requests a WebAuthn challenge. The server binds the challenge to the user row
+// identified by `authValue`, so pass the stored credential id when logging an
+// existing passkey in, or a fresh unique handle when registering a new one.
+// Sending an empty/constant value would bind every passkey user to one row.
+export const apiPasskeyChallenge = async (
   appId: string,
+  authValue: string,
 ): Promise<ApiPasskeyChallenge> => {
   if (!appId) {
     throw new Error('BLUX: appId is missing in config.');
@@ -119,7 +124,7 @@ export const apiRegisterPasskeyChallenge = async (
       body: JSON.stringify({
         wallet: '',
         auth_method: 'passkey',
-        auth_value: '',
+        auth_value: authValue,
       }),
     },
   );
@@ -143,7 +148,7 @@ export const apiRegisterPasskeyChallenge = async (
   throw new Error('BLUX: Unexpected response from api');
 };
 
-export const apiRegisterPasskey = async (
+export const apiPasskeyVerify = async (
   appId: string,
   challenge: ApiPasskeyChallenge,
   passkeyResult: PasskeyFlowResult,
@@ -154,21 +159,21 @@ export const apiRegisterPasskey = async (
 
   const { credential } = passkeyResult;
 
-  // The server parses `code` as a standard WebAuthn credential JSON:
-  // `{ id, rawId, type, response: { ... } }`. A login (get()) yields an
-  // AuthenticatorAssertionResponse (authenticatorData/signature/userHandle);
-  // a registration (create()) yields an AuthenticatorAttestationResponse
-  // (attestationObject/transports). They share clientDataJSON but no other
-  // response fields, so the `response` payload is built per step while the
-  // outer envelope stays identical.
-  let response: Record<string, unknown>;
+  // The server parses `code` as a flat object (json.Unmarshal into a map for
+  // registration, into AssertionResponse for login) and reads snake_case fields
+  // off the top level — NOT a nested WebAuthn `{ response: { ... } }` envelope.
+  // Registration needs attestation_object + client_data_json + transports; login
+  // needs client_data_json + authenticator_data + signature. Both carry the
+  // challenge_id so the server can locate the single-use challenge.
+  let code: Record<string, unknown>;
 
   if (passkeyResult.step === 'register') {
     const attestation = credential.response as AuthenticatorAttestationResponse;
 
-    response = {
-      attestationObject: bufferToBase64Url(attestation.attestationObject),
-      clientDataJSON: bufferToBase64Url(attestation.clientDataJSON),
+    code = {
+      challenge_id: challenge.challenge_id,
+      attestation_object: bufferToBase64Url(attestation.attestationObject),
+      client_data_json: bufferToBase64Url(attestation.clientDataJSON),
       transports:
         typeof attestation.getTransports === 'function'
           ? attestation.getTransports()
@@ -177,23 +182,13 @@ export const apiRegisterPasskey = async (
   } else {
     const assertion = credential.response as AuthenticatorAssertionResponse;
 
-    response = {
-      authenticatorData: bufferToBase64Url(assertion.authenticatorData),
-      clientDataJSON: bufferToBase64Url(assertion.clientDataJSON),
+    code = {
+      challenge_id: challenge.challenge_id,
+      client_data_json: bufferToBase64Url(assertion.clientDataJSON),
+      authenticator_data: bufferToBase64Url(assertion.authenticatorData),
       signature: bufferToBase64Url(assertion.signature),
-      userHandle: assertion.userHandle
-        ? bufferToBase64Url(assertion.userHandle)
-        : null,
     };
   }
-
-  const codeObject: Record<string, unknown> = {
-    challenge_id: challenge.challenge_id,
-    id: credential.id,
-    rawId: bufferToBase64Url(credential.rawId),
-    type: credential.type,
-    response,
-  };
 
   const res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
     method: 'POST',
@@ -204,10 +199,11 @@ export const apiRegisterPasskey = async (
     },
     body: JSON.stringify({
       auth_method: 'passkey',
-      // Already a RawURL-base64 string; the server matches it against the
-      // credential id derived from the attestation.
+      // PublicKeyCredential.id is already RawURL-base64; the server matches it
+      // against the credential id derived from the attestation (register) or the
+      // stored credential (login).
       auth_value: credential.id,
-      code: JSON.stringify(codeObject),
+      code: JSON.stringify(code),
     }),
   });
 
@@ -215,10 +211,18 @@ export const apiRegisterPasskey = async (
     throw new Error('BLUX: invalid inputs');
   }
 
+  if (res.status === 401) {
+    throw new Error('BLUX: passkey verification failed');
+  }
+
   if (res.status === 403) {
     throw new Error(
       'BLUX: This account already has a passkey; sign in with the existing one.',
     );
+  }
+
+  if (res.status === 404) {
+    throw new Error('BLUX: user not found');
   }
 
   if (res.status === 500) {
@@ -288,11 +292,21 @@ export const apiSendOtp = async (
   throw new Error('BLUX: Unexpected response from api');
 };
 
-export const apiStoreWalletConnection = async (
+type ApiWalletChallenge = {
+  challenge_xdr: string;
+  network_passphrase: string;
+};
+
+// Step 1 of wallet login: ask the API for a SEP-10 challenge transaction the
+// connected wallet must sign to prove it controls `walletAddress`. The challenge
+// has sequence 0 and only ManageData operations, so it can never be submitted
+// and moves no funds — it is purely an ownership proof. The project's
+// allow/block list is enforced here (403 -> BluxAccessDeniedError).
+export const apiWalletChallenge = async (
   appId: string,
   walletName: string,
   walletAddress: string,
-): Promise<boolean> => {
+): Promise<ApiWalletChallenge> => {
   if (!appId) {
     throw new Error('BLUX: appId is missing in config.');
   }
@@ -301,10 +315,10 @@ export const apiStoreWalletConnection = async (
     throw new Error('BLUX: wallet address is missing.');
   }
 
-  let res: ApiResponse<null>;
+  let res: ApiResponse<ApiWalletChallenge>;
 
   try {
-    res = await fetcher<ApiResponse<null>>(`${BLUX_API}/auth`, {
+    res = await fetcher<ApiResponse<ApiWalletChallenge>>(`${BLUX_API}/auth`, {
       method: 'POST',
       headers: {
         [BLUX_APP_ID_HEADER]: appId,
@@ -340,7 +354,71 @@ export const apiStoreWalletConnection = async (
   }
 
   if (res.status === 200) {
-    return true;
+    return res.result;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
+};
+
+// Step 3 of wallet login: submit the signed challenge XDR exactly as the wallet
+// returned it. The server locates the single-use challenge by the transaction
+// hash and checks the signature against the wallet address, then returns a
+// session JWT. The XDR must not be rebuilt or re-serialized, or the hash changes.
+export const apiVerifyWalletChallenge = async (
+  appId: string,
+  signedXdr: string,
+): Promise<string> => {
+  if (!appId) {
+    throw new Error('BLUX: appId is missing in config.');
+  }
+
+  let res: ApiResponse<string>;
+
+  try {
+    res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        auth_method: 'wallet',
+        code: signedXdr,
+      }),
+    });
+  } catch (_e: any) {
+    throw new Error('BLUX: Unexpected response from api');
+  }
+
+  if (res.status === 403) {
+    throw new BluxAccessDeniedError(res.error);
+  }
+
+  if (res.status === 401) {
+    throw new Error('BLUX: Challenge verification failed');
+  }
+
+  // 400 covers an invalid / expired / already-used challenge — restart from the
+  // challenge request (apiWalletChallenge).
+  if (res.status === 400) {
+    throw new Error('BLUX: Login challenge expired. Please try again.');
+  }
+
+  if (res.status === 404) {
+    throw new Error('BLUX: user not found');
+  }
+
+  if (res.status === 500) {
+    throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 429) {
+    throw new Error('BLUX: too many requests');
+  }
+
+  if (res.status === 200) {
+    return res.result;
   }
 
   throw new Error('BLUX: Unexpected response from api');

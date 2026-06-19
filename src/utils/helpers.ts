@@ -34,6 +34,24 @@ export const bufferToBase64Url = (buf: ArrayBuffer) => {
     .replace(/=+$/, '');
 };
 
+// Inverse of bufferToBase64Url. WebAuthn needs the raw bytes (e.g. the server
+// challenge or a credential id) as a BufferSource, and the API encodes them as
+// base64url without padding, so restore the standard base64 alphabet and padding
+// before atob. Returns a concrete ArrayBuffer (a valid BufferSource).
+export const base64UrlToBuffer = (value: string): ArrayBuffer => {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padding = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4));
+  const binary = atob(base64 + padding);
+
+  const buffer = new ArrayBuffer(binary.length);
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return buffer;
+};
+
 export const getAssetTitle = (
   asset:
     | Horizon.HorizonApi.BalanceLineNative

@@ -234,25 +234,23 @@ const Onboarding = () => {
           if (!store.showAllWallets && method === 'email') {
             return (
               <React.Fragment key="email">
-                {
-                  <>
-                    <CardItem
-                      inputType="email"
-                      variant="input"
-                      startIcon={
-                        <CDNImage
-                          name={CDNFiles.SmallEmail}
-                          props={{ fill: appearance.textColor }}
-                        />
-                      }
-                      onChange={(value: string) => setInputValue(value)}
-                      onEnter={handleConnectEmail}
-                      onSubmit={handleConnectEmail}
-                    />
+                <div className="bluxcc:mb-2">
+                  <CardItem
+                    inputType="email"
+                    variant="input"
+                    startIcon={
+                      <CDNImage
+                        name={CDNFiles.SmallEmail}
+                        props={{ fill: appearance.textColor }}
+                      />
+                    }
+                    onChange={(value: string) => setInputValue(value)}
+                    onEnter={handleConnectEmail}
+                    onSubmit={handleConnectEmail}
+                  />
+                </div>
 
-                    {shouldRenderDivider && renderDivider()}
-                  </>
-                }
+                {shouldRenderDivider && renderDivider()}
               </React.Fragment>
             );
           }
