@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { StrKey } from '@stellar/stellar-sdk';
-import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
+import { Horizon, StrKey } from '@stellar/stellar-sdk';
 
 import { Route } from '../../../enums';
 import { useAppStore } from '../../../store';
@@ -85,7 +84,7 @@ const SendForm = () => {
           form.address,
           store.selectAsset.sendAsset,
           store.user?.address as string,
-          store.stellar?.servers.horizon as HorizonServer,
+          store.stellar?.servers.horizon as Horizon.Server,
           store.stellar?.activeNetwork || '',
         );
 

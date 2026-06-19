@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { AccountCallBuilder } from '@stellar/stellar-sdk/lib/horizon/account_call_builder';
+import { AccountCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/account_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAsset, resolveAddressKey, type AssetArg } from './helpers';

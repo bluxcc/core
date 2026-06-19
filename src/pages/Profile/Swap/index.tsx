@@ -1,5 +1,4 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
 
 import AssetBox from './AssetBox';
 import { Route } from '../../../enums';
@@ -23,6 +22,7 @@ import {
   isChangeTrustNeeded,
   getLiveAssetBalance,
 } from '../../../utils/helpers';
+import { Horizon } from '@stellar/stellar-sdk';
 
 const isSameAsset = (a: IAsset, b: IAsset) =>
   a.assetCode === b.assetCode && a.assetIssuer === b.assetIssuer;
@@ -160,7 +160,7 @@ const Swap = () => {
         store.selectAsset.swapToAsset,
         path,
         store.user?.address as string,
-        store.stellar?.servers.horizon as HorizonServer,
+        store.stellar?.servers.horizon as Horizon.Server,
         store.stellar?.activeNetwork || '',
         isNeeded,
       );

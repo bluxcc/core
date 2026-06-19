@@ -19,7 +19,6 @@ import {
   INetworkTransports,
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
-import { HorizonApi } from '@stellar/stellar-sdk/lib/horizon';
 
 export const bufferToBase64Url = (buf: ArrayBuffer) => {
   const bytes = new Uint8Array(buf);
@@ -60,10 +59,10 @@ export const base64UrlToBuffer = (value: string): ArrayBuffer => {
 
 export const getAssetTitle = (
   asset:
-    | HorizonApi.BalanceLineNative
-    | HorizonApi.BalanceLineAsset<'credit_alphanum4'>
-    | HorizonApi.BalanceLineAsset<'credit_alphanum12'>
-    | HorizonApi.BalanceLineLiquidityPool,
+    | Horizon.HorizonApi.BalanceLineNative
+    | Horizon.HorizonApi.BalanceLineAsset<'credit_alphanum4'>
+    | Horizon.HorizonApi.BalanceLineAsset<'credit_alphanum12'>
+    | Horizon.HorizonApi.BalanceLineLiquidityPool,
 ): string => {
   if (asset.asset_type === 'native') {
     return 'XLM';
@@ -85,10 +84,10 @@ export const getAssetTitle = (
 
 export const getAssetSubtitle = (
   asset:
-    | HorizonApi.BalanceLineNative
-    | HorizonApi.BalanceLineAsset<'credit_alphanum4'>
-    | HorizonApi.BalanceLineAsset<'credit_alphanum12'>
-    | HorizonApi.BalanceLineLiquidityPool,
+    | Horizon.HorizonApi.BalanceLineNative
+    | Horizon.HorizonApi.BalanceLineAsset<'credit_alphanum4'>
+    | Horizon.HorizonApi.BalanceLineAsset<'credit_alphanum12'>
+    | Horizon.HorizonApi.BalanceLineLiquidityPool,
 ): string => {
   if (asset.asset_type === 'native') {
     return 'native';
@@ -187,9 +186,9 @@ export const getLiveAssetBalance = (
     asset.assetType === 'native'
       ? b.asset_type === 'native'
       : // @ts-ignore
-        b.asset_code === asset.assetCode &&
-        // @ts-ignore
-        b.asset_issuer === asset.assetIssuer,
+      b.asset_code === asset.assetCode &&
+      // @ts-ignore
+      b.asset_issuer === asset.assetIssuer,
   );
 
   return line?.balance || '0';
@@ -261,9 +260,9 @@ export const getMaxSpendableAmount = (
     asset.assetType === 'native'
       ? b.asset_type === 'native'
       : // @ts-ignore - liquidity pool lines carry no asset_code/asset_issuer
-        b.asset_code === asset.assetCode &&
-        // @ts-ignore
-        b.asset_issuer === asset.assetIssuer,
+      b.asset_code === asset.assetCode &&
+      // @ts-ignore
+      b.asset_issuer === asset.assetIssuer,
   );
 
   if (!line) {
@@ -398,8 +397,10 @@ export const getMappedWallets = async (
   const checkedWallets = await Promise.all(
     Object.values(walletsConfig).map(async (wallet) => {
       try {
-        // @ts-ignore
-        if (walletNames.includes(wallet.name.toLowerCase().replace(/\s+/g, ''))) {
+        if (
+          // @ts-ignore
+          walletNames.includes(wallet.name.toLowerCase().replace(/\s+/g, ''))
+        ) {
           return { wallet, isAvailable: false };
         }
 
@@ -692,7 +693,9 @@ export const validateOrderWallets = (
   }
 
   if (!Array.isArray(orderWallets)) {
-    throw new Error('BLUX: config.orderWallets must be an array of wallet names.');
+    throw new Error(
+      'BLUX: config.orderWallets must be an array of wallet names.',
+    );
   }
 
   const knownNames = new Set(

@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { TransactionCallBuilder } from '@stellar/stellar-sdk/lib/horizon/transaction_call_builder';
+import { TransactionCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/transaction_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAddressKey } from './helpers';

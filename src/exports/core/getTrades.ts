@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { TradesCallBuilder } from '@stellar/stellar-sdk/lib/horizon/trades_call_builder';
+import { TradesCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/trades_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAsset, resolveAddressKey, type AssetArg } from './helpers';

@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { LiquidityPoolCallBuilder } from '@stellar/stellar-sdk/lib/horizon/liquidity_pool_call_builder';
+import { LiquidityPoolCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/liquidity_pool_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAsset, resolveAddressKey, type AssetArg } from './helpers';
@@ -40,7 +40,9 @@ export const getLiquidityPools = async (
   }
 
   if (options.forAssets) {
-    builder = builder.forAssets(...options.forAssets.map((a) => resolveAsset(a)));
+    builder = builder.forAssets(
+      ...options.forAssets.map((a) => resolveAsset(a)),
+    );
   }
 
   const response = await builder.call();

@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { LedgerCallBuilder } from '@stellar/stellar-sdk/lib/horizon/ledger_call_builder';
+import { LedgerCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/ledger_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { checkConfigCreated, CallBuilderOptions } from '../utils';

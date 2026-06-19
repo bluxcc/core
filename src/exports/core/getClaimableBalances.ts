@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { ClaimableBalanceCallBuilder } from '@stellar/stellar-sdk/lib/horizon/claimable_balances_call_builder';
+import { ClaimableBalanceCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/claimable_balances_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAsset, resolveAddressKey, type AssetArg } from './helpers';

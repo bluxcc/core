@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { PathCallBuilder } from '@stellar/stellar-sdk/lib/horizon/path_call_builder';
+import { PathCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/path_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAsset, resolveAddress, type AssetArg } from './helpers';

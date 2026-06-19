@@ -1,4 +1,3 @@
-import { HorizonServer } from '@stellar/stellar-sdk/lib/horizon/server';
 import { Horizon, Operation, TransactionBuilder } from '@stellar/stellar-sdk';
 
 import { IAsset } from '../types';
@@ -12,7 +11,7 @@ const swapTransaction = async (
   toAsset: IAsset,
   path: IAsset[],
   sourceAddress: string,
-  server: HorizonServer,
+  server: Horizon.Server,
   networkPassphrase: string,
   isChangeTrustNeeded: boolean,
 ) => {

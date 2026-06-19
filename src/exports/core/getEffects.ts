@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { EffectCallBuilder } from '@stellar/stellar-sdk/lib/horizon/effect_call_builder';
+import { EffectCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/effect_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAddressKey } from './helpers';

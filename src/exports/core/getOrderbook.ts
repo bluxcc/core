@@ -1,5 +1,5 @@
 import { Horizon } from '@stellar/stellar-sdk';
-import { OrderbookCallBuilder } from '@stellar/stellar-sdk/lib/horizon/orderbook_call_builder';
+import { OrderbookCallBuilder } from '@stellar/stellar-sdk/lib/esm/horizon/orderbook_call_builder';
 
 import { callBuilder } from './callBuilder';
 import { resolveAsset, type AssetArg } from './helpers';
