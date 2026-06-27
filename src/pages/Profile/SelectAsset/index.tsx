@@ -214,7 +214,7 @@ const SelectAsset = () => {
         </div>
       </div>
 
-      <div className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:mt-4 bluxcc:gap-2 bluxcc:overflow-y-auto overflowStyle bluxcc:max-h-[300px]">
+      <div className="bluxcc:absolute bluxcc:right-0 bluxcc:left-0 bluxcc:mt-4 bluxcc:gap-2 bluxcc:overflow-y-auto bluxcc:overflowStyle bluxcc:max-h-[300px]">
         {assets.map((asset, index) =>
           renderAssetRow(asset, index, index === assets.length - 1),
         )}

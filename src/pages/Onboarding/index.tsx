@@ -161,7 +161,7 @@ const Onboarding = () => {
           if (method === 'wallet') {
             return (
               <React.Fragment key="wallet">
-                <div className="bluxcc:max-h-81 bluxcc:space-y-2 bluxcc:overflow-y-auto overflowStyle">
+                <div className="bluxcc:max-h-81 bluxcc:space-y-2 bluxcc:overflow-y-auto bluxcc:overflowStyle">
                   {visibleWallets.map((checkedWallet) => (
                     <CardItem
                       key={checkedWallet.name}

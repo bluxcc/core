@@ -185,17 +185,17 @@ const AnimatedGradient = ({
   return (
     <div
       onClick={onClick}
-      className={`relative overflow-hidden ${className}`}
+      className={`bluxcc:relative bluxcc:overflow-hidden ${className}`}
       style={style}
       data-gradient-id={COLOR_THEMES[theme]?.id || 'unknown_gradient'}
     >
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 z-0"
+        className="bluxcc:absolute bluxcc:inset-0 bluxcc:z-0"
         style={{ width: size, height: size }}
       />
       {children && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="bluxcc:absolute bluxcc:inset-0 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:z-10">
           {children}
         </div>
       )}

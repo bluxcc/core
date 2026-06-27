@@ -196,7 +196,6 @@ export const PasskeyFingerLogo = () => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="lucide lucide-fingerprint-pattern"
       aria-hidden="true"
       style={{ width: '38px', height: '38px' }}
     >

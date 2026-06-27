@@ -41,7 +41,7 @@ const About = () => {
       <p className="bluxcc:text-2xl bluxcc:mt-6.5 bluxcc:mb-2 bluxcc:px-6  ">
         {t('wallet_infra')}
       </p>
-      <p className="bluxcc:text-sm text-center">{t('blux_gateway')}</p>
+      <p className="bluxcc:text-sm bluxcc:text-center">{t('blux_gateway')}</p>
     </div>
   );
 };

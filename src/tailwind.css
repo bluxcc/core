@@ -10,7 +10,7 @@
   /* all prefixed Tailwind elements */
 }
 /* WebKit (Chrome, Safari, Edge, Opera) */
-.overflowStyle::-webkit-scrollbar {
+.bluxcc\:overflowStyle::-webkit-scrollbar {
   width: 0.1px;
 }
 
@@ -140,7 +140,7 @@
   --color-alert-warning: #fa8f02;
 }
 
-@keyframes fadeIn {
+@keyframes bluxcc-fadeIn {
   0% {
     opacity: 0;
   }
@@ -149,7 +149,7 @@
   }
 }
 
-@keyframes fadeOut {
+@keyframes bluxcc-fadeOut {
   0% {
     opacity: 1;
   }
@@ -159,14 +159,14 @@
 }
 
 .bluxcc\:animate-fadeIn {
-  animation: fadeIn 500ms ease-in-out;
+  animation: bluxcc-fadeIn 500ms ease-in-out;
 }
 
 .bluxcc\:animate-fadeOut {
-  animation: fadeOut 300ms ease-in-out;
+  animation: bluxcc-fadeOut 300ms ease-in-out;
 }
 
-@keyframes marquee {
+@keyframes bluxcc-marquee {
   0% {
     transform: translateX(-16%);
   }
@@ -183,7 +183,7 @@
 .bluxcc\:marquee_track {
   display: flex;
   width: max-content;
-  animation: marquee 40s linear infinite;
+  animation: bluxcc-marquee 40s linear infinite;
   will-change: transform;
 }
 

@@ -35,7 +35,7 @@ const Assets = ({ assets }: AssetsProps) => {
   };
 
   return (
-    <div className="bluxcc:h-full bluxcc:w-full bluxcc:overflow-auto overflowStyle">
+    <div className="bluxcc:h-full bluxcc:w-full bluxcc:overflow-auto bluxcc:overflowStyle">
       {assets.map((asset, index) => (
         <button
           id="bluxcc-button"

@@ -51,11 +51,11 @@ const TabBox = ({ tabs }: TabsProps) => {
       </div>
 
       <div
-        className="bluxcc:max-h-78 bluxcc:h-78 w-full bluxcc:overflow-auto overflowStyle"
+        className="bluxcc:max-h-78 bluxcc:h-78 bluxcc:w-full bluxcc:overflow-auto bluxcc:overflowStyle"
         role="tabpanel"
         aria-labelledby={`tab-${activeTab}`}
       >
-        <div className="bluxcc:absolute bluxcc:left-0 bluxcc:right-0 bluxcc:max-h-78 bluxcc:h-78 bluxcc:overflow-auto overflowStyle">
+        <div className="bluxcc:absolute bluxcc:left-0 bluxcc:right-0 bluxcc:max-h-78 bluxcc:h-78 bluxcc:overflow-auto bluxcc:overflowStyle">
           {tabs[activeTab]?.content}
         </div>
       </div>
