@@ -6,7 +6,7 @@ import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
 import { PasskeyFlowResult } from '../pages/Onboarding/Passkey';
 
 type ApiErrorResponse = {
-  status: 400 | 401 | 403 | 404 | 429 | 500;
+  status: 400 | 401 | 403 | 404 | 409 | 429 | 500 | 502;
   error: string;
 };
 
@@ -605,4 +605,130 @@ export const apiSignTransaction = async (
   } catch (e: any) {
     throw new Error('BLUX: Unexpected response from api');
   }
+};
+
+// ==================== Custom tokens (SAC) ====================
+
+/** Mirrors the API's `TokenView`. The API only buckets tokens mainnet/testnet. */
+export type ApiTokenView = {
+  id: number;
+  contract_address: string;
+  network: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+};
+
+/** GET /tokens result: the user's tokens grouped per network bucket. */
+export type ApiGroupedTokens = {
+  mainnet: ApiTokenView[];
+  testnet: ApiTokenView[];
+};
+
+const authHeaders = (JWT: string) => ({
+  Accept: 'application/json',
+  Authorization: `Bearer ${JWT}`,
+  'Content-Type': 'application/json',
+});
+
+// GET /tokens — the authenticated user's preferred tokens, grouped per network.
+export const apiGetTokens = async (
+  JWT: string,
+): Promise<ApiGroupedTokens> => {
+  const res = await fetcher<ApiResponse<ApiGroupedTokens>>(
+    `${BLUX_API}/tokens`,
+    {
+      method: 'GET',
+      headers: authHeaders(JWT),
+    },
+  );
+
+  if (res.status === 401) {
+    throw new Error('BLUX: invalid JWT');
+  }
+
+  if (res.status === 500) {
+    throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 200) {
+    return {
+      mainnet: res.result?.mainnet ?? [],
+      testnet: res.result?.testnet ?? [],
+    };
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
+};
+
+// POST /tokens — the server validates the SAC on-chain, captures its
+// name/symbol/decimals, stores it, and links it to the user. `network` is the
+// API bucket ('mainnet' | 'testnet').
+export const apiAddToken = async (
+  JWT: string,
+  contractAddress: string,
+  network: 'mainnet' | 'testnet',
+): Promise<ApiTokenView> => {
+  const res = await fetcher<ApiResponse<ApiTokenView>>(`${BLUX_API}/tokens`, {
+    method: 'POST',
+    headers: authHeaders(JWT),
+    body: JSON.stringify({
+      contract_address: contractAddress,
+      network,
+    }),
+  });
+
+  if (res.status === 401) {
+    throw new Error('BLUX: invalid JWT');
+  }
+
+  if (res.status === 409) {
+    throw new Error('BLUX: token already added');
+  }
+
+  if (res.status === 502) {
+    throw new Error('BLUX: could not reach the network to validate the token');
+  }
+
+  if (res.status === 400) {
+    throw new Error(res.error || 'BLUX: invalid token, or token limit reached');
+  }
+
+  if (res.status === 200 && res.result) {
+    return res.result;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
+};
+
+// DELETE /tokens/{id} — unlink a token from the authenticated user.
+export const apiDeleteToken = async (
+  JWT: string,
+  tokenId: number,
+): Promise<boolean> => {
+  const res = await fetcher<ApiResponse<null>>(
+    `${BLUX_API}/tokens/${tokenId}`,
+    {
+      method: 'DELETE',
+      headers: authHeaders(JWT),
+    },
+  );
+
+  if (res.status === 401) {
+    throw new Error('BLUX: invalid JWT');
+  }
+
+  if (res.status === 404) {
+    throw new Error('BLUX: token not in your list');
+  }
+
+  if (res.status === 400) {
+    throw new Error('BLUX: invalid token id');
+  }
+
+  if (res.status === 200) {
+    return true;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
 };

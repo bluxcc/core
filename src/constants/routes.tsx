@@ -14,6 +14,7 @@ import Balances from '../pages/Profile/Balances';
 import Activity from '../pages/Profile/Activity';
 import SendTransaction from '../pages/SendTransaction';
 import BalanceDetails from '../pages/Profile/Balances/BalanceDetails';
+import TokenDetails from '../pages/Profile/Balances/TokenDetails';
 import About from '../pages/About';
 import AddToken from '../pages/Profile/Balances/AddToken';
 import SignMessage from '../pages/SignMessage';
@@ -81,6 +82,10 @@ export const getModalContent = (): Record<string, IRoute> => {
       title: '',
       Component: <BalanceDetails />,
     },
+    [Route.TOKEN_DETAILS]: {
+      title: 'token_details',
+      Component: <TokenDetails />,
+    },
     [Route.OTP]: {
       title: '',
       Component: <OTP />,
@@ -102,7 +107,7 @@ export const getModalContent = (): Record<string, IRoute> => {
       Component: <About />,
     },
     [Route.ADD_TOKEN]: {
-      title: 'addToken',
+      title: 'new_token',
       Component: <AddToken />,
     },
     [Route.SIGN_MESSAGE]: {

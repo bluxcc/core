@@ -14,6 +14,9 @@ import {
   IAsset,
   IWallet,
   IAppearance,
+  AssetMetaMap,
+  ICustomToken,
+  ICustomTokens,
   ISignMessage,
   IInternalConfig,
   ISendTransaction,
@@ -78,6 +81,7 @@ export interface ILoginPromise {
 
 export interface IStoreProperties {
   logos: ILogo[] | null;
+  assetMeta: AssetMetaMap | null;
   emitter: Emitter<BluxEventMap>;
   auth?: IAuth;
   config: IInternalConfig;
@@ -114,6 +118,15 @@ export interface IStoreProperties {
   transactions: UseTransactionsResult;
   selectAsset: ISelectAsset;
   detailsAsset?: IAsset;
+  // Custom SAC/SEP-41 tokens the user added, grouped by API network bucket
+  // (mainnet/testnet). Fetched from the Blux API on login; balances are read
+  // on-chain. Both buckets are kept so switching network needs no refetch.
+  customTokens: ICustomTokens;
+  // Which Balances tab is active. Persisted here (not local state) so returning
+  // from a token/asset details page restores the tab the user was on.
+  balancesTab: 'assets' | 'tokens';
+  // The custom token whose details page is open (mirrors detailsAsset).
+  detailsToken?: ICustomToken;
   walletConnect?: {
     connection: any;
     client: SignClient;
@@ -157,6 +170,15 @@ export interface IStoreMethods {
   setBalanceValues: (balanceValues: Record<string, string>) => void;
   setSelectAsset: (selectAsset: ISelectAsset) => void;
   setDetailsAsset: (asset: IAsset | undefined) => void;
+  setCustomTokens: (customTokens: ICustomTokens) => void;
+  addCustomToken: (token: ICustomToken) => void;
+  removeCustomToken: (network: 'mainnet' | 'testnet', id: number) => void;
+  setCustomTokenBalances: (
+    network: 'mainnet' | 'testnet',
+    balances: Record<number, string>,
+  ) => void;
+  setBalancesTab: (tab: 'assets' | 'tokens') => void;
+  setDetailsToken: (token: ICustomToken | undefined) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
   cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
@@ -168,6 +190,7 @@ export interface IStoreMethods {
   setLogin: (loginDetails: ILoginPromise | undefined) => void;
   setLoginError: (message?: string) => void;
   setLogos: (logos: ILogo[]) => void;
+  setAssetMeta: (assetMeta: AssetMetaMap) => void;
 }
 
 export interface IStore extends IStoreProperties, IStoreMethods { }
@@ -186,6 +209,7 @@ const DEFAULT_SELECT_ASSET: ISelectAsset = {
 
 export const store = createStore<IStore>((set) => ({
   logos: null,
+  assetMeta: null,
   emitter,
   auth: undefined,
   config: {
@@ -244,6 +268,9 @@ export const store = createStore<IStore>((set) => ({
   },
   selectAsset: { ...DEFAULT_SELECT_ASSET },
   detailsAsset: undefined,
+  customTokens: { mainnet: [], testnet: [] },
+  balancesTab: 'assets',
+  detailsToken: undefined,
   walletConnectClient: undefined,
   networkSyncDisabled: false,
   setConfig: (config: IInternalConfig) =>
@@ -304,6 +331,9 @@ export const store = createStore<IStore>((set) => ({
           ? {
               selectAsset: { ...DEFAULT_SELECT_ASSET },
               detailsAsset: undefined,
+              // A token's details belong to the previous network; clear it.
+              // customTokens itself is kept (both buckets persist across switches).
+              detailsToken: undefined,
               balanceValues: {},
             }
           : {}),
@@ -445,6 +475,10 @@ export const store = createStore<IStore>((set) => ({
       waitingStatus: 'login',
       selectAsset: { ...DEFAULT_SELECT_ASSET },
       detailsAsset: undefined,
+      detailsToken: undefined,
+      // Custom tokens are user-specific; drop them so the next account starts clean.
+      customTokens: { mainnet: [], testnet: [] },
+      balancesTab: 'assets',
       balanceValues: {},
       authState: {
         ...current.authState,
@@ -463,6 +497,51 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, selectAsset })),
   setDetailsAsset: (detailsAsset: IAsset | undefined) =>
     set((state) => ({ ...state, detailsAsset })),
+  setCustomTokens: (customTokens: ICustomTokens) =>
+    set((state) => ({ ...state, customTokens })),
+  addCustomToken: (token: ICustomToken) =>
+    set((state) => {
+      const bucket = state.customTokens[token.network] ?? [];
+      // Drop any existing entry for the same id/contract so a re-add can't duplicate.
+      const deduped = bucket.filter(
+        (t) => t.id !== token.id && t.contractAddress !== token.contractAddress,
+      );
+
+      return {
+        ...state,
+        customTokens: {
+          ...state.customTokens,
+          [token.network]: [...deduped, token],
+        },
+      };
+    }),
+  removeCustomToken: (network: 'mainnet' | 'testnet', id: number) =>
+    set((state) => ({
+      ...state,
+      customTokens: {
+        ...state.customTokens,
+        [network]: (state.customTokens[network] ?? []).filter(
+          (t) => t.id !== id,
+        ),
+      },
+    })),
+  setCustomTokenBalances: (
+    network: 'mainnet' | 'testnet',
+    balances: Record<number, string>,
+  ) =>
+    set((state) => ({
+      ...state,
+      customTokens: {
+        ...state.customTokens,
+        [network]: (state.customTokens[network] ?? []).map((t) =>
+          balances[t.id] != null ? { ...t, balance: balances[t.id] } : t,
+        ),
+      },
+    })),
+  setBalancesTab: (balancesTab: 'assets' | 'tokens') =>
+    set((state) => ({ ...state, balancesTab })),
+  setDetailsToken: (detailsToken: ICustomToken | undefined) =>
+    set((state) => ({ ...state, detailsToken })),
   setWalletConnectClient: (client: SignClient, connection: any) =>
     set((state) => ({ ...state, walletConnect: { client, connection } })),
   cleanUp: (prop) => set((state) => ({ ...state, [prop]: undefined })),
@@ -495,6 +574,11 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({
       ...state,
       logos,
+    })),
+  setAssetMeta: (assetMeta: AssetMetaMap) =>
+    set((state) => ({
+      ...state,
+      assetMeta,
     })),
 }));
 

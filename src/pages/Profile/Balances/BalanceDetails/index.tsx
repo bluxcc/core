@@ -6,6 +6,7 @@ import { useAppStore } from '../../../../store';
 import { useLang } from '../../../../hooks/useLang';
 import CDNFiles from '../../../../constants/cdnFiles';
 import CDNImage from '../../../../components/CDNImage';
+import AssetLogo from '../../../../components/AssetLogo';
 import { assetValueKey } from '../../../../utils/prices';
 import {
   NETWORK_DISPLAY_NAMES,
@@ -211,7 +212,7 @@ const BalanceDetails = () => {
 
   return (
     <div>
-      <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:gap-3 bluxcc:my-5">
+      <div className="bluxcc:flex bluxcc:items-center bluxcc:justify-between bluxcc:gap-3 bluxcc:my-5 bluxcc:px-4">
         <div
           className="bluxcc:size-14 bluxcc:flex bluxcc:items-center bluxcc:justify-center bluxcc:rounded-full bluxcc:border"
           style={{
@@ -219,20 +220,15 @@ const BalanceDetails = () => {
             borderWidth: appearance.borderWidth,
           }}
         >
-          {isNative ? (
-            <CDNImage
-              name={CDNFiles.Stellar}
-              props={{ fill: getContrastColor(appearance.background) }}
-            />
-          ) : (
-            <CDNImage
-              name={CDNFiles.QuestionMark}
-              props={{ fill: getContrastColor(appearance.background) }}
-            />
-          )}
+          <AssetLogo
+            assetCode={asset.assetCode}
+            assetIssuer={asset.assetIssuer}
+            assetType={asset.assetType}
+            fill={getContrastColor(appearance.background)}
+          />
         </div>
 
-        <div className="bluxcc:flex bluxcc:flex-col">
+        <div className="bluxcc:flex bluxcc:flex-col bluxcc:items-end bluxcc:text-right">
           <span
             className="bluxcc:text-3xl bluxcc:font-semibold bluxcc:leading-8"
             style={{ color: appearance.accentColor }}

@@ -84,7 +84,7 @@ const History = ({ tx }: TransactionProps) => {
           style={{ background: appearance.fieldBackground }}
         >
           <span className="bluxcc:flex bluxcc:items-center bluxcc:justify-center">
-            <CDNImage name={CDNFiles.Globe} />;
+            <CDNImage name={CDNFiles.Globe} />
           </span>
         </button>
       </div>

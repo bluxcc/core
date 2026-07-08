@@ -1,11 +1,10 @@
 import { useState } from 'react';
 
-import CDNImage from '../CDNImage';
 import { Route } from '../../enums';
+import AssetLogo from '../AssetLogo';
 import { IAsset } from '../../types';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
-import CDNFiles from '../../constants/cdnFiles';
 import {
   hexToRgba,
   formatUsd,
@@ -67,21 +66,12 @@ const Assets = ({ assets }: AssetsProps) => {
                 border: `${appearance.borderWidth} solid ${appearance.borderColor}`,
               }}
             >
-              {asset.assetType === 'native' ? (
-                <CDNImage
-                  name={CDNFiles.Stellar}
-                  props={{
-                    fill: getContrastColor(appearance.fieldBackground),
-                  }}
-                />
-              ) : (
-                <CDNImage
-                  name={CDNFiles.QuestionMark}
-                  props={{
-                    fill: getContrastColor(appearance.fieldBackground),
-                  }}
-                />
-              )}
+              <AssetLogo
+                assetCode={asset.assetCode}
+                assetIssuer={asset.assetIssuer}
+                assetType={asset.assetType}
+                fill={getContrastColor(appearance.fieldBackground)}
+              />
             </span>
             <div className="bluxcc:flex bluxcc:flex-col bluxcc:justify-start bluxcc:items-start">
               <span className="bluxcc:text-sm bluxcc:font-medium">

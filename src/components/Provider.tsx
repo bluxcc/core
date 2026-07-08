@@ -6,6 +6,7 @@ import Header from './Header';
 import { Route } from '../enums';
 import { useAppStore } from '../store';
 import { getModalContent } from '../constants/routes';
+import useCustomTokens from '../hooks/useCustomTokens';
 import useUpdateAccount from '../hooks/useUpdateAccount';
 import loginResolver from '../stellar/processes/loginResolver';
 import useCheckWalletNetwork from '../hooks/useCheckWalletNetwork';
@@ -16,6 +17,7 @@ import {
 
 export const Provider = () => {
   useUpdateAccount();
+  useCustomTokens();
 
   const store = useAppStore((store) => store);
 
@@ -49,6 +51,7 @@ export const Provider = () => {
       Route.RECEIVE,
       Route.SWAP,
       Route.BALANCE_DETAILS,
+      Route.TOKEN_DETAILS,
       Route.ABOUT,
       Route.ADD_TOKEN,
       Route.WALLET_CONNECT,
@@ -96,7 +99,11 @@ export const Provider = () => {
       return;
     }
 
-    if ([Route.BALANCE_DETAILS, Route.ADD_TOKEN].includes(route)) {
+    if (
+      [Route.BALANCE_DETAILS, Route.TOKEN_DETAILS, Route.ADD_TOKEN].includes(
+        route,
+      )
+    ) {
       store.setRoute(Route.BALANCES);
       return;
     }

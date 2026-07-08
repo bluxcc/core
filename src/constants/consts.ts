@@ -12,3 +12,6 @@ export const BLUX_CDN_PATH = 'https://cdn.blux.cc/files';
 
 export const CLOUDFLARE_R2_LOGOS =
   'https://cdn2.blux.cc/core-assets/logos2.json.gz';
+
+export const CLOUDFLARE_R2_ASSET_META =
+  'https://cdn2.blux.cc/core-assets/asset-meta.json.gz';

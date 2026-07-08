@@ -9,6 +9,7 @@ import Divider from '../../../components/Divider';
 import InputField from '../../../components/Input';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
+import AssetLogo from '../../../components/AssetLogo';
 import useMaxAmount from '../../../hooks/useMaxAmount';
 import { sendTransaction } from '../../../exports/blux';
 import { getContrastColor } from '../../../utils/helpers';
@@ -133,27 +134,19 @@ const SendForm = () => {
             }
             onButtonClick={handleOpenAssets}
             button={
-              <span className="bluxcc:flex bluxcc:justify-between bluxcc:gap-1!">
-                <span className="bluxcc:flex bluxcc:items-center">
-                  {store.selectAsset.sendAsset.assetType === 'native' ? (
-                    <CDNImage
-                      name={CDNFiles.StellarSmall}
-                      props={{
-                        fill: getContrastColor(
-                          store.config.appearance.fieldBackground,
-                        ),
-                      }}
-                    />
-                  ) : (
-                    <CDNImage
-                      name={CDNFiles.SmallQuestionMark}
-                      props={{
-                        fill: getContrastColor(
-                          store.config.appearance.fieldBackground,
-                        ),
-                      }}
-                    />
-                  )}
+              <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1.5">
+                <span
+                  style={{ borderRadius: store.config.appearance.borderRadius }}
+                  className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden"
+                >
+                  <AssetLogo
+                    assetCode={store.selectAsset.sendAsset.assetCode}
+                    assetIssuer={store.selectAsset.sendAsset.assetIssuer}
+                    assetType={store.selectAsset.sendAsset.assetType}
+                    fill={getContrastColor(
+                      store.config.appearance.fieldBackground,
+                    )}
+                  />
                 </span>
                 {store.selectAsset.sendAsset.assetCode}
               </span>

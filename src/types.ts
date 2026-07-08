@@ -209,6 +209,53 @@ export interface IAsset {
   assetIssuer: string;
 }
 
+/**
+ * Display metadata for a single asset, sourced from curated SEP-42 asset lists
+ * (Lobstr, StellarExpert, Soroswap) and served as a gzipped blob from R2.
+ */
+export interface IAssetMeta {
+  code: string;
+  issuer: string | null;
+  contract: string | null;
+  name: string;
+  org: string | null;
+  domain: string | null;
+  /** HTTPS (or IPFS gateway) URL of the asset logo. */
+  icon: string;
+  decimals: number;
+  /** Which curated list this entry came from. */
+  source: string;
+}
+
+/** Asset metadata keyed by `${network}:${code}:${issuer}` (e.g. `pubnet:USDC:GA5Z...`). */
+export type AssetMetaMap = Record<string, IAssetMeta>;
+
+/**
+ * A custom Stellar Asset Contract (SAC) / SEP-41 token the user added to their
+ * preferred list. The id/contract/name/symbol/decimals come from the Blux API
+ * (`TokenView`); `balance` is read on-chain for the logged-in account (the API
+ * does not store balances). The API only buckets tokens by `mainnet`/`testnet`.
+ */
+export interface ICustomToken {
+  /** Server-side id, used for the DELETE route. */
+  id: number;
+  /** Token contract id (`C...`). */
+  contractAddress: string;
+  /** API network bucket this token belongs to. */
+  network: 'mainnet' | 'testnet';
+  name: string;
+  symbol: string;
+  decimals: number;
+  /** Human-readable on-chain balance for the logged-in account; `'0'` until read. */
+  balance: string;
+}
+
+/** Custom tokens grouped by the two network buckets the Blux API supports. */
+export interface ICustomTokens {
+  mainnet: ICustomToken[];
+  testnet: ICustomToken[];
+}
+
 export interface ISignOptions {
   network: string;
 }

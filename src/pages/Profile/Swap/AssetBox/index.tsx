@@ -2,6 +2,7 @@ import { IAsset } from '../../../../types';
 import { useAppStore } from '../../../../store';
 import CDNFiles from '../../../../constants/cdnFiles';
 import CDNImage from '../../../../components/CDNImage';
+import AssetLogo from '../../../../components/AssetLogo';
 import { getContrastColor } from '../../../../utils/helpers';
 
 type AssetBoxProps = {
@@ -37,17 +38,12 @@ const AssetBox = ({ handleOpenAssets, asset }: AssetBoxProps) => {
         }}
         className="bluxcc:flex bluxcc:mr-0.5 bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
       >
-        {asset.assetType === 'native' ? (
-          <CDNImage
-            name={CDNFiles.Stellar}
-            props={{ fill: getContrastColor(appearance.fieldBackground) }}
-          />
-        ) : (
-          <CDNImage
-            name={CDNFiles.QuestionMark}
-            props={{ fill: getContrastColor(appearance.fieldBackground) }}
-          />
-        )}
+        <AssetLogo
+          assetCode={asset.assetCode}
+          assetIssuer={asset.assetIssuer}
+          assetType={asset.assetType}
+          fill={getContrastColor(appearance.fieldBackground)}
+        />
       </div>
 
       <span>{asset.assetCode}</span>
