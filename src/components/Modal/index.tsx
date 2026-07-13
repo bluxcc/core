@@ -72,7 +72,7 @@ const Modal = ({
 
       {/* modal */}
       <div
-        className={`bluxcc:absolute bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
+        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
           }`}
         onClick={(e) => {
           if (e.target === e.currentTarget && !isSticky) {
