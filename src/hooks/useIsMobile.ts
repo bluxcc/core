@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 
 export const useIsMobile = (breakpoint = 460) => {
-  const [isMobile, setIsMobile] = useState(false);
+  // Seeded from the real viewport so the first paint on a phone doesn't flash
+  // the desktop (centered) modal before switching to the bottom sheet.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < breakpoint,
+  );
 
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < breakpoint);

@@ -107,7 +107,7 @@ export interface IConfig {
   walletConnect?: IWalletConnectMetaData;
   /** Trezor manifest metadata; required to enable Trezor. */
   trezor?: ITrezorMetaData;
-  /** Prompt the user when their wallet is on a different network. Defaults to `true`. */
+  /** Show a modal when the connected wallet is on a network outside `networks`. Opt-in — defaults to `false`. */
   promptOnWrongNetwork?: boolean;
 }
 

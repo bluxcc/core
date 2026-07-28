@@ -35,3 +35,25 @@ export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Fordefi]: fordefiConfig,
   [SupportedWallet.Trezor]: trezorConfig,
 };
+
+/**
+ * Resolves the wallet config that signs for the given user. Wallet logins sign
+ * with their own wallet; every other auth method (email, socials, passkey)
+ * signs through the Blux API with the session JWT. The API pseudo-wallet never
+ * appears in the store's available-wallets list (its `isAvailable` is false so
+ * it stays out of the onboarding UI), which is why it is resolved from
+ * `walletsConfig` here instead of from `availableWallets`.
+ */
+export const getSigningWallet = (
+  user: { authMethod: string; authValue: string },
+  availableWallets: IWallet[],
+): IWallet | undefined => {
+  if (user.authMethod === 'wallet') {
+    return (
+      availableWallets.find((w) => w.name === user.authValue) ??
+      walletsConfig[user.authValue as SupportedWallet]
+    );
+  }
+
+  return walletsConfig[SupportedWallet.Api];
+};

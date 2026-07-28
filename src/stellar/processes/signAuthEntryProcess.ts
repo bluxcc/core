@@ -1,6 +1,6 @@
+import { Route } from '../../enums';
 import { IStore } from '../../store';
-import { walletsConfig } from '../../wallets';
-import { Route, SupportedWallet } from '../../enums';
+import { getSigningWallet } from '../../wallets';
 import handleSignAuthEntry from '../handleSignAuthEntry';
 
 const signAuthEntryProcess = async (store: IStore) => {
@@ -20,15 +20,7 @@ const signAuthEntryProcess = async (store: IStore) => {
     return;
   }
 
-  const { authMethod, authValue } = store.user;
-
-  if (authMethod !== 'wallet') {
-    store.setRoute(Route.FAILED);
-
-    return;
-  }
-
-  const wallet = walletsConfig[authValue as SupportedWallet];
+  const wallet = getSigningWallet(store.user, store.wallets);
 
   if (!wallet) {
     store.setRoute(Route.FAILED);

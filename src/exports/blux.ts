@@ -12,6 +12,7 @@ import {
   clearRecentLoginConfig,
 } from '../utils/checkRecentLogins';
 import handleSignAuthEntry from '../stellar/handleSignAuthEntry';
+import { getSigningWallet } from '../wallets';
 
 /**
  * Internal login driver. Prefer the public {@link login}.
@@ -184,12 +185,12 @@ const _signTransaction = (
       return;
     }
 
-    const foundWallet = state.wallets.find(
-      (w) => w.name === state.user!.authValue,
-    );
+    const foundWallet = getSigningWallet(state.user, state.wallets);
 
     if (!foundWallet) {
-      throw new Error('BLUX: Could not find the connected wallet.');
+      reject(new Error('BLUX: Could not find the connected wallet.'));
+
+      return;
     }
 
     const transactionObject: ISendTransaction = {
@@ -289,12 +290,12 @@ export const signMessage = (message: string, options?: { network: string }) =>
       network = options.network;
     }
 
-    const foundWallet = state.wallets.find(
-      (w) => w.name === state.user!.authValue,
-    );
+    const foundWallet = getSigningWallet(state.user, state.wallets);
 
     if (!foundWallet) {
-      throw new Error('BLUX: Could not find the connected wallet.');
+      reject(new Error('BLUX: Could not find the connected wallet.'));
+
+      return;
     }
 
     const signMessageDetails: ISignMessage = {
@@ -379,12 +380,12 @@ export const signAuthEntry = (
       network = options.network;
     }
 
-    const foundWallet = state.wallets.find(
-      (w) => w.name === state.user!.authValue,
-    );
+    const foundWallet = getSigningWallet(state.user, state.wallets);
 
     if (!foundWallet) {
-      throw new Error('BLUX: Could not find the connected wallet.');
+      reject(new Error('BLUX: Could not find the connected wallet.'));
+
+      return;
     }
 
     const signAuthEntryDetails: ISignAuthEntry = {

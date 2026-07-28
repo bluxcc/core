@@ -112,7 +112,9 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   const orderWallets = validateOrderWallets(config.orderWallets);
 
-  let promptOnWrongNetwork = true;
+  // Opt-in: the wrong-network modal only ever appears when the consumer
+  // explicitly asks for it.
+  let promptOnWrongNetwork = false;
 
   if (config.promptOnWrongNetwork !== undefined) {
     promptOnWrongNetwork = config.promptOnWrongNetwork;

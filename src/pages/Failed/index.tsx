@@ -7,6 +7,7 @@ import Divider from '../../components/Divider';
 import CDNFiles from '../../constants/cdnFiles';
 import CDNImage from '../../components/CDNImage';
 import signMessageProcess from '../../stellar/processes/signMessageProcess';
+import signAuthEntryProcess from '../../stellar/processes/signAuthEntryProcess';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import sendTransactionProcess from '../../stellar/processes/sendTransactionProcess';
 
@@ -22,6 +23,8 @@ const Failed = () => {
   const handleRetry = () => {
     if (store.waitingStatus === 'signMessage') {
       signMessageProcess(store);
+    } else if (store.waitingStatus === 'signAuthEntry') {
+      signAuthEntryProcess(store);
     } else if (store.waitingStatus === 'sendTransaction') {
       sendTransactionProcess(store);
     } else if (store.waitingStatus === 'login') {

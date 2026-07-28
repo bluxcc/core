@@ -1,7 +1,11 @@
 import { IWallet } from '../types';
 import { getState } from '../store';
 import { SupportedWallet } from '../enums';
-import { apiSignMessage, apiSignTransaction } from '../utils/api';
+import {
+  apiSignMessage,
+  apiSignAuthEntry,
+  apiSignTransaction,
+} from '../utils/api';
 
 export const apiConfig: IWallet = {
   name: SupportedWallet.Api,
@@ -17,8 +21,26 @@ export const apiConfig: IWallet = {
   isAvailable: async () => {
     return false;
   },
-  signAuthEntry: async () => {
-    throw new Error('BLUX: API does not support the signAuthEntry function');
+  signAuthEntry: async (authEntry, options) => {
+    try {
+      const store = getState();
+
+      const JWT = store.auth?.JWT;
+
+      if (!JWT) {
+        throw new Error('BLUX: Failed to sign the auth entry from API');
+      }
+
+      const res = await apiSignAuthEntry(JWT, authEntry, options.network);
+
+      if (res) {
+        return res;
+      }
+
+      throw new Error('BLUX: Failed to sign the auth entry from API');
+    } catch (error) {
+      throw new Error('BLUX: Failed to sign the auth entry from API');
+    }
   },
   signMessage: async (message, _) => {
     try {

@@ -181,7 +181,7 @@ export interface IStoreMethods {
   setDetailsToken: (token: ICustomToken | undefined) => void;
   setTransactions: (transactions: UseTransactionsResult) => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
-  cleanUp: (method: 'sendTransaction' | 'signMessage') => void;
+  cleanUp: (method: 'sendTransaction' | 'signMessage' | 'signAuthEntry') => void;
   setNetworkSyncDisabled: (isDisabled: boolean) => void;
   setAppearance: (newAppearance: Partial<IAppearance>) => void;
   setApiResponse: (res: AuthenticateApiResponse) => void;
@@ -223,7 +223,7 @@ export const store = createStore<IStore>((set) => ({
     showWalletUIs: true,
     loginMethods: ['wallet'],
     explorer: 'stellarchain',
-    promptOnWrongNetwork: true,
+    promptOnWrongNetwork: false,
     appearance: defaultLightTheme,
     walletConnect: {
       icons: [],

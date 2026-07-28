@@ -125,17 +125,21 @@ export const Provider = () => {
     setShowAllWallets(false);
 
     const { waitingStatus } = store;
-    const isSigning = waitingStatus === 'signMessage';
-    const isSending = waitingStatus === 'sendTransaction';
 
     loginResolver();
 
-    if (!isSigning && !isSending) return;
-
-    const resolverObject = isSigning
-      ? store.signMessage
-      : store.sendTransaction;
-    if (!resolverObject) return;
+    // Settle the pending signing promise on close — otherwise the caller's
+    // await hangs forever. signAuthEntry shares the signMessage UI but has its
+    // own store slot.
+    const resolverObject =
+      waitingStatus === 'signMessage'
+        ? store.signMessage
+        : waitingStatus === 'signAuthEntry'
+          ? store.signAuthEntry
+          : waitingStatus === 'sendTransaction'
+            ? store.sendTransaction
+            : undefined;
+    if (waitingStatus === 'login' || !resolverObject) return;
 
     const { resolver, rejecter, result } = resolverObject;
 
@@ -161,6 +165,12 @@ export const Provider = () => {
         store.cleanUp('signMessage');
 
         store.signMessage.rejecter('BLUX: User logged out during the process.');
+      }
+
+      if (store.signAuthEntry) {
+        store.cleanUp('signAuthEntry');
+
+        store.signAuthEntry.rejecter('BLUX: User logged out during the process.');
       }
 
       if (store.sendTransaction) {

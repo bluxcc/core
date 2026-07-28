@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { IAppearance } from '../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -52,12 +53,16 @@ const Modal = ({
 
   if (!isOpen) return null;
 
-  return (
+  // Portaled to <body>: the host element Blux is mounted into can live deep in
+  // the consumer's tree, where a transformed/filtered ancestor would turn
+  // `position: fixed` into ancestor-relative positioning and push the bottom
+  // sheet off-screen on mobile.
+  return createPortal(
     <>
       {/* backdrop */}
       {!isPersistent && (
         <div
-          className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-40 ${isClosing && !isSticky
+          className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-9999998 ${isClosing && !isSticky
               ? 'bluxcc:animate-fadeOut'
               : 'bluxcc:animate-fadeIn'
             }`}
@@ -127,7 +132,8 @@ const Modal = ({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 };
 

@@ -1,6 +1,6 @@
+import { Route } from '../../enums';
 import { IStore } from '../../store';
-import { walletsConfig } from '../../wallets';
-import { Route, SupportedWallet } from '../../enums';
+import { getSigningWallet } from '../../wallets';
 import handleTransactionSigning from './../handleTransactionSigning';
 
 const sendTransactionProcess = async (store: IStore) => {
@@ -20,17 +20,8 @@ const sendTransactionProcess = async (store: IStore) => {
     return;
   }
 
-  const { authMethod, authValue } = store.user;
+  const wallet = getSigningWallet(store.user, store.wallets);
 
-  if (authMethod !== 'wallet') {
-    store.setRoute(Route.FAILED);
-
-    return;
-  }
-
-  const wallet = walletsConfig[authValue as SupportedWallet];
-
-  // TODO: if it's not wallet, then it's email. fix that
   if (!wallet) {
     store.setRoute(Route.FAILED);
 

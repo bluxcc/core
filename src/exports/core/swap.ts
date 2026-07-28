@@ -2,6 +2,7 @@ import {
   xdr,
   Memo,
   Asset,
+  Horizon,
   Operation,
   TransactionBuilder,
 } from '@stellar/stellar-sdk';
@@ -13,6 +14,7 @@ import { getStrictSendPaths } from './getStrictSendPaths';
 import { numberish, type Numberish } from './toScVal';
 import { checkConfigCreated, getNetwork } from '../utils';
 import { getStrictReceivePaths } from './getStrictReceivePaths';
+import { DEFAULT_NETWORKS_TRANSPORTS } from '../../constants/networkDetails';
 import {
   resolveAsset,
   resolveAddress,
@@ -99,7 +101,11 @@ const applySlippage = (
 
 /** Converts a Horizon path-record hop list into the intermediary {@link Asset}s. */
 const pathToAssets = (
-  path: Array<{ asset_type: string; asset_code?: string; asset_issuer?: string }>,
+  path: Array<{
+    asset_type: string;
+    asset_code?: string;
+    asset_issuer?: string;
+  }>,
 ): Asset[] =>
   path.map((hop) =>
     hop.asset_type === 'native'
@@ -110,12 +116,65 @@ const pathToAssets = (
 /** Short, human-readable asset label for error messages (`XLM` for native). */
 const assetLabel = (asset: Asset): string => asset.getCode();
 
+/** Full asset identity for error messages: `XLM` or `CODE:ISSUER`. */
+const assetIdentity = (asset: Asset): string =>
+  asset.isNative() ? 'XLM' : `${asset.getCode()}:${asset.getIssuer()}`;
+
+/**
+ * Picks the route to embed in the path payment. Horizon returns records
+ * best-rate first, but some Horizon nodes (the default public one included)
+ * reject path payments whose chain is 4+ assets long (2+ intermediary hops), so
+ * the best route of at most 3 assets wins; a longer route is used only when no
+ * shorter one exists, relying on the configured node to accept it.
+ */
+const pickPathRecord = (
+  records: Horizon.ServerApi.PaymentPathRecord[],
+): Horizon.ServerApi.PaymentPathRecord | undefined =>
+  records.find((record) => record.path.length < 2) ?? records[0];
+
+/**
+ * Builds the "no path" error. The usual cause is an issuer that lives on a
+ * different network than the one being queried, so probe the issuer accounts
+ * and call that out explicitly instead of letting it read like a liquidity
+ * problem.
+ */
+const noSwapPathError = async (
+  horizon: Horizon.Server,
+  send: Asset,
+  dest: Asset,
+  networkPassphrase: string,
+): Promise<Error> => {
+  const networkName =
+    DEFAULT_NETWORKS_TRANSPORTS[networkPassphrase]?.name ?? 'this network';
+
+  for (const asset of [dest, send]) {
+    const issuer = asset.getIssuer();
+
+    if (!issuer) {
+      continue;
+    }
+
+    if (!(await loadAccount(horizon, issuer))) {
+      return new Error(
+        `BLUX: No swap path found from ${assetLabel(send)} to ${assetLabel(dest)} — the ${asset.getCode()} issuer ${issuer} could not be found on ${networkName}; is it an asset from a different network?`,
+      );
+    }
+  }
+
+  return new Error(
+    `BLUX: No swap path found from ${assetIdentity(send)} to ${assetIdentity(dest)} on ${networkName} — no route can fill this amount right now.`,
+  );
+};
+
 /**
  * Swaps one asset for another through the Stellar DEX / liquidity pools using a
- * path payment, picking the best available path automatically. Defaults to a
- * self-swap; pass `to` to deliver the bought asset to another account. When the
- * recipient is the logged-in account and lacks a trustline for `toAsset`, the
- * required `changeTrust` is added automatically. Requires a logged-in account.
+ * path payment, picking the best available path automatically. Routes of at
+ * most 3 assets (one intermediary hop) are preferred, since longer chains are
+ * rejected by some Horizon nodes; a longer route is used only when no shorter
+ * one exists. Defaults to a self-swap; pass `to` to deliver the bought asset to
+ * another account. When the recipient is the logged-in account and lacks a
+ * trustline for `toAsset`, the required `changeTrust` is added automatically.
+ * Requires a logged-in account.
  *
  * @param options - What to swap and how — see {@link SwapOptions}.
  * @returns The submitted transaction.
@@ -229,12 +288,10 @@ export const swap = async (
       [send, amountString, [dest]],
       { network },
     );
-    const record = response.records[0];
+    const record = pickPathRecord(response.records);
 
     if (!record) {
-      throw new Error(
-        `BLUX: No swap path found from ${assetLabel(send)} to ${assetLabel(dest)}.`,
-      );
+      throw await noSwapPathError(horizon, send, dest, networkPassphrase);
     }
 
     operation = Operation.pathPaymentStrictSend({
@@ -250,12 +307,10 @@ export const swap = async (
       [[send], dest, amountString],
       { network },
     );
-    const record = response.records[0];
+    const record = pickPathRecord(response.records);
 
     if (!record) {
-      throw new Error(
-        `BLUX: No swap path found from ${assetLabel(send)} to ${assetLabel(dest)}.`,
-      );
+      throw await noSwapPathError(horizon, send, dest, networkPassphrase);
     }
 
     operation = Operation.pathPaymentStrictReceive({

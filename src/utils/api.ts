@@ -515,6 +515,7 @@ export const apiGetUser = async (JWT: string) => {
 
 type ApiSignMessageResponse = string;
 type ApiSignTransactionResponse = string;
+type ApiSignAuthEntryResponse = string;
 
 export const apiSignMessage = async (JWT: string, message: string) => {
   try {
@@ -576,6 +577,56 @@ export const apiSignTransaction = async (
         },
         body: JSON.stringify({
           xdr,
+          network,
+        }),
+      },
+    );
+
+    if (res.status === 401) {
+      throw new Error('BLUX: invalid JWT');
+    }
+
+    if (res.status === 500) {
+      throw new Error('BLUX: server error');
+    }
+
+    if (res.status === 404) {
+      throw new Error('BLUX: user nout found');
+    }
+
+    if (res.status === 429) {
+      throw new Error('BLUX: too many requests');
+    }
+
+    if (res.status === 200 && res.result) {
+      return res.result;
+    }
+
+    throw new Error('BLUX: Unexpected response from api');
+  } catch (e: any) {
+    throw new Error('BLUX: Unexpected response from api');
+  }
+};
+
+// POST /users/sign-auth-entry — signs a Soroban authorization entry with the
+// user's API-managed key (email/social/passkey sessions).
+export const apiSignAuthEntry = async (
+  JWT: string,
+  authEntry: string,
+  network: string,
+) => {
+  try {
+    const res = await fetcher<ApiResponse<ApiSignAuthEntryResponse>>(
+      `${BLUX_API}/users/sign-auth-entry`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${JWT}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          auth_entry: authEntry,
           network,
         }),
       },
