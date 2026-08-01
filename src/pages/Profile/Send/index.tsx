@@ -31,6 +31,7 @@ const SendForm = () => {
     address: '',
   });
 
+  const { appearance } = store.config;
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -120,35 +121,58 @@ const SendForm = () => {
                 type="button"
                 onClick={handleMaxClick}
                 style={{
-                  color: store.config.appearance.accentColor,
-                  fontFamily: store.config.appearance.fontFamily,
+                  color: appearance.accentColor,
+                  fontFamily: appearance.fontFamily,
                 }}
                 className="bluxcc:mr-2 bluxcc:inline-flex bluxcc:bg-transparent"
               >
                 {t('max')}{' '}
                 <CDNImage
                   name={CDNFiles.ArrowDropUp}
-                  props={{ fill: store.config.appearance.accentColor }}
+                  props={{ fill: appearance.accentColor }}
                 />
               </button>
             }
             onButtonClick={handleOpenAssets}
             button={
-              <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1.5">
-                <span
-                  style={{ borderRadius: store.config.appearance.borderRadius }}
-                  className="bluxcc:flex bluxcc:size-10 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden"
+              <span
+                className="bluxcc:flex bluxcc:bg-transparent bluxcc:items-center bluxcc:gap-1 bluxcc:max-h-8"
+                style={{
+                  backgroundColor: appearance.fieldBackground,
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: appearance.fontFamily,
+                    background: appearance.background,
+                    borderRadius: appearance.borderRadius,
+                    borderColor: appearance.borderColor,
+                    borderWidth: appearance.borderWidth,
+                    color: appearance.textColor,
+                  }}
+                  className="bluxcc:flex bluxcc:mr-2 bluxcc:size-7 bluxcc:shrink-0 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:transition-[border-radius] bluxcc:duration-300"
                 >
                   <AssetLogo
                     assetCode={store.selectAsset.sendAsset.assetCode}
                     assetIssuer={store.selectAsset.sendAsset.assetIssuer}
                     assetType={store.selectAsset.sendAsset.assetType}
-                    fill={getContrastColor(
-                      store.config.appearance.fieldBackground,
-                    )}
+                    fill={getContrastColor(appearance.fieldBackground)}
                   />
+                </div>
+
+                <span
+                  style={{
+                    fontFamily: appearance.fontFamily,
+                    color: appearance.textColor,
+                  }}
+                >
+                  {store.selectAsset.sendAsset.assetCode}
                 </span>
-                {store.selectAsset.sendAsset.assetCode}
+
+                <CDNImage
+                  name={CDNFiles.ArrowDropDown}
+                  props={{ fill: appearance.accentColor }}
+                />
               </span>
             }
           />
