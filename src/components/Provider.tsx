@@ -15,7 +15,7 @@ import {
   decideBackRouteFromSelectAsset,
 } from '../utils/helpers';
 
-export const Provider = () => {
+export const Provider = ({ isBodyMount }: { isBodyMount: boolean }) => {
   useUpdateAccount();
   useCustomTokens();
 
@@ -207,6 +207,7 @@ export const Provider = () => {
       onClose={handleClose}
       isPersistent={store.config.isPersistent ?? false}
       appearance={store.config.appearance}
+      isBodyMount={isBodyMount}
     >
       <Header
         icon={modalIcon}

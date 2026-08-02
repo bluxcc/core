@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import { IAppearance } from '../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -14,6 +13,7 @@ interface ModalProps {
   children: React.ReactNode;
   appearance: IAppearance;
   isPersistent: boolean;
+  isBodyMount: boolean;
 }
 
 const Modal = ({
@@ -23,6 +23,7 @@ const Modal = ({
   isSticky = false,
   appearance,
   isPersistent,
+  isBodyMount,
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -53,11 +54,7 @@ const Modal = ({
 
   if (!isOpen) return null;
 
-  // Portaled to <body>: the host element Blux is mounted into can live deep in
-  // the consumer's tree, where a transformed/filtered ancestor would turn
-  // `position: fixed` into ancestor-relative positioning and push the bottom
-  // sheet off-screen on mobile.
-  return createPortal(
+  return (
     <>
       {/* backdrop */}
       {!isPersistent && (
@@ -77,7 +74,7 @@ const Modal = ({
 
       {/* modal */}
       <div
-        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
+        className={`${isBodyMount ? 'bluxcc:fixed' : 'bluxcc:absolute'} bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
           }`}
         onClick={(e) => {
           if (e.target === e.currentTarget && !isSticky) {
@@ -132,8 +129,7 @@ const Modal = ({
           </div>
         </div>
       </div>
-    </>,
-    document.body,
+    </>
   );
 };
 
