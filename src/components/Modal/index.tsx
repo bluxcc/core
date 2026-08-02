@@ -14,7 +14,6 @@ interface ModalProps {
   children: React.ReactNode;
   appearance: IAppearance;
   isPersistent: boolean;
-  mountElement: HTMLElement;
 }
 
 const Modal = ({
@@ -24,14 +23,10 @@ const Modal = ({
   isSticky = false,
   appearance,
   isPersistent,
-  mountElement,
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [, setContainerRevision] = useState(0);
   const isMobile = useIsMobile();
-  const isViewportModal =
-    mountElement === document.body || mountElement === document.documentElement;
   const { isClosing, handleClose } = useModalAnimation(isOpen, 250);
   const { height, isHeightReady, reset } = useDynamicHeight(contentRef, [
     isOpen,
@@ -50,31 +45,7 @@ const Modal = ({
     }
   }, [isOpen, isMobile]);
 
-  useLockBodyScroll(isOpen, isViewportModal ? document.body : mountElement);
-
-  useEffect(() => {
-    if (!isOpen || isViewportModal) return;
-
-    const updateContainerViewport = () => {
-      setContainerRevision((revision) => revision + 1);
-    };
-
-    mountElement.addEventListener('scroll', updateContainerViewport, {
-      passive: true,
-    });
-
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? undefined
-        : new ResizeObserver(updateContainerViewport);
-
-    resizeObserver?.observe(mountElement);
-
-    return () => {
-      mountElement.removeEventListener('scroll', updateContainerViewport);
-      resizeObserver?.disconnect();
-    };
-  }, [isOpen, isViewportModal, mountElement]);
+  useLockBodyScroll(isOpen);
 
   useEffect(() => {
     if (!isOpen) reset();
@@ -82,30 +53,20 @@ const Modal = ({
 
   if (!isOpen) return null;
 
-  const overlayPosition = isViewportModal
-    ? 'bluxcc:fixed bluxcc:inset-0'
-    : 'bluxcc:absolute';
-  const overlayStyle = isViewportModal
-    ? undefined
-    : {
-        top: mountElement.scrollTop,
-        left: mountElement.scrollLeft,
-        width: mountElement.clientWidth,
-        height: mountElement.clientHeight,
-      };
-
-  const modal = (
+  // Portaled to <body>: the host element Blux is mounted into can live deep in
+  // the consumer's tree, where a transformed/filtered ancestor would turn
+  // `position: fixed` into ancestor-relative positioning and push the bottom
+  // sheet off-screen on mobile.
+  return createPortal(
     <>
       {/* backdrop */}
       {!isPersistent && (
         <div
-          className={`${overlayPosition} bluxcc:z-9999998 ${
-            isClosing && !isSticky
+          className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-9999998 ${isClosing && !isSticky
               ? 'bluxcc:animate-fadeOut'
               : 'bluxcc:animate-fadeIn'
-          }`}
+            }`}
           style={{
-            ...overlayStyle,
             backdropFilter: `blur(${appearance.backdropBlur})`,
             WebkitBackdropFilter: `blur(${appearance.backdropBlur})`,
             backgroundColor: appearance.backdropColor,
@@ -116,10 +77,8 @@ const Modal = ({
 
       {/* modal */}
       <div
-        className={`${overlayPosition} bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${
-          isClosing && !isSticky && 'bluxcc:animate-fadeOut'
-        }`}
-        style={overlayStyle}
+        className={`bluxcc:fixed bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
+          }`}
         onClick={(e) => {
           if (e.target === e.currentTarget && !isSticky) {
             handleClose(onClose);
@@ -128,23 +87,20 @@ const Modal = ({
       >
         <div
           id="bluxcc-modal"
-          className={`bluxcc:box-border ${
-            isMobile
-              ? `${isViewportModal ? 'bluxcc:fixed' : 'bluxcc:absolute'} bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:rounded-b-none!`
+          className={`bluxcc:box-border ${isMobile
+              ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:rounded-b-none!'
               : 'bluxcc:relative bluxcc:w-90!'
-          }`}
+            }`}
           style={{
             height:
               typeof height === 'number'
                 ? `${isMobile ? height + 20 : height}px`
                 : height,
             transition: isHeightReady
-              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${
-                  isMobile ? ', transform 250ms ease-out' : ''
-                }`
-              : `border-radius 250ms, opacity 250ms ease-out${
-                  isMobile ? ', transform 250ms ease-out' : ''
-                }`,
+              ? `height 250ms ease-in-out, border-radius 250ms, opacity 250ms ease-out, outline 250ms ease-out, color 250ms ease-out${isMobile ? ', transform 250ms ease-out' : ''
+              }`
+              : `border-radius 250ms, opacity 250ms ease-out${isMobile ? ', transform 250ms ease-out' : ''
+              }`,
             transform: isMobile
               ? isClosing
                 ? 'translateY(100%)'
@@ -176,13 +132,9 @@ const Modal = ({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
-
-  // Viewport modals are portaled to <body> so transformed or filtered app
-  // ancestors cannot change fixed positioning. Custom mounts stay in their
-  // caller-provided container and use that container as their absolute bounds.
-  return isViewportModal ? createPortal(modal, document.body) : modal;
 };
 
 export default Modal;

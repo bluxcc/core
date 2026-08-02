@@ -55,7 +55,7 @@ const init = (element: HTMLElement = document.body) => {
   element.appendChild(container);
 
   root = createRoot(container);
-  root.render(createElement(Provider, { mountElement: element }));
+  root.render(createElement(Provider));
 };
 
 /**

@@ -15,11 +15,7 @@ import {
   decideBackRouteFromSelectAsset,
 } from '../utils/helpers';
 
-interface ProviderProps {
-  mountElement: HTMLElement;
-}
-
-export const Provider = ({ mountElement }: ProviderProps) => {
+export const Provider = () => {
   useUpdateAccount();
   useCustomTokens();
 
@@ -211,7 +207,6 @@ export const Provider = ({ mountElement }: ProviderProps) => {
       onClose={handleClose}
       isPersistent={store.config.isPersistent ?? false}
       appearance={store.config.appearance}
-      mountElement={mountElement}
     >
       <Header
         icon={modalIcon}
