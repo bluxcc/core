@@ -5,7 +5,7 @@ import {
   apiPasskeyVerify,
   apiPasskeyChallenge,
 } from '../../../utils/api';
-import { getState, useAppStore } from '../../../store';
+import { getState, setState, useAppStore } from '../../../store';
 import { base64UrlToBuffer, hexToRgba } from '../../../utils/helpers';
 import {
   getStoredPasskeyCredentialId,
@@ -17,7 +17,6 @@ import Button from '../../../components/Button';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
-import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { Route } from '../../../enums';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 
@@ -195,17 +194,23 @@ const PasskeyOnboardingPage = () => {
   };
 
   const completePasskeyAuthentication = async (jwt: string) => {
+    // Hold the JWT in memory until terms are accepted (completeLoginProcess).
     store.setAuth({
-      isAuthenticated: true,
+      isAuthenticated: false,
       JWT: jwt,
     });
 
     const result = await apiGetUser(jwt);
 
-    // Persist the credential id the server resolved for this passkey (store.user
-    // isn't populated yet at this point, so reading it here would store
-    // undefined and silently break recent-login restore).
-    setRecentLoginConfig('passkey', result.auth_value, Date.now(), jwt);
+    setState((state) => ({
+      ...state,
+      user: {
+        address: result.public_key,
+        walletPassphrase: '',
+        authMethod: result.auth_method || 'passkey',
+        authValue: result.auth_value,
+      },
+    }));
 
     store.connectWalletSuccessful(
       result.public_key,

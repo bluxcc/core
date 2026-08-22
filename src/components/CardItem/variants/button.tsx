@@ -52,7 +52,7 @@ const ButtonCard = ({
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300
           ${size === 'small'
           ? 'bluxcc:size-24 bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4'
-          : 'bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2'
+          : 'bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2 bluxcc:text-left'
         }
         `}
       style={{
@@ -64,6 +64,7 @@ const ButtonCard = ({
         backgroundColor: appearance.fieldBackground,
         borderWidth: appearance.borderWidth,
         color: appearance.textColor,
+        textAlign: size === 'small' ? 'center' : 'left',
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -81,13 +82,13 @@ const ButtonCard = ({
       </span>
 
       <div
-        className={`${size === 'small' ? 'bluxcc:mt-0' : 'bluxcc:ml-4'
+        className={`${size === 'small' ? 'bluxcc:mt-0' : 'bluxcc:ml-4 bluxcc:min-w-0 bluxcc:overflow-hidden'
           } bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
       >
         <span
           className={`${size === 'small'
               ? 'bluxcc:text-sm bluxcc:leading-4'
-              : 'bluxcc:text-base'
+              : 'bluxcc:w-full bluxcc:text-left bluxcc:text-base bluxcc:whitespace-nowrap'
             } bluxcc:font-medium bluxcc:select-none`}
         >
           {label}

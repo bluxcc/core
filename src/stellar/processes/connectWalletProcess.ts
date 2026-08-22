@@ -3,13 +3,11 @@ import { IWallet } from '../../types';
 import signTransaction from '../signTransaction';
 import { isAccessDenied } from '../../utils/errors';
 import { getState, IStore } from '../../store';
-import { BLUX_JWT_STORE } from '../../constants/consts';
 import continueLoginProcess from './continueLoginProcess';
 import {
   apiWalletChallenge,
   apiVerifyWalletChallenge,
 } from '../../utils/api';
-import { setRecentLoginConfig } from '../../utils/checkRecentLogins';
 import {
   getWalletNetwork,
   setRecentConnectionMethod,
@@ -71,15 +69,13 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
     // is independent of the (testnet) network the ownership challenge used.
     const passphrase = await getWalletNetwork(wallet);
 
-    // Persist the session JWT the same way the other login methods do.
-    localStorage.setItem(BLUX_JWT_STORE, jwt);
+    // Hold the JWT in memory until terms are accepted (completeLoginProcess).
     store.setAuth({
-      isAuthenticated: true,
+      isAuthenticated: false,
       JWT: jwt,
     });
 
     setRecentConnectionMethod(wallet.name);
-    setRecentLoginConfig('wallet', wallet.name, Date.now(), jwt);
 
     setTimeout(() => {
       if (!getState().modal.isOpen) {

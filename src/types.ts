@@ -12,7 +12,8 @@ export type LanguageKey =
   | 'ru'
   | 'zh'
   | 'ja'
-  | 'ko';
+  | 'ko'
+  | 'tr';
 
 /** Custom RPC endpoints keyed by network passphrase. */
 export type ITransports = Record<string, IServers>;

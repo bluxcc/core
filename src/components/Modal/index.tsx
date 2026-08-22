@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { IAppearance } from '../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -14,7 +14,16 @@ interface ModalProps {
   appearance: IAppearance;
   isPersistent: boolean;
   isBodyMount: boolean;
+  /** Parent passed to createConfig. Used to pin horizontal placement. */
+  mountElement?: HTMLElement;
 }
+
+const syncOverlayToParent = (overlay: HTMLDivElement, host: HTMLElement) => {
+  const rect = host.getBoundingClientRect();
+
+  overlay.style.left = `${rect.left}px`;
+  overlay.style.width = `${rect.width}px`;
+};
 
 const Modal = ({
   isOpen,
@@ -24,8 +33,10 @@ const Modal = ({
   appearance,
   isPersistent,
   isBodyMount,
+  mountElement,
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const isMobile = useIsMobile();
   const { isClosing, handleClose } = useModalAnimation(isOpen, 250);
@@ -33,6 +44,35 @@ const Modal = ({
     isOpen,
     children,
   ]);
+
+  // Parent mount: stay in the viewport vertically (middle of the page) while
+  // matching the parent's horizontal box, so a sidebar layout can offset the
+  // modal without it scrolling off-screen with the parent.
+  useLayoutEffect(() => {
+    if (isBodyMount || !isOpen || !mountElement) return;
+
+    const overlay = overlayRef.current;
+
+    if (!overlay) return;
+
+    const sync = () => syncOverlayToParent(overlay, mountElement);
+
+    sync();
+
+    window.addEventListener('resize', sync);
+    window.addEventListener('scroll', sync, true);
+
+    const observer = new ResizeObserver(sync);
+    observer.observe(mountElement);
+
+    return () => {
+      window.removeEventListener('resize', sync);
+      window.removeEventListener('scroll', sync, true);
+      observer.disconnect();
+      overlay.style.left = '';
+      overlay.style.width = '';
+    };
+  }, [isBodyMount, isOpen, mountElement]);
 
   useEffect(() => {
     if (isOpen && isMobile) {
@@ -74,7 +114,11 @@ const Modal = ({
 
       {/* modal */}
       <div
-        className={`${isBodyMount ? 'bluxcc:fixed' : 'bluxcc:absolute'} bluxcc:inset-0 bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
+        ref={overlayRef}
+        className={`${isBodyMount
+            ? 'bluxcc:fixed bluxcc:inset-0'
+            : 'bluxcc:fixed bluxcc:top-0 bluxcc:bottom-0'
+          } bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
           }`}
         onClick={(e) => {
           if (e.target === e.currentTarget && !isSticky) {

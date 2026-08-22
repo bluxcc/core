@@ -429,8 +429,10 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
     throw new Error('BLUX: appId is missing in config.');
   }
 
+  let res: ApiResponse<string>;
+
   try {
-    const res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
+    res = await fetcher<ApiResponse<string>>(`${BLUX_API}/auth/code`, {
       method: 'POST',
       headers: {
         [BLUX_APP_ID_HEADER]: appId,
@@ -444,31 +446,35 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
         auth_value: user.authValue,
       }),
     });
-
-    if (res.status === 400) {
-      throw new Error('BLUX: invalid inputs');
-    }
-
-    if (res.status === 500) {
-      throw new Error('BLUX: server error');
-    }
-
-    if (res.status === 404) {
-      throw new Error('BLUX: invalid code');
-    }
-
-    if (res.status === 429) {
-      throw new Error('BLUX: too many requests');
-    }
-
-    if (res.status === 200) {
-      return res.result;
-    }
-
-    throw new Error('BLUX: Unexpected response from api');
-  } catch (e: any) {
+  } catch (_e: any) {
     throw new Error('BLUX: Unexpected response from api');
   }
+
+  if (res.status === 403) {
+    throw new BluxAccessDeniedError(res.error);
+  }
+
+  if (res.status === 400) {
+    throw new Error('BLUX: invalid inputs');
+  }
+
+  if (res.status === 500) {
+    throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 404) {
+    throw new Error('BLUX: invalid code');
+  }
+
+  if (res.status === 429) {
+    throw new Error('BLUX: too many requests');
+  }
+
+  if (res.status === 200) {
+    return res.result;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
 };
 
 type ApiGetUserResponse = {

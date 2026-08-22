@@ -6,10 +6,8 @@ import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
-import { BLUX_JWT_STORE } from '../../../constants/consts';
 import { getState, setState, useAppStore } from '../../../store';
 import { apiGetUser } from '../../../utils/api';
-import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
 import { capitalizeFirstLetter } from '../../../utils/helpers';
 import { isAccessDenied, looksLikeAccessDenied } from '../../../utils/errors';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
@@ -65,10 +63,9 @@ const SocialsOnboarding = () => {
       // The Blux API runs the OAuth flow in the popup and posts the JWT back.
       const jwt = await awaitSocialLogin(session);
 
-      localStorage.setItem(BLUX_JWT_STORE, jwt);
-
+      // Hold the JWT in memory until terms are accepted (completeLoginProcess).
       store.setAuth({
-        isAuthenticated: true,
+        isAuthenticated: false,
         JWT: jwt,
       });
 
@@ -83,8 +80,6 @@ const SocialsOnboarding = () => {
           authValue: result.auth_value,
         },
       }));
-
-      setRecentLoginConfig(provider, result.auth_value || '', Date.now(), jwt);
 
       store.connectWalletSuccessful(
         result.public_key,

@@ -9,13 +9,20 @@ import { getModalContent } from '../constants/routes';
 import useCustomTokens from '../hooks/useCustomTokens';
 import useUpdateAccount from '../hooks/useUpdateAccount';
 import loginResolver from '../stellar/processes/loginResolver';
+import { rejectLoginProcess } from '../stellar/processes/continueLoginProcess';
 import useCheckWalletNetwork from '../hooks/useCheckWalletNetwork';
 import {
   getNetworkRpc,
   decideBackRouteFromSelectAsset,
 } from '../utils/helpers';
 
-export const Provider = ({ isBodyMount }: { isBodyMount: boolean }) => {
+export const Provider = ({
+  isBodyMount,
+  mountElement,
+}: {
+  isBodyMount: boolean;
+  mountElement?: HTMLElement;
+}) => {
   useUpdateAccount();
   useCustomTokens();
 
@@ -121,8 +128,20 @@ export const Provider = ({ isBodyMount }: { isBodyMount: boolean }) => {
   const handleClose = () => {
     if (isSticky) return;
 
-    closeModal();
     setShowAllWallets(false);
+
+    // An incomplete login (OTP, wallet wait, terms prompt, success splash)
+    // must not leave a JWT/user behind. Closing the modal is a cancel.
+    if (
+      store.waitingStatus === 'login' &&
+      !store.authState.isAuthenticated &&
+      store.login
+    ) {
+      rejectLoginProcess('BLUX: Login cancelled.');
+      return;
+    }
+
+    closeModal();
 
     const { waitingStatus } = store;
 
@@ -208,6 +227,7 @@ export const Provider = ({ isBodyMount }: { isBodyMount: boolean }) => {
       isPersistent={store.config.isPersistent ?? false}
       appearance={store.config.appearance}
       isBodyMount={isBodyMount}
+      mountElement={mountElement}
     >
       <Header
         icon={modalIcon}

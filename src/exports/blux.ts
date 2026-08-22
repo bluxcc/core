@@ -424,7 +424,8 @@ export const blux = {
   signAuthEntry,
   signTransaction,
   sendTransaction,
-  /** Whether the SDK has finished initializing and is ready to use. */
+  /** Whether the SDK has finished initializing and is ready to use. Wallet
+   *  availability is not part of this wait when `loginMethods` omits `'wallet'`. */
   get isReady() {
     const { authState } = getState();
 

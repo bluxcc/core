@@ -42,9 +42,10 @@ export const assertAppIsValid = (): void => {
 };
 
 /**
- * Resolves once the SDK has finished initializing (wallets loaded) AND appId
- * validation has settled, so the caller can then assert validity. Polls because
- * both happen asynchronously after createConfig.
+ * Resolves once the SDK has finished initializing AND appId validation has
+ * settled, so the caller can then assert validity. Polls because both happen
+ * asynchronously after createConfig. For apps that do not offer wallet login,
+ * `isReady` does not wait on wallet availability — only appId validation.
  */
 export const waitForBluxReady = async (): Promise<void> => {
   while (true) {

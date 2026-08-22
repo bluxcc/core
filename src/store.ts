@@ -471,6 +471,7 @@ export const store = createStore<IStore>((set) => ({
     set((current) => ({
       ...current,
       user: undefined,
+      auth: undefined,
       loginError: undefined,
       waitingStatus: 'login',
       selectAsset: { ...DEFAULT_SELECT_ASSET },

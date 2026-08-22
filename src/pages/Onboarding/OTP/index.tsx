@@ -7,9 +7,8 @@ import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
-import { BLUX_JWT_STORE } from '../../../constants/consts';
 import { getState, IUser, useAppStore } from '../../../store';
-import { setRecentLoginConfig } from '../../../utils/checkRecentLogins';
+import { isAccessDenied } from '../../../utils/errors';
 import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 
@@ -27,7 +26,12 @@ const OTP = () => {
   const handleResendCode = async () => {
     try {
       await apiSendOtp(store.config.appId, store.user?.authValue || '');
-    } catch { }
+    } catch (cause) {
+      if (isAccessDenied(cause)) {
+        store.setLoginError(cause.message);
+        store.setRoute(Route.FAILED);
+      }
+    }
   };
 
   const verifyOTPRequest = async (otpString: string): Promise<void> => {
@@ -43,16 +47,9 @@ const OTP = () => {
       if (JWT) {
         setError(false);
 
-        localStorage.setItem(BLUX_JWT_STORE, JWT);
-        setRecentLoginConfig(
-          'email',
-          store.user?.authValue || '',
-          Date.now(),
-          JWT,
-        );
-
+        // Hold the JWT in memory until terms are accepted (completeLoginProcess).
         store.setAuth({
-          isAuthenticated: true,
+          isAuthenticated: false,
           JWT,
         });
 
@@ -80,6 +77,12 @@ const OTP = () => {
         });
       }
     } catch (cause) {
+      if (isAccessDenied(cause)) {
+        store.setLoginError(cause.message);
+        store.setRoute(Route.FAILED);
+        return;
+      }
+
       setError(true);
 
       setTimeout(() => setOtp(Array(6).fill('')), 1000);

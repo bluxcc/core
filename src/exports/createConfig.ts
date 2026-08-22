@@ -13,6 +13,7 @@ import { getEnabledSocials } from '../utils/socialLogin';
 import {
   getNetworkRpc,
   handleLoadWallets,
+  loginMethodsIncludeWallet,
   validateNetworkOptions,
   validateOrderWallets,
 } from '../utils/helpers';
@@ -55,7 +56,12 @@ const init = (element: HTMLElement = document.body) => {
   element.appendChild(container);
 
   root = createRoot(container);
-  root.render(createElement(Provider, { isBodyMount: element === document.body }));
+  root.render(
+    createElement(Provider, {
+      isBodyMount: element === document.body,
+      mountElement: element === document.body ? undefined : element,
+    }),
+  );
 };
 
 /**
@@ -63,8 +69,15 @@ const init = (element: HTMLElement = document.body) => {
  * available wallets, wires up integrations (WalletConnect, Trezor), and
  * authenticates the app id. Call this once before any other Blux function.
  *
+ * Wallet availability is always scanned in the background. `isReady` waits on
+ * that scan only when `loginMethods` includes `'wallet'`; apps that omit
+ * wallet login (email/social/passkey only) become ready as soon as the config
+ * is applied, so they are not blocked by extension detection or `window.load`.
+ *
  * @param config - The app configuration — see {@link IConfig}.
  * @param element - DOM element to mount the Blux UI into. Defaults to `document.body`.
+ *   When set, the modal is centered horizontally in this element and vertically
+ *   in the viewport, so a sidebar layout can offset it without it scrolling away.
  * @throws If `config` is empty or missing `appId`, `appName`, or `networks`, or if the network options are invalid.
  */
 export function createConfig(config: IConfig, element?: HTMLElement) {
@@ -92,7 +105,7 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     );
   }
 
-  const SUPPORTED_LANGS = ['en', 'es', 'pt', 'fr', 'de', 'ru', 'zh', 'ja', 'ko'];
+  const SUPPORTED_LANGS = ['en', 'es', 'pt', 'fr', 'de', 'ru', 'zh', 'ja', 'ko', 'tr'];
   let lang = (config.lang || 'en').trim().toLowerCase();
 
   if (!SUPPORTED_LANGS.includes(lang)) {
@@ -101,6 +114,12 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     );
 
     lang = 'en';
+  }
+
+  if (config.isPersistent) {
+    console.warn(
+      'BLUX: isPersistent: true is only for testing purposes. Know what you are doing. For a better experience with Blux, remove isPersistent: true.',
+    );
   }
 
   init(element);
@@ -164,6 +183,17 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   setConfig(conf);
 
+  const usesWalletLogin = loginMethodsIncludeWallet(conf.loginMethods);
+
+  // Email/social/passkey-only apps (e.g. dashboard.blux.cc) must not wait on
+  // wallet extension detection: each isAvailable() can take hundreds of
+  // milliseconds, and handleLoadWallets also waits for window load. Flip
+  // isReady now and still scan wallets in the background so they are ready if
+  // the app later needs them.
+  if (!usesWalletLogin) {
+    setIsReady(true);
+  }
+
   handleLoadWallets(excludeWallets, orderWallets).then((wallets) => {
     const includedWallets = wallets.filter(
       (w) =>
@@ -172,7 +202,10 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     );
 
     setWallets(includedWallets);
-    setIsReady(true);
+
+    if (usesWalletLogin) {
+      setIsReady(true);
+    }
   });
 
   if (config.walletConnect) {

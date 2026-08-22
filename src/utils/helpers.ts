@@ -13,6 +13,7 @@ import {
   LanguageKey,
   ITransports,
   IWalletNames,
+  ILoginMethods,
 } from '../types';
 import {
   networks,
@@ -474,6 +475,15 @@ export const getNetworkRpc = (
 
 export const canonicalWalletName = (name: string) =>
   name.toLowerCase().replace(/\s+/g, '');
+
+// True when the app offers wallet login. Used so createConfig can flip isReady
+// without waiting on extension detection for email/social/passkey-only apps.
+export const loginMethodsIncludeWallet = (
+  loginMethods: ILoginMethods | string[] | undefined,
+): boolean =>
+  (loginMethods || []).some(
+    (method) => String(method).toLowerCase().trim() === 'wallet',
+  );
 
 // Display order: recently used wallets first (most recent on top), then the
 // dev-prioritized ones from config.orderWallets, then everything else in the

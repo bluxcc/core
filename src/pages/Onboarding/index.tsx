@@ -76,13 +76,14 @@ const Onboarding = () => {
     store.setLoginError(undefined);
 
     try {
-      connectEmail(inputValue);
-
+      // Restriction list is enforced by POST /auth. Check before navigating to
+      // OTP so a blocked email never sees the code screen.
       await apiSendOtp(config.appId, inputValue);
+      connectEmail(inputValue);
     } catch (e) {
       // The project restricts access and this email is blocked: surface the
       // reason on the Failed screen. Other (network/server) errors leave the
-      // user on the OTP step, where the resend action is available.
+      // user on the onboarding form so they can retry.
       if (isAccessDenied(e)) {
         store.setLoginError(e.message);
         store.setRoute(Route.FAILED);

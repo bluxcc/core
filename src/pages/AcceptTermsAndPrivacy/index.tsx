@@ -7,7 +7,10 @@ import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
 import { hexToRgba } from '../../utils/helpers';
 import { ArrowOutward, Terms } from '../../assets';
-import { completeLoginProcess } from '../../stellar/processes/continueLoginProcess';
+import {
+  completeLoginProcess,
+  rejectLoginProcess,
+} from '../../stellar/processes/continueLoginProcess';
 
 type ILink = {
   href: string;
@@ -43,6 +46,10 @@ const AcceptTermsAndPrivacy = () => {
 
   const handleAgree = () => {
     completeLoginProcess();
+  };
+
+  const handleDisagree = () => {
+    rejectLoginProcess();
   };
 
   return (
@@ -84,7 +91,7 @@ const AcceptTermsAndPrivacy = () => {
             fontFamily: appearance.fontFamily,
           }}
           id="bluxcc-button"
-          onClick={handleAgree}
+          onClick={handleDisagree}
           className="bluxcc:flex bluxcc:h-11 bluxcc:font-medium bluxcc:text-base bluxcc:w-full bluxcc:bg-transparent bluxcc:items-center bluxcc:justify-center"
         >
           {t('disagree')}
