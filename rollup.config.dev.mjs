@@ -6,6 +6,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import { stripCssFromDts } from './rollup-strip-css-dts.mjs';
 
 const commonPlugins = [
   json(),
@@ -54,7 +55,7 @@ const config = [
         sourcemap: true,
       },
     ],
-    plugins: [peerDepsExternal(), ...commonPlugins],
+    plugins: [peerDepsExternal(), ...commonPlugins, stripCssFromDts()],
   },
   // {
   //   input: 'src/index.ts',

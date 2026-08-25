@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Horizon, rpc } from '@stellar/stellar-sdk';
 
 import { SupportedWallet } from './enums';
@@ -17,6 +18,9 @@ export type LanguageKey =
 
 /** Custom RPC endpoints keyed by network passphrase. */
 export type ITransports = Record<string, IServers>;
+
+/** A value TypeScript still treats as a string, while keeping literal unions suggestable. */
+type LooseString = string & {};
 
 /** Block explorer used to build account/transaction links. */
 export type IExplorer =
@@ -49,7 +53,7 @@ export type IWalletNames = Array<
 >;
 
 /** RPC endpoints for a single network. */
-interface IServers {
+export interface IServers {
   /** Horizon base URL. */
   horizon: string;
   /** Soroban RPC base URL. */
@@ -97,13 +101,13 @@ export interface IConfig {
   /** Show Blux's built-in signing/approval UIs. When `false`, signing happens headlessly. Defaults to `true`. */
   showWalletUIs?: boolean;
   /** Login methods to offer. Defaults to `['wallet']`. */
-  loginMethods?: ILoginMethods | string[];
+  loginMethods?: Array<ILoginMethods[number] | LooseString>;
   /** Custom Horizon/Soroban endpoints per network; required for custom networks. */
   transports?: ITransports;
   /** Wallets to hide from the picker. */
   excludeWallets?: IWalletNames;
   /** Wallets to surface first in the picker, in the given order. */
-  orderWallets?: IWalletNames | string[];
+  orderWallets?: Array<IWalletNames[number] | LooseString>;
   /** WalletConnect metadata; required to enable WalletConnect. */
   walletConnect?: IWalletConnectMetaData;
   /** Trezor manifest metadata; required to enable Trezor. */
@@ -202,7 +206,7 @@ export interface IAccountData {
 }
 
 export interface IAsset {
-  logo?: string | React.ReactNode;
+  logo?: string | ReactNode;
   valueInCurrency?: string;
   assetBalance: string;
   assetCode: string;

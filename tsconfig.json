@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "./src",
     "module": "ESNext",
     "jsx": "react-jsx",
     "lib": ["ES2020", "DOM"],
@@ -19,6 +20,6 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "types"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

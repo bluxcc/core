@@ -1,6 +1,22 @@
 import { getState as getStoreState } from '../store';
 import { BluxEventMap, ReadOnlyEmitter } from '../utils/events';
 
+export type {
+  IAppearance,
+  IConfig,
+  IExplorer,
+  ILoginMethods,
+  IServers,
+  ISocialProvider,
+  ITrezorMetaData,
+  ITransports,
+  IWalletConnectMetaData,
+  IWalletNames,
+  LanguageKey,
+} from '../types';
+export type { IUser } from '../store';
+export type { IExportedStore } from './exportedStore';
+
 export { Asset } from '@stellar/stellar-sdk';
 export * as StellarSdk from '@stellar/stellar-sdk';
 export * from './core';

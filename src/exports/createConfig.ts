@@ -18,7 +18,18 @@ import {
   validateOrderWallets,
 } from '../utils/helpers';
 
-import '../tailwind.css';
+export type {
+  IAppearance,
+  IConfig,
+  IExplorer,
+  ILoginMethods,
+  IServers,
+  ITrezorMetaData,
+  ITransports,
+  IWalletConnectMetaData,
+  IWalletNames,
+  LanguageKey,
+} from '../types';
 
 let root: Root | null = null;
 let isInitiated = false;
