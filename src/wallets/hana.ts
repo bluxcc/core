@@ -19,7 +19,7 @@ export const hanaConfig: IWallet = {
       throw new Error('BLUX: Failed to connect to HanaWallet.');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     try {
       if (!window.hanaWallet?.stellar)
@@ -67,12 +67,20 @@ export const hanaConfig: IWallet = {
     }
 
     try {
-      const signedMessage = await window.hanaWallet!.stellar!.signMessage({
-        message,
+      // Hana's signMessage is raw ed25519, not SEP-53. Pre-hash and signBlob.
+      const payload = Buffer.concat([
+        Buffer.from('Stellar Signed Message:\n', 'utf8'),
+        Buffer.from(message, 'utf8'),
+      ]);
+      const digest = Buffer.from(
+        await crypto.subtle.digest('SHA-256', payload),
+      );
+
+      // @ts-ignore
+      return await window.hanaWallet!.stellar!.signBlob({
+        blob: digest.toString('base64'),
         accountToSign: options.address,
       });
-
-      return signedMessage;
     } catch {
       throw new Error('BLUX: Failed to signMessage using HanaWallet');
     }

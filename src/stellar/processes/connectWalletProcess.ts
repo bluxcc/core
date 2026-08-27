@@ -23,7 +23,7 @@ const connectWalletProcess = async (store: IStore, wallet: IWallet) => {
 
     // Prove the user controls this address. Most wallets sign a SEP-10 challenge
     // transaction (sequence 0, ManageData only — never submittable). Wallets
-    // flagged `authenticateWithSignedMessage` (Freighter, Hana) sign a SEP-53
+    // flagged `authenticateWithSignedMessage` (Freighter, Hana, Rabet, OneKey) sign a SEP-53
     // challenge string instead, because they treat the unsubmittable TX as a
     // real payment and block on insufficient XLM. Either proof is exchanged for
     // a session JWT. Hardware wallets like Ledger keep the transaction path.

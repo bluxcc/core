@@ -197,16 +197,33 @@ declare global {
         signAuthEntry({
           xdr,
           accountToSign,
-        }: SignTransactionProps): Promise<string>;
+        }: {
+          xdr: string;
+          accountToSign?: string;
+        }): Promise<string>;
         signMessage({
-          xdr,
+          message,
           accountToSign,
-        }: SignTransactionProps): Promise<string>;
+        }: {
+          message: string;
+          accountToSign?: string;
+        }): Promise<string>;
+        signBlob({
+          blob,
+          accountToSign,
+        }: {
+          blob: string;
+          accountToSign?: string;
+        }): Promise<string>;
         signTransaction({
           xdr,
           accountToSign,
           networkPassphrase,
-        }: SignTransactionProps): Promise<string>;
+        }: {
+          xdr: string;
+          accountToSign?: string;
+          networkPassphrase?: string;
+        }): Promise<string>;
       };
     };
   }

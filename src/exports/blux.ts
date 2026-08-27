@@ -261,11 +261,10 @@ export const sendTransaction = async (
  * Signs an arbitrary message with the connected wallet.
  *
  * @param message - The message to sign.
- * @param options - Optional network passphrase override.
  * @returns The signature.
  * @throws If the user is not authenticated or the Blux modal is open elsewhere.
  */
-export const signMessage = (message: string, options?: { network: string }) =>
+export const signMessage = (message: string) =>
   new Promise((resolve, reject) => {
     // Throwing inside the executor rejects the returned promise.
     assertAppIsValid();
@@ -284,12 +283,6 @@ export const signMessage = (message: string, options?: { network: string }) =>
       return;
     }
 
-    let network = state.stellar.activeNetwork;
-
-    if (options && options.network) {
-      network = options.network;
-    }
-
     const foundWallet = getSigningWallet(state.user, state.wallets);
 
     if (!foundWallet) {
@@ -300,7 +293,6 @@ export const signMessage = (message: string, options?: { network: string }) =>
 
     const signMessageDetails: ISignMessage = {
       message,
-      options: options || { network },
       rejecter: reject,
       resolver: resolve,
       result: undefined,
@@ -309,7 +301,7 @@ export const signMessage = (message: string, options?: { network: string }) =>
     state.setSignMessage(signMessageDetails, state.config.showWalletUIs);
 
     if (!state.config.showWalletUIs) {
-      handleSignMessage(foundWallet, message, state!.user.address, network)
+      handleSignMessage(foundWallet, message, state!.user.address)
         .then((result) => {
           resolve(result);
         })

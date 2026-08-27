@@ -172,7 +172,7 @@ export interface IWallet {
    * When true, login proves ownership with `signMessage` (SEP-53) instead of a
    * SEP-10 challenge transaction. Use this for wallets that treat the
    * unsubmittable challenge as a real payment and block on insufficient XLM
-   * (Freighter, Hana). Hardware wallets that cannot sign arbitrary messages
+   * (Freighter, Hana, Rabet, OneKey). Hardware wallets that cannot sign arbitrary messages
    * must leave this unset so they keep using the challenge transaction.
    */
   authenticateWithSignedMessage?: boolean;
@@ -194,7 +194,7 @@ export interface IWallet {
     message: string,
     options: {
       address: string;
-      network: string;
+      network?: string;
     },
   ) => Promise<string>;
   signTransaction: (
@@ -313,7 +313,6 @@ export interface ISendTransaction {
 export interface ISignMessage {
   message: string;
   result?: string;
-  options: ISignOptions;
   rejecter: (reason: any) => void;
   resolver: (value: string) => void;
 }

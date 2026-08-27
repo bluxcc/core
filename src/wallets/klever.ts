@@ -14,7 +14,7 @@ export const kleverConfig: IWallet = {
       throw new Error('BLUX: Failed to connect to Klever');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     try {
       const result = await window.kleverWallet!.stellar!.getNetwork();

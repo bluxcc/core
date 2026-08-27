@@ -4,10 +4,12 @@ import { SupportedWallet } from '../enums';
 export const xBullConfig: IWallet = {
   name: SupportedWallet.Xbull,
   website: 'https://xbull.app',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {
-      if (!window.xBullSDK) throw new Error('BLUX: xBull Wallet is not installed');
+      if (!window.xBullSDK)
+        throw new Error('BLUX: xBull Wallet is not installed');
 
       await window.xBullSDK.connect({
         canRequestPublicKey: true,
@@ -21,10 +23,11 @@ export const xBullConfig: IWallet = {
       throw new Error('BLUX: Failed to connect to xBull');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     try {
-      if (!window.xBullSDK) throw new Error('BLUX: xBull Wallet is not installed');
+      if (!window.xBullSDK)
+        throw new Error('BLUX: xBull Wallet is not installed');
 
       const networkDetails = await window.xBullSDK.getNetwork();
 
@@ -47,7 +50,8 @@ export const xBullConfig: IWallet = {
   },
   signMessage: async (message, options) => {
     try {
-      if (!window.xBullSDK) throw new Error('BLUX: xBull Wallet is not installed');
+      if (!window.xBullSDK)
+        throw new Error('BLUX: xBull Wallet is not installed');
 
       const result = await window.xBullSDK.signMessage(message, {
         address: options.address,
@@ -65,7 +69,8 @@ export const xBullConfig: IWallet = {
   },
   signTransaction: async (xdr, options) => {
     try {
-      if (!window.xBullSDK) throw new Error('BLUX: xBull Wallet is not installed.');
+      if (!window.xBullSDK)
+        throw new Error('BLUX: xBull Wallet is not installed.');
 
       const signedXdr = await window.xBullSDK.signXDR(xdr, {
         network: options.network,

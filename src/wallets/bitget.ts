@@ -4,6 +4,7 @@ import { SupportedWallet } from '../enums';
 export const bitgetConfig: IWallet = {
   name: SupportedWallet.Bitget,
   website: 'https://bitget.com',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {

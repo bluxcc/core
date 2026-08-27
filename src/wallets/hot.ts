@@ -8,6 +8,7 @@ import { SupportedWallet } from '../enums';
 export const hotConfig: IWallet = {
   name: SupportedWallet.Hot,
   website: 'https://hot-labs.org/',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {

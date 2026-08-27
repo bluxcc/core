@@ -6,6 +6,8 @@ import { SupportedWallet } from '../enums';
 export const albedoConfig: IWallet = {
   name: SupportedWallet.Albedo,
   website: 'https://albedo.link',
+  authenticateWithSignedMessage: true,
+
   connect: async () => {
     try {
       const result = await albedo.publicKey({ token: 'Connect to Albedo' });
@@ -14,7 +16,7 @@ export const albedoConfig: IWallet = {
       throw new Error('BLUX: Failed to connect to Albedo.');
     }
   },
-  disconnect: async () => {},
+  disconnect: async () => { },
   getNetwork: async () => {
     throw new Error('BLUX: Albedo does not support the getNetwork function');
   },
@@ -28,7 +30,11 @@ export const albedoConfig: IWallet = {
       pubkey: options.address,
     });
 
-    return result.signed_message;
+    console.log('result');
+    console.log(result);
+
+    // @ts-ignore
+    return result.signedMessage;
   },
   signTransaction: async (xdr, options): Promise<string> => {
     try {

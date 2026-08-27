@@ -95,7 +95,9 @@ export const walletConnectConfig: IWallet = {
           ? WC_STELLAR_PUBNET
           : WC_STELLAR_TESTNET;
 
-      const response = await walletConnect.client.request({
+      const { signedXDR } = await walletConnect.client.request<{
+        signedXDR: string;
+      }>({
         topic: session.topic,
         chainId: chainId,
         request: {
@@ -106,7 +108,7 @@ export const walletConnectConfig: IWallet = {
         },
       });
 
-      return response as string;
+      return signedXDR;
     } catch (e) {
       throw new Error(
         'BLUX: Failed to sign and submit the transaction with Wallet Connect.',
@@ -135,7 +137,9 @@ export const walletConnectConfig: IWallet = {
 
       const chainId = session.namespaces.stellar.chains?.[0] || network;
 
-      const response = await walletConnect.client.request({
+      const { signature } = await walletConnect.client.request<{
+        signature: string;
+      }>({
         topic: session.topic,
         chainId: chainId,
         request: {
@@ -146,7 +150,7 @@ export const walletConnectConfig: IWallet = {
         },
       });
 
-      return response as string;
+      return signature;
     } catch (e) {
       throw new Error('BLUX: Failed to sign message with Wallet Connect.');
     }

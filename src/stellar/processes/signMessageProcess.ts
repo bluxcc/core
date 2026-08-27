@@ -33,7 +33,6 @@ const signMessageProcess = async (store: IStore) => {
       wallet,
       signMessage.message,
       store.user?.address as string,
-      signMessage.options.network,
     );
 
     store.setSignMessage(

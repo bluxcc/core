@@ -4,6 +4,7 @@ import { SupportedWallet } from '../enums';
 export const onekeyConfig: IWallet = {
   name: SupportedWallet.Onekey,
   website: 'https://onekey.so',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {
@@ -63,7 +64,7 @@ export const onekeyConfig: IWallet = {
 
       const result = await window.$onekey!.stellar!.signMessage(message, {
         address: options.address,
-        networkPassphrase: options.network,
+        networkPassphrase: options.network as string,
       });
 
       return result.signedMessage;

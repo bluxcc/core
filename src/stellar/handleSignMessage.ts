@@ -4,7 +4,7 @@ const handleSignMessage = async (
   wallet: IWallet,
   message: string,
   address: string,
-  network: string,
+  network?: string,
 ) => {
   if (!wallet?.signMessage) {
     throw new Error("BLUX: Wallet does not support signMessage.");
@@ -12,7 +12,7 @@ const handleSignMessage = async (
 
   const signedMessage = await wallet.signMessage(message, {
     address,
-    network: network,
+    network,
   });
 
   return signedMessage;

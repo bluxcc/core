@@ -4,6 +4,7 @@ import { IWallet } from '../types';
 export const rabetConfig: IWallet = {
   name: SupportedWallet.Rabet,
   website: 'https://rabet.io',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {
