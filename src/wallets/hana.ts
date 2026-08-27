@@ -4,6 +4,7 @@ import { SupportedWallet } from '../enums';
 export const hanaConfig: IWallet = {
   name: SupportedWallet.Hana,
   website: 'https://www.hanawallet.io/',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {

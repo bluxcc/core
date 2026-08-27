@@ -162,9 +162,20 @@ export interface IAppearance {
   boxShadow: string;
 }
 
+/** How a wallet proves it controls an address during login. */
+export type WalletProofType = 'signed_transaction' | 'signed_message';
+
 export interface IWallet {
   name: SupportedWallet;
   website: string;
+  /**
+   * When true, login proves ownership with `signMessage` (SEP-53) instead of a
+   * SEP-10 challenge transaction. Use this for wallets that treat the
+   * unsubmittable challenge as a real payment and block on insufficient XLM
+   * (Freighter, Hana). Hardware wallets that cannot sign arbitrary messages
+   * must leave this unset so they keep using the challenge transaction.
+   */
+  authenticateWithSignedMessage?: boolean;
   connect: () => Promise<string>;
   disconnect: () => Promise<void>;
   getNetwork: () => Promise<{

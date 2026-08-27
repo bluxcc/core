@@ -1,7 +1,7 @@
 import { IUser } from '../store';
 import { BluxAccessDeniedError } from './errors';
 import { bufferToBase64Url, fetcher } from './helpers';
-import { AuthenticateApiResponse } from '../types';
+import { AuthenticateApiResponse, WalletProofType } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
 import { PasskeyFlowResult } from '../pages/Onboarding/Passkey';
 
@@ -293,19 +293,23 @@ export const apiSendOtp = async (
 };
 
 type ApiWalletChallenge = {
-  challenge_xdr: string;
+  challenge_xdr?: string;
+  challenge?: string;
   network_passphrase: string;
+  proof_type?: WalletProofType;
 };
 
-// Step 1 of wallet login: ask the API for a SEP-10 challenge transaction the
-// connected wallet must sign to prove it controls `walletAddress`. The challenge
-// has sequence 0 and only ManageData operations, so it can never be submitted
-// and moves no funds — it is purely an ownership proof. The project's
-// allow/block list is enforced here (403 -> BluxAccessDeniedError).
+// Step 1 of wallet login: ask the API for an ownership challenge the connected
+// wallet must sign to prove it controls `walletAddress`. Default is a SEP-10
+// challenge transaction (sequence 0, ManageData only — never submittable).
+// Wallets that treat that TX as a real payment pass proofType `signed_message`
+// and receive a SEP-53 challenge string instead. The project's allow/block
+// list is enforced here (403 -> BluxAccessDeniedError).
 export const apiWalletChallenge = async (
   appId: string,
   walletName: string,
   walletAddress: string,
+  proofType: WalletProofType = 'signed_transaction',
 ): Promise<ApiWalletChallenge> => {
   if (!appId) {
     throw new Error('BLUX: appId is missing in config.');
@@ -329,6 +333,7 @@ export const apiWalletChallenge = async (
         wallet: walletAddress,
         auth_method: 'wallet',
         auth_value: walletName,
+        proof_type: proofType,
       }),
     });
   } catch (_e: any) {
@@ -360,13 +365,19 @@ export const apiWalletChallenge = async (
   throw new Error('BLUX: Unexpected response from api');
 };
 
-// Step 3 of wallet login: submit the signed challenge XDR exactly as the wallet
-// returned it. The server locates the single-use challenge by the transaction
-// hash and checks the signature against the wallet address, then returns a
-// session JWT. The XDR must not be rebuilt or re-serialized, or the hash changes.
+// Step 3 of wallet login: submit the signed ownership proof. For the default
+// SEP-10 path, `code` is the signed challenge XDR (passed through untouched so
+// the transaction hash still matches). For `signed_message`, `code` is the
+// SEP-53 signature and `challenge` is the string that was signed. The server
+// locates the single-use challenge by hash and checks the signature against
+// the wallet address, then returns a session JWT.
 export const apiVerifyWalletChallenge = async (
   appId: string,
-  signedXdr: string,
+  code: string,
+  options?: {
+    proofType?: WalletProofType;
+    challenge?: string;
+  },
 ): Promise<string> => {
   if (!appId) {
     throw new Error('BLUX: appId is missing in config.');
@@ -384,7 +395,9 @@ export const apiVerifyWalletChallenge = async (
       },
       body: JSON.stringify({
         auth_method: 'wallet',
-        code: signedXdr,
+        code,
+        ...(options?.proofType ? { proof_type: options.proofType } : {}),
+        ...(options?.challenge ? { challenge: options.challenge } : {}),
       }),
     });
   } catch (_e: any) {
@@ -689,9 +702,7 @@ const authHeaders = (JWT: string) => ({
 });
 
 // GET /tokens — the authenticated user's preferred tokens, grouped per network.
-export const apiGetTokens = async (
-  JWT: string,
-): Promise<ApiGroupedTokens> => {
+export const apiGetTokens = async (JWT: string): Promise<ApiGroupedTokens> => {
   const res = await fetcher<ApiResponse<ApiGroupedTokens>>(
     `${BLUX_API}/tokens`,
     {

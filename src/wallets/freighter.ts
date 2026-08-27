@@ -12,6 +12,7 @@ import { SupportedWallet } from '../enums';
 export const freighterConfig: IWallet = {
   name: SupportedWallet.Freighter,
   website: 'https://freighter.app',
+  authenticateWithSignedMessage: true,
 
   connect: async () => {
     try {
@@ -128,7 +129,7 @@ export const freighterConfig: IWallet = {
     try {
       const { signedMessage, error } = await signMessage(message, {
         address: options.address,
-        networkPassphrase: options.network,
+        // networkPassphrase: options.network,
       });
 
       if (error || !signedMessage) {
