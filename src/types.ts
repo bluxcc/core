@@ -96,7 +96,7 @@ export interface IConfig {
   lang?: LanguageKey;
   /** Block explorer used for links. Defaults to `'stellarchain'`. */
   explorer?: IExplorer;
-  /** Persist the session across reloads. Defaults to `false`. */
+  /** Persist the session across page reloads. Defaults to `false` and should remain `false` in most scenarios. */
   isPersistent?: boolean;
   /** Show Blux's built-in signing/approval UIs. When `false`, signing happens headlessly. Defaults to `true`. */
   showWalletUIs?: boolean;
