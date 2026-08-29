@@ -6,9 +6,10 @@ import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
+import SocialProviderIcon from '../../../components/SocialProviderIcon';
 import { getState, setState, useAppStore } from '../../../store';
 import { apiGetUser } from '../../../utils/api';
-import { capitalizeFirstLetter } from '../../../utils/helpers';
+import { capitalizeFirstLetter, getContrastColor } from '../../../utils/helpers';
 import { isAccessDenied, looksLikeAccessDenied } from '../../../utils/errors';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 import {
@@ -150,7 +151,10 @@ const SocialsOnboarding = () => {
         }}
       >
         {providerMeta ? (
-          <CDNImage name={providerMeta.icon} />
+          <SocialProviderIcon
+            provider={provider}
+            fill={getContrastColor(appearance.background)}
+          />
         ) : (
           <CDNImage
             name={CDNFiles.Globe}

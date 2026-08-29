@@ -1,3 +1,20 @@
+import type { ComponentType } from 'react';
+
+import { AppleLogo } from '../assets/AppleLogo';
+import {
+  FarcasterLogo,
+  InstagramLogo,
+  KickLogo,
+  LinkedInLogo,
+  SpotifyLogo,
+  TikTokLogo,
+  TwitchLogo,
+  WhatsAppLogo,
+} from '../assets/AdditionalSocialLogos';
+import { DiscordLogo } from '../assets/DiscordLogo';
+import { GitHubLogo } from '../assets/GitHubLogo';
+import { MetaLogo } from '../assets/MetaLogo';
+import { TelegramLogo } from '../assets/TelegramLogo';
 import CDNFiles from '../constants/cdnFiles';
 import { BLUX_API } from '../constants/consts';
 import { ILoginMethods, AuthenticateApiResponse } from '../types';
@@ -9,7 +26,7 @@ import { ILoginMethods, AuthenticateApiResponse } from '../types';
 // button and the result screen.
 type SocialProviderMeta = {
   displayName: string;
-  icon: CDNFiles;
+  icon: CDNFiles | ComponentType<{ fill?: string }>;
 };
 
 export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
@@ -17,6 +34,34 @@ export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
     displayName: 'Google',
     icon: CDNFiles.Google,
   },
+  apple: {
+    displayName: 'Apple',
+    icon: AppleLogo,
+  },
+  discord: {
+    displayName: 'Discord',
+    icon: DiscordLogo,
+  },
+  telegram: {
+    displayName: 'Telegram',
+    icon: TelegramLogo,
+  },
+  meta: {
+    displayName: 'Meta',
+    icon: MetaLogo,
+  },
+  github: {
+    displayName: 'GitHub',
+    icon: GitHubLogo,
+  },
+  farcaster: { displayName: 'Farcaster', icon: FarcasterLogo },
+  tiktok: { displayName: 'TikTok', icon: TikTokLogo },
+  linkedin: { displayName: 'LinkedIn', icon: LinkedInLogo },
+  whatsapp: { displayName: 'WhatsApp', icon: WhatsAppLogo },
+  twitch: { displayName: 'Twitch', icon: TwitchLogo },
+  kick: { displayName: 'Kick', icon: KickLogo },
+  spotify: { displayName: 'Spotify', icon: SpotifyLogo },
+  instagram: { displayName: 'Instagram', icon: InstagramLogo },
 };
 
 const NON_SOCIAL_METHODS = ['wallet', 'sms', 'email', 'passkey'];
@@ -96,7 +141,7 @@ export const cancelActiveSocialSession = () => {
   if (activeSession?.popup && !activeSession.popup.closed) {
     try {
       activeSession.popup.close();
-    } catch (_) { }
+    } catch (_) {}
   }
 
   activeSession = null;
@@ -189,7 +234,9 @@ export const awaitSocialLogin = (session: ISocialSession): Promise<string> =>
 
     if (!session.popup) {
       reject(
-        new Error('BLUX: Popup was blocked. Please allow popups and try again.'),
+        new Error(
+          'BLUX: Popup was blocked. Please allow popups and try again.',
+        ),
       );
 
       return;
@@ -212,7 +259,7 @@ export const awaitSocialLogin = (session: ISocialSession): Promise<string> =>
 
       try {
         session.popup?.close();
-      } catch (_) { }
+      } catch (_) {}
     };
 
     const succeed = (jwt: string) => {

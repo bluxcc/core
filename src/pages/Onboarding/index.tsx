@@ -8,6 +8,7 @@ import { useLang } from '../../hooks/useLang';
 import CDNFiles from '../../constants/cdnFiles';
 import CardItem from '../../components/CardItem';
 import CDNImage from '../../components/CDNImage';
+import SocialProviderIcon from '../../components/SocialProviderIcon';
 import handleLogos from '../../utils/walletLogos';
 import { Route, SupportedWallet } from '../../enums';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
@@ -222,7 +223,12 @@ const Onboarding = () => {
                     label={t('continueWith', {
                       provider: providerMeta.displayName,
                     })}
-                    startIcon={<CDNImage name={providerMeta.icon} />}
+                    startIcon={
+                      <SocialProviderIcon
+                        provider={socialProvider}
+                        fill={getContrastColor(appearance.background)}
+                      />
+                    }
                     onClick={() => handleConnectSocial(socialProvider)}
                   />
                 </div>

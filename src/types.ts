@@ -30,7 +30,21 @@ export type IExplorer =
   | 'lumenscan';
 
 /** Social login providers supported by Blux. */
-export type ISocialProvider = 'google';
+export type ISocialProvider =
+  | 'google'
+  | 'apple'
+  | 'discord'
+  | 'telegram'
+  | 'meta'
+  | 'github'
+  | 'farcaster'
+  | 'tiktok'
+  | 'linkedin'
+  | 'whatsapp'
+  | 'twitch'
+  | 'kick'
+  | 'spotify'
+  | 'instagram';
 
 /** Login methods to offer in the modal. */
 export type ILoginMethods = Array<
