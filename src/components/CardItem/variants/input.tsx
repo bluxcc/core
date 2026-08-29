@@ -95,7 +95,9 @@ const InputCard = ({
           value={inputValue}
           autoComplete={inputType === 'tel' ? 'tel' : 'off'}
           inputMode={inputType === 'tel' ? 'tel' : undefined}
-          placeholder={placeholder ?? (inputType === 'tel' ? t('phone') : t('email'))}
+          placeholder={
+            placeholder ?? (inputType === 'tel' ? t('phone') : t('email'))
+          }
           onKeyDown={handleKeyDown}
           onChange={handleInputChange}
           className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden
@@ -122,7 +124,7 @@ const InputCard = ({
               e.stopPropagation();
               onSubmit?.(inputValue);
             }}
-            className={`bluxcc:absolute bluxcc:right-0 bluxcc:flex bluxcc:h-8 bluxcc:w-17! bluxcc:items-center bluxcc:justify-center bluxcc:border bluxcc:text-sm! bluxcc:font-medium bluxcc:transition-[border-radius,background,border-color] bluxcc:duration-200`}
+            className={`bluxcc:absolute bluxcc:right-0 bluxcc:flex bluxcc:h-8 bluxcc:px-1.5! bluxcc:items-center bluxcc:justify-center bluxcc:border bluxcc:text-sm! bluxcc:font-medium bluxcc:transition-[border-radius,background,border-color] bluxcc:duration-200`}
             style={{
               background: appearance.fieldBackground,
               borderRadius: appearance.borderRadius,
