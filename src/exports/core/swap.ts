@@ -2,13 +2,15 @@ import {
   xdr,
   Memo,
   Asset,
+  StrKey,
   Horizon,
   Operation,
   TransactionBuilder,
+  extractBaseAddress,
 } from '@stellar/stellar-sdk';
+import BigNumber from 'bignumber.js';
 
 import { getState } from '../../store';
-import { sendTransaction } from '../blux';
 import { ISubmittedTransaction } from '../../types';
 import { getStrictSendPaths } from './getStrictSendPaths';
 import { numberish, type Numberish } from './toScVal';
@@ -19,7 +21,6 @@ import {
   resolveAsset,
   resolveAddress,
   loadAccount,
-  hasTrustline,
   type AssetArg,
 } from './helpers';
 
@@ -68,35 +69,89 @@ export type SwapOptions = {
  */
 const SWAP_FEE = '100000';
 
-const STROOPS_PER_UNIT = 10_000_000;
+const STROOPS_PER_UNIT = new BigNumber(10_000_000);
+const BASE_RESERVE_STROOPS = new BigNumber(5_000_000);
+const MAX_STROOPS = new BigNumber('9223372036854775807');
+const TEXT_MEMO_MAX_BYTES = 28;
+
+type CreditBalance = Horizon.HorizonApi.BalanceLineAsset;
 
 /** Formats an integer stroop amount as a trimmed decimal string (max 7 dp). */
-const formatStroops = (stroops: number): string => {
-  const whole = Math.floor(stroops / STROOPS_PER_UNIT);
-  const fraction = String(stroops % STROOPS_PER_UNIT)
+const formatStroops = (stroops: BigNumber): string => {
+  const whole = stroops.idiv(STROOPS_PER_UNIT);
+  const fraction = stroops
+    .mod(STROOPS_PER_UNIT)
+    .toFixed(0)
     .padStart(7, '0')
     .replace(/0+$/, '');
 
-  return fraction ? `${whole}.${fraction}` : `${whole}`;
+  return fraction ? `${whole.toFixed(0)}.${fraction}` : whole.toFixed(0);
+};
+
+const toStroops = (amount: string, requireExact = true): BigNumber => {
+  const stroops = new BigNumber(amount).times(STROOPS_PER_UNIT);
+
+  if (!stroops.isFinite() || stroops.lte(0)) {
+    throw new Error('BLUX: swap "amount" must be greater than zero.');
+  }
+
+  if (requireExact && !stroops.isInteger()) {
+    throw new Error(
+      'BLUX: swap "amount" can have at most 7 decimal places.',
+    );
+  }
+
+  const rounded = requireExact
+    ? stroops
+    : stroops.integerValue(BigNumber.ROUND_FLOOR);
+
+  if (rounded.gt(MAX_STROOPS)) {
+    throw new Error('BLUX: swap "amount" is too large.');
+  }
+
+  return rounded;
+};
+
+const assertStellarAmount = (amountString: string): void => {
+  const fraction = amountString.split('.')[1];
+
+  if (fraction && fraction.length > 7) {
+    throw new Error(
+      'BLUX: swap "amount" can have at most 7 decimal places.',
+    );
+  }
+
+  toStroops(amountString, true);
 };
 
 /**
  * Applies the slippage guardrail to a quoted amount: `'down'` for the minimum to
  * receive (exactIn `destMin`), `'up'` for the maximum to send (exactOut
  * `sendMax`). Rounds conservatively so the on-chain bound is never tighter than
- * the user asked for.
+ * the user asked for. `destMin` is at least 1 stroop — the network rejects 0.
  */
 const applySlippage = (
   amount: string,
   slippage: number,
   direction: 'down' | 'up',
 ): string => {
-  const factor = direction === 'down' ? 1 - slippage : 1 + slippage;
-  const stroops = Number(amount) * STROOPS_PER_UNIT * factor;
+  const stroops = toStroops(amount, false);
+  const factor = new BigNumber(direction === 'down' ? 1 - slippage : 1 + slippage);
+  let result = stroops.times(factor);
+  result =
+    direction === 'down'
+      ? result.integerValue(BigNumber.ROUND_FLOOR)
+      : result.integerValue(BigNumber.ROUND_CEIL);
 
-  return formatStroops(
-    direction === 'down' ? Math.floor(stroops) : Math.ceil(stroops),
-  );
+  if (direction === 'down' && result.lt(1)) {
+    result = new BigNumber(1);
+  }
+
+  if (!result.isFinite() || result.lt(1) || result.gt(MAX_STROOPS)) {
+    throw new Error('BLUX: swap amount is too large.');
+  }
+
+  return formatStroops(result);
 };
 
 /** Converts a Horizon path-record hop list into the intermediary {@link Asset}s. */
@@ -107,11 +162,17 @@ const pathToAssets = (
     asset_issuer?: string;
   }>,
 ): Asset[] =>
-  path.map((hop) =>
-    hop.asset_type === 'native'
-      ? Asset.native()
-      : new Asset(hop.asset_code as string, hop.asset_issuer as string),
-  );
+  path.map((hop) => {
+    if (hop.asset_type === 'native') {
+      return Asset.native();
+    }
+
+    if (!hop.asset_code || !hop.asset_issuer) {
+      throw new Error('BLUX: Swap path contained an unrecognized asset.');
+    }
+
+    return new Asset(hop.asset_code, hop.asset_issuer);
+  });
 
 /** Short, human-readable asset label for error messages (`XLM` for native). */
 const assetLabel = (asset: Asset): string => asset.getCode();
@@ -119,6 +180,160 @@ const assetLabel = (asset: Asset): string => asset.getCode();
 /** Full asset identity for error messages: `XLM` or `CODE:ISSUER`. */
 const assetIdentity = (asset: Asset): string =>
   asset.isNative() ? 'XLM' : `${asset.getCode()}:${asset.getIssuer()}`;
+
+const sourcePublicKeyOf = (address: string): string => {
+  if (StrKey.isValidEd25519PublicKey(address)) {
+    return address;
+  }
+
+  if (StrKey.isValidMed25519PublicKey(address)) {
+    return extractBaseAddress(address);
+  }
+
+  throw new Error('BLUX: The logged-in account address is invalid.');
+};
+
+const findCreditBalance = (
+  account: Horizon.AccountResponse,
+  asset: Asset,
+): CreditBalance | undefined => {
+  if (asset.isNative()) {
+    return undefined;
+  }
+
+  return account.balances.find(
+    (balance): balance is CreditBalance =>
+      (balance.asset_type === 'credit_alphanum4' ||
+        balance.asset_type === 'credit_alphanum12') &&
+      balance.asset_code === asset.getCode() &&
+      balance.asset_issuer === asset.getIssuer(),
+  );
+};
+
+const isAuthorized = (line: CreditBalance): boolean =>
+  line.is_authorized !== false;
+
+/** Remaining room on a credit trustline, in stroops. Native is unlimited. */
+const destRemainingStroops = (
+  account: Horizon.AccountResponse,
+  asset: Asset,
+): BigNumber | 'unlimited' => {
+  if (asset.isNative()) {
+    return 'unlimited';
+  }
+
+  const line = findCreditBalance(account, asset);
+
+  if (!line || !isAuthorized(line)) {
+    return new BigNumber(0);
+  }
+
+  return new BigNumber(line.limit)
+    .minus(line.balance)
+    .minus(line.buying_liabilities || '0')
+    .times(STROOPS_PER_UNIT);
+};
+
+const creditSpendableStroops = (
+  account: Horizon.AccountResponse,
+  asset: Asset,
+): BigNumber => {
+  const line = findCreditBalance(account, asset);
+
+  if (!line || !isAuthorized(line)) {
+    return new BigNumber(0);
+  }
+
+  return new BigNumber(line.balance)
+    .minus(line.selling_liabilities || '0')
+    .times(STROOPS_PER_UNIT);
+};
+
+/**
+ * XLM left after selling liabilities and the account's minimum balance,
+ * including `extraEntries` not-yet-created ledger entries (a new trustline).
+ * Fees are not subtracted here.
+ */
+const nativeAvailableStroops = (
+  account: Horizon.AccountResponse,
+  extraEntries: number,
+): BigNumber => {
+  const line = account.balances.find(
+    (balance) => balance.asset_type === 'native',
+  );
+
+  if (!line) {
+    return new BigNumber(0);
+  }
+
+  const entryCount =
+    2 +
+    (account.subentry_count || 0) +
+    (account.num_sponsoring || 0) -
+    (account.num_sponsored || 0) +
+    extraEntries;
+
+  const selling = new BigNumber(
+    'selling_liabilities' in line ? line.selling_liabilities : '0',
+  ).times(STROOPS_PER_UNIT);
+
+  return new BigNumber(line.balance)
+    .times(STROOPS_PER_UNIT)
+    .minus(selling)
+    .minus(BASE_RESERVE_STROOPS.times(entryCount));
+};
+
+const assertCanAfford = (
+  account: Horizon.AccountResponse,
+  send: Asset,
+  sendAmount: string,
+  extraEntries: number,
+  extraOps: number,
+): void => {
+  const feeStroops = new BigNumber(SWAP_FEE).times(1 + extraOps);
+  const nativeLeft = nativeAvailableStroops(account, extraEntries);
+  const sendStroops = toStroops(sendAmount, false);
+
+  if (send.isNative()) {
+    if (nativeLeft.lt(feeStroops.plus(sendStroops))) {
+      throw new Error('BLUX: Insufficient balance to swap this amount.');
+    }
+
+    return;
+  }
+
+  if (nativeLeft.lt(feeStroops)) {
+    throw new Error(
+      'BLUX: Insufficient XLM to cover the swap fee and trustline reserve.',
+    );
+  }
+
+  if (creditSpendableStroops(account, send).lt(sendStroops)) {
+    throw new Error('BLUX: Insufficient balance to swap this amount.');
+  }
+};
+
+/** Builds the right {@link Memo} for a value, honoring a federation-declared type. */
+const buildMemo = (memo?: string, memoType?: string): Memo | undefined => {
+  if (memo === undefined || memo === null || memo === '') {
+    return undefined;
+  }
+
+  switch (memoType) {
+    case 'id':
+      return Memo.id(memo);
+    case 'hash':
+      return Memo.hash(memo);
+    case 'return':
+      return Memo.return(memo);
+    default:
+      if (Buffer.byteLength(memo, 'utf8') > TEXT_MEMO_MAX_BYTES) {
+        throw new Error('BLUX: swap "memo" must be at most 28 bytes.');
+      }
+
+      return Memo.text(memo);
+  }
+};
 
 /**
  * Picks the route to embed in the path payment. Horizon returns records
@@ -167,22 +382,16 @@ const noSwapPathError = async (
 };
 
 /**
- * Swaps one asset for another through the Stellar DEX / liquidity pools using a
- * path payment, picking the best available path automatically. Routes of at
- * most 3 assets (one intermediary hop) are preferred, since longer chains are
- * rejected by some Horizon nodes; a longer route is used only when no shorter
- * one exists. Defaults to a self-swap; pass `to` to deliver the bought asset to
- * another account. When the recipient is the logged-in account and lacks a
- * trustline for `toAsset`, the required `changeTrust` is added automatically.
- * Requires a logged-in account.
+ * Builds the unsigned swap transaction XDR. {@link swap} signs and submits this
+ * envelope; the profile Swap page uses it so it can close the modal before
+ * opening the signing flow.
  *
  * @param options - What to swap and how — see {@link SwapOptions}.
- * @returns The submitted transaction.
- * @throws If no account is logged in, the inputs are invalid, no path exists, the destination account does not exist, or the destination (when not self) lacks a trustline for `toAsset`.
+ * @returns The unsigned transaction envelope as XDR.
  */
-export const swap = async (
+export const buildSwapTransaction = async (
   options: SwapOptions,
-): Promise<ISubmittedTransaction> => {
+): Promise<string> => {
   if (!checkConfigCreated()) {
     throw new Error('BLUX: swap must be called after createConfig');
   }
@@ -197,7 +406,7 @@ export const swap = async (
     throw new Error('BLUX: No account is logged in.');
   }
 
-  const sourceAddress = user.address;
+  const sourcePublicKey = sourcePublicKeyOf(user.address);
 
   const {
     fromAsset,
@@ -228,9 +437,15 @@ export const swap = async (
     );
   }
 
+  if (typeof memo === 'string' && memo !== '') {
+    if (Buffer.byteLength(memo, 'utf8') > TEXT_MEMO_MAX_BYTES) {
+      throw new Error('BLUX: swap "memo" must be at most 28 bytes.');
+    }
+  }
+
   const amountString = numberish<string>(amount, 'string');
 
-  if (!(Number(amountString) > 0)) {
+  if (!(Number(amountString) > 0) || !Number.isFinite(Number(amountString))) {
     throw new Error('BLUX: swap "amount" must be greater than zero.');
   }
 
@@ -239,6 +454,8 @@ export const swap = async (
       'BLUX: "amount" could not be represented precisely; pass it as a string (e.g. "0.0000001").',
     );
   }
+
+  assertStellarAmount(amountString);
 
   const send = resolveAsset(fromAsset);
   const dest = resolveAsset(toAsset);
@@ -249,11 +466,15 @@ export const swap = async (
 
   const resolved = to
     ? await resolveAddress(to)
-    : { destination: sourceAddress, publicKey: sourceAddress };
+    : {
+        destination: sourcePublicKey,
+        publicKey: sourcePublicKey,
+        federated: false,
+      };
 
   const { horizon, networkPassphrase } = getNetwork(network);
 
-  const sourceAccount = await loadAccount(horizon, sourceAddress);
+  const sourceAccount = await loadAccount(horizon, sourcePublicKey);
 
   if (!sourceAccount) {
     throw new Error(
@@ -261,7 +482,7 @@ export const swap = async (
     );
   }
 
-  const isSelf = resolved.publicKey === sourceAddress;
+  const isSelf = resolved.publicKey === sourcePublicKey;
   const destinationAccount = isSelf
     ? sourceAccount
     : await loadAccount(horizon, resolved.publicKey);
@@ -272,16 +493,35 @@ export const swap = async (
     );
   }
 
-  const needsTrustline = !hasTrustline(destinationAccount, dest);
+  if (!send.isNative()) {
+    const sendLine = findCreditBalance(sourceAccount, send);
 
-  if (needsTrustline && !isSelf) {
+    if (!sendLine || !isAuthorized(sendLine)) {
+      throw new Error(
+        `BLUX: You do not have a trustline for ${assetLabel(send)}.`,
+      );
+    }
+  }
+
+  const destLine = findCreditBalance(destinationAccount, dest);
+
+  if (destLine && !isAuthorized(destLine)) {
+    throw new Error(
+      `BLUX: The destination is not authorized to hold ${assetLabel(dest)}.`,
+    );
+  }
+
+  const destHasLine = dest.isNative() || !!destLine;
+
+  if (!destHasLine && !isSelf) {
     throw new Error(
       `BLUX: The destination has no trustline for ${assetLabel(dest)}.`,
     );
   }
 
-  // Discover the best path and derive the slippage-protected bound.
   let operation: xdr.Operation;
+  let quotedOut: string;
+  let sendAmount: string;
 
   if (type === 'exactIn') {
     const { response } = await getStrictSendPaths(
@@ -294,6 +534,8 @@ export const swap = async (
       throw await noSwapPathError(horizon, send, dest, networkPassphrase);
     }
 
+    quotedOut = record.destination_amount;
+    sendAmount = amountString;
     operation = Operation.pathPaymentStrictSend({
       sendAsset: send,
       sendAmount: amountString,
@@ -313,9 +555,11 @@ export const swap = async (
       throw await noSwapPathError(horizon, send, dest, networkPassphrase);
     }
 
+    quotedOut = amountString;
+    sendAmount = applySlippage(record.source_amount, slippage, 'up');
     operation = Operation.pathPaymentStrictReceive({
       sendAsset: send,
-      sendMax: applySlippage(record.source_amount, slippage, 'up'),
+      sendMax: sendAmount,
       destination: resolved.destination,
       destAsset: dest,
       destAmount: amountString,
@@ -323,25 +567,67 @@ export const swap = async (
     });
   }
 
+  const remaining = destRemainingStroops(destinationAccount, dest);
+  const quotedOutStroops = toStroops(quotedOut, false);
+  const needsMoreRoom =
+    remaining !== 'unlimited' && quotedOutStroops.gt(remaining);
+  const addingNewTrustline = !dest.isNative() && !destHasLine;
+  const shouldAddTrustline = addingNewTrustline || (isSelf && needsMoreRoom);
+
+  if (needsMoreRoom && !isSelf) {
+    throw new Error(
+      `BLUX: The destination cannot receive this amount of ${assetLabel(dest)} (trustline limit).`,
+    );
+  }
+
+  const extraEntries = addingNewTrustline ? 1 : 0;
+  const extraOps = shouldAddTrustline ? 1 : 0;
+
+  assertCanAfford(sourceAccount, send, sendAmount, extraEntries, extraOps);
+
   let builder = new TransactionBuilder(sourceAccount, {
     fee: SWAP_FEE,
     networkPassphrase,
   });
 
-  // A self-swap into a never-held asset needs its trustline first.
-  if (needsTrustline) {
+  if (shouldAddTrustline) {
     builder = builder.addOperation(Operation.changeTrust({ asset: dest }));
   }
 
   builder = builder.addOperation(operation);
 
-  if (memo) {
-    builder = builder.addMemo(Memo.text(memo));
+  const memoValue = memo ?? resolved.memo;
+  const memoType = memo !== undefined ? 'text' : resolved.memoType;
+  const builtMemo = buildMemo(memoValue, memoType);
+
+  if (builtMemo) {
+    builder = builder.addMemo(builtMemo);
   }
 
-  const builtXdr = builder.setTimeout(180).build().toXDR();
+  return builder.setTimeout(180).build().toXDR();
+};
+
+/**
+ * Swaps one asset for another through the Stellar DEX / liquidity pools using a
+ * path payment, picking the best available path automatically. Routes of at
+ * most 3 assets (one intermediary hop) are preferred, since longer chains are
+ * rejected by some Horizon nodes; a longer route is used only when no shorter
+ * one exists. Defaults to a self-swap; pass `to` to deliver the bought asset to
+ * another account. When the recipient is the logged-in account and lacks a
+ * trustline for `toAsset`, the required `changeTrust` is added automatically.
+ * Requires a logged-in account.
+ *
+ * @param options - What to swap and how — see {@link SwapOptions}.
+ * @returns The submitted transaction.
+ * @throws If no account is logged in, the inputs are invalid, no path exists, the destination account does not exist, or the destination (when not self) lacks a trustline for `toAsset`.
+ */
+export const swap = async (
+  options: SwapOptions,
+): Promise<ISubmittedTransaction> => {
+  const builtXdr = await buildSwapTransaction(options);
+  const { sendTransaction } = await import('../blux');
 
   return sendTransaction(builtXdr, {
-    network: networkPassphrase,
+    network: getNetwork(options.network).networkPassphrase,
   }) as Promise<ISubmittedTransaction>;
 };

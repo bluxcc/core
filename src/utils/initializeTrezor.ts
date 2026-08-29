@@ -23,6 +23,7 @@ export const initializeTrezor = (
       appUrl: trezor.appUrl || window.location.origin,
       email: trezor.email,
     },
+    // @ts-ignore
     lazyLoad: true,
   }).catch(() => {
     initPromise = null;

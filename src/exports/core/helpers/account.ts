@@ -8,14 +8,29 @@ import { Asset, Horizon } from '@stellar/stellar-sdk';
  * @param address - The account id (`G...`) to load.
  * @returns The account, or `null` if it is not found.
  */
+const isAccountMissing = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const status = (error as { response?: { status?: number } }).response?.status;
+  const message = error instanceof Error ? error.message : '';
+
+  return status === 404 || /account not found/i.test(message);
+};
+
 export const loadAccount = async (
   horizon: Horizon.Server,
   address: string,
 ): Promise<Horizon.AccountResponse | null> => {
   try {
     return await horizon.loadAccount(address);
-  } catch {
-    return null;
+  } catch (error) {
+    if (isAccountMissing(error)) {
+      return null;
+    }
+
+    throw error;
   }
 };
 

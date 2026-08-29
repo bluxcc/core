@@ -48,7 +48,10 @@ const ButtonCard = ({
     <button
       type="button"
       id="bluxcc-button"
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.();
+      }}
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300
           ${size === 'small'
           ? 'bluxcc:size-24 bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:gap-2 bluxcc:py-4'

@@ -62,6 +62,8 @@ export const _login = (isSilent: boolean) => {
     return promise;
   }
 
+  store.setShowAllWallets(false);
+
   (async () => {
     const current = getState();
 
@@ -82,7 +84,16 @@ export const _login = (isSilent: boolean) => {
 
     const s2 = getState();
 
-    if (!s2.modal.isOpen) s2.openModal(Route.ONBOARDING);
+    // Always land on the main onboarding screen. `showAllWallets` is a view
+    // flag on ONBOARDING, so a second login() (host retry, click bubbling
+    // through a parent Connect button, etc.) must not reopen on that list.
+    s2.setShowAllWallets(false);
+
+    if (!s2.modal.isOpen) {
+      s2.openModal(Route.ONBOARDING);
+    } else if (s2.modal.route === Route.ONBOARDING) {
+      s2.setRoute(Route.ONBOARDING);
+    }
   })().catch((err) => {
     rejecter(err);
 

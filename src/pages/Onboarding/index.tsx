@@ -10,6 +10,7 @@ import CardItem from '../../components/CardItem';
 import CDNImage from '../../components/CDNImage';
 import handleLogos from '../../utils/walletLogos';
 import { Route, SupportedWallet } from '../../enums';
+import { PhoneIcon } from '../../assets';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
@@ -22,13 +23,16 @@ import {
 const Onboarding = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
-  const [inputValue, setInputValue] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [phoneValue, setPhoneValue] = useState('');
 
-  const { config, wallets, connectEmail, setShowAllWallets } = store;
+  const { config, wallets, connectEmail, connectSms, setShowAllWallets } = store;
   const { appearance } = config;
   const loginMethods = config.loginMethods || [];
 
   const isPassKeyEnabled = loginMethods.includes('passkey');
+  const isSmsEnabled =
+    loginMethods.includes('sms') && store.apiResponse?.smsEnabled === true;
 
   // Socials the dev listed in loginMethods AND the owner enabled in the
   // dashboard (delivered by /auth/validate). Empty until apiResponse arrives.
@@ -78,12 +82,26 @@ const Onboarding = () => {
     try {
       // Restriction list is enforced by POST /auth. Check before navigating to
       // OTP so a blocked email never sees the code screen.
-      await apiSendOtp(config.appId, inputValue);
-      connectEmail(inputValue);
+      await apiSendOtp(config.appId, emailValue);
+      connectEmail(emailValue);
     } catch (e) {
       // The project restricts access and this email is blocked: surface the
       // reason on the Failed screen. Other (network/server) errors leave the
       // user on the onboarding form so they can retry.
+      if (isAccessDenied(e)) {
+        store.setLoginError(e.message);
+        store.setRoute(Route.FAILED);
+      }
+    }
+  };
+
+  const handleConnectSms = async () => {
+    store.setLoginError(undefined);
+
+    try {
+      await apiSendOtp(config.appId, phoneValue, 'sms');
+      connectSms(phoneValue);
+    } catch (e) {
       if (isAccessDenied(e)) {
         store.setLoginError(e.message);
         store.setRoute(Route.FAILED);
@@ -151,7 +169,9 @@ const Onboarding = () => {
           // Rows that are rendered as non-wallet login options. A divider
           // separates the wallet block from those rows on either side.
           const isAuthRow = (m?: string) =>
-            m === 'email' || enabledSocials.includes(normalizeMethod(m));
+            m === 'email' ||
+            (m === 'sms' && isSmsEnabled) ||
+            enabledSocials.includes(normalizeMethod(m));
           const shouldRenderDivider =
             (walletExists &&
               !store.showAllWallets &&
@@ -245,9 +265,31 @@ const Onboarding = () => {
                         props={{ fill: appearance.textColor }}
                       />
                     }
-                    onChange={(value: string) => setInputValue(value)}
+                    onChange={(value: string) => setEmailValue(value)}
                     onEnter={handleConnectEmail}
                     onSubmit={handleConnectEmail}
+                  />
+                </div>
+
+                {shouldRenderDivider && renderDivider()}
+              </React.Fragment>
+            );
+          }
+
+          if (!store.showAllWallets && method === 'sms' && isSmsEnabled) {
+            return (
+              <React.Fragment key="sms">
+                <div className="bluxcc:mb-2">
+                  <CardItem
+                    inputType="tel"
+                    variant="input"
+                    placeholder={t('phone')}
+                    startIcon={
+                      <PhoneIcon fill={appearance.textColor} />
+                    }
+                    onChange={(value: string) => setPhoneValue(value)}
+                    onEnter={handleConnectSms}
+                    onSubmit={handleConnectSms}
                   />
                 </div>
 

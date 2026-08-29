@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Horizon } from '@stellar/stellar-sdk';
+import { useEffect, useRef, useState } from 'react';
+import { Horizon, StrKey } from '@stellar/stellar-sdk';
 
 import { useAppStore } from '../store';
 import { getTransactions } from '../exports';
@@ -15,61 +15,116 @@ export type UseTransactionsResult = {
   transactions: TransactionRecordWithOperations[];
 };
 
-const useTransactions = (): UseTransactionsResult => {
-  const store = useAppStore((store) => store);
-  const [result, setResult] = useState<UseTransactionsResult>({
-    error: null,
-    loading: true,
-    transactions: [],
-  });
+const EMPTY: UseTransactionsResult = {
+  error: null,
+  loading: false,
+  transactions: [],
+};
 
-  const userAddress = store.user?.address as string;
+const isFetchableAddress = (address?: string) =>
+  !!address &&
+  (StrKey.isValidEd25519PublicKey(address) ||
+    StrKey.isValidMed25519PublicKey(address));
+
+/**
+ * Horizon activity for the signed-in account. Mount this only from the
+ * Activity page — listing txs and then fetching each one's operations is
+ * expensive and should not run in the background.
+ */
+const useTransactions = (): UseTransactionsResult => {
+  const userAddress = useAppStore((s) => s.user?.address);
+  const activeNetwork = useAppStore((s) => s.stellar?.activeNetwork || '');
+  const refreshNonce = useAppStore((s) => s.accountRefreshNonce);
+
+  const canFetch = isFetchableAddress(userAddress) && !!activeNetwork;
+  const identity = `${userAddress ?? ''}|${activeNetwork}`;
+
+  const [result, setResult] = useState<UseTransactionsResult>(() =>
+    canFetch ? { error: null, loading: true, transactions: [] } : EMPTY,
+  );
+  const [seenIdentity, setSeenIdentity] = useState(identity);
+
+  // Drop the previous account/network's rows on the same render so the
+  // activity list never shows leftover history from another identity.
+  if (identity !== seenIdentity) {
+    setSeenIdentity(identity);
+    setResult(
+      canFetch ? { error: null, loading: true, transactions: [] } : EMPTY,
+    );
+  }
+
+  const requestId = useRef(0);
 
   useEffect(() => {
-    setResult({
+    if (!canFetch || !userAddress) {
+      setResult(EMPTY);
+      return;
+    }
+
+    const id = ++requestId.current;
+    let cancelled = false;
+
+    setResult((prev) => ({
       error: null,
-      loading: true,
-      transactions: [],
-    });
+      loading: prev.transactions.length === 0,
+      transactions: prev.transactions,
+    }));
 
     getTransactions({
       limit: 5,
       order: 'desc',
       forAccount: userAddress,
+      network: activeNetwork,
     })
-      .then((result) => {
-        const txs = result.response;
+      .then(async (page) => {
+        const txs = page.response.records;
 
-        const operationsBuilder: Promise<
-          Horizon.ServerApi.CollectionPage<Horizon.ServerApi.OperationRecord>
-        >[] = [];
+        const operations = await Promise.all(
+          txs.map((tx) =>
+            tx
+              .operations()
+              .then((ops) => ops.records)
+              .catch(() => [] as Horizon.ServerApi.OperationRecord[]),
+          ),
+        );
 
-        for (const tx of txs.records) {
-          operationsBuilder.push(tx.operations());
+        if (cancelled || id !== requestId.current) {
+          return;
         }
 
-        Promise.all(operationsBuilder).then((operations) => {
-          const transactionsWithOps = txs.records.map((x, i) => ({
-            ...x,
-            operations: operations[i].records,
-          }));
-
-          setResult({
-            error: null,
-            loading: false,
-            transactions:
-              transactionsWithOps as TransactionRecordWithOperations[],
-          });
+        setResult({
+          error: null,
+          loading: false,
+          transactions: txs.map((tx, i) => ({
+            ...tx,
+            operations: operations[i],
+          })) as TransactionRecordWithOperations[],
         });
       })
       .catch((err) => {
-        setResult({
+        if (cancelled || id !== requestId.current) {
+          return;
+        }
+
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
+
+        if (status === 404) {
+          setResult({ error: null, loading: false, transactions: [] });
+          return;
+        }
+
+        setResult((prev) => ({
           error: err,
           loading: false,
-          transactions: [],
-        });
+          transactions: prev.transactions,
+        }));
       });
-  }, [userAddress, store.stellar?.servers]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userAddress, activeNetwork, refreshNonce, canFetch]);
 
   return result;
 };

@@ -6,8 +6,9 @@ import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
 import { PasskeyFlowResult } from '../pages/Onboarding/Passkey';
 
 type ApiErrorResponse = {
-  status: 400 | 401 | 403 | 404 | 409 | 429 | 500 | 502;
+  status: 400 | 401 | 403 | 404 | 409 | 429 | 500 | 502 | 503;
   error: string;
+  code?: string;
 };
 
 type ApiSuccessResponse<T> = {
@@ -28,6 +29,8 @@ type ApiResponseAuth = {
   terms: string;
   socials?: string[];
   socials_config?: ApiSocialConfigEntry[];
+  plan?: string;
+  sms_enabled?: boolean;
 };
 
 type ApiPasskeyChallenge = {
@@ -66,6 +69,8 @@ export const authenticateAppId = async (
           provider: (entry.provider || '').toLowerCase(),
           displayName: entry.display_name || entry.provider || '',
         })),
+        plan: res.result.plan || 'free',
+        smsEnabled: !!res.result.sms_enabled,
       };
     }
 
@@ -77,6 +82,8 @@ export const authenticateAppId = async (
         privacyPolicy: '',
         socials: [],
         socialsConfig: [],
+        plan: '',
+        smsEnabled: false,
       };
     }
 
@@ -87,6 +94,8 @@ export const authenticateAppId = async (
       privacyPolicy: '',
       socials: [],
       socialsConfig: [],
+      plan: '',
+      smsEnabled: false,
     };
   } catch (e: any) {
     return {
@@ -96,6 +105,8 @@ export const authenticateAppId = async (
       privacyPolicy: '',
       socials: [],
       socialsConfig: [],
+      plan: '',
+      smsEnabled: false,
     };
   }
 };
@@ -243,6 +254,7 @@ export const apiPasskeyVerify = async (
 export const apiSendOtp = async (
   appId: string,
   authValue: string,
+  authMethod: 'email' | 'sms' = 'email',
 ): Promise<boolean> => {
   if (!appId) {
     throw new Error('BLUX: appId is missing in config.');
@@ -260,7 +272,7 @@ export const apiSendOtp = async (
       },
       body: JSON.stringify({
         wallet: '',
-        auth_method: 'email',
+        auth_method: authMethod,
         auth_value: authValue,
       }),
     });
@@ -268,7 +280,8 @@ export const apiSendOtp = async (
     throw new Error('BLUX: Unexpected response from api');
   }
 
-  // The project restricts access (allowlist/blocklist) and this email is blocked.
+  // SMS on a free plan, or the project restricts access and this identity is
+  // blocked.
   if (res.status === 403) {
     throw new BluxAccessDeniedError(res.error);
   }
@@ -279,6 +292,10 @@ export const apiSendOtp = async (
 
   if (res.status === 500) {
     throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 503) {
+    throw new Error('BLUX: SMS is not configured');
   }
 
   if (res.status === 429) {
@@ -455,7 +472,10 @@ export const apiVerifyOtp = async (appId: string, user: IUser, otp: string) => {
       body: JSON.stringify({
         code: otp,
         wallet: '',
-        auth_method: 'email',
+        auth_method:
+          user.authMethod === 'sms' || user.authMethod === 'phone'
+            ? 'sms'
+            : 'email',
         auth_value: user.authValue,
       }),
     });

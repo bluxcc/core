@@ -82,7 +82,7 @@ export interface ITrezorMetaData {
 
 /** Configuration passed to {@link createConfig}. */
 export interface IConfig {
-  /** Your Blux app id, from the Blux dashboard. Required for email/passkey/social login. */
+  /** Your Blux app id, from the Blux dashboard. Required for email/SMS/passkey/social login. */
   appId: string;
   /** Display name of your app, shown in wallet prompts and UI. */
   appName: string;
@@ -100,7 +100,7 @@ export interface IConfig {
   isPersistent?: boolean;
   /** Show Blux's built-in signing/approval UIs. When `false`, signing happens headlessly. Defaults to `true`. */
   showWalletUIs?: boolean;
-  /** Login methods to offer. Defaults to `['wallet']`. */
+  /** Login methods to offer. Defaults to `['wallet']`. `'sms'` is shown only when `/auth/validate` reports a paid plan. */
   loginMethods?: Array<ILoginMethods[number] | LooseString>;
   /** Custom Horizon/Soroban endpoints per network; required for custom networks. */
   transports?: ITransports;
@@ -340,4 +340,8 @@ export interface AuthenticateApiResponse {
   terms: string;
   socials: string[];
   socialsConfig: ISocialConfigEntry[];
+  /** Entitled billing plan of the account that owns this app. */
+  plan: string;
+  /** True when the account is on a paid plan and may offer SMS login. */
+  smsEnabled: boolean;
 }

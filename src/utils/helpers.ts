@@ -17,7 +17,6 @@ import {
 } from '../types';
 import {
   networks,
-  INetworkTransports,
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
 
@@ -442,36 +441,7 @@ export const getNetworkByPassphrase = (passphrase: string) => {
   return networkEntry[0].toLowerCase();
 };
 
-export const getNetworkRpc = (
-  network: string,
-  transports: ITransports,
-): INetworkTransports => {
-  let details = DEFAULT_NETWORKS_TRANSPORTS[network];
-
-  const transport = transports[network];
-
-  if (!details && !transport) {
-    throw new Error('BLUX: Custom network has no transports.');
-  } else if (!details && transport) {
-    details = {
-      name: 'Custom Network',
-      horizon: '',
-      soroban: '',
-    };
-  }
-
-  if (transport) {
-    if (transport.horizon) {
-      details.horizon = transport.horizon;
-    }
-
-    if (transport.soroban) {
-      details.soroban = transport.soroban;
-    }
-  }
-
-  return details;
-};
+export { getNetworkRpc } from './networkRpc';
 
 export const canonicalWalletName = (name: string) =>
   name.toLowerCase().replace(/\s+/g, '');
@@ -812,5 +782,55 @@ const formatNumberWithCommas = (number: string): string => {
 
 export const validateInput = (type: string, value: string) => {
   if (type === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  if (type === 'tel') return isUSCanadaPhone(value);
   return value.trim() !== '';
+};
+
+const NON_US_CANADA_NANP = new Set([
+  '242',
+  '246',
+  '264',
+  '268',
+  '284',
+  '345',
+  '441',
+  '473',
+  '649',
+  '658',
+  '664',
+  '721',
+  '758',
+  '767',
+  '784',
+  '809',
+  '829',
+  '849',
+  '868',
+  '869',
+  '876',
+]);
+
+export const isUSCanadaPhone = (raw: string): boolean => {
+  let s = raw.trim();
+  if (!s) return false;
+  if (s.startsWith('00')) s = `+${s.slice(2)}`;
+
+  let digits = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '+' && digits.length === 0 && i === 0) continue;
+    if (c >= '0' && c <= '9') {
+      digits += c;
+      continue;
+    }
+    if (' -()./'.includes(c)) continue;
+    return false;
+  }
+
+  if (digits.length === 11 && digits[0] === '1') digits = digits.slice(1);
+  if (digits.length !== 10) return false;
+  if (digits[0] < '2' || digits[0] > '9' || digits[3] < '2' || digits[3] > '9') {
+    return false;
+  }
+  return !NON_US_CANADA_NANP.has(digits.slice(0, 3));
 };

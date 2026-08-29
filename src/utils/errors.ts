@@ -1,7 +1,7 @@
 // Thrown when the Blux API rejects a login because the project restricts access
-// (allowlist or blocklist mode) and the wallet address, email, or social
-// identity being used is not permitted. Unlike a transient failure, this is not
-// retryable — the same identity will keep being rejected.
+// (allowlist or blocklist mode) and the wallet address, email, phone number, or
+// social identity being used is not permitted. Unlike a transient failure, this
+// is not retryable — the same identity will keep being rejected.
 export const ACCESS_DENIED_FALLBACK =
   'This account is not allowed to access this app';
 

@@ -1,28 +1,47 @@
-import { Transaction, Operation } from '@stellar/stellar-sdk';
+import { Transaction } from '@stellar/stellar-sdk';
+
+const PATH_PAYMENT_TYPES = new Set([
+  'pathPaymentStrictSend',
+  'pathPaymentStrictReceive',
+]);
+
+const DESTINATION_OP_TYPES = new Set([
+  'payment',
+  'pathPaymentStrictSend',
+  'pathPaymentStrictReceive',
+  'createAccount',
+  'createClaimableBalance',
+]);
+
+const opDestination = (op: Transaction['operations'][number]): string => {
+  if ('destination' in op && typeof op.destination === 'string') {
+    return op.destination;
+  }
+
+  return '';
+};
 
 const getTransactionDetails = (xdr: string, network: string) => {
   try {
     const transaction = new Transaction(xdr, network);
-    const firstOp = transaction.operations[0];
+    const ops = transaction.operations;
 
-    let receiver: string | null = null;
+    // A self-swap into a never-held asset prepends changeTrust; surface the
+    // path payment as the action the user is actually confirming.
+    const primary =
+      ops.find((op) => PATH_PAYMENT_TYPES.has(op.type)) ||
+      ops.find((op) => DESTINATION_OP_TYPES.has(op.type)) ||
+      ops[0];
 
-    if (firstOp.type === 'payment') {
-      receiver = (firstOp as Operation.Payment).destination;
-    } else if (
-      firstOp.type === 'pathPaymentStrictSend' ||
-      firstOp.type === 'pathPaymentStrictReceive'
-    ) {
-      receiver = firstOp.destination;
-    } else {
-      receiver = '';
+    if (!primary) {
+      return null;
     }
 
     return {
-      action: firstOp.type,
-      operations: transaction.operations.length,
+      action: primary.type,
+      operations: ops.length,
       sender: transaction.source,
-      receiver,
+      receiver: opDestination(primary),
       estimatedFee: Number(transaction.fee) / 1e7,
     };
   } catch (_error: any) {

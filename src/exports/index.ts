@@ -20,6 +20,7 @@ export type { IExportedStore } from './exportedStore';
 export { Asset } from '@stellar/stellar-sdk';
 export * as StellarSdk from '@stellar/stellar-sdk';
 export * from './core';
+export * as core from './core';
 export { blux } from './blux';
 export { BluxEvent } from '../utils/events';
 export {

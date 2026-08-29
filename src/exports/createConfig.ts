@@ -82,7 +82,7 @@ const init = (element: HTMLElement = document.body) => {
  *
  * Wallet availability is always scanned in the background. `isReady` waits on
  * that scan only when `loginMethods` includes `'wallet'`; apps that omit
- * wallet login (email/social/passkey only) become ready as soon as the config
+ * wallet login (email/SMS/social/passkey only) become ready as soon as the config
  * is applied, so they are not blocked by extension detection or `window.load`.
  *
  * @param config - The app configuration — see {@link IConfig}.
@@ -196,7 +196,7 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   const usesWalletLogin = loginMethodsIncludeWallet(conf.loginMethods);
 
-  // Email/social/passkey-only apps (e.g. dashboard.blux.cc) must not wait on
+  // Email/SMS/social/passkey-only apps (e.g. dashboard.blux.cc) must not wait on
   // wallet extension detection: each isAvailable() can take hundreds of
   // milliseconds, and handleLoadWallets also waits for window load. Flip
   // isReady now and still scan wallets in the background so they are ready if
@@ -246,5 +246,15 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     }
 
     getEnabledSocials(conf.loginMethods, result);
+
+    const wantsSms = (conf.loginMethods || []).some(
+      (method) => String(method).toLowerCase().trim() === 'sms',
+    );
+
+    if (wantsSms && !result.smsEnabled) {
+      console.error(
+        'BLUX: SMS login requires a paid Blux plan. SMS will not be offered until this app is upgraded.',
+      );
+    }
   });
 }

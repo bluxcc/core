@@ -22,6 +22,7 @@ const useCustomTokens = () => {
   const JWT = useAppStore((s) => s.auth?.JWT);
   const userAddress = useAppStore((s) => s.user?.address);
   const activeNetwork = useAppStore((s) => s.stellar?.activeNetwork || '');
+  const refreshNonce = useAppStore((s) => s.accountRefreshNonce);
   const customTokens = useAppStore((s) => s.customTokens);
   const setCustomTokens = useAppStore((s) => s.setCustomTokens);
   const setCustomTokenBalances = useAppStore((s) => s.setCustomTokenBalances);
@@ -99,7 +100,14 @@ const useCustomTokens = () => {
     };
     // `bucket` is intentionally tracked via the stable `bucketKey` string.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, bucketKey, userAddress, activeNetwork, setCustomTokenBalances]);
+  }, [
+    slug,
+    bucketKey,
+    userAddress,
+    activeNetwork,
+    refreshNonce,
+    setCustomTokenBalances,
+  ]);
 };
 
 export default useCustomTokens;

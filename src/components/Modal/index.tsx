@@ -108,7 +108,12 @@ const Modal = ({
             WebkitBackdropFilter: `blur(${appearance.backdropBlur})`,
             backgroundColor: appearance.backdropColor,
           }}
-          onClick={isSticky ? () => { } : onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isSticky) {
+              onClose();
+            }
+          }}
         />
       )}
 
@@ -121,6 +126,7 @@ const Modal = ({
           } bluxcc:z-9999999 bluxcc:flex bluxcc:items-center bluxcc:justify-center ${isClosing && !isSticky && 'bluxcc:animate-fadeOut'
           }`}
         onClick={(e) => {
+          e.stopPropagation();
           if (e.target === e.currentTarget && !isSticky) {
             handleClose(onClose);
           }
@@ -128,6 +134,7 @@ const Modal = ({
       >
         <div
           id="bluxcc-modal"
+          onClick={(e) => e.stopPropagation()}
           className={`bluxcc:box-border ${isMobile
               ? 'bluxcc:fixed bluxcc:bottom-0 bluxcc:left-0 bluxcc:w-full bluxcc:rounded-b-none!'
               : 'bluxcc:relative bluxcc:w-90!'
