@@ -11,7 +11,7 @@ import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import { sendTransaction } from '../../../exports/blux';
-import swapTransaction from '../../../stellar/swapTransaction';
+import { buildSwapTransaction } from '../../../exports/core/swap';
 import { getSuggestedAssets } from '../../../constants/assets';
 import { getStrictReceivePaths, getStrictSendPaths } from '../../../exports';
 import {
@@ -19,10 +19,8 @@ import {
   iAssetToAsset,
   humanizeAmount,
   balanceToAsset,
-  isChangeTrustNeeded,
   getLiveAssetBalance,
 } from '../../../utils/helpers';
-import { Horizon } from '@stellar/stellar-sdk';
 
 const isSameAsset = (a: IAsset, b: IAsset) =>
   a.assetCode === b.assetCode && a.assetIssuer === b.assetIssuer;
@@ -144,31 +142,17 @@ const Swap = () => {
     }
 
     try {
-      const isNeeded = isChangeTrustNeeded(
-        to,
-        store.selectAsset.swapToAsset,
-        store.balances.balances,
-      );
-
-      const xdr = await swapTransaction(
-        from,
-        to,
-        lastFieldChanged,
-        store.selectAsset.swapFromAsset,
-        store.selectAsset.swapToAsset,
-        path,
-        store.user?.address as string,
-        store.stellar?.servers.horizon as Horizon.Server,
-        store.stellar?.activeNetwork || '',
-        isNeeded,
-      );
+      const xdr = await buildSwapTransaction({
+        fromAsset: iAssetToAsset(store.selectAsset.swapFromAsset),
+        toAsset: iAssetToAsset(store.selectAsset.swapToAsset),
+        amount: lastFieldChanged === 'from' ? from : to,
+        type: lastFieldChanged === 'from' ? 'exactIn' : 'exactOut',
+      });
 
       store.closeModal();
 
       setTimeout(() => {
-        try {
-          sendTransaction(xdr);
-        } catch (e) { }
+        sendTransaction(xdr).catch(() => {});
       }, 400);
     } catch (e) {
       setError({ field: 'both', message: t('failedToMakeTransaction') });
@@ -225,18 +209,16 @@ const Swap = () => {
 
         setLoading(false);
 
-        const records = result.response.records.filter(
-          (x) => x.path.length < 2,
-        );
+        const records = result.response.records;
+        const swapDetails =
+          records.find((x) => x.path.length < 2) ?? records[0];
 
-        if (records.length === 0) {
+        if (!swapDetails) {
           setError({
             field: 'both',
             message: t('couldNotFindPath'),
           });
         } else {
-          const swapDetails = records[0];
-
           setRate({
             rate:
               Number(swapDetails.destination_amount) /
@@ -268,19 +250,16 @@ const Swap = () => {
 
         setLoading(false);
 
-        // todo: double check
-        const records = result.response.records.filter(
-          (x) => x.path.length < 2,
-        );
+        const records = result.response.records;
+        const swapDetails =
+          records.find((x) => x.path.length < 2) ?? records[0];
 
-        if (records.length === 0) {
+        if (!swapDetails) {
           setError({
             field: 'both',
             message: t('couldNotFindPath'),
           });
         } else {
-          const swapDetails = records[0];
-
           setRate({
             rate:
               Number(swapDetails.destination_amount) /

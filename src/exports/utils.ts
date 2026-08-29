@@ -2,7 +2,7 @@ import { Horizon, rpc, xdr } from '@stellar/stellar-sdk';
 
 import { getState } from '../store';
 import { BluxEvent } from '../utils/events';
-import { getNetworkRpc } from '../utils/helpers';
+import { getNetworkRpc } from '../utils/networkRpc';
 
 /**
  * A single Soroban contract invocation, consumed by {@link readContracts} and

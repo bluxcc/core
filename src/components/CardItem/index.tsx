@@ -14,7 +14,8 @@ type CardItemProps = {
   onChange?: (value: string) => void;
   onEnter?: (value: string) => void;
   onSubmit?: (value: string) => void;
-  inputType?: 'text' | 'password' | 'number' | 'email' | string;
+  inputType?: 'text' | 'password' | 'number' | 'email' | 'tel' | string;
+  placeholder?: string;
 };
 
 const CardItem = ({
@@ -29,6 +30,7 @@ const CardItem = ({
   onEnter,
   onSubmit,
   inputType = 'text',
+  placeholder,
 }: CardItemProps) => {
   return variant === 'input' ? (
     <InputCard
@@ -37,6 +39,7 @@ const CardItem = ({
       onChange={onChange}
       inputType={inputType}
       startIcon={startIcon}
+      placeholder={placeholder}
     />
   ) : (
     <ButtonCard

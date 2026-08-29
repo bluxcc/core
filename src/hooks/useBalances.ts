@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Horizon } from '@stellar/stellar-sdk';
+import { useEffect, useRef, useState } from 'react';
+import { Horizon, StrKey } from '@stellar/stellar-sdk';
 
 import { useAppStore } from '../store';
 import { getBalances } from '../exports';
@@ -10,41 +10,81 @@ export type UseBalancesResult = {
   balances: Horizon.HorizonApi.BalanceLine[];
 };
 
-const useBalances = (): UseBalancesResult => {
-  const store = useAppStore((store) => store);
-  const [result, setResult] = useState<UseBalancesResult>({
-    error: null,
-    loading: true,
-    balances: [],
-  });
+const EMPTY: UseBalancesResult = {
+  error: null,
+  loading: false,
+  balances: [],
+};
 
-  const userAddress = store.user?.address as string;
+const isFetchableAddress = (address?: string) =>
+  !!address &&
+  (StrKey.isValidEd25519PublicKey(address) ||
+    StrKey.isValidMed25519PublicKey(address));
+
+const useBalances = (): UseBalancesResult => {
+  const userAddress = useAppStore((s) => s.user?.address);
+  const activeNetwork = useAppStore((s) => s.stellar?.activeNetwork || '');
+  const refreshNonce = useAppStore((s) => s.accountRefreshNonce);
+
+  const canFetch = isFetchableAddress(userAddress) && !!activeNetwork;
+  const identity = `${userAddress ?? ''}|${activeNetwork}`;
+
+  const [result, setResult] = useState<UseBalancesResult>(EMPTY);
+  const [seenIdentity, setSeenIdentity] = useState(identity);
+
+  if (identity !== seenIdentity) {
+    setSeenIdentity(identity);
+    setResult(canFetch ? { error: null, loading: true, balances: [] } : EMPTY);
+  }
+
+  const requestId = useRef(0);
 
   useEffect(() => {
-    setResult({
+    if (!canFetch || !userAddress) {
+      setResult(EMPTY);
+      return;
+    }
+
+    const id = ++requestId.current;
+    let cancelled = false;
+
+    setResult((prev) => ({
       error: null,
-      loading: true,
-      balances: [],
-    });
+      loading: prev.balances.length === 0,
+      balances: prev.balances,
+    }));
 
     getBalances({
       address: userAddress,
+      network: activeNetwork,
     })
-      .then((result) => {
+      .then((balances) => {
+        if (cancelled || id !== requestId.current) {
+          return;
+        }
+
         setResult({
           error: null,
           loading: false,
-          balances: result,
+          balances,
         });
       })
       .catch((err) => {
-        setResult({
+        if (cancelled || id !== requestId.current) {
+          return;
+        }
+
+        setResult((prev) => ({
           error: err,
           loading: false,
-          balances: [],
-        });
+          balances: prev.balances,
+        }));
       });
-  }, [userAddress, store.stellar?.servers]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userAddress, activeNetwork, refreshNonce, canFetch]);
 
   return result;
 };

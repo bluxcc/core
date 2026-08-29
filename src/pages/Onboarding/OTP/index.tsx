@@ -9,6 +9,7 @@ import CDNImage from '../../../components/CDNImage';
 import OTPInput from '../../../components/Input/OTPInput';
 import { getState, IUser, useAppStore } from '../../../store';
 import { isAccessDenied } from '../../../utils/errors';
+import { PhoneIcon } from '../../../assets';
 import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
 
@@ -19,13 +20,18 @@ const OTP = () => {
   const user = store.user;
   const appearance = store.config.appearance;
 
-  const email = user?.authValue;
+  const identifier = user?.authValue;
+  const isSms = user?.authMethod === 'sms' || user?.authMethod === 'phone';
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   const [error, setError] = useState(false);
 
   const handleResendCode = async () => {
     try {
-      await apiSendOtp(store.config.appId, store.user?.authValue || '');
+      await apiSendOtp(
+        store.config.appId,
+        store.user?.authValue || '',
+        isSms ? 'sms' : 'email',
+      );
     } catch (cause) {
       if (isAccessDenied(cause)) {
         store.setLoginError(cause.message);
@@ -95,7 +101,7 @@ const OTP = () => {
     if (otpValue.length === 6) {
       verifyOTPRequest(otpValue);
     }
-  }, [otp, email]);
+  }, [otp, identifier]);
 
   return (
     <div className="bluxcc:mt-4 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
@@ -106,10 +112,14 @@ const OTP = () => {
         }}
         className="bluxcc:mb-6 bluxcc:flex bluxcc:h-20 bluxcc:w-20 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full bluxcc:border-2"
       >
-        <CDNImage
-          name={CDNFiles.Email}
-          props={{ fill: appearance.textColor }}
-        />
+        {isSms ? (
+          <PhoneIcon fill={appearance.textColor} />
+        ) : (
+          <CDNImage
+            name={CDNFiles.Email}
+            props={{ fill: appearance.textColor }}
+          />
+        )}
       </div>
 
       <div className="bluxcc:flex-col bluxcc:space-y-1 bluxcc:text-center">
@@ -122,7 +132,11 @@ const OTP = () => {
           </p>
         ) : (
           <p className="bluxcc:h-10 bluxcc:text-sm">
-            {t('enterConfirmationCodeHelp')}
+            {t(
+              isSms
+                ? 'enterConfirmationCodeHelpSms'
+                : 'enterConfirmationCodeHelp',
+            )}
           </p>
         )}
       </div>

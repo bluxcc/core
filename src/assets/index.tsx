@@ -1,3 +1,48 @@
+export const CurrencyExchange = ({ fill = '#0C1083' }: { fill?: string }) => {
+  return (
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 -960 960 960"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M480-40q-112 0-206-51T120-227v107H40v-240h240v80h-99q48 72 126.5 116T480-120q75 0 140.5-28.5t114-77q48.5-48.5 77-114T840-480h80q0 91-34.5 171T791-169q-60 60-140 94.5T480-40Zm-36-160v-52q-47-11-76.5-40.5T324-370l66-26q12 41 37.5 61.5T486-314q33 0 56.5-15.5T566-378q0-29-24.5-47T454-466q-59-21-86.5-50T340-592q0-41 28.5-74.5T446-710v-50h70v50q36 3 65.5 29t40.5 61l-64 26q-8-23-26-38.5T482-648q-35 0-53.5 15T410-592q0 26 23 41t83 35q72 26 96 61t24 77q0 29-10 51t-26.5 37.5Q583-274 561-264.5T514-250v50h-70ZM40-480q0-91 34.5-171T169-791q60-60 140-94.5T480-920q112 0 206 51t154 136v-107h80v240H680v-80h99q-48-72-126.5-116T480-840q-75 0-140.5 28.5t-114 77q-48.5 48.5-77 114T120-480H40Z"
+        fill={fill}
+      />
+    </svg>
+  );
+};
+
+export const BuyIcon = ({ fill = '#0C1083' }: { fill?: string }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill={fill} />
+    </svg>
+  );
+};
+
+export const SellIcon = ({ fill = '#0C1083' }: { fill?: string }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 4h14v-2H5v2z" fill={fill} />
+    </svg>
+  );
+};
+
 export const ArrowOutward = ({ fill = '#999999' }: { fill?: string }) => {
   return (
     <svg
@@ -133,10 +178,7 @@ export const FordefiLogo = () => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect width="32" height="32" rx="8" fill="#2E27F6" />
-      <path
-        d="M8 24V8h16l-4.2 4.8H13v3h8.4L17.2 20H13v4H8Z"
-        fill="#ffffff"
-      />
+      <path d="M8 24V8h16l-4.2 4.8H13v3h8.4L17.2 20H13v4H8Z" fill="#ffffff" />
     </svg>
   );
 };
@@ -154,6 +196,24 @@ export const TrezorLogo = ({ fill = '#171717' }: { fill?: string }) => {
         clipRule="evenodd"
         d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm3 8V7a3 3 0 1 0-6 0v3h6Zm-3 4a1.75 1.75 0 0 0-.75 3.33V19.5a.75.75 0 0 0 1.5 0v-2.17A1.75 1.75 0 0 0 12 14Z"
         fill={fill}
+      />
+    </svg>
+  );
+};
+
+export const MoneyGramLogo = () => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="24" height="24" rx="6" fill="#E31837" />
+      <path
+        d="M6.4 17.2V6.8h2.35l3.25 6.55L15.25 6.8H17.6v10.4h-2.2V10.3l-2.95 5.85h-1.9L7.6 10.3v6.9H6.4Z"
+        fill="white"
       />
     </svg>
   );
@@ -208,6 +268,24 @@ export const PasskeyFingerLogo = () => {
       <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"></path>
       <path d="M8.65 22c.21-.66.45-1.32.57-2"></path>
       <path d="M9 6.8a6 6 0 0 1 9 5.2v2"></path>
+    </svg>
+  );
+};
+
+export const PhoneIcon = ({ fill = '#0C1083' }: { fill?: string }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2Z"
+        fill={fill}
+      />
     </svg>
   );
 };

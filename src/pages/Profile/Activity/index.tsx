@@ -4,6 +4,7 @@ import { Horizon } from '@stellar/stellar-sdk';
 import { useAppStore } from '../../../store';
 import Button from '../../../components/Button';
 import { useLang } from '../../../hooks/useLang';
+import useTransactions from '../../../hooks/useTransactions';
 import History, { TxDetail } from '../../../components/Transaction/History';
 import {
   hexToRgba,
@@ -22,10 +23,39 @@ const handleAssetText = (
   return op.asset_code || poolLabel;
 };
 
+const PAYMENT_TYPES = new Set(['payment']);
+const PATH_PAYMENT_TYPES = new Set([
+  'path_payment_strict_send',
+  'path_payment_strict_receive',
+  Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend,
+  Horizon.HorizonApi.OperationResponseType.pathPayment,
+]);
+const CREATE_ACCOUNT_TYPES = new Set(['create_account', 'createAccount']);
+const INVOKE_TYPES = new Set(['invoke_host_function', 'invokeHostFunction']);
+
+type AssetBalanceChange = {
+  type?: string;
+  from?: string;
+  to?: string;
+  amount?: string;
+  asset_type?: string;
+  asset_code?: string;
+};
+
+const sameAddress = (a?: string, b?: string) =>
+  !!a && !!b && a.toLowerCase() === b.toLowerCase();
+
+const pickPrimaryOp = (ops: Horizon.ServerApi.OperationRecord[]) =>
+  ops.find((op) => PAYMENT_TYPES.has(op.type)) ||
+  ops.find((op) => PATH_PAYMENT_TYPES.has(op.type)) ||
+  ops.find((op) => CREATE_ACCOUNT_TYPES.has(op.type)) ||
+  ops.find((op) => INVOKE_TYPES.has(op.type)) ||
+  ops[0];
+
 const Activity = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
-  const { loading, transactions } = useAppStore((store) => store.transactions);
+  const { loading, transactions } = useTransactions();
   const [transactionsDetails, setTransactionsDetails] = useState<TxDetail[]>(
     [],
   );
@@ -46,13 +76,19 @@ const Activity = () => {
 
   useEffect(() => {
     if (!transactions) {
+      setTransactionsDetails([]);
       return;
     }
 
     const result: TxDetail[] = [];
 
     for (const tx of transactions) {
-      const op = tx.operations[0];
+      const ops = tx.operations || [];
+      const op = pickPrimaryOp(ops);
+
+      if (!op?.type) {
+        continue;
+      }
 
       const details: TxDetail = {
         hash: tx.hash,
@@ -62,40 +98,72 @@ const Activity = () => {
         title: toTitleFormat(op.type),
       };
 
-      if (tx.operations.length > 1) {
+      const isPrimaryAction =
+        PAYMENT_TYPES.has(op.type) ||
+        PATH_PAYMENT_TYPES.has(op.type) ||
+        CREATE_ACCOUNT_TYPES.has(op.type) ||
+        INVOKE_TYPES.has(op.type);
+
+      if (ops.length > 1 && !isPrimaryAction) {
         details.title = t('multiOperation');
         details.action = 'multi';
-      } else if (op.type === 'payment') {
-        let title = t('send');
-        details.action = 'send';
+      } else if (PAYMENT_TYPES.has(op.type)) {
+        const payment = op as Horizon.ServerApi.PaymentOperationRecord;
+        const incoming = sameAddress(payment.to, userAddress);
 
-        if (op.to.toLowerCase() === userAddress.toLowerCase()) {
-          title = t('receive');
-          details.action = 'receive';
-        }
-
-        details.title = title;
-        details.description = `${humanizeAmount(op.amount)} ${handleAssetText(
-          op,
+        details.action = incoming ? 'receive' : 'send';
+        details.title = incoming ? t('receive') : t('send');
+        details.description = `${humanizeAmount(payment.amount)} ${handleAssetText(
+          payment,
           t('pool'),
         )}`;
-      } else if (
-        op.type ===
-          Horizon.HorizonApi.OperationResponseType.pathPaymentStrictSend ||
-        op.type === Horizon.HorizonApi.OperationResponseType.pathPayment
-      ) {
+      } else if (PATH_PAYMENT_TYPES.has(op.type)) {
         details.title = t('swap');
         details.action = 'swap';
         details.description = t('receivedAsset', {
           asset: handleAssetText(op, t('pool')),
         });
+      } else if (CREATE_ACCOUNT_TYPES.has(op.type)) {
+        const created = op as Horizon.ServerApi.CreateAccountOperationRecord;
+        const incoming = sameAddress(created.account, userAddress);
+
+        details.action = incoming ? 'receive' : 'send';
+        details.title = incoming ? t('receive') : t('send');
+        details.description = `${humanizeAmount(created.starting_balance)} XLM`;
+      } else if (INVOKE_TYPES.has(op.type)) {
+        const changes: AssetBalanceChange[] = Array.isArray(
+          (op as { asset_balance_changes?: AssetBalanceChange[] })
+            .asset_balance_changes,
+        )
+          ? (op as { asset_balance_changes: AssetBalanceChange[] })
+              .asset_balance_changes
+          : [];
+
+        const transfer = changes.find(
+          (change) =>
+            change.type === 'transfer' &&
+            (sameAddress(change.to, userAddress) ||
+              sameAddress(change.from, userAddress)),
+        );
+
+        if (transfer?.amount) {
+          const incoming = sameAddress(transfer.to, userAddress);
+
+          details.action = incoming ? 'receive' : 'send';
+          details.title = incoming ? t('receive') : t('send');
+          details.description = `${humanizeAmount(transfer.amount)} ${
+            transfer.asset_type === 'native'
+              ? 'XLM'
+              : transfer.asset_code || t('pool')
+          }`;
+        }
       }
 
       result.push(details);
     }
 
     setTransactionsDetails(result);
-  }, [transactions]);
+  }, [transactions, userAddress]);
 
   const isEmpty = !loading && transactionsDetails.length === 0;
 
@@ -118,7 +186,7 @@ const Activity = () => {
       ) : (
         transactionsDetails.map((tx, index) => (
           <div
-            key={index}
+            key={tx.hash || index}
             style={{
               borderBottomStyle: 'dashed',
               borderBottomWidth:

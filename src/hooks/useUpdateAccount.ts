@@ -1,29 +1,31 @@
 import { useEffect, useRef } from 'react';
 
 import { Route } from '../enums';
-import { useAppStore } from '../store';
+import { getState, useAppStore } from '../store';
 import useBalances from './useBalances';
-import useTransactions from './useTransactions';
 import { balanceToAsset } from '../utils/helpers';
 import { balanceLineKey, getBalancesUsdValues } from '../utils/prices';
 
-const INTERVAL = 10000;
+const INTERVAL_MS = 20_000;
 
 const useUpdateAccount = () => {
-  const store = useAppStore((store) => store);
+  const store = useAppStore((s) => s);
 
   const balancesResult = useBalances();
-  const transactionsResult = useTransactions();
 
   const activeNetwork = store.stellar?.activeNetwork || '';
+  const isAuthenticated = store.authState.isAuthenticated;
+  const userAddress = store.user?.address;
+  const modalIsOpen = store.modal.isOpen;
+  const modalRoute = store.modal.route;
 
-  // Signature of the balances last priced, so the 10s refresh interval only
+  // Signature of the balances last priced, so the 20s refresh interval only
   // triggers a (network-heavy) revaluation when the holdings actually change.
   const pricedSignature = useRef<string>('');
+  const modalWasOpen = useRef(false);
 
   const updateAccountDetails = () => {
     store.setBalances(balancesResult);
-    store.setTransactions(transactionsResult);
 
     storeXLMAsSelectedAsset();
   };
@@ -56,15 +58,36 @@ const useUpdateAccount = () => {
 
   useEffect(() => {
     updateAccountDetails();
+  }, [balancesResult, store.modal.route]);
 
-    const i = setInterval(() => {
-      updateAccountDetails();
-    }, INTERVAL);
+  useEffect(() => {
+    if (!isAuthenticated || !userAddress) {
+      return;
+    }
+
+    const id = setInterval(() => {
+      getState().bumpAccountRefresh();
+    }, INTERVAL_MS);
 
     return () => {
-      clearInterval(i);
+      clearInterval(id);
     };
-  }, [balancesResult, transactionsResult, store.modal.route]);
+  }, [isAuthenticated, userAddress, activeNetwork]);
+
+  useEffect(() => {
+    const opened = modalIsOpen && !modalWasOpen.current;
+    modalWasOpen.current = modalIsOpen;
+
+    if (!opened || !isAuthenticated || !userAddress) {
+      return;
+    }
+
+    if (modalRoute !== Route.PROFILE) {
+      return;
+    }
+
+    getState().bumpAccountRefresh();
+  }, [modalIsOpen, modalRoute, isAuthenticated, userAddress]);
 
   // Price each balance against the live order book whenever the holdings (or
   // network) change. Keyed off a content signature so the periodic balance

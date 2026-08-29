@@ -108,6 +108,7 @@ const bigintToInt64 = (value: bigint): xdr.Int64 => {
     signedHigh -= 0x100000000;
   }
 
+  // @ts-ignore
   return new xdr.Int64([low, signedHigh]);
 };
 
@@ -115,6 +116,7 @@ const bigintToUint64 = (value: bigint): xdr.Uint64 => {
   const low = safeBigintToNumber(value & BigInt(0xffffffff));
   const high = safeBigintToNumber((value >> BigInt(32)) & BigInt(0xffffffff));
 
+  // @ts-ignore
   return new xdr.Uint64([low, high]);
 };
 
@@ -141,6 +143,7 @@ const bigintToScvU128 = (value: bigint): xdr.ScVal => {
   // @ts-ignore
   const lo = bigintToUint64(bytesToBigint(false, ...loBuffer));
 
+  // @ts-ignore
   return xdr.ScVal.scvU128(new xdr.UInt128Parts({ hi, lo }));
 };
 
@@ -181,6 +184,7 @@ const bigintToScvU256 = (value: bigint): xdr.ScVal => {
   // @ts-ignore
   const loLo = bigintToUint64(bytesToBigint(false, ...lo_lo_buffer));
 
+  // @ts-ignore
   return xdr.ScVal.scvU256(new xdr.UInt256Parts({ hiHi, hiLo, loHi, loLo }));
 };
 

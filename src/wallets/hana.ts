@@ -102,6 +102,7 @@ export const hanaConfig: IWallet = {
 
       return await signFn({
         xdr,
+        // @ts-ignore
         address: options.address,
         networkPassphrase: options.network,
       });

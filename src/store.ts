@@ -6,9 +6,8 @@ import { SignClient } from '@walletconnect/sign-client/dist/types/client';
 import { XLM } from './constants/assets';
 import { Route, SupportedWallet } from './enums';
 import { defaultLightTheme } from './constants/themes';
-import { UseBalancesResult } from './hooks/useBalances';
+import type { UseBalancesResult } from './hooks/useBalances';
 import { syncExportedStore } from './exports/exportedStore';
-import { UseTransactionsResult } from './hooks/useTransactions';
 import Emitter, { BluxEvent, BluxEventMap } from './utils/events';
 import {
   IAsset,
@@ -115,7 +114,10 @@ export interface IStoreProperties {
   // Populated asynchronously after balances load; absent keys mean "not priced
   // yet" and the UI falls back to showing no value.
   balanceValues: Record<string, string>;
-  transactions: UseTransactionsResult;
+  // Bumped to refetch balances and custom-token balances (20s interval while
+  // signed in, and whenever the profile modal opens). Activity is fetched only
+  // while that page is mounted.
+  accountRefreshNonce: number;
   selectAsset: ISelectAsset;
   detailsAsset?: IAsset;
   // Custom SAC/SEP-41 tokens the user added, grouped by API network bucket
@@ -137,6 +139,7 @@ export interface IStoreProperties {
 
 export interface IStoreMethods {
   connectEmail: (email: string) => void;
+  connectSms: (phone: string) => void;
   connectSocial: (provider: string) => void;
   connectWallet: (walletName: string) => void;
   connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
@@ -179,7 +182,7 @@ export interface IStoreMethods {
   ) => void;
   setBalancesTab: (tab: 'assets' | 'tokens') => void;
   setDetailsToken: (token: ICustomToken | undefined) => void;
-  setTransactions: (transactions: UseTransactionsResult) => void;
+  bumpAccountRefresh: () => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
   cleanUp: (method: 'sendTransaction' | 'signMessage' | 'signAuthEntry') => void;
   setNetworkSyncDisabled: (isDisabled: boolean) => void;
@@ -261,11 +264,7 @@ export const store = createStore<IStore>((set) => ({
   },
   balanceValues: {},
   apiResponse: undefined,
-  transactions: {
-    error: null,
-    loading: false,
-    transactions: [],
-  },
+  accountRefreshNonce: 0,
   selectAsset: { ...DEFAULT_SELECT_ASSET },
   detailsAsset: undefined,
   customTokens: { mainnet: [], testnet: [] },
@@ -335,6 +334,8 @@ export const store = createStore<IStore>((set) => ({
               // customTokens itself is kept (both buckets persist across switches).
               detailsToken: undefined,
               balanceValues: {},
+              balances: { error: null, loading: true, balances: [] },
+              accountRefreshNonce: state.accountRefreshNonce + 1,
             }
           : {}),
       };
@@ -348,6 +349,10 @@ export const store = createStore<IStore>((set) => ({
   openModal: (route: Route) => {
     set((state) => ({
       ...state,
+      // A fresh onboarding session always starts on the main login screen,
+      // not the leftover "all wallets" list from a previous attempt.
+      showAllWallets:
+        route === Route.ONBOARDING ? false : state.showAllWallets,
       modal: {
         ...state.modal,
         route,
@@ -382,6 +387,7 @@ export const store = createStore<IStore>((set) => ({
   closeModal: () =>
     set((current) => ({
       ...current,
+      showAllWallets: false,
       modal: { ...current.modal, isOpen: false },
     })),
   connectWallet: (walletName: string) => {
@@ -450,6 +456,23 @@ export const store = createStore<IStore>((set) => ({
         route: Route.OTP,
       },
     })),
+  connectSms: (phone: string) =>
+    set((state) => ({
+      ...state,
+      loginError: undefined,
+      waitingStatus: 'login',
+      user: {
+        address: '',
+        authValue: phone,
+        authMethod: 'sms',
+        walletPassphrase: '',
+      },
+      modal: {
+        ...state.modal,
+        isOpen: true,
+        route: Route.OTP,
+      },
+    })),
   connectSocial: (provider: string) =>
     set((state) => ({
       ...state,
@@ -474,6 +497,7 @@ export const store = createStore<IStore>((set) => ({
       auth: undefined,
       loginError: undefined,
       waitingStatus: 'login',
+      showAllWallets: false,
       selectAsset: { ...DEFAULT_SELECT_ASSET },
       detailsAsset: undefined,
       detailsToken: undefined,
@@ -481,6 +505,7 @@ export const store = createStore<IStore>((set) => ({
       customTokens: { mainnet: [], testnet: [] },
       balancesTab: 'assets',
       balanceValues: {},
+      balances: { error: null, loading: false, balances: [] },
       authState: {
         ...current.authState,
         isAuthenticated: false,
@@ -492,8 +517,11 @@ export const store = createStore<IStore>((set) => ({
   setBalanceValues: (balanceValues: Record<string, string>) =>
     set((state) => ({ ...state, balanceValues })),
   setAuth: (auth: IAuth) => set((state) => ({ ...state, auth })),
-  setTransactions: (transactions: UseTransactionsResult) =>
-    set((state) => ({ ...state, transactions })),
+  bumpAccountRefresh: () =>
+    set((state) => ({
+      ...state,
+      accountRefreshNonce: state.accountRefreshNonce + 1,
+    })),
   setSelectAsset: (selectAsset: ISelectAsset) =>
     set((state) => ({ ...state, selectAsset })),
   setDetailsAsset: (detailsAsset: IAsset | undefined) =>

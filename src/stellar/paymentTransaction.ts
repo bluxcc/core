@@ -4,9 +4,9 @@ import {
   Horizon,
   Operation,
   TransactionBuilder,
-} from "@stellar/stellar-sdk";
+} from '@stellar/stellar-sdk';
 
-import { IAsset } from "../types";
+import { IAsset } from '../types';
 
 const paymentTransaction = async (
   memo: string,
@@ -16,28 +16,31 @@ const paymentTransaction = async (
   sourceAddress: string,
   server: Horizon.Server,
   networkPassphrase: string,
+  memoType: 'text' | 'id' | 'hash' = 'text',
 ) => {
   let sourceAccount: null | Horizon.AccountResponse = null;
   let destinationAccount: null | Horizon.AccountResponse = null;
 
   try {
     destinationAccount = await server.loadAccount(destinationAddress);
-  } catch { }
+  } catch {}
 
   try {
     sourceAccount = await server.loadAccount(sourceAddress);
-  } catch { }
+  } catch {}
 
   if (!sourceAccount) {
-    throw new Error("BLUX: Inactive account cannot send a transaction.");
+    throw new Error('BLUX: Inactive account cannot send a transaction.');
   }
 
-  if (!destinationAccount && asset.assetType !== "native") {
-    throw new Error("BLUX: Cannot send non-native asset to an inactive account.");
+  if (!destinationAccount && asset.assetType !== 'native') {
+    throw new Error(
+      'BLUX: Cannot send non-native asset to an inactive account.',
+    );
   }
 
   let transaction = new TransactionBuilder(sourceAccount, {
-    fee: "50000",
+    fee: '50000',
     networkPassphrase,
   });
 
@@ -51,7 +54,7 @@ const paymentTransaction = async (
   } else {
     let stellarAsset = Asset.native();
 
-    if (asset.assetType !== "native") {
+    if (asset.assetType !== 'native') {
       stellarAsset = new Asset(asset.assetCode, asset.assetIssuer);
     }
 
@@ -65,7 +68,13 @@ const paymentTransaction = async (
   }
 
   if (memo) {
-    transaction = transaction.addMemo(Memo.text(memo));
+    if (memoType === 'id') {
+      transaction = transaction.addMemo(Memo.id(memo));
+    } else if (memoType === 'hash') {
+      transaction = transaction.addMemo(Memo.hash(memo));
+    } else {
+      transaction = transaction.addMemo(Memo.text(memo));
+    }
   }
 
   const transactionEnvelope = transaction.setTimeout(180).build();

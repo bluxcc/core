@@ -52,6 +52,7 @@ export const ledgerConfig: IWallet = {
 
       const { signature } = await app.signTransaction(
         "44'/148'/0'",
+        // @ts-ignore
         tx.signatureBase(),
       );
 

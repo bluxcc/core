@@ -9,7 +9,8 @@ type InputCardProps = {
   onChange?: (value: string) => void;
   onEnter?: (value: string) => void;
   onSubmit?: (value: string) => void;
-  inputType?: 'text' | 'password' | 'number' | 'email' | string;
+  inputType?: 'text' | 'password' | 'number' | 'email' | 'tel' | string;
+  placeholder?: string;
 };
 
 const InputCard = ({
@@ -19,6 +20,7 @@ const InputCard = ({
 
   onSubmit,
   inputType = 'text',
+  placeholder,
 }: InputCardProps) => {
   const store = useAppStore((store) => store);
   const { appearance } = store.config;
@@ -57,6 +59,7 @@ const InputCard = ({
   return (
     <div
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300 bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2`}
+      onClick={(e) => e.stopPropagation()}
       style={{
         fontFamily: appearance.fontFamily,
         borderRadius: appearance.borderRadius,
@@ -87,11 +90,14 @@ const InputCard = ({
         className={`bluxcc:ml-4 bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
       >
         <input
-          id="bluxcc-input"
-          type={inputType}
+          id={`bluxcc-input-${inputType}`}
+          type={inputType === 'tel' ? 'tel' : inputType}
           value={inputValue}
-          autoComplete="off"
-          placeholder={t('email')}
+          autoComplete={inputType === 'tel' ? 'tel' : 'off'}
+          inputMode={inputType === 'tel' ? 'tel' : undefined}
+          placeholder={
+            placeholder ?? (inputType === 'tel' ? t('phone') : t('email'))
+          }
           onKeyDown={handleKeyDown}
           onChange={handleInputChange}
           className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden
@@ -105,16 +111,19 @@ const InputCard = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => {
             setIsFocused(false);
-            if (!validateInput('email', inputValue)) {
+            if (!validateInput(inputType, inputValue)) {
               setIsValid(false);
             }
           }}
         />
         <div className="bluxcc:flex bluxcc:h-10 bluxcc:w-25 bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent">
           <button
-            id="bluxcc-button"
+            id={`bluxcc-button-${inputType}`}
             disabled={!isValid}
-            onClick={() => onSubmit?.(inputValue)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSubmit?.(inputValue);
+            }}
             className={`bluxcc:absolute bluxcc:right-0 bluxcc:flex bluxcc:h-8 bluxcc:px-2! bluxcc:items-center bluxcc:justify-center bluxcc:border bluxcc:text-sm! bluxcc:font-medium bluxcc:transition-[border-radius,background,border-color] bluxcc:duration-200`}
             style={{
               background: appearance.fieldBackground,
