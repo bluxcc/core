@@ -1,37 +1,59 @@
-import CDNFiles from '../constants/cdnFiles';
 import { BLUX_API } from '../constants/consts';
 import { ILoginMethods, AuthenticateApiResponse } from '../types';
 
 // Display metadata for each social provider. The whole OAuth dance — building
 // the provider authorization URL, the (fixed) redirect URI, and the
 // code -> token exchange with the project's secret — now happens on the Blux
-// API, so the kit only needs each provider's label and icon to render the
-// button and the result screen.
+// API, so the kit only needs each provider's label to render the button and
+// the result screen. Icons live in src/assets/socials.
 type SocialProviderMeta = {
   displayName: string;
-  icon: CDNFiles;
 };
 
 export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
-  google: {
-    displayName: 'Google',
-    icon: CDNFiles.Google,
-  },
+  google: { displayName: 'Google' },
+  farcaster: { displayName: 'Farcaster' },
+  tiktok: { displayName: 'TikTok' },
+  linkedin: { displayName: 'LinkedIn' },
+  twitch: { displayName: 'Twitch' },
+  kick: { displayName: 'Kick' },
+  spotify: { displayName: 'Spotify' },
+  instagram: { displayName: 'Instagram' },
+  apple: { displayName: 'Apple' },
+  discord: { displayName: 'Discord' },
+  github: { displayName: 'GitHub' },
+  meta: { displayName: 'Meta' },
+  telegram: { displayName: 'Telegram' },
+  microsoft: { displayName: 'Microsoft' },
+  gitlab: { displayName: 'GitLab' },
+  twitter: { displayName: 'X' },
+  steam: { displayName: 'Steam' },
 };
 
 const NON_SOCIAL_METHODS = ['wallet', 'sms', 'email', 'passkey'];
+const SOCIAL_ALIASES: Record<string, string> = { x: 'twitter' };
+
+export const canonicalSocialName = (method: string): string =>
+  SOCIAL_ALIASES[method.toLowerCase().trim()] || method.toLowerCase().trim();
 
 export const isSocialProvider = (method: string): boolean =>
-  !!SOCIAL_PROVIDERS[method.toLowerCase().trim()];
+  !!SOCIAL_PROVIDERS[canonicalSocialName(method)];
+
+export const getSocialDisplayName = (provider: string): string => {
+  const name = canonicalSocialName(provider);
+
+  return SOCIAL_PROVIDERS[name]?.displayName || name;
+};
 
 const warnedMethods = new Set<string>();
 
-const warnOnce = (method: string, _: string) => {
+const warnOnce = (method: string, message: string) => {
   if (warnedMethods.has(method)) {
     return;
   }
 
   warnedMethods.add(method);
+  console.warn(message);
 };
 
 // Intersection of the socials the dev asked for in config.loginMethods and
@@ -46,11 +68,13 @@ export const getEnabledSocials = (
     return [];
   }
 
-  const enabled = new Set(apiResponse.socials.map((s) => s.toLowerCase()));
+  const enabled = new Set(
+    apiResponse.socials.map((s) => canonicalSocialName(s)),
+  );
   const result: string[] = [];
 
   for (const method of loginMethods) {
-    const name = String(method).toLowerCase().trim();
+    const name = canonicalSocialName(String(method));
 
     if (NON_SOCIAL_METHODS.includes(name)) {
       continue;
@@ -80,6 +104,50 @@ export const getEnabledSocials = (
   }
 
   return result;
+};
+
+export const telegramBotUsername = (
+  apiResponse?: AuthenticateApiResponse,
+): string => {
+  const entry = apiResponse?.socialsConfig?.find(
+    (s) => s.provider === 'telegram',
+  );
+
+  return (entry?.publicId || '').replace(/^@/, '').trim();
+};
+
+export const telegramMiniAppsEnabled = (
+  apiResponse?: AuthenticateApiResponse,
+): boolean => {
+  const entry = apiResponse?.socialsConfig?.find(
+    (s) => s.provider === 'telegram',
+  );
+
+  return !!entry?.miniApps;
+};
+
+export const telegramWebAppInitData = (): string => {
+  if (typeof window === 'undefined') {
+    return '';
+  }
+
+  const telegram = (
+    window as Window & {
+      Telegram?: { WebApp?: { initData?: string } };
+    }
+  ).Telegram;
+
+  return (telegram?.WebApp?.initData || '').trim();
+};
+
+export const isTelegramLogin = (
+  provider: string,
+  apiResponse?: AuthenticateApiResponse,
+): boolean => {
+  const name = canonicalSocialName(provider);
+  const entry = apiResponse?.socialsConfig?.find((s) => s.provider === name);
+
+  return (entry?.kind || (name === 'telegram' ? 'telegram' : '')) === 'telegram';
 };
 
 export type ISocialSession = {
@@ -125,9 +193,7 @@ export const beginSocialLogin = (
 ): ISocialSession => {
   cancelActiveSocialSession();
 
-  const meta = SOCIAL_PROVIDERS[provider];
-
-  if (!meta || !appId) {
+  if (!appId) {
     activeSession = {
       provider,
       popup: null,

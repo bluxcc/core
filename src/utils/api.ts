@@ -22,6 +22,9 @@ type ApiResponse<T> = ApiErrorResponse | ApiSuccessResponse<T>;
 type ApiSocialConfigEntry = {
   provider: string;
   display_name?: string;
+  kind?: string;
+  public_id?: string;
+  mini_apps?: boolean;
 };
 
 type ApiResponseAuth = {
@@ -68,6 +71,9 @@ export const authenticateAppId = async (
         socialsConfig: (res.result.socials_config ?? []).map((entry) => ({
           provider: (entry.provider || '').toLowerCase(),
           displayName: entry.display_name || entry.provider || '',
+          kind: (entry.kind || '').toLowerCase(),
+          publicId: entry.public_id || '',
+          miniApps: !!entry.mini_apps,
         })),
         plan: res.result.plan || 'free',
         smsEnabled: !!res.result.sms_enabled,
@@ -816,6 +822,57 @@ export const apiDeleteToken = async (
 
   if (res.status === 200) {
     return true;
+  }
+
+  throw new Error('BLUX: Unexpected response from api');
+};
+
+// Completes Telegram Login Widget sign-in. The widget runs on the customer's
+// page (the bot is domain-bound) and posts the signed user object here; the
+// API verifies it with the project's bot token and returns a JWT.
+export const apiTelegramLogin = async (
+  appId: string,
+  payload: Record<string, unknown>,
+): Promise<string> => {
+  if (!appId) {
+    throw new Error('BLUX: appId is missing in config.');
+  }
+
+  const res = await fetcher<ApiResponse<string>>(
+    `${BLUX_API}/auth/social/telegram`,
+    {
+      method: 'POST',
+      headers: {
+        [BLUX_APP_ID_HEADER]: appId,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (res.status === 403) {
+    throw new BluxAccessDeniedError(res.error);
+  }
+
+  if (res.status === 401) {
+    throw new Error('BLUX: Telegram verification failed');
+  }
+
+  if (res.status === 400) {
+    throw new Error(res.error ? `BLUX: ${res.error}` : 'BLUX: invalid inputs');
+  }
+
+  if (res.status === 500) {
+    throw new Error('BLUX: server error');
+  }
+
+  if (res.status === 429) {
+    throw new Error('BLUX: too many requests');
+  }
+
+  if (res.status === 200 && res.result) {
+    return res.result;
   }
 
   throw new Error('BLUX: Unexpected response from api');

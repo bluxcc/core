@@ -26,6 +26,7 @@ import FundMe from '../pages/FundMe';
 import AcceptTermsAndPrivacy from '../pages/AcceptTermsAndPrivacy';
 import PasskeyOnboardingPage from '../pages/Onboarding/Passkey';
 import SocialsOnboarding from '../pages/Onboarding/Socials';
+import OtherSocials from '../pages/Onboarding/Socials/OtherSocials';
 
 type IRoute = {
   title?: string;
@@ -97,6 +98,10 @@ export const getModalContent = (): Record<string, IRoute> => {
     [Route.SOCIALS_ONBOARDING]: {
       title: '',
       Component: <SocialsOnboarding />,
+    },
+    [Route.OTHER_SOCIALS]: {
+      title: 'otherSocials',
+      Component: <OtherSocials />,
     },
     [Route.WRONG_NETWORK]: {
       title: '',

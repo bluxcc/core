@@ -63,6 +63,7 @@ export const Provider = ({
       Route.ADD_TOKEN,
       Route.WALLET_CONNECT,
       Route.FUND_ME_CRYPTO,
+      Route.OTHER_SOCIALS,
     ].includes(route);
 
   const modalIcon = shouldShowBackButton
@@ -82,7 +83,8 @@ export const Provider = ({
       route === Route.WAITING ||
       (route === Route.OTP && !store.authState.isAuthenticated) ||
       route === Route.ABOUT ||
-      route === Route.WALLET_CONNECT
+      route === Route.WALLET_CONNECT ||
+      route === Route.OTHER_SOCIALS
     ) {
       store.setRoute(Route.ONBOARDING);
       return;

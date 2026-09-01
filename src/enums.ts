@@ -31,6 +31,7 @@ export enum Route {
   ONBOARDING = 'ONBOARDING', // View for selecting a wallet
   PASSKEY_ONBOARDING = 'PASSKEY_ONBOARDING',
   SOCIALS_ONBOARDING = 'SOCIALS_ONBOARDING', // Social (OAuth) login popup flow
+  OTHER_SOCIALS = 'OTHER_SOCIALS', // Remaining social providers after the primary one
   WRONG_NETWORK = 'WRONG_NETWORK', // View for selecting a wallet
   WAITING = 'WAITING', // View for connection process
   SUCCESSFUL = 'SUCCESSFUL', // View for connection success process

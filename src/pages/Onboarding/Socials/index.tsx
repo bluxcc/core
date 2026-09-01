@@ -7,18 +7,25 @@ import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import { getState, setState, useAppStore } from '../../../store';
-import { apiGetUser } from '../../../utils/api';
-import { capitalizeFirstLetter } from '../../../utils/helpers';
+import { apiGetUser, apiTelegramLogin } from '../../../utils/api';
+import { isBackgroundDark } from '../../../utils/helpers';
 import { isAccessDenied, looksLikeAccessDenied } from '../../../utils/errors';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
+import handleSocialLogos from '../../../utils/socialLogos';
 import {
   ISocialSession,
-  SOCIAL_PROVIDERS,
   beginSocialLogin,
   awaitSocialLogin,
   getActiveSocialSession,
   cancelActiveSocialSession,
+  getEnabledSocials,
+  getSocialDisplayName,
+  isTelegramLogin,
+  telegramBotUsername,
+  telegramMiniAppsEnabled,
+  telegramWebAppInitData,
 } from '../../../utils/socialLogin';
+import TelegramWidget from './TelegramWidget';
 
 type SocialStatus = 'loading' | 'failed' | 'success';
 
@@ -32,15 +39,70 @@ const SocialsOnboarding = () => {
   const [status, setStatus] = useState<SocialStatus>('loading');
   const [errorMessage, setErrorMessage] = useState('');
   const [isDenied, setIsDenied] = useState(false);
+  const [widgetKey, setWidgetKey] = useState(0);
   const isRunning = useRef(false);
 
   const appearance = store.config.appearance;
   const provider = store.user?.authMethod || '';
-  const providerMeta = SOCIAL_PROVIDERS[provider];
-  const displayName =
-    providerMeta?.displayName || capitalizeFirstLetter(provider || 'social');
+  const displayName = getSocialDisplayName(provider || 'social');
+  const telegram = isTelegramLogin(provider, store.apiResponse);
+  const botUsername = telegramBotUsername(store.apiResponse);
+  const miniAppInitData =
+    telegram && telegramMiniAppsEnabled(store.apiResponse)
+      ? telegramWebAppInitData()
+      : '';
+
+  const finishWithJwt = async (jwt: string) => {
+    store.setAuth({
+      isAuthenticated: false,
+      JWT: jwt,
+    });
+
+    const result = await apiGetUser(jwt);
+
+    setState((state) => ({
+      ...state,
+      user: {
+        address: result.public_key,
+        walletPassphrase: '',
+        authMethod: provider,
+        authValue: result.auth_value,
+      },
+    }));
+
+    store.connectWalletSuccessful(
+      result.public_key,
+      store.stellar?.activeNetwork || '',
+    );
+
+    setStatus('success');
+
+    setTimeout(() => {
+      if (!getState().modal.isOpen) {
+        return;
+      }
+
+      continueLoginProcess();
+    }, 1200);
+  };
+
+  const fail = (cause: unknown) => {
+    cancelActiveSocialSession();
+
+    const raw = cause instanceof Error ? cause.message : '';
+    const message = raw.replace(/^BLUX:\s*/, '');
+    const denied = isAccessDenied(cause) || looksLikeAccessDenied(message);
+
+    setStatus('failed');
+    setIsDenied(denied);
+    setErrorMessage(message || t('loginRetryMessage'));
+  };
 
   const runSocialFlow = async (existingSession?: ISocialSession | null) => {
+    if (telegram) {
+      return;
+    }
+
     if (isRunning.current) {
       return;
     }
@@ -60,61 +122,28 @@ const SocialsOnboarding = () => {
         session = beginSocialLogin(provider, store.config.appId);
       }
 
-      // The Blux API runs the OAuth flow in the popup and posts the JWT back.
       const jwt = await awaitSocialLogin(session);
-
-      // Hold the JWT in memory until terms are accepted (completeLoginProcess).
-      store.setAuth({
-        isAuthenticated: false,
-        JWT: jwt,
-      });
-
-      const result = await apiGetUser(jwt);
-
-      setState((state) => ({
-        ...state,
-        user: {
-          address: result.public_key,
-          walletPassphrase: '',
-          authMethod: provider,
-          authValue: result.auth_value,
-        },
-      }));
-
-      store.connectWalletSuccessful(
-        result.public_key,
-        store.stellar?.activeNetwork || '',
-      );
-
-      setStatus('success');
-
-      setTimeout(() => {
-        if (!getState().modal.isOpen) {
-          return;
-        }
-
-        continueLoginProcess();
-      }, 1200);
-    } catch (cause: any) {
-      cancelActiveSocialSession();
-
-      // Errors carry the BLUX: prefix for developers; keep the modal clean.
-      const message = (cause?.message || '').replace(/^BLUX:\s*/, '');
-      // The social popup posts the API's message back as a plain string, so
-      // detect the allowlist/blocklist rejection by its wording too.
-      const denied = isAccessDenied(cause) || looksLikeAccessDenied(message);
-
-      setStatus('failed');
-      setIsDenied(denied);
-      setErrorMessage(message || t('loginRetryMessage'));
+      await finishWithJwt(jwt);
+    } catch (cause: unknown) {
+      fail(cause);
     } finally {
       isRunning.current = false;
     }
   };
 
   useEffect(() => {
-    // The popup was already opened by the click on the onboarding page; here
-    // we only wait for its result.
+    if (telegram) {
+      if (miniAppInitData) {
+        return;
+      }
+
+      if (!botUsername) {
+        fail(new Error('BLUX: Telegram is not configured for this app.'));
+      }
+
+      return;
+    }
+
     runSocialFlow();
 
     return () => {
@@ -122,14 +151,70 @@ const SocialsOnboarding = () => {
     };
   }, []);
 
+  const handleTelegramAuth = async (user: Record<string, unknown>) => {
+    if (isRunning.current) {
+      return;
+    }
+
+    isRunning.current = true;
+    setStatus('loading');
+    setErrorMessage('');
+    setIsDenied(false);
+
+    try {
+      const jwt = await apiTelegramLogin(store.config.appId, user);
+      await finishWithJwt(jwt);
+    } catch (cause: unknown) {
+      fail(cause);
+    } finally {
+      isRunning.current = false;
+    }
+  };
+
+  useEffect(() => {
+    if (!miniAppInitData) {
+      return;
+    }
+
+    handleTelegramAuth({ init_data: miniAppInitData });
+  }, []);
+
   const handleRetry = () => {
+    setStatus('loading');
+    setErrorMessage('');
+    setIsDenied(false);
+
+    if (telegram) {
+      if (miniAppInitData) {
+        handleTelegramAuth({ init_data: miniAppInitData });
+        return;
+      }
+
+      if (!botUsername) {
+        fail(new Error('BLUX: Telegram is not configured for this app.'));
+        return;
+      }
+
+      setWidgetKey((k) => k + 1);
+      return;
+    }
+
     runSocialFlow(beginSocialLogin(provider, store.config.appId));
   };
 
   const handleBack = () => {
     cancelActiveSocialSession();
 
-    store.setRoute(Route.ONBOARDING);
+    const enabled = getEnabledSocials(
+      store.config.loginMethods || [],
+      store.apiResponse,
+    );
+    const cameFromOtherSocials =
+      enabled.length > 1 && enabled[0] !== provider;
+
+    store.setRoute(
+      cameFromOtherSocials ? Route.OTHER_SOCIALS : Route.ONBOARDING,
+    );
   };
 
   const ringColor =
@@ -138,6 +223,10 @@ const SocialsOnboarding = () => {
       : status === 'failed'
         ? FAILED_COLOR
         : appearance.borderColor;
+
+  const waitingHelp = telegram
+    ? t('telegramWidgetHelp')
+    : t('socialPopupHelp', { provider: displayName });
 
   return (
     <div className="bluxcc:mt-3 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
@@ -149,13 +238,10 @@ const SocialsOnboarding = () => {
           borderStyle: 'solid',
         }}
       >
-        {providerMeta ? (
-          <CDNImage name={providerMeta.icon} />
-        ) : (
-          <CDNImage
-            name={CDNFiles.Globe}
-            props={{ fill: appearance.textColor }}
-          />
+        {handleSocialLogos(
+          provider,
+          isBackgroundDark(appearance.background),
+          'large',
         )}
       </div>
 
@@ -174,8 +260,7 @@ const SocialsOnboarding = () => {
             color: status === 'failed' ? FAILED_COLOR : appearance.textColor,
           }}
         >
-          {status === 'loading' &&
-            t('socialPopupHelp', { provider: displayName })}
+          {status === 'loading' && waitingHelp}
           {status === 'success' && t('connectionSuccessfulMessage')}
           {status === 'failed' && (errorMessage || t('loginRetryMessage'))}
         </p>
@@ -192,7 +277,15 @@ const SocialsOnboarding = () => {
 
       <Divider />
 
-      {status === 'loading' && (
+      {status === 'loading' && telegram && botUsername && !miniAppInitData && (
+        <TelegramWidget
+          key={widgetKey}
+          botUsername={botUsername}
+          onAuth={handleTelegramAuth}
+        />
+      )}
+
+      {status === 'loading' && (!telegram || !!miniAppInitData) && (
         <Button
           state="disabled"
           variant="outline"
@@ -216,8 +309,6 @@ const SocialsOnboarding = () => {
 
       {status === 'failed' &&
         (isDenied ? (
-          // Retrying the same account would just be blocked again; offer only a
-          // way back to pick a different login method.
           <Button state="enabled" variant="fill" onClick={handleBack}>
             {t('back')}
           </Button>

@@ -11,14 +11,20 @@ import CDNImage from '../../components/CDNImage';
 import handleLogos from '../../utils/walletLogos';
 import { Route, SupportedWallet } from '../../enums';
 import { PhoneIcon } from '../../assets';
-import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
+import {
+  getContrastColor,
+  isBackgroundDark,
+} from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
 import {
-  SOCIAL_PROVIDERS,
   beginSocialLogin,
+  canonicalSocialName,
   getEnabledSocials,
+  isSocialProvider,
+  isTelegramLogin,
 } from '../../utils/socialLogin';
+import SocialLoginButton from './Socials/SocialLoginButton';
 
 const Onboarding = () => {
   const t = useLang();
@@ -36,15 +42,50 @@ const Onboarding = () => {
 
   // Socials the dev listed in loginMethods AND the owner enabled in the
   // dashboard (delivered by /auth/validate). Empty until apiResponse arrives.
+  // Order follows loginMethods; disabled entries are omitted entirely.
   const enabledSocials = useMemo(
     () => getEnabledSocials(loginMethods, store.apiResponse),
     [loginMethods, store.apiResponse],
   );
+  const primarySocial = enabledSocials[0];
+  const otherSocials = enabledSocials.slice(1);
 
   const orderedLoginMethods = useMemo(() => {
     const methods = [...loginMethods].filter((method) => method !== 'passkey');
     return [...methods, ...(isPassKeyEnabled ? ['passkey'] : [])];
   }, [loginMethods, isPassKeyEnabled]);
+
+  const normalizeMethod = (m?: string) =>
+    m ? canonicalSocialName(String(m)) : '';
+
+  // Methods that should not occupy a slot — same as if they were never listed.
+  const isSkippedMethod = (m?: string) => {
+    const name = normalizeMethod(m);
+
+    if (!name) {
+      return true;
+    }
+
+    if (name === 'sms' && !isSmsEnabled) {
+      return true;
+    }
+
+    if (isSocialProvider(name) && name !== primarySocial) {
+      return true;
+    }
+
+    if (
+      !['wallet', 'email', 'sms', 'passkey'].includes(name) &&
+      !isSocialProvider(name)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const nextVisibleMethod = (index: number) =>
+    orderedLoginMethods.slice(index + 1).find((m) => !isSkippedMethod(m));
 
   const hiddenWallets = useMemo(() => {
     return wallets.length > 3 ? wallets.slice(2) : [];
@@ -110,9 +151,13 @@ const Onboarding = () => {
   };
 
   const handleConnectSocial = (provider: string) => {
-    // The popup must open synchronously inside the click gesture, otherwise
-    // the browser blocks it. The SocialsOnboarding page picks the session up.
-    beginSocialLogin(provider, store.config.appId);
+    // Telegram uses an on-page widget (the bot is bound to this site's domain),
+    // so it must not open the OAuth popup. Every other provider opens the
+    // popup synchronously here so the browser does not block it; the
+    // SocialsOnboarding page then waits for the result.
+    if (!isTelegramLogin(provider, store.apiResponse)) {
+      beginSocialLogin(provider, store.config.appId);
+    }
 
     store.connectSocial(provider);
   };
@@ -161,17 +206,20 @@ const Onboarding = () => {
 
       <div className="">
         {orderedLoginMethods.map((method, index) => {
-          const normalizeMethod = (m?: string) =>
-            String(m || '').toLowerCase().trim();
           const socialProvider = normalizeMethod(method);
-          const nextMethod = orderedLoginMethods[index + 1];
+          const nextMethod = nextVisibleMethod(index);
           const walletExists = orderedLoginMethods.includes('wallet');
           // Rows that are rendered as non-wallet login options. A divider
           // separates the wallet block from those rows on either side.
-          const isAuthRow = (m?: string) =>
-            m === 'email' ||
-            (m === 'sms' && isSmsEnabled) ||
-            enabledSocials.includes(normalizeMethod(m));
+          const isAuthRow = (m?: string) => {
+            const name = normalizeMethod(m);
+
+            return (
+              name === 'email' ||
+              (name === 'sms' && isSmsEnabled) ||
+              (!!primarySocial && name === primarySocial)
+            );
+          };
           const shouldRenderDivider =
             (walletExists &&
               !store.showAllWallets &&
@@ -221,31 +269,43 @@ const Onboarding = () => {
 
           if (
             !store.showAllWallets &&
-            enabledSocials.includes(socialProvider)
+            primarySocial &&
+            socialProvider === primarySocial
           ) {
-            // Render only the first occurrence of a provider so duplicate
-            // entries in loginMethods don't produce duplicate buttons.
+            // Render only the first occurrence so duplicate entries in
+            // loginMethods don't produce duplicate buttons.
             const firstIndex = orderedLoginMethods.findIndex(
-              (m) => normalizeMethod(m) === socialProvider,
+              (m) => normalizeMethod(m) === primarySocial,
             );
 
             if (firstIndex !== index) {
               return null;
             }
 
-            const providerMeta = SOCIAL_PROVIDERS[socialProvider];
-
             return (
-              <React.Fragment key={socialProvider}>
+              <React.Fragment key={primarySocial}>
                 <div className="bluxcc:mb-2">
-                  <CardItem
-                    label={t('continueWith', {
-                      provider: providerMeta.displayName,
-                    })}
-                    startIcon={<CDNImage name={providerMeta.icon} />}
-                    onClick={() => handleConnectSocial(socialProvider)}
+                  <SocialLoginButton
+                    provider={primarySocial}
+                    onClick={handleConnectSocial}
                   />
                 </div>
+
+                {otherSocials.length > 0 && (
+                  <div className="bluxcc:mb-2">
+                    <CardItem
+                      endArrow
+                      label={t('otherSocials')}
+                      startIcon={
+                        <CDNImage
+                          name={CDNFiles.Globe}
+                          props={{ fill: appearance.textColor }}
+                        />
+                      }
+                      onClick={() => store.setRoute(Route.OTHER_SOCIALS)}
+                    />
+                  </div>
+                )}
 
                 {shouldRenderDivider && renderDivider()}
               </React.Fragment>

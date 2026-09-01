@@ -30,7 +30,24 @@ export type IExplorer =
   | 'lumenscan';
 
 /** Social login providers supported by Blux. */
-export type ISocialProvider = 'google';
+export type ISocialProvider =
+  | 'google'
+  | 'farcaster'
+  | 'tiktok'
+  | 'linkedin'
+  | 'twitch'
+  | 'kick'
+  | 'spotify'
+  | 'instagram'
+  | 'apple'
+  | 'discord'
+  | 'github'
+  | 'meta'
+  | 'telegram'
+  | 'microsoft'
+  | 'gitlab'
+  | 'twitter'
+  | 'steam';
 
 /** Login methods to offer in the modal. */
 export type ILoginMethods = Array<
@@ -331,6 +348,12 @@ export interface ISignAuthEntry {
 export interface ISocialConfigEntry {
   provider: string;
   displayName: string;
+  /** Login mechanism from /auth/validate: oauth2, steam, farcaster, or telegram. */
+  kind?: string;
+  /** Telegram bot username the on-page widget needs; empty for other providers. */
+  publicId?: string;
+  /** Telegram Mini App / in-app login is enabled for this project. */
+  miniApps?: boolean;
 }
 
 export interface AuthenticateApiResponse {
