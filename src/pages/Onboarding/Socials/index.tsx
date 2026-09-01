@@ -6,12 +6,12 @@ import { useLang } from '../../../hooks/useLang';
 import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
+import SocialProviderIcon from '../../../components/SocialProviderIcon';
 import { getState, setState, useAppStore } from '../../../store';
 import { apiGetUser, apiTelegramLogin } from '../../../utils/api';
-import { isBackgroundDark } from '../../../utils/helpers';
+import { getContrastColor } from '../../../utils/helpers';
 import { isAccessDenied, looksLikeAccessDenied } from '../../../utils/errors';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
-import handleSocialLogos from '../../../utils/socialLogos';
 import {
   ISocialSession,
   beginSocialLogin,
@@ -238,10 +238,16 @@ const SocialsOnboarding = () => {
           borderStyle: 'solid',
         }}
       >
-        {handleSocialLogos(
-          provider,
-          isBackgroundDark(appearance.background),
-          'large',
+        {provider ? (
+          <SocialProviderIcon
+            provider={provider}
+            fill={getContrastColor(appearance.background)}
+          />
+        ) : (
+          <CDNImage
+            name={CDNFiles.Globe}
+            props={{ fill: appearance.textColor }}
+          />
         )}
       </div>
 

@@ -1,33 +1,57 @@
+import type { ComponentType } from 'react';
+
+import { AppleLogo } from '../assets/AppleLogo';
+import {
+  FarcasterLogo,
+  GitLabLogo,
+  InstagramLogo,
+  KickLogo,
+  LinkedInLogo,
+  MicrosoftLogo,
+  SpotifyLogo,
+  SteamLogo,
+  TikTokLogo,
+  TwitchLogo,
+  WhatsAppLogo,
+  XLogo,
+} from '../assets/AdditionalSocialLogos';
+import { DiscordLogo } from '../assets/DiscordLogo';
+import { GitHubLogo } from '../assets/GitHubLogo';
+import { MetaLogo } from '../assets/MetaLogo';
+import { TelegramLogo } from '../assets/TelegramLogo';
+import CDNFiles from '../constants/cdnFiles';
 import { BLUX_API } from '../constants/consts';
 import { ILoginMethods, AuthenticateApiResponse } from '../types';
 
 // Display metadata for each social provider. The whole OAuth dance — building
 // the provider authorization URL, the (fixed) redirect URI, and the
 // code -> token exchange with the project's secret — now happens on the Blux
-// API, so the kit only needs each provider's label to render the button and
-// the result screen. Icons live in src/assets/socials.
+// API, so the kit only needs each provider's label and icon to render the
+// button and the result screen.
 type SocialProviderMeta = {
   displayName: string;
+  icon: CDNFiles | ComponentType<{ fill?: string }>;
 };
 
 export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
-  google: { displayName: 'Google' },
-  farcaster: { displayName: 'Farcaster' },
-  tiktok: { displayName: 'TikTok' },
-  linkedin: { displayName: 'LinkedIn' },
-  twitch: { displayName: 'Twitch' },
-  kick: { displayName: 'Kick' },
-  spotify: { displayName: 'Spotify' },
-  instagram: { displayName: 'Instagram' },
-  apple: { displayName: 'Apple' },
-  discord: { displayName: 'Discord' },
-  github: { displayName: 'GitHub' },
-  meta: { displayName: 'Meta' },
-  telegram: { displayName: 'Telegram' },
-  microsoft: { displayName: 'Microsoft' },
-  gitlab: { displayName: 'GitLab' },
-  twitter: { displayName: 'X' },
-  steam: { displayName: 'Steam' },
+  google: { displayName: 'Google', icon: CDNFiles.Google },
+  apple: { displayName: 'Apple', icon: AppleLogo },
+  discord: { displayName: 'Discord', icon: DiscordLogo },
+  telegram: { displayName: 'Telegram', icon: TelegramLogo },
+  meta: { displayName: 'Meta', icon: MetaLogo },
+  github: { displayName: 'GitHub', icon: GitHubLogo },
+  farcaster: { displayName: 'Farcaster', icon: FarcasterLogo },
+  tiktok: { displayName: 'TikTok', icon: TikTokLogo },
+  linkedin: { displayName: 'LinkedIn', icon: LinkedInLogo },
+  whatsapp: { displayName: 'WhatsApp', icon: WhatsAppLogo },
+  twitch: { displayName: 'Twitch', icon: TwitchLogo },
+  kick: { displayName: 'Kick', icon: KickLogo },
+  spotify: { displayName: 'Spotify', icon: SpotifyLogo },
+  instagram: { displayName: 'Instagram', icon: InstagramLogo },
+  microsoft: { displayName: 'Microsoft', icon: MicrosoftLogo },
+  gitlab: { displayName: 'GitLab', icon: GitLabLogo },
+  twitter: { displayName: 'X', icon: XLogo },
+  steam: { displayName: 'Steam', icon: SteamLogo },
 };
 
 const NON_SOCIAL_METHODS = ['wallet', 'sms', 'email', 'passkey'];
@@ -164,7 +188,7 @@ export const cancelActiveSocialSession = () => {
   if (activeSession?.popup && !activeSession.popup.closed) {
     try {
       activeSession.popup.close();
-    } catch (_) { }
+    } catch (_) {}
   }
 
   activeSession = null;
@@ -255,7 +279,9 @@ export const awaitSocialLogin = (session: ISocialSession): Promise<string> =>
 
     if (!session.popup) {
       reject(
-        new Error('BLUX: Popup was blocked. Please allow popups and try again.'),
+        new Error(
+          'BLUX: Popup was blocked. Please allow popups and try again.',
+        ),
       );
 
       return;
@@ -278,7 +304,7 @@ export const awaitSocialLogin = (session: ISocialSession): Promise<string> =>
 
       try {
         session.popup?.close();
-      } catch (_) { }
+      } catch (_) {}
     };
 
     const succeed = (jwt: string) => {

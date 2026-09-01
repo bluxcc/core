@@ -1,8 +1,8 @@
 import CardItem from '../../../components/CardItem';
+import SocialProviderIcon from '../../../components/SocialProviderIcon';
 import { useLang } from '../../../hooks/useLang';
 import { useAppStore } from '../../../store';
-import { isBackgroundDark } from '../../../utils/helpers';
-import handleSocialLogos from '../../../utils/socialLogos';
+import { getContrastColor } from '../../../utils/helpers';
 import { getSocialDisplayName } from '../../../utils/socialLogin';
 
 type SocialLoginButtonProps = {
@@ -19,10 +19,12 @@ const SocialLoginButton = ({ provider, onClick }: SocialLoginButtonProps) => {
       label={t('continueWith', {
         provider: getSocialDisplayName(provider),
       })}
-      startIcon={handleSocialLogos(
-        provider,
-        isBackgroundDark(appearance.background),
-      )}
+      startIcon={
+        <SocialProviderIcon
+          provider={provider}
+          fill={getContrastColor(appearance.background)}
+        />
+      }
       onClick={() => onClick(provider)}
     />
   );
