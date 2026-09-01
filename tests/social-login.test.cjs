@@ -136,6 +136,8 @@ test('Apple is recognized alongside Google with normalized configuration', () =>
   const api = createLoader()('src/utils/socialLogin');
   assert.equal(api.isSocialProvider(' Apple '), true);
   assert.equal(api.isSocialProvider('google'), true);
+  assert.equal(api.isSocialProvider('x'), true);
+  assert.equal(api.canonicalSocialName('x'), 'twitter');
   assert.equal(api.SOCIAL_PROVIDERS.apple.displayName, 'Apple');
   assert.deepEqual(
     Array.from(
@@ -337,8 +339,10 @@ for (const dark of [false, true]) {
         load('src/pages/Onboarding/Socials/OtherSocials').default,
       ),
     );
-    assert.match(others, /Continue with Google/);
+    assert.match(others, />Google</);
+    assert.doesNotMatch(others, /Continue with Google/);
     assert.doesNotMatch(others, /Continue with Apple/);
+    assert.doesNotMatch(others, />Apple</);
     const status = renderToStaticMarkup(
       React.createElement(load('src/pages/Onboarding/Socials').default),
     );
@@ -366,11 +370,14 @@ for (const [provider, displayName, brandColor] of [
   ['farcaster', 'Farcaster', '#855DCD'],
   ['tiktok', 'TikTok', '#25F4EE'],
   ['linkedin', 'LinkedIn', '#0A66C2'],
-  ['whatsapp', 'WhatsApp', '#25D366'],
   ['twitch', 'Twitch', '#9146FF'],
   ['kick', 'Kick', '#53FC18'],
   ['spotify', 'Spotify', '#1DB954'],
   ['instagram', 'Instagram', '#E4405F'],
+  ['microsoft', 'Microsoft', '#F25022'],
+  ['gitlab', 'GitLab', '#FC6D26'],
+  ['twitter', 'X', '#000000'],
+  ['steam', 'Steam', '#000000'],
 ]) {
   test(`${displayName} requires opt-in and backend enablement and deduplicates normalized names`, () => {
     const api = createLoader()('src/utils/socialLogin');
@@ -485,7 +492,13 @@ for (const [provider, displayName, brandColor] of [
         1,
       );
       const expectedColor =
-        provider === 'github' ? (dark ? '#FFFFFF' : '#000000') : brandColor;
+        provider === 'github' ||
+        provider === 'twitter' ||
+        provider === 'steam'
+          ? dark
+            ? '#FFFFFF'
+            : '#000000'
+          : brandColor;
       assert.match(picker, new RegExp(`fill="${expectedColor}"`));
       assert.doesNotMatch(picker, /<img/);
       const status = renderToStaticMarkup(
@@ -524,7 +537,6 @@ test('all social providers retain the configured display order', () => {
     'spotify',
     'kick',
     'twitch',
-    'whatsapp',
     'linkedin',
     'tiktok',
     'farcaster',
@@ -534,6 +546,10 @@ test('all social providers retain the configured display order', () => {
     'apple',
     'discord',
     'google',
+    'microsoft',
+    'gitlab',
+    'twitter',
+    'steam',
   ];
   const load = uiLoader({ methods, socials: methods });
   const html = renderToStaticMarkup(
@@ -541,7 +557,7 @@ test('all social providers retain the configured display order', () => {
   );
   assert.deepEqual(
     html.match(
-      /Continue with (Instagram|Spotify|Kick|Twitch|WhatsApp|LinkedIn|TikTok|Farcaster|GitHub|Telegram|Meta|Apple|Discord|Google)|Other socials/g,
+      /Continue with (Instagram|Spotify|Kick|Twitch|LinkedIn|TikTok|Farcaster|GitHub|Telegram|Meta|Apple|Discord|Google|Microsoft|GitLab|X|Steam)|Other socials/g,
     ),
     ['Continue with Instagram', 'Other socials'],
   );
@@ -550,24 +566,28 @@ test('all social providers retain the configured display order', () => {
       load('src/pages/Onboarding/Socials/OtherSocials').default,
     ),
   );
+  assert.doesNotMatch(others, /Continue with/);
   assert.deepEqual(
     others.match(
-      /Continue with (Instagram|Spotify|Kick|Twitch|WhatsApp|LinkedIn|TikTok|Farcaster|GitHub|Telegram|Meta|Apple|Discord|Google)/g,
+      />(Spotify|Kick|Twitch|LinkedIn|TikTok|Farcaster|GitHub|Telegram|Meta|Apple|Discord|Google|Microsoft|GitLab|X|Steam)</g,
     ),
     [
-      'Continue with Spotify',
-      'Continue with Kick',
-      'Continue with Twitch',
-      'Continue with WhatsApp',
-      'Continue with LinkedIn',
-      'Continue with TikTok',
-      'Continue with Farcaster',
-      'Continue with GitHub',
-      'Continue with Telegram',
-      'Continue with Meta',
-      'Continue with Apple',
-      'Continue with Discord',
-      'Continue with Google',
+      '>Spotify<',
+      '>Kick<',
+      '>Twitch<',
+      '>LinkedIn<',
+      '>TikTok<',
+      '>Farcaster<',
+      '>GitHub<',
+      '>Telegram<',
+      '>Meta<',
+      '>Apple<',
+      '>Discord<',
+      '>Google<',
+      '>Microsoft<',
+      '>GitLab<',
+      '>X<',
+      '>Steam<',
     ],
   );
 });

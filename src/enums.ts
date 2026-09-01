@@ -30,7 +30,7 @@ export enum StellarNetwork {
 export enum Route {
   ONBOARDING = 'ONBOARDING', // View for selecting a wallet
   PASSKEY_ONBOARDING = 'PASSKEY_ONBOARDING',
-  SOCIALS_ONBOARDING = 'SOCIALS_ONBOARDING', // Social (OAuth) login popup flow
+  SOCIALS_ONBOARDING = 'SOCIALS_ONBOARDING', // Social login waiting / widget / popup flow
   OTHER_SOCIALS = 'OTHER_SOCIALS', // Remaining social providers after the primary one
   WRONG_NETWORK = 'WRONG_NETWORK', // View for selecting a wallet
   WAITING = 'WAITING', // View for connection process

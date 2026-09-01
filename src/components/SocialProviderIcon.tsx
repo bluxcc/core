@@ -1,5 +1,5 @@
 import CDNImage from './CDNImage';
-import { SOCIAL_PROVIDERS } from '../utils/socialLogin';
+import { canonicalSocialName, SOCIAL_PROVIDERS } from '../utils/socialLogin';
 
 const SocialProviderIcon = ({
   provider,
@@ -8,7 +8,7 @@ const SocialProviderIcon = ({
   provider: string;
   fill?: string;
 }) => {
-  const icon = SOCIAL_PROVIDERS[provider]?.icon;
+  const icon = SOCIAL_PROVIDERS[canonicalSocialName(provider)]?.icon;
 
   if (!icon) return null;
 

@@ -40,7 +40,6 @@ export type ISocialProvider =
   | 'farcaster'
   | 'tiktok'
   | 'linkedin'
-  | 'whatsapp'
   | 'twitch'
   | 'kick'
   | 'spotify'

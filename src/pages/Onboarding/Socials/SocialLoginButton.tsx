@@ -8,17 +8,23 @@ import { getSocialDisplayName } from '../../../utils/socialLogin';
 type SocialLoginButtonProps = {
   provider: string;
   onClick: (provider: string) => void;
+  nameOnly?: boolean;
 };
 
-const SocialLoginButton = ({ provider, onClick }: SocialLoginButtonProps) => {
+const SocialLoginButton = ({
+  provider,
+  onClick,
+  nameOnly = false,
+}: SocialLoginButtonProps) => {
   const t = useLang();
   const appearance = useAppStore((store) => store.config.appearance);
+  const displayName = getSocialDisplayName(provider);
 
   return (
     <CardItem
-      label={t('continueWith', {
-        provider: getSocialDisplayName(provider),
-      })}
+      label={
+        nameOnly ? displayName : t('continueWith', { provider: displayName })
+      }
       startIcon={
         <SocialProviderIcon
           provider={provider}

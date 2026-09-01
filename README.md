@@ -79,8 +79,8 @@ Create a project through the [Blux Dashboard](https://dashboard.blux.cc/) to obt
 
 ### Social Login
 
-Add any supported provider to `loginMethods` to
-offer the corresponding **Continue with** buttons:
+Add any supported provider to `loginMethods`. The first enabled social is
+shown on the login screen; the rest appear on **Other socials**.
 
 ```tsx
 createConfig({
@@ -98,11 +98,14 @@ createConfig({
     'farcaster',
     'tiktok',
     'linkedin',
-    'whatsapp',
     'twitch',
     'kick',
     'spotify',
     'instagram',
+    'microsoft',
+    'gitlab',
+    'twitter',
+    'steam',
     'email',
     'passkey',
   ],
@@ -110,19 +113,18 @@ createConfig({
 ```
 
 Each provider is shown only when requested in `loginMethods` and returned in
-the app's enabled `socials` by `/auth/validate`. The SDK opens
+the app's enabled `socials` by `/auth/validate`. Most providers open
 `/auth/social/{provider}/start` on the Blux API (for example,
-`/auth/social/meta/start` or `/auth/social/github/start`) and uses the
-shared social-login success, retry, and cancellation flow.
+`/auth/social/meta/start` or `/auth/social/github/start`) and use the
+shared social-login success, retry, and cancellation flow. Telegram uses
+the on-page [Login Widget](https://core.telegram.org/widgets/login) instead
+of a popup, because the bot is bound to the site's domain; Mini Apps can
+complete login via WebApp init data when that is enabled for the project.
 
 The backend must support each provider and have the project's credentials
 and callbacks configured. Private keys, client secrets, and bot tokens never
-belong in this browser configuration. Discord uses its
-[OAuth2 flow](https://docs.discord.com/developers/topics/oauth2); Telegram
-supports [OpenID Connect login](https://core.telegram.org/bots/telegram-login#openid-connect),
-with allowed URLs and client credentials configured through BotFather.
-Token verification is the backend's responsibility; the SDK accepts only the
-resulting Blux session. This is website login, not Telegram Mini App authentication.
+belong in this browser configuration. Token verification is the backend's
+responsibility; the SDK accepts only the resulting Blux session.
 
 ## Customization
 

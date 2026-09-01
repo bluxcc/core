@@ -17,7 +17,6 @@ const InputCard = ({
   startIcon,
   onChange,
   onEnter,
-
   onSubmit,
   inputType = 'text',
   placeholder,

@@ -18,11 +18,10 @@ import {
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
 import {
-  beginSocialLogin,
   canonicalSocialName,
   getEnabledSocials,
   isSocialProvider,
-  isTelegramLogin,
+  startSocialLogin,
 } from '../../utils/socialLogin';
 import SocialLoginButton from './Socials/SocialLoginButton';
 
@@ -105,7 +104,7 @@ const Onboarding = () => {
         .then((connection) => {
           store.setWalletConnectClient(store.walletConnect!.client, connection);
         })
-        .catch((_e) => { });
+        .catch(() => {});
     }
   }, []);
 
@@ -151,16 +150,10 @@ const Onboarding = () => {
   };
 
   const handleConnectSocial = (provider: string) => {
-    // Telegram uses an on-page widget (the bot is bound to this site's domain),
-    // so it must not open the OAuth popup. Every other provider opens the
-    // popup synchronously here so the browser does not block it; the
-    // SocialsOnboarding page then waits for the result.
-    if (!isTelegramLogin(provider, store.apiResponse)) {
-      beginSocialLogin(provider, store.config.appId);
-    }
-
+    startSocialLogin(provider, store.config.appId, store.apiResponse);
     store.connectSocial(provider);
   };
+
   const handleRedirectToOnboardingPasskey = () => {
     store.setRoute(Route.PASSKEY_ONBOARDING);
   };
@@ -204,7 +197,7 @@ const Onboarding = () => {
         </div>
       )}
 
-      <div className="">
+      <div>
         {orderedLoginMethods.map((method, index) => {
           const socialProvider = normalizeMethod(method);
           const nextMethod = nextVisibleMethod(index);

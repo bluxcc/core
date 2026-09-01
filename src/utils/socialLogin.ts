@@ -12,7 +12,6 @@ import {
   SteamLogo,
   TikTokLogo,
   TwitchLogo,
-  WhatsAppLogo,
   XLogo,
 } from '../assets/AdditionalSocialLogos';
 import { DiscordLogo } from '../assets/DiscordLogo';
@@ -43,7 +42,6 @@ export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
   farcaster: { displayName: 'Farcaster', icon: FarcasterLogo },
   tiktok: { displayName: 'TikTok', icon: TikTokLogo },
   linkedin: { displayName: 'LinkedIn', icon: LinkedInLogo },
-  whatsapp: { displayName: 'WhatsApp', icon: WhatsAppLogo },
   twitch: { displayName: 'Twitch', icon: TwitchLogo },
   kick: { displayName: 'Kick', icon: KickLogo },
   spotify: { displayName: 'Spotify', icon: SpotifyLogo },
@@ -249,6 +247,21 @@ export const beginSocialLogin = (
   };
 
   return activeSession;
+};
+
+// Telegram's bot is bound to this site's domain, so it must not open the
+// OAuth popup. Every other provider opens the popup synchronously from the
+// click handler so the browser does not block it.
+export const startSocialLogin = (
+  provider: string,
+  appId: string,
+  apiResponse?: AuthenticateApiResponse,
+) => {
+  if (isTelegramLogin(provider, apiResponse)) {
+    return;
+  }
+
+  beginSocialLogin(provider, appId);
 };
 
 const POLL_INTERVAL_MS = 400;

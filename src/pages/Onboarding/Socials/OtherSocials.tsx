@@ -1,9 +1,8 @@
 import { useLang } from '../../../hooks/useLang';
 import { useAppStore } from '../../../store';
 import {
-  beginSocialLogin,
   getEnabledSocials,
-  isTelegramLogin,
+  startSocialLogin,
 } from '../../../utils/socialLogin';
 import SocialLoginButton from './SocialLoginButton';
 
@@ -18,10 +17,7 @@ const OtherSocials = () => {
   ).slice(1);
 
   const handleConnectSocial = (provider: string) => {
-    if (!isTelegramLogin(provider, store.apiResponse)) {
-      beginSocialLogin(provider, store.config.appId);
-    }
-
+    startSocialLogin(provider, store.config.appId, store.apiResponse);
     store.connectSocial(provider);
   };
 
@@ -42,6 +38,7 @@ const OtherSocials = () => {
           <SocialLoginButton
             key={provider}
             provider={provider}
+            nameOnly
             onClick={handleConnectSocial}
           />
         ))}
