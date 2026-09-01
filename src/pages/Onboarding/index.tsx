@@ -318,15 +318,15 @@ const Onboarding = () => {
         })}
       </div>
 
-      <footer
-        className={`bluxcc:w-full bluxcc:pt-4.25 bluxcc:text-center bluxcc:text-xs bluxcc:font-medium`}
+      <div
+        className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:pt-4.25 bluxcc:text-center bluxcc:text-xs bluxcc:font-medium"
       >
         <a
           aria-label="blux website"
           href="https://blux.cc"
           target="_blank"
           rel="noreferrer"
-          className="bluxcc:no-underline"
+          className="bluxcc:inline-block bluxcc:text-center bluxcc:no-underline"
           style={{
             color: appearance.textColor,
             fontFamily: appearance.fontFamily,
@@ -334,7 +334,7 @@ const Onboarding = () => {
         >
           {t('poweredByBlux')}
         </a>
-      </footer>
+      </div>
     </div>
   );
 };

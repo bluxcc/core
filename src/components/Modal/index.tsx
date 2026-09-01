@@ -19,10 +19,17 @@ interface ModalProps {
 }
 
 const syncOverlayToParent = (overlay: HTMLDivElement, host: HTMLElement) => {
-  const rect = host.getBoundingClientRect();
+  const { left, width } = host.getBoundingClientRect();
+  const nextLeft = `${left}px`;
+  const nextWidth = `${width}px`;
 
-  overlay.style.left = `${rect.left}px`;
-  overlay.style.width = `${rect.width}px`;
+  if (overlay.style.left !== nextLeft) {
+    overlay.style.left = nextLeft;
+  }
+
+  if (overlay.style.width !== nextWidth) {
+    overlay.style.width = nextWidth;
+  }
 };
 
 const Modal = ({
@@ -59,20 +66,51 @@ const Modal = ({
 
     sync();
 
+    // Keep left/width in sync during CSS animations and other layout shifts
+    // that move the parent without changing its own size (so ResizeObserver
+    // alone would miss them).
+    let frame = requestAnimationFrame(function tick() {
+      sync();
+      frame = requestAnimationFrame(tick);
+    });
+
     window.addEventListener('resize', sync);
     window.addEventListener('scroll', sync, true);
+    window.visualViewport?.addEventListener('resize', sync);
+    window.visualViewport?.addEventListener('scroll', sync);
 
     const observer = new ResizeObserver(sync);
-    observer.observe(mountElement);
+    for (
+      let node: HTMLElement | null = mountElement;
+      node;
+      node = node.parentElement
+    ) {
+      observer.observe(node);
+    }
 
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener('resize', sync);
       window.removeEventListener('scroll', sync, true);
+      window.visualViewport?.removeEventListener('resize', sync);
+      window.visualViewport?.removeEventListener('scroll', sync);
       observer.disconnect();
       overlay.style.left = '';
       overlay.style.width = '';
     };
   }, [isBodyMount, isOpen, mountElement]);
+
+  useLayoutEffect(() => {
+    const overlay = overlayRef.current;
+
+    if (!overlay) return;
+
+    overlay.style.pointerEvents = isPersistent ? 'none' : '';
+
+    return () => {
+      overlay.style.pointerEvents = '';
+    };
+  }, [isOpen, isPersistent]);
 
   useEffect(() => {
     if (isOpen && isMobile) {
@@ -140,6 +178,7 @@ const Modal = ({
               : 'bluxcc:relative bluxcc:w-90!'
             }`}
           style={{
+            pointerEvents: isPersistent ? 'auto' : undefined,
             height:
               typeof height === 'number'
                 ? `${isMobile ? height + 20 : height}px`

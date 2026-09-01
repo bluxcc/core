@@ -349,10 +349,13 @@ export const store = createStore<IStore>((set) => ({
   openModal: (route: Route) => {
     set((state) => ({
       ...state,
-      // A fresh onboarding session always starts on the main login screen,
-      // not the leftover "all wallets" list from a previous attempt.
+      // Drop a leftover "all wallets" view only when opening a closed
+      // modal. If onboarding is already showing, the user may have just
+      // opened that list — do not kick them back.
       showAllWallets:
-        route === Route.ONBOARDING ? false : state.showAllWallets,
+        route === Route.ONBOARDING && !state.modal.isOpen
+          ? false
+          : state.showAllWallets,
       modal: {
         ...state.modal,
         route,

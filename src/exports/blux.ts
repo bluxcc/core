@@ -27,6 +27,16 @@ export const _login = (isSilent: boolean) => {
     return Promise.resolve(store.user);
   }
 
+  // Interactive login is already in flight. Reuse it so a second login()
+  // cannot reset the onboarding view while the user is browsing wallets.
+  if (!isSilent && store.login?.promise && !store.login.isSilent) {
+    if (!store.modal.isOpen) {
+      store.openModal(Route.ONBOARDING);
+    }
+
+    return store.login.promise;
+  }
+
   let resolver: (value: IUser) => void;
   let rejecter: (reason: any) => void;
 
@@ -56,49 +66,21 @@ export const _login = (isSilent: boolean) => {
       })
       .catch(() => { })
       .finally(() => {
-        store.setLogin(undefined);
+        // A later interactive login() overwrites this slot. Do not clear it.
+        if (getState().login?.promise === promise) {
+          store.setLogin(undefined);
+        }
       });
 
     return promise;
   }
 
-  store.setShowAllWallets(false);
-
-  (async () => {
-    const current = getState();
-
-    if (current.login?.isSilent && current.login.promise) {
-      try {
-        await current.login.promise;
-      } catch { }
-
-      if (getState().user) {
-        // @ts-ignore
-        resolver(getState().user);
-
-        store.setLogin(undefined);
-
-        return;
-      }
-    }
-
-    const s2 = getState();
-
-    // Always land on the main onboarding screen. `showAllWallets` is a view
-    // flag on ONBOARDING, so a second login() (host retry, click bubbling
-    // through a parent Connect button, etc.) must not reopen on that list.
-    s2.setShowAllWallets(false);
-
-    if (!s2.modal.isOpen) {
-      s2.openModal(Route.ONBOARDING);
-    } else if (s2.modal.route === Route.ONBOARDING) {
-      s2.setRoute(Route.ONBOARDING);
-    }
-  })().catch((err) => {
-    rejecter(err);
-
-    store.setLogin(undefined);
-  });
+  // `showAllWallets` is left alone while the modal is already open so a
+  // second login() cannot yank the user off the all-wallets list. Closing
+  // the modal (or opening a fresh one) is what resets it.
+  if (!store.modal.isOpen) {
+    store.openModal(Route.ONBOARDING);
+  }
 
   return promise;
 };
