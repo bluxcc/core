@@ -4,6 +4,21 @@ import { useAppStore } from '../../../store';
 import { useLang } from '../../../hooks/useLang';
 import { validateInput } from '../../../utils/helpers';
 
+const splitRegionHint = (text: string) => {
+  const match = text.match(
+    /^(.*?)(\s*[\(\uFF08][^)\uFF09]+[\)\uFF09])\s*$/,
+  );
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    prefix: match[1].trimEnd(),
+    suffix: match[2].trim(),
+  };
+};
+
 type InputCardProps = {
   startIcon: React.ReactNode;
   onChange?: (value: string) => void;
@@ -55,6 +70,11 @@ const InputCard = ({
     }
   };
 
+  const defaultPlaceholder =
+    placeholder ?? (inputType === 'tel' ? t('phone') : t('email'));
+  const regionHint =
+    inputType === 'tel' ? splitRegionHint(defaultPlaceholder) : null;
+
   return (
     <div
       className={`bluxcc:flex bluxcc:transition-colors bluxcc:duration-300 bluxcc:h-14! bluxcc:w-full bluxcc:items-center bluxcc:py-2 bluxcc:pr-3 bluxcc:pl-2`}
@@ -88,33 +108,50 @@ const InputCard = ({
         style={{ cursor: 'text' }}
         className={`bluxcc:ml-4 bluxcc:relative bluxcc:flex bluxcc:h-full bluxcc:flex-1 bluxcc:items-center`}
       >
-        <input
-          id={`bluxcc-input-${inputType}`}
-          type={inputType === 'tel' ? 'tel' : inputType}
-          value={inputValue}
-          autoComplete={inputType === 'tel' ? 'tel' : 'off'}
-          inputMode={inputType === 'tel' ? 'tel' : undefined}
-          placeholder={
-            placeholder ?? (inputType === 'tel' ? t('phone') : t('email'))
-          }
-          onKeyDown={handleKeyDown}
-          onChange={handleInputChange}
-          className="bluxcc:mr-1 bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden
-              bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:text-base!"
-          style={{
-            color: appearance.textColor,
-            fontFamily: appearance.fontFamily,
-            ['--input-text-color' as any]:
-              appearance.textColor as React.CSSProperties,
-          }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => {
-            setIsFocused(false);
-            if (!validateInput(inputType, inputValue)) {
-              setIsValid(false);
-            }
-          }}
-        />
+        <div className="bluxcc:relative bluxcc:mr-1 bluxcc:h-full bluxcc:min-w-0 bluxcc:flex-1">
+          <input
+            id={`bluxcc-input-${inputType}`}
+            type={inputType === 'tel' ? 'tel' : inputType}
+            value={inputValue}
+            autoComplete={inputType === 'tel' ? 'tel' : 'off'}
+            inputMode={inputType === 'tel' ? 'tel' : undefined}
+            aria-label={regionHint ? defaultPlaceholder : undefined}
+            placeholder={regionHint ? undefined : defaultPlaceholder}
+            onKeyDown={handleKeyDown}
+            onChange={handleInputChange}
+            className="bluxcc:h-full bluxcc:w-full bluxcc:bg-transparent bluxcc:outline-hidden
+                bluxcc:focus:outline-hidden bluxcc:text-base bluxcc:placeholder:text-base!"
+            style={{
+              color: appearance.textColor,
+              fontFamily: appearance.fontFamily,
+              ['--input-text-color' as any]:
+                appearance.textColor as React.CSSProperties,
+            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              setIsFocused(false);
+              if (!validateInput(inputType, inputValue)) {
+                setIsValid(false);
+              }
+            }}
+          />
+          {regionHint && !inputValue && (
+            <span
+              aria-hidden
+              className="bluxcc:pointer-events-none bluxcc:absolute bluxcc:inset-0 bluxcc:flex bluxcc:items-center bluxcc:overflow-hidden"
+              style={{
+                color: appearance.textColor,
+                opacity: 0.4,
+                fontFamily: appearance.fontFamily,
+              }}
+            >
+              <span className="bluxcc:flex bluxcc:items-baseline bluxcc:gap-1 bluxcc:text-base bluxcc:whitespace-nowrap">
+                {regionHint.prefix}
+                <span className="bluxcc:text-xs">{regionHint.suffix}</span>
+              </span>
+            </span>
+          )}
+        </div>
         <div className="bluxcc:flex bluxcc:h-10 bluxcc:w-25 bluxcc:items-center bluxcc:justify-center bluxcc:bg-transparent">
           <button
             id={`bluxcc-button-${inputType}`}

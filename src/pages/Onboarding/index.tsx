@@ -25,6 +25,35 @@ import {
 } from '../../utils/socialLogin';
 import SocialLoginButton from './Socials/SocialLoginButton';
 
+const MAX_ONBOARDING_ROWS = 5;
+const MAX_PINNED_WALLETS = 2;
+const INLINE_WALLET_LIMIT = 3;
+
+// Cap the main list at 5 rows (passkey is a text link and does not count).
+// Extra wallets collapse into "All Stellar Wallets", dropping pinned wallets
+// first so email/SMS/social rows always keep their slots.
+const getWalletRowSplit = (walletCount: number, otherAuthRowCount: number) => {
+  const walletSlots = Math.max(0, MAX_ONBOARDING_ROWS - otherAuthRowCount);
+  const canShowAllInline =
+    walletCount > 0 &&
+    walletCount <= INLINE_WALLET_LIMIT &&
+    walletCount <= walletSlots;
+
+  if (canShowAllInline) {
+    return { pinnedCount: walletCount, showOverflow: false };
+  }
+
+  const pinnedCount = Math.min(
+    MAX_PINNED_WALLETS,
+    Math.max(0, walletSlots - 1),
+  );
+
+  return {
+    pinnedCount,
+    showOverflow: walletCount > pinnedCount,
+  };
+};
+
 const Onboarding = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
@@ -86,17 +115,31 @@ const Onboarding = () => {
   const nextVisibleMethod = (index: number) =>
     orderedLoginMethods.slice(index + 1).find((m) => !isSkippedMethod(m));
 
-  const hiddenWallets = useMemo(() => {
-    return wallets.length > 3 ? wallets.slice(2) : [];
-  }, [wallets]);
+  const { visibleWallets, hiddenWallets } = useMemo(() => {
+    const otherAuthRowCount =
+      (loginMethods.includes('email') ? 1 : 0) +
+      (isSmsEnabled ? 1 : 0) +
+      (primarySocial ? 1 : 0) +
+      (otherSocials.length > 0 ? 1 : 0);
+    const { pinnedCount, showOverflow } = getWalletRowSplit(
+      wallets.length,
+      otherAuthRowCount,
+    );
 
-  const visibleWallets = useMemo(() => {
-    return wallets.length <= 3
-      ? wallets
-      : store.showAllWallets
-        ? wallets.slice(2, wallets.length)
-        : wallets.slice(0, 2);
-  }, [wallets, store.showAllWallets]);
+    return {
+      visibleWallets: store.showAllWallets
+        ? wallets.slice(pinnedCount)
+        : wallets.slice(0, pinnedCount),
+      hiddenWallets: showOverflow ? wallets.slice(pinnedCount) : [],
+    };
+  }, [
+    wallets,
+    store.showAllWallets,
+    loginMethods,
+    isSmsEnabled,
+    primarySocial,
+    otherSocials.length,
+  ]);
 
   useEffect(() => {
     if (store.walletConnect) {
