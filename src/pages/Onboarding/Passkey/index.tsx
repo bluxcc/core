@@ -1,17 +1,8 @@
 import { useEffect, useState } from 'react';
 import { PasskeyFingerLogo } from '../../../assets';
-import {
-  apiGetUser,
-  apiPasskeyVerify,
-  apiPasskeyChallenge,
-} from '../../../utils/api';
-import { getState, setState, useAppStore } from '../../../store';
-import { base64UrlToBuffer, hexToRgba } from '../../../utils/helpers';
-import {
-  getStoredPasskeyCredentialId,
-  setStoredPasskeyCredentialId,
-  createPasskeyRegistrationHandle,
-} from '../../../utils/passkeyCredentials';
+import { getState, useAppStore } from '../../../store';
+import { hexToRgba } from '../../../utils/helpers';
+import { authenticateWithPasskey } from '../../../utils/passkey';
 import { useLang } from '../../../hooks/useLang';
 import Button from '../../../components/Button';
 import Divider from '../../../components/Divider';
@@ -19,6 +10,7 @@ import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import { Route } from '../../../enums';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
+import { hydrateUserFromJwt } from '../../../stellar/processes/hydrateUserFromJwt';
 
 type PasskeyStatus = 'loading' | 'failed' | 'success';
 
@@ -43,112 +35,6 @@ const textKeys: Record<
   },
 };
 
-export type PasskeyFlowResult =
-  | {
-    step: 'login';
-    credential: PublicKeyCredential;
-  }
-  | {
-    step: 'register';
-    credential: PublicKeyCredential;
-  };
-
-async function ensurePasskeySupport(): Promise<void> {
-  if (typeof window === 'undefined') {
-    throw new Error('BLUX: Passkeys require a browser environment.');
-  }
-
-  if (!('credentials' in navigator)) {
-    throw new Error('BLUX: WebAuthn is not supported in this browser.');
-  }
-
-  if (!('PublicKeyCredential' in window)) {
-    throw new Error('BLUX: Passkeys are not supported in this browser.');
-  }
-}
-
-async function runPasskeyCeremony(
-  challenge: string,
-  userId: string,
-  mode: 'login' | 'register',
-  credentialId?: string,
-): Promise<PasskeyFlowResult> {
-  await ensurePasskeySupport();
-
-  // The API issues the challenge as base64url. The authenticator must sign the
-  // raw bytes so the browser re-encodes them to the exact string the server
-  // stored and matches against clientDataJSON.challenge. (UTF-8-encoding the
-  // string instead would sign a different value and fail verification.)
-  const challengeBytes = base64UrlToBuffer(challenge);
-  const rpId = window.location.hostname;
-
-  // Returning user: we already know which credential to assert, and the
-  // challenge was bound to that credential's owner, so target it explicitly
-  // rather than relying on discoverable-credential selection.
-  if (mode === 'login' && credentialId) {
-    const assertion = await navigator.credentials.get({
-      publicKey: {
-        challenge: challengeBytes,
-        rpId,
-        userVerification: 'preferred',
-        timeout: 60000,
-        allowCredentials: [
-          {
-            id: base64UrlToBuffer(credentialId),
-            type: 'public-key',
-          },
-        ],
-      },
-    });
-
-    if (!(assertion instanceof PublicKeyCredential)) {
-      throw new Error('BLUX: Passkey login was not completed.');
-    }
-
-    return {
-      step: 'login',
-      credential: assertion,
-    };
-  }
-
-  // First-time user on this browser: enroll a new passkey.
-  const created = await navigator.credentials.create({
-    publicKey: {
-      challenge: challengeBytes,
-      rp: {
-        name: 'BLUX',
-        id: rpId,
-      },
-      user: {
-        id: new TextEncoder().encode(userId),
-        name: 'Blux User',
-        displayName: 'Blux User',
-      },
-      pubKeyCredParams: [
-        {
-          type: 'public-key',
-          alg: -7, // ES256
-        },
-      ],
-      authenticatorSelection: {
-        residentKey: 'required',
-        userVerification: 'preferred',
-      },
-      timeout: 60000,
-      attestation: 'none',
-    },
-  });
-
-  if (!(created instanceof PublicKeyCredential)) {
-    throw new Error('BLUX: Passkey registration was not completed.');
-  }
-
-  return {
-    step: 'register',
-    credential: created,
-  };
-}
-
 const PasskeyOnboardingPage = () => {
   const t = useLang();
   const store = useAppStore((store) => store);
@@ -157,81 +43,30 @@ const PasskeyOnboardingPage = () => {
 
   const passkeyLoginFlow = async () => {
     try {
-      const appId = store.config.appId;
-
-      // Identifier-first: a stored credential id means this browser already
-      // registered a passkey for this app, so log it in; otherwise enroll a new
-      // one. The challenge's auth_value must identify the right user row — the
-      // credential id for login, a fresh unique handle for registration.
-      const storedCredentialId = getStoredPasskeyCredentialId(appId);
-      const mode: 'login' | 'register' = storedCredentialId
-        ? 'login'
-        : 'register';
-      const challengeAuthValue =
-        storedCredentialId ?? createPasskeyRegistrationHandle();
-
-      const challenge = await apiPasskeyChallenge(appId, challengeAuthValue);
-
-      const passkeyResult = await runPasskeyCeremony(
-        challenge.challenge,
-        String(challenge.user_id),
-        mode,
-        storedCredentialId ?? undefined,
-      );
-
-      const jwt = await apiPasskeyVerify(appId, challenge, passkeyResult);
-
-      // Remember the real credential id so the next visit logs in instead of
-      // attempting to register again (which the server rejects as a duplicate).
-      setStoredPasskeyCredentialId(appId, passkeyResult.credential.id);
+      const jwt = await authenticateWithPasskey(store.config.appId);
 
       setStatus('success');
 
-      await completePasskeyAuthentication(jwt);
-    } catch (e: any) {
-      setStatus('failed');
-    }
-  };
-
-  const completePasskeyAuthentication = async (jwt: string) => {
-    // Hold the JWT in memory until terms are accepted (completeLoginProcess).
-    store.setAuth({
-      isAuthenticated: false,
-      JWT: jwt,
-    });
-
-    const result = await apiGetUser(jwt);
-
-    setState((state) => ({
-      ...state,
-      user: {
-        address: result.public_key,
-        walletPassphrase: '',
-        authMethod: result.auth_method || 'passkey',
-        authValue: result.auth_value,
-      },
-    }));
-
-    store.connectWalletSuccessful(
-      result.public_key,
-      store.stellar?.activeNetwork || '',
-    );
-
-    setTimeout(() => {
-      if (!getState().modal.isOpen) {
-        return;
-      }
-
-      store.setRoute(Route.SUCCESSFUL);
+      await hydrateUserFromJwt(jwt, 'passkey');
 
       setTimeout(() => {
         if (!getState().modal.isOpen) {
           return;
         }
 
-        continueLoginProcess();
-      }, 1000);
-    });
+        store.setRoute(Route.SUCCESSFUL);
+
+        setTimeout(() => {
+          if (!getState().modal.isOpen) {
+            return;
+          }
+
+          continueLoginProcess();
+        }, 1000);
+      });
+    } catch (e: any) {
+      setStatus('failed');
+    }
   };
 
   useEffect(() => {

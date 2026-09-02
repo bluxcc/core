@@ -115,7 +115,13 @@ export interface IConfig {
   explorer?: IExplorer;
   /** Persist the session across page reloads. Defaults to `false` and should remain `false` in most scenarios. */
   isPersistent?: boolean;
-  /** Show Blux's built-in signing/approval UIs. When `false`, signing happens headlessly. Defaults to `true`. */
+  /**
+   * Show Blux's built-in signing/approval UIs. When `false`, signing happens
+   * headlessly so you can render your own confirmation UI. Login is independent:
+   * `login()` still opens the Blux modal, while `loginEmail` / `loginSms` /
+   * `loginOAuth` / `loginPasskey` / `loginWallet(name)` never do (WalletConnect
+   * still uses the Blux QR). Defaults to `true`.
+   */
   showWalletUIs?: boolean;
   /** Login methods to offer. Defaults to `['wallet']`. `'sms'` is shown only when `/auth/validate` reports a paid plan. */
   loginMethods?: Array<ILoginMethods[number] | LooseString>;

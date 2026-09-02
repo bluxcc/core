@@ -56,6 +56,8 @@ const Swap = () => {
   // and for XLM also minus the reserve and fee buffer. Only the source side is
   // constrained; the destination is being received, not spent.
   const fromMax = useMaxAmount(store.selectAsset.swapFromAsset);
+  const activeNetwork =
+    store.stellar?.activeNetwork || store.config.defaultNetwork || '';
 
   const handleOpenAssets = (field: 'swapFrom' | 'swapTo') => {
     store.setSelectAsset({
@@ -95,9 +97,9 @@ const Swap = () => {
           .map((b) => `${b.asset_code}:${b.asset_issuer}`),
       );
 
-      const suggestion = getSuggestedAssets(
-        store.stellar?.activeNetwork || '',
-      ).find((s) => !isSameAsset(s, swapFromAsset));
+      const suggestion = getSuggestedAssets(activeNetwork).find(
+        (s) => !isSameAsset(s, swapFromAsset),
+      );
 
       if (suggestion) {
         // Use the real balance when the user already holds the suggestion.
@@ -119,7 +121,7 @@ const Swap = () => {
         });
       }
     }
-  }, []);
+  }, [activeNetwork]);
 
   const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();

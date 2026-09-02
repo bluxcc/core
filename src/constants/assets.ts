@@ -16,6 +16,8 @@ export const MAINNET_USDC = {
   assetType: 'credit_alphanum4',
 };
 
+// Circle's testnet USDC. Must not be confused with the mainnet issuer above —
+// that account is not Circle on Testnet, so swaps would have no path.
 export const TESTNET_USDC = {
   assetIssuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5',
   assetCode: 'USDC',
@@ -32,14 +34,60 @@ export const MAINNET_EURC = {
   assetType: 'credit_alphanum4',
 };
 
+const PUBLIC_NETWORK_IDS = new Set([
+  Networks.PUBLIC,
+  'mainnet',
+  'pubnet',
+  'stellar:pubnet',
+]);
+
+const TESTNET_NETWORK_IDS = new Set([
+  Networks.TESTNET,
+  'testnet',
+  'stellar:testnet',
+]);
+
+export const isPublicNetwork = (network: string): boolean =>
+  PUBLIC_NETWORK_IDS.has(network);
+
+export const isTestnetNetwork = (network: string): boolean =>
+  TESTNET_NETWORK_IDS.has(network);
+
+/** Circle USDC for the active network. Testnet uses Circle's test issuer. */
+export const usdcForNetwork = (network: string): IAsset =>
+  isPublicNetwork(network) ? MAINNET_USDC : TESTNET_USDC;
+
+/**
+ * Curated logos are pubnet-only. Map a well-known testnet (or same-network)
+ * issuer to the pubnet issuer whose icon we should reuse.
+ */
+export const pubnetLogoIssuer = (
+  assetCode: string,
+  assetIssuer: string,
+): string | undefined => {
+  if (
+    assetCode === 'USDC' &&
+    (assetIssuer === TESTNET_USDC.assetIssuer ||
+      assetIssuer === MAINNET_USDC.assetIssuer)
+  ) {
+    return MAINNET_USDC.assetIssuer;
+  }
+
+  if (assetCode === 'EURC' && assetIssuer === MAINNET_EURC.assetIssuer) {
+    return MAINNET_EURC.assetIssuer;
+  }
+
+  return undefined;
+};
+
 // Well-known assets offered as swap destinations even when the user does not
 // hold them yet (the swap adds a changeTrust operation in that case).
-export const getSuggestedAssets = (networkPassphrase: string): IAsset[] => {
-  if (networkPassphrase === Networks.PUBLIC) {
+export const getSuggestedAssets = (network: string): IAsset[] => {
+  if (isPublicNetwork(network)) {
     return [MAINNET_USDC, MAINNET_EURC];
   }
 
-  if (networkPassphrase === Networks.TESTNET) {
+  if (isTestnetNetwork(network)) {
     return [TESTNET_USDC];
   }
 

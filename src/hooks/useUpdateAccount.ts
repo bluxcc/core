@@ -4,6 +4,7 @@ import { Route } from '../enums';
 import { getState, useAppStore } from '../store';
 import useBalances from './useBalances';
 import { balanceToAsset } from '../utils/helpers';
+import { getSuggestedAssets } from '../constants/assets';
 import { balanceLineKey, getBalancesUsdValues } from '../utils/prices';
 
 const INTERVAL_MS = 20_000;
@@ -13,7 +14,8 @@ const useUpdateAccount = () => {
 
   const balancesResult = useBalances();
 
-  const activeNetwork = store.stellar?.activeNetwork || '';
+  const activeNetwork =
+    store.stellar?.activeNetwork || store.config.defaultNetwork || '';
   const isAuthenticated = store.authState.isAuthenticated;
   const userAddress = store.user?.address;
   const modalIsOpen = store.modal.isOpen;
@@ -45,6 +47,18 @@ const useUpdateAccount = () => {
 
       if (balances.length > 1) {
         swapToAsset = balanceToAsset(balances[1]);
+      } else {
+        // XLM-only accounts: pre-select network USDC (Circle testnet issuer
+        // on Testnet, Circle mainnet issuer on Pubnet) so Swap is not XLM→XLM.
+        const suggestion = getSuggestedAssets(activeNetwork).find(
+          (asset) =>
+            asset.assetCode !== swapToAsset.assetCode ||
+            asset.assetIssuer !== swapToAsset.assetIssuer,
+        );
+
+        if (suggestion) {
+          swapToAsset = suggestion;
+        }
       }
 
       store.setSelectAsset({

@@ -3,7 +3,7 @@ import { BluxAccessDeniedError } from './errors';
 import { bufferToBase64Url, fetcher } from './helpers';
 import { AuthenticateApiResponse, WalletProofType } from '../types';
 import { BLUX_API, BLUX_APP_ID_HEADER } from '../constants/consts';
-import { PasskeyFlowResult } from '../pages/Onboarding/Passkey';
+import type { PasskeyFlowResult } from './passkey';
 
 type ApiErrorResponse = {
   status: 400 | 401 | 403 | 404 | 409 | 429 | 500 | 502 | 503;

@@ -49,7 +49,9 @@ export const Provider = ({
 
   const shouldShowBackButton =
     (isWaiting && store.waitingStatus !== 'sendTransaction') ||
-    (route === Route.ONBOARDING && store.showAllWallets) ||
+    (route === Route.ONBOARDING &&
+      store.showAllWallets &&
+      !store.walletOnlyOnboarding) ||
     [
       Route.ACTIVITY,
       Route.SEND,
@@ -90,7 +92,7 @@ export const Provider = ({
       return;
     }
 
-    if (store.showAllWallets) {
+    if (store.showAllWallets && !store.walletOnlyOnboarding) {
       setShowAllWallets(false);
       return;
     }
@@ -191,13 +193,17 @@ export const Provider = ({
       if (store.signAuthEntry) {
         store.cleanUp('signAuthEntry');
 
-        store.signAuthEntry.rejecter('BLUX: User logged out during the process.');
+        store.signAuthEntry.rejecter(
+          'BLUX: User logged out during the process.',
+        );
       }
 
       if (store.sendTransaction) {
         store.cleanUp('sendTransaction');
 
-        store.sendTransaction.rejecter('BLUX: User logged out during the process.');
+        store.sendTransaction.rejecter(
+          'BLUX: User logged out during the process.',
+        );
       }
     }
   }, [store.authState]);

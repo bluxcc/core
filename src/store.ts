@@ -99,6 +99,11 @@ export interface IStoreProperties {
     };
   };
   showAllWallets: boolean;
+  /**
+   * When true, onboarding shows only the scrollable wallet list (no email /
+   * SMS / social / passkey). Set by loginWallet() with no wallet name.
+   */
+  walletOnlyOnboarding: boolean;
   waitingStatus: WaitingStatus;
   wallets: IWallet[];
   stellar?: IStellarConfig;
@@ -145,10 +150,11 @@ export interface IStoreMethods {
   connectWalletSuccessful: (publicKey: string, passphrase: string) => void;
   closeModal: () => void;
   logoutAction: () => void;
-  openModal: (route: Route) => void;
+  openModal: (route: Route, options?: { walletOnly?: boolean }) => void;
   setConfig: (config: IInternalConfig) => void;
   setIsReady: (isReady: boolean) => void;
   setShowAllWallets: (showAllWallets: boolean) => void;
+  setWalletOnlyOnboarding: (walletOnlyOnboarding: boolean) => void;
   setRoute: (route: Route) => void;
   setSendTransaction: (
     sendTransaction: ISendTransaction,
@@ -184,7 +190,9 @@ export interface IStoreMethods {
   setDetailsToken: (token: ICustomToken | undefined) => void;
   bumpAccountRefresh: () => void;
   setWalletConnectClient: (client: SignClient, connection: any) => void;
-  cleanUp: (method: 'sendTransaction' | 'signMessage' | 'signAuthEntry') => void;
+  cleanUp: (
+    method: 'sendTransaction' | 'signMessage' | 'signAuthEntry',
+  ) => void;
   setNetworkSyncDisabled: (isDisabled: boolean) => void;
   setAppearance: (newAppearance: Partial<IAppearance>) => void;
   setApiResponse: (res: AuthenticateApiResponse) => void;
@@ -196,7 +204,7 @@ export interface IStoreMethods {
   setAssetMeta: (assetMeta: AssetMetaMap) => void;
 }
 
-export interface IStore extends IStoreProperties, IStoreMethods { }
+export interface IStore extends IStoreProperties, IStoreMethods {}
 
 const emitter = new Emitter<BluxEventMap>();
 
@@ -244,6 +252,7 @@ export const store = createStore<IStore>((set) => ({
   wallets: [],
   waitingStatus: 'login',
   showAllWallets: false,
+  walletOnlyOnboarding: false,
   modal: {
     isOpen: false,
     route: Route.ONBOARDING,
@@ -279,6 +288,8 @@ export const store = createStore<IStore>((set) => ({
     set((state) => ({ ...state, authState: { ...state.authState, isReady } })),
   setShowAllWallets: (showAllWallets: boolean) =>
     set((state) => ({ ...state, showAllWallets })),
+  setWalletOnlyOnboarding: (walletOnlyOnboarding: boolean) =>
+    set((state) => ({ ...state, walletOnlyOnboarding })),
   setRoute: (route: Route) =>
     set((state) => ({ ...state, modal: { ...state.modal, route } })),
   setSendTransaction: (
@@ -346,7 +357,7 @@ export const store = createStore<IStore>((set) => ({
       modal: { ...state.modal, isOpen: true, route: Route.WAITING },
       waitingStatus: 'sendTransaction',
     })),
-  openModal: (route: Route) => {
+  openModal: (route: Route, options?: { walletOnly?: boolean }) => {
     set((state) => ({
       ...state,
       // Drop a leftover "all wallets" view only when opening a closed
@@ -356,6 +367,12 @@ export const store = createStore<IStore>((set) => ({
         route === Route.ONBOARDING && !state.modal.isOpen
           ? false
           : state.showAllWallets,
+      walletOnlyOnboarding:
+        options?.walletOnly !== undefined
+          ? options.walletOnly
+          : route === Route.ONBOARDING && !state.modal.isOpen
+            ? false
+            : state.walletOnlyOnboarding,
       modal: {
         ...state.modal,
         route,
@@ -391,6 +408,7 @@ export const store = createStore<IStore>((set) => ({
     set((current) => ({
       ...current,
       showAllWallets: false,
+      walletOnlyOnboarding: false,
       modal: { ...current.modal, isOpen: false },
     })),
   connectWallet: (walletName: string) => {
@@ -501,6 +519,7 @@ export const store = createStore<IStore>((set) => ({
       loginError: undefined,
       waitingStatus: 'login',
       showAllWallets: false,
+      walletOnlyOnboarding: false,
       selectAsset: { ...DEFAULT_SELECT_ASSET },
       detailsAsset: undefined,
       detailsToken: undefined,

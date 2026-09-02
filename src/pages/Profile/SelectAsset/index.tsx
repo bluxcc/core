@@ -51,7 +51,9 @@ const SelectAsset = () => {
   // swap destinations. The swap adds a changeTrust operation when needed.
   const suggestedAssets =
     store.selectAsset.field === 'swapTo'
-      ? getSuggestedAssets(store.stellar?.activeNetwork || '').filter(
+      ? getSuggestedAssets(
+          store.stellar?.activeNetwork || store.config.defaultNetwork || '',
+        ).filter(
           (suggested) =>
             !ownedAssets.some(
               (owned) =>

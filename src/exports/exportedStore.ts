@@ -13,6 +13,8 @@ export interface IExportedStore {
     isAuthenticated: boolean;
   };
   stellar?: IStellarConfig;
+  /** Installed wallets currently offered in the picker. */
+  wallets: Array<{ name: string }>;
 }
 
 export const exportedStore = createStore<IExportedStore>(() => ({
@@ -42,6 +44,7 @@ export const exportedStore = createStore<IExportedStore>(() => ({
     isAuthenticated: false,
   },
   stellar: undefined,
+  wallets: [],
 }));
 
 export const syncExportedStore = (mainStore: typeof store) => {
@@ -52,6 +55,7 @@ export const syncExportedStore = (mainStore: typeof store) => {
     config: mainState.config,
     stellar: mainState.stellar,
     authState: mainState.authState,
+    wallets: mainState.wallets.map((wallet) => ({ name: wallet.name })),
   });
 
   return mainStore.subscribe((state) => {
@@ -60,6 +64,7 @@ export const syncExportedStore = (mainStore: typeof store) => {
       config: state.config,
       stellar: state.stellar,
       authState: state.authState,
+      wallets: state.wallets.map((wallet) => ({ name: wallet.name })),
     });
   });
 };

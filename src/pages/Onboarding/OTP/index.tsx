@@ -10,8 +10,9 @@ import OTPInput from '../../../components/Input/OTPInput';
 import { getState, IUser, useAppStore } from '../../../store';
 import { isAccessDenied } from '../../../utils/errors';
 import { PhoneIcon } from '../../../assets';
-import { apiGetUser, apiSendOtp, apiVerifyOtp } from '../../../utils/api';
+import { apiSendOtp, apiVerifyOtp } from '../../../utils/api';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
+import { hydrateUserFromJwt } from '../../../stellar/processes/hydrateUserFromJwt';
 
 const OTP = () => {
   const t = useLang();
@@ -53,17 +54,10 @@ const OTP = () => {
       if (JWT) {
         setError(false);
 
-        // Hold the JWT in memory until terms are accepted (completeLoginProcess).
-        store.setAuth({
-          isAuthenticated: false,
+        await hydrateUserFromJwt(
           JWT,
-        });
-
-        const result = await apiGetUser(JWT);
-
-        store.connectWalletSuccessful(
-          result.public_key,
-          store.stellar?.activeNetwork || '',
+          isSms ? 'sms' : 'email',
+          store.user?.authValue,
         );
 
         setTimeout(() => {

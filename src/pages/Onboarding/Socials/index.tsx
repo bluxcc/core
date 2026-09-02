@@ -7,11 +7,12 @@ import Divider from '../../../components/Divider';
 import CDNFiles from '../../../constants/cdnFiles';
 import CDNImage from '../../../components/CDNImage';
 import SocialProviderIcon from '../../../components/SocialProviderIcon';
-import { getState, setState, useAppStore } from '../../../store';
-import { apiGetUser, apiTelegramLogin } from '../../../utils/api';
+import { getState, useAppStore } from '../../../store';
+import { apiTelegramLogin } from '../../../utils/api';
 import { getContrastColor } from '../../../utils/helpers';
 import { isAccessDenied, looksLikeAccessDenied } from '../../../utils/errors';
 import continueLoginProcess from '../../../stellar/processes/continueLoginProcess';
+import { hydrateUserFromJwt } from '../../../stellar/processes/hydrateUserFromJwt';
 import {
   ISocialSession,
   beginSocialLogin,
@@ -53,27 +54,7 @@ const SocialsOnboarding = () => {
       : '';
 
   const finishWithJwt = async (jwt: string) => {
-    store.setAuth({
-      isAuthenticated: false,
-      JWT: jwt,
-    });
-
-    const result = await apiGetUser(jwt);
-
-    setState((state) => ({
-      ...state,
-      user: {
-        address: result.public_key,
-        walletPassphrase: '',
-        authMethod: provider,
-        authValue: result.auth_value,
-      },
-    }));
-
-    store.connectWalletSuccessful(
-      result.public_key,
-      store.stellar?.activeNetwork || '',
-    );
+    await hydrateUserFromJwt(jwt, provider);
 
     setStatus('success');
 
@@ -209,8 +190,7 @@ const SocialsOnboarding = () => {
       store.config.loginMethods || [],
       store.apiResponse,
     );
-    const cameFromOtherSocials =
-      enabled.length > 1 && enabled[0] !== provider;
+    const cameFromOtherSocials = enabled.length > 1 && enabled[0] !== provider;
 
     store.setRoute(
       cameFromOtherSocials ? Route.OTHER_SOCIALS : Route.ONBOARDING,
@@ -253,8 +233,7 @@ const SocialsOnboarding = () => {
 
       <div className="bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
         <p className="bluxcc:text-xl" style={{ color: appearance.textColor }}>
-          {status === 'loading' &&
-            t('waitingFor', { walletName: displayName })}
+          {status === 'loading' && t('waitingFor', { walletName: displayName })}
           {status === 'success' && t('connectionSuccessfulTitle')}
           {status === 'failed' &&
             (isDenied ? t('accessDeniedTitle') : t('loginFailed'))}

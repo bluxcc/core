@@ -2,7 +2,7 @@ import { Horizon, Networks, StellarToml } from '@stellar/stellar-sdk';
 
 import { IAsset } from '../types';
 import { fetcher } from '../utils/helpers';
-import { MAINNET_USDC, TESTNET_USDC } from '../constants/assets';
+import { usdcForNetwork } from '../constants/assets';
 
 const POLL_MS = 3000;
 const POLL_TIMEOUT_MS = 15 * 60 * 1000;
@@ -78,8 +78,7 @@ const throwIfHttpError = (res: JsonRecord, fallback: string) => {
 export const isMoneygramNetwork = (network: string): boolean =>
   homeDomainFor(network) !== null;
 
-export const moneygramUsdc = (network: string): IAsset =>
-  network === Networks.PUBLIC ? MAINNET_USDC : TESTNET_USDC;
+export const moneygramUsdc = (network: string): IAsset => usdcForNetwork(network);
 
 export const startMoneygramWithdraw = async ({
   address,

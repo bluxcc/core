@@ -11,10 +11,7 @@ import CDNImage from '../../components/CDNImage';
 import handleLogos from '../../utils/walletLogos';
 import { Route, SupportedWallet } from '../../enums';
 import { PhoneIcon } from '../../assets';
-import {
-  getContrastColor,
-  isBackgroundDark,
-} from '../../utils/helpers';
+import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
 import {
@@ -60,7 +57,8 @@ const Onboarding = () => {
   const [emailValue, setEmailValue] = useState('');
   const [phoneValue, setPhoneValue] = useState('');
 
-  const { config, wallets, connectEmail, connectSms, setShowAllWallets } = store;
+  const { config, wallets, connectEmail, connectSms, setShowAllWallets } =
+    store;
   const { appearance } = config;
   const loginMethods = config.loginMethods || [];
 
@@ -241,182 +239,195 @@ const Onboarding = () => {
       )}
 
       <div>
-        {orderedLoginMethods.map((method, index) => {
-          const socialProvider = normalizeMethod(method);
-          const nextMethod = nextVisibleMethod(index);
-          const walletExists = orderedLoginMethods.includes('wallet');
-          // Rows that are rendered as non-wallet login options. A divider
-          // separates the wallet block from those rows on either side.
-          const isAuthRow = (m?: string) => {
-            const name = normalizeMethod(m);
+        {store.walletOnlyOnboarding ? (
+          <div className="bluxcc:max-h-81 bluxcc:space-y-2 bluxcc:overflow-y-auto bluxcc:overflowStyle">
+            {wallets.map((checkedWallet) => (
+              <CardItem
+                key={checkedWallet.name}
+                {...checkedWallet}
+                label={checkedWallet.name}
+                startIcon={handleLogos(
+                  checkedWallet.name,
+                  isBackgroundDark(appearance.background),
+                )}
+                onClick={() => handleConnect(checkedWallet)}
+              />
+            ))}
+          </div>
+        ) : (
+          orderedLoginMethods.map((method, index) => {
+            const socialProvider = normalizeMethod(method);
+            const nextMethod = nextVisibleMethod(index);
+            const walletExists = orderedLoginMethods.includes('wallet');
+            // Rows that are rendered as non-wallet login options. A divider
+            // separates the wallet block from those rows on either side.
+            const isAuthRow = (m?: string) => {
+              const name = normalizeMethod(m);
 
-            return (
-              name === 'email' ||
-              (name === 'sms' && isSmsEnabled) ||
-              (!!primarySocial && name === primarySocial)
-            );
-          };
-          const shouldRenderDivider =
-            (walletExists &&
-              !store.showAllWallets &&
-              method === 'wallet' &&
-              isAuthRow(nextMethod)) ||
-            (walletExists && isAuthRow(method) && nextMethod === 'wallet');
+              return (
+                name === 'email' ||
+                (name === 'sms' && isSmsEnabled) ||
+                (!!primarySocial && name === primarySocial)
+              );
+            };
+            const shouldRenderDivider =
+              (walletExists &&
+                !store.showAllWallets &&
+                method === 'wallet' &&
+                isAuthRow(nextMethod)) ||
+              (walletExists && isAuthRow(method) && nextMethod === 'wallet');
 
-          if (method === 'wallet') {
-            return (
-              <React.Fragment key="wallet">
-                <div className="bluxcc:max-h-81 bluxcc:space-y-2 bluxcc:overflow-y-auto bluxcc:overflowStyle">
-                  {visibleWallets.map((checkedWallet) => (
-                    <CardItem
-                      key={checkedWallet.name}
-                      {...checkedWallet}
-                      label={checkedWallet.name}
-                      startIcon={handleLogos(
-                        checkedWallet.name,
-                        isBackgroundDark(appearance.background),
-                      )}
-                      onClick={() => handleConnect(checkedWallet)}
-                    />
-                  ))}
+            if (method === 'wallet') {
+              return (
+                <React.Fragment key="wallet">
+                  <div className="bluxcc:max-h-81 bluxcc:space-y-2 bluxcc:overflow-y-auto bluxcc:overflowStyle">
+                    {visibleWallets.map((checkedWallet) => (
+                      <CardItem
+                        key={checkedWallet.name}
+                        {...checkedWallet}
+                        label={checkedWallet.name}
+                        startIcon={handleLogos(
+                          checkedWallet.name,
+                          isBackgroundDark(appearance.background),
+                        )}
+                        onClick={() => handleConnect(checkedWallet)}
+                      />
+                    ))}
 
-                  {hiddenWallets.length > 0 && !store.showAllWallets && (
-                    <CardItem
-                      endArrow
-                      label={t('allStellarWallets')}
-                      startIcon={
-                        <CDNImage
-                          name={CDNFiles.Stellar}
-                          props={{
-                            fill: getContrastColor(appearance.background),
-                          }}
-                        />
-                      }
-                      onClick={() => {
-                        setShowAllWallets(true);
-                      }}
-                    />
-                  )}
-                  {shouldRenderDivider && renderDivider()}
-                </div>
-              </React.Fragment>
-            );
-          }
-
-          if (
-            !store.showAllWallets &&
-            primarySocial &&
-            socialProvider === primarySocial
-          ) {
-            // Render only the first occurrence so duplicate entries in
-            // loginMethods don't produce duplicate buttons.
-            const firstIndex = orderedLoginMethods.findIndex(
-              (m) => normalizeMethod(m) === primarySocial,
-            );
-
-            if (firstIndex !== index) {
-              return null;
+                    {hiddenWallets.length > 0 && !store.showAllWallets && (
+                      <CardItem
+                        endArrow
+                        label={t('allStellarWallets')}
+                        startIcon={
+                          <CDNImage
+                            name={CDNFiles.Stellar}
+                            props={{
+                              fill: getContrastColor(appearance.background),
+                            }}
+                          />
+                        }
+                        onClick={() => {
+                          setShowAllWallets(true);
+                        }}
+                      />
+                    )}
+                    {shouldRenderDivider && renderDivider()}
+                  </div>
+                </React.Fragment>
+              );
             }
 
-            return (
-              <React.Fragment key={primarySocial}>
-                <div className="bluxcc:mb-2">
-                  <SocialLoginButton
-                    provider={primarySocial}
-                    onClick={handleConnectSocial}
-                  />
-                </div>
+            if (
+              !store.showAllWallets &&
+              primarySocial &&
+              socialProvider === primarySocial
+            ) {
+              // Render only the first occurrence so duplicate entries in
+              // loginMethods don't produce duplicate buttons.
+              const firstIndex = orderedLoginMethods.findIndex(
+                (m) => normalizeMethod(m) === primarySocial,
+              );
 
-                {otherSocials.length > 0 && (
+              if (firstIndex !== index) {
+                return null;
+              }
+
+              return (
+                <React.Fragment key={primarySocial}>
+                  <div className="bluxcc:mb-2">
+                    <SocialLoginButton
+                      provider={primarySocial}
+                      onClick={handleConnectSocial}
+                    />
+                  </div>
+
+                  {otherSocials.length > 0 && (
+                    <div className="bluxcc:mb-2">
+                      <CardItem
+                        endArrow
+                        label={t('otherSocials')}
+                        startIcon={
+                          <CDNImage
+                            name={CDNFiles.Globe}
+                            props={{ fill: appearance.textColor }}
+                          />
+                        }
+                        onClick={() => store.setRoute(Route.OTHER_SOCIALS)}
+                      />
+                    </div>
+                  )}
+
+                  {shouldRenderDivider && renderDivider()}
+                </React.Fragment>
+              );
+            }
+
+            if (!store.showAllWallets && method === 'email') {
+              return (
+                <React.Fragment key="email">
                   <div className="bluxcc:mb-2">
                     <CardItem
-                      endArrow
-                      label={t('otherSocials')}
+                      inputType="email"
+                      variant="input"
                       startIcon={
                         <CDNImage
-                          name={CDNFiles.Globe}
+                          name={CDNFiles.SmallEmail}
                           props={{ fill: appearance.textColor }}
                         />
                       }
-                      onClick={() => store.setRoute(Route.OTHER_SOCIALS)}
+                      onChange={(value: string) => setEmailValue(value)}
+                      onEnter={handleConnectEmail}
+                      onSubmit={handleConnectEmail}
                     />
                   </div>
-                )}
 
-                {shouldRenderDivider && renderDivider()}
-              </React.Fragment>
-            );
-          }
+                  {shouldRenderDivider && renderDivider()}
+                </React.Fragment>
+              );
+            }
 
-          if (!store.showAllWallets && method === 'email') {
-            return (
-              <React.Fragment key="email">
-                <div className="bluxcc:mb-2">
-                  <CardItem
-                    inputType="email"
-                    variant="input"
-                    startIcon={
-                      <CDNImage
-                        name={CDNFiles.SmallEmail}
-                        props={{ fill: appearance.textColor }}
-                      />
-                    }
-                    onChange={(value: string) => setEmailValue(value)}
-                    onEnter={handleConnectEmail}
-                    onSubmit={handleConnectEmail}
-                  />
-                </div>
+            if (!store.showAllWallets && method === 'sms' && isSmsEnabled) {
+              return (
+                <React.Fragment key="sms">
+                  <div className="bluxcc:mb-2">
+                    <CardItem
+                      inputType="tel"
+                      variant="input"
+                      placeholder={t('phone')}
+                      startIcon={<PhoneIcon fill={appearance.textColor} />}
+                      onChange={(value: string) => setPhoneValue(value)}
+                      onEnter={handleConnectSms}
+                      onSubmit={handleConnectSms}
+                    />
+                  </div>
 
-                {shouldRenderDivider && renderDivider()}
-              </React.Fragment>
-            );
-          }
+                  {shouldRenderDivider && renderDivider()}
+                </React.Fragment>
+              );
+            }
 
-          if (!store.showAllWallets && method === 'sms' && isSmsEnabled) {
-            return (
-              <React.Fragment key="sms">
-                <div className="bluxcc:mb-2">
-                  <CardItem
-                    inputType="tel"
-                    variant="input"
-                    placeholder={t('phone')}
-                    startIcon={
-                      <PhoneIcon fill={appearance.textColor} />
-                    }
-                    onChange={(value: string) => setPhoneValue(value)}
-                    onEnter={handleConnectSms}
-                    onSubmit={handleConnectSms}
-                  />
-                </div>
+            if (!store.showAllWallets && method === 'passkey') {
+              return (
+                <button
+                  key="passkey"
+                  onClick={handleRedirectToOnboardingPasskey}
+                  className="bluxcc:mt-6! bluxcc:w-full bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
+                  style={{
+                    color: appearance.accentColor,
+                    fontFamily: appearance.fontFamily,
+                  }}
+                >
+                  {t('logInWithPasskey')}
+                </button>
+              );
+            }
 
-                {shouldRenderDivider && renderDivider()}
-              </React.Fragment>
-            );
-          }
-
-          if (!store.showAllWallets && method === 'passkey') {
-            return (
-              <button
-                key="passkey"
-                onClick={handleRedirectToOnboardingPasskey}
-                className="bluxcc:mt-6! bluxcc:w-full bluxcc:bg-transparent bluxcc:flex bluxcc:h-4 bluxcc:items-center bluxcc:justify-center bluxcc:text-sm bluxcc:leading-7 bluxcc:font-medium"
-                style={{
-                  color: appearance.accentColor,
-                  fontFamily: appearance.fontFamily,
-                }}
-              >
-                {t('logInWithPasskey')}
-              </button>
-            );
-          }
-
-          return null;
-        })}
+            return null;
+          })
+        )}
       </div>
 
-      <div
-        className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:pt-4.25 bluxcc:text-center bluxcc:text-xs bluxcc:font-medium"
-      >
+      <div className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:pt-4.25 bluxcc:text-center bluxcc:text-xs bluxcc:font-medium">
         <a
           aria-label="blux website"
           href="https://blux.cc"

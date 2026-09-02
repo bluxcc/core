@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Networks } from '@stellar/stellar-sdk';
 
 import CDNImage from './CDNImage';
 import { useAppStore } from '../store';
 import CDNFiles from '../constants/cdnFiles';
+import { pubnetLogoIssuer } from '../constants/assets';
 import { assetMetaKey } from '../utils/preloadAssetMeta';
 
 // Uniform on-screen size (px) for every asset logo, matching the bundled
@@ -44,7 +46,25 @@ const AssetLogo = ({
   const icon = useMemo(() => {
     if (assetType === 'native' || !assetMeta) return undefined;
 
-    return assetMeta[assetMetaKey(activeNetwork, assetCode, assetIssuer)]?.icon;
+    const exact =
+      assetMeta[assetMetaKey(activeNetwork, assetCode, assetIssuer)]?.icon;
+
+    if (exact) return exact;
+
+    // The curated blob is pubnet-only. Reuse the same-issuer pubnet icon when
+    // present, then the well-known Circle USDC/EURC icon (testnet USDC has a
+    // different issuer than mainnet).
+    const pubnetSameIssuer =
+      assetMeta[assetMetaKey(Networks.PUBLIC, assetCode, assetIssuer)]?.icon;
+
+    if (pubnetSameIssuer) return pubnetSameIssuer;
+
+    const aliasIssuer = pubnetLogoIssuer(assetCode, assetIssuer);
+
+    if (!aliasIssuer || aliasIssuer === assetIssuer) return undefined;
+
+    return assetMeta[assetMetaKey(Networks.PUBLIC, assetCode, aliasIssuer)]
+      ?.icon;
   }, [assetMeta, activeNetwork, assetCode, assetIssuer, assetType]);
 
   // Reset the error flag when the resolved icon changes (e.g. the same component

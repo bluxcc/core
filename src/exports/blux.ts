@@ -1,106 +1,38 @@
 import { Route } from '../enums';
-import { getState, IUser } from '../store';
+import { getState } from '../store';
 import { BluxEvent } from '../utils/events';
-import { assertAppIsValid, waitForBluxReady } from '../utils/appValidity';
+import { assertAppIsValid } from '../utils/appValidity';
 import { BLUX_JWT_STORE } from '../constants/consts';
 import { ISendTransaction, ISignAuthEntry, ISignMessage } from '../types';
 import handleSignMessage from '../stellar/handleSignMessage';
 import getTransactionDetails from '../stellar/getTransactionDetails';
 import handleTransactionSigning from '../stellar/handleTransactionSigning';
-import {
-  checkRecentLogins,
-  clearRecentLoginConfig,
-} from '../utils/checkRecentLogins';
+import { clearRecentLoginConfig } from '../utils/checkRecentLogins';
 import handleSignAuthEntry from '../stellar/handleSignAuthEntry';
 import { getSigningWallet } from '../wallets';
+import {
+  login,
+  loginEmail,
+  loginOAuth,
+  loginPasskey,
+  loginSms,
+  loginWallet,
+} from './loginMethods';
 
-/**
- * Internal login driver. Prefer the public {@link login}.
- *
- * @param isSilent - When `true`, tries to restore a recent session without opening the modal.
- * @returns A promise that resolves to the authenticated user.
- */
-export const _login = (isSilent: boolean) => {
-  const store = getState();
-
-  if (store.user && store.user.address) {
-    return Promise.resolve(store.user);
-  }
-
-  // Interactive login is already in flight. Reuse it so a second login()
-  // cannot reset the onboarding view while the user is browsing wallets.
-  if (!isSilent && store.login?.promise && !store.login.isSilent) {
-    if (!store.modal.isOpen) {
-      store.openModal(Route.ONBOARDING);
-    }
-
-    return store.login.promise;
-  }
-
-  let resolver: (value: IUser) => void;
-  let rejecter: (reason: any) => void;
-
-  const promise = new Promise<IUser>((res, rej) => {
-    resolver = res;
-    rejecter = rej;
-  });
-
-  store.setLogin({
-    promise,
-    isSilent,
-    // @ts-ignore
-    resolver,
-    // @ts-ignore
-    rejecter,
-  });
-
-  if (isSilent) {
-    checkRecentLogins()
-      .then(() => {
-        const { user } = getState();
-
-        if (user) {
-          resolver(user);
-        } else {
-        }
-      })
-      .catch(() => { })
-      .finally(() => {
-        // A later interactive login() overwrites this slot. Do not clear it.
-        if (getState().login?.promise === promise) {
-          store.setLogin(undefined);
-        }
-      });
-
-    return promise;
-  }
-
-  // `showAllWallets` is left alone while the modal is already open so a
-  // second login() cannot yank the user off the all-wallets list. Closing
-  // the modal (or opening a fresh one) is what resets it.
-  if (!store.modal.isOpen) {
-    store.openModal(Route.ONBOARDING);
-  }
-
-  return promise;
-};
-
-/**
- * Opens the Blux modal so the user can connect a wallet or sign in, resolving
- * once authenticated. Waits for the SDK to finish initializing first.
- *
- * @returns The authenticated user.
- */
-export const login = async (): Promise<IUser> => {
-  await waitForBluxReady();
-
-  // A bad appId (missing, wrong, deleted, used from a disallowed origin, or an
-  // unreachable Blux API) disables login entirely — throw before the onboarding
-  // modal can ever open.
-  assertAppIsValid();
-
-  return _login(false);
-};
+export { _login } from './loginMethods';
+export {
+  login,
+  loginEmail,
+  loginOAuth,
+  loginPasskey,
+  loginSms,
+  loginWallet,
+} from './loginMethods';
+export type {
+  LoginCodeApi,
+  LoginCodeFn,
+  LoginOAuthOptions,
+} from './loginMethods';
 
 /** Logs the user out, clearing the stored session/JWT and emitting a logged-out event. */
 const logout = () => {
@@ -402,6 +334,11 @@ export const signAuthEntry = (
  */
 export const blux = {
   login,
+  loginEmail,
+  loginSms,
+  loginOAuth,
+  loginPasskey,
+  loginWallet,
   logout,
   fundMe,
   profile,
