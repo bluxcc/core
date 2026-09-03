@@ -117,6 +117,18 @@ const translations: Translations = {
     ko: '잔액',
     tr: 'Bakiyeler',
   },
+  onOffRamp: {
+    en: 'On/Off Ramp',
+    es: 'Comprar / Vender',
+    pt: 'Comprar / Vender',
+    fr: 'Acheter / Vendre',
+    de: 'Kaufen / Verkaufen',
+    ru: 'Ввод / вывод',
+    zh: '入金 / 出金',
+    ja: '入金 / 出金',
+    ko: '입금 / 출금',
+    tr: 'Para yatır / çek',
+  },
   whatIsBlux: {
     en: 'What is Blux',
     es: 'Qué es Blux',

@@ -1,8 +1,14 @@
-export const CurrencyExchange = ({ fill = '#0C1083' }: { fill?: string }) => {
+export const CurrencyExchange = ({
+  fill = '#0C1083',
+  size = 40,
+}: {
+  fill?: string;
+  size?: number;
+}) => {
   return (
     <svg
-      width="40"
-      height="40"
+      width={size}
+      height={size}
       viewBox="0 -960 960 960"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

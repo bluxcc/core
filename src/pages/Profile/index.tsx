@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Route } from '../../enums';
+import { CurrencyExchange } from '../../assets';
 import { useAppStore } from '../../store';
 import { useLang } from '../../hooks/useLang';
 import Divider from '../../components/Divider';
@@ -179,9 +180,9 @@ const Profile = () => {
           onClick={handleOpenSwap}
         />
       </div>
-      <div className="bluxcc:mt-4 bluxcc:w-full bluxcc:space-y-2">
+      <div className="bluxcc:mt-4 bluxcc:flex bluxcc:space-x-3">
         <CardItem
-          endArrow
+          size="small"
           label={t('balances')}
           startIcon={
             <CDNImage
@@ -195,7 +196,7 @@ const Profile = () => {
         />
 
         <CardItem
-          endArrow
+          size="small"
           label={t('activity')}
           startIcon={
             <CDNImage
@@ -205,6 +206,17 @@ const Profile = () => {
           }
           onClick={() => {
             setRoute(Route.ACTIVITY);
+          }}
+        />
+
+        <CardItem
+          size="small"
+          label={t('onOffRamp')}
+          startIcon={
+            <CurrencyExchange fill={appearance.textColor} size={24} />
+          }
+          onClick={() => {
+            setRoute(Route.FUND_ME);
           }}
         />
       </div>

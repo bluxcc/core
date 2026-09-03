@@ -64,6 +64,7 @@ export const Provider = ({
       Route.ABOUT,
       Route.ADD_TOKEN,
       Route.WALLET_CONNECT,
+      Route.FUND_ME,
       Route.FUND_ME_CRYPTO,
       Route.OTHER_SOCIALS,
     ].includes(route);
@@ -104,6 +105,7 @@ export const Provider = ({
         Route.BALANCES,
         Route.RECEIVE,
         Route.SWAP,
+        Route.FUND_ME,
       ].includes(route)
     ) {
       store.setRoute(Route.PROFILE);
