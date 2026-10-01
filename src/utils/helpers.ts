@@ -20,6 +20,8 @@ import {
   DEFAULT_NETWORKS_TRANSPORTS,
 } from '../constants/networkDetails';
 
+export { getContrastColor, hexToRgba, isBackgroundDark } from './colors';
+
 export const bufferToBase64Url = (buf: ArrayBuffer) => {
   const bytes = new Uint8Array(buf);
 
@@ -354,17 +356,6 @@ export const getActiveNetworkTitle = (activeNetwork: string): string => {
   return networkName;
 };
 
-export const getContrastColor = (bgColor: string): string => {
-  const hex = bgColor.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-  return luminance > 0.5 ? '#000000' : '#FFFFFF';
-};
-
 export const getExplorerUrl = (
   networkPassphrase: string,
   explorerProvider: IExplorer,
@@ -532,25 +523,6 @@ export const handleLoadWallets = (
     }
   });
 
-export const hexToRgba = (hex: string, alpha: number = 1) => {
-  hex = hex.replace(/^#/, '');
-  let r: number, g: number, b: number;
-
-  if (hex.length === 3) {
-    r = parseInt(hex[0] + hex[0], 16);
-    g = parseInt(hex[1] + hex[1], 16);
-    b = parseInt(hex[2] + hex[2], 16);
-  } else if (hex.length === 6 || hex.length === 8) {
-    r = parseInt(hex.substring(0, 2), 16);
-    g = parseInt(hex.substring(2, 4), 16);
-    b = parseInt(hex.substring(4, 6), 16);
-  } else {
-    throw new Error(`BLUX: Invalid hex color: ${hex}`);
-  }
-
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
 export const humanizeAmount = (
   amount: number | string,
   big: boolean = false,
@@ -601,17 +573,6 @@ export const initializeRabetMobile = () => {
   };
 
   window.addEventListener('message', handleMessage);
-};
-
-export const isBackgroundDark = (bgColor: string): boolean => {
-  const hex = bgColor.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-  return luminance > 0.5 ? false : true;
 };
 
 export const loadWallets = async (

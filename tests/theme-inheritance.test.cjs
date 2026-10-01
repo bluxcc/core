@@ -332,6 +332,25 @@ test('every adapter resolves both light and dark semantic values', () => {
   }
 });
 
+test('inherited computed colors are safe for component alpha styles', () => {
+  const load = createLoader();
+  const themeApi = load('src/utils/themeInheritance');
+  const colorApi = load('src/utils/colors');
+  const env = createEnvironment({
+    variables: { '--primary': 'rgb(12, 16, 131)' },
+  });
+  const appearance = themeApi.resolveThemeAppearance(
+    { inherit: 'shadcn' },
+    env.mount,
+  );
+
+  assert.doesNotThrow(() => colorApi.hexToRgba(appearance.accentColor, 0.15));
+  assert.equal(
+    colorApi.hexToRgba(appearance.accentColor, 0.15),
+    'rgba(12, 16, 131, 0.15)',
+  );
+});
+
 test('values are resolved in the active scope before overrides are applied', () => {
   const api = createLoader()('src/utils/themeInheritance');
   const env = createEnvironment({

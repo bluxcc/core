@@ -2,7 +2,7 @@ import { Route } from '../enums';
 import { getState } from '../store';
 import { BluxEvent } from '../utils/events';
 import { assertAppIsValid } from '../utils/appValidity';
-import { BLUX_JWT_STORE } from '../constants/consts';
+import { clearLegacyJwtStorage } from '../utils/sessionJwt';
 import { ISendTransaction, ISignAuthEntry, ISignMessage } from '../types';
 import handleSignMessage from '../stellar/handleSignMessage';
 import getTransactionDetails from '../stellar/getTransactionDetails';
@@ -40,7 +40,7 @@ const logout = () => {
 
   logoutAction();
 
-  localStorage.removeItem(BLUX_JWT_STORE);
+  clearLegacyJwtStorage();
   clearRecentLoginConfig();
 
   getState().emitter.emit(BluxEvent.LoggedOut, undefined);

@@ -10,6 +10,7 @@ import { initializeTrezor } from '../utils/initializeTrezor';
 import { initializeWalletConnect } from '../utils/initializeWalletConnect';
 import { getEnabledSocials } from '../utils/socialLogin';
 import { configureThemeInheritance } from '../utils/themeInheritance';
+import { resolveConfigDefaults } from '../utils/configDefaults';
 import {
   getNetworkRpc,
   handleLoadWallets,
@@ -94,7 +95,10 @@ const init = (element: HTMLElement = document.body) => {
  * @param element - DOM element to mount the Blux UI into. Defaults to `document.body`.
  *   When set, the modal is centered horizontally in this element and vertically
  *   in the viewport, so a sidebar layout can offset it without it scrolling away.
- * @throws If `config` is empty or missing `appId`, `appName`, or `networks`, or if the network options are invalid.
+ * When omitted, `appName` defaults to `'App'`. If neither `networks` nor
+ * `defaultNetwork` is supplied, Blux uses Mainnet as the only network.
+ *
+ * @throws If `config` is empty or missing `appId`, or if the network options are invalid.
  */
 export function createConfig(config: IConfig, element?: HTMLElement) {
   isInitiated = true;
@@ -109,17 +113,7 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     );
   }
 
-  if (!config.appName) {
-    throw new Error(
-      'BLUX: createConfig config object must have the appName property.',
-    );
-  }
-
-  if (!config.networks) {
-    throw new Error(
-      'BLUX: createConfig config object must have the networks property.',
-    );
-  }
+  const resolvedConfig = resolveConfigDefaults(config);
 
   const SUPPORTED_LANGS = [
     'en',
@@ -176,10 +170,12 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   const conf: IInternalConfig = {
     ...config,
+    appName: resolvedConfig.appName,
+    networks: resolvedConfig.networks,
     excludeWallets,
     orderWallets,
     appearance: resolvedAppearance,
-    defaultNetwork: '',
+    defaultNetwork: resolvedConfig.defaultNetwork,
     promptOnWrongNetwork,
     lang: lang as IInternalConfig['lang'],
     explorer: config.explorer || 'stellarchain',
@@ -189,13 +185,7 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     ...(config?.walletConnect ? { walletConnect: config.walletConnect } : {}),
   };
 
-  validateNetworkOptions(
-    config.networks,
-    config.defaultNetwork,
-    config.transports,
-  );
-
-  conf.defaultNetwork = config.defaultNetwork ?? config.networks[0];
+  validateNetworkOptions(conf.networks, conf.defaultNetwork, config.transports);
 
   const { horizon, soroban } = getNetworkRpc(
     conf.defaultNetwork,
@@ -241,11 +231,11 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   });
 
   if (config.walletConnect) {
-    initializeWalletConnect(config.walletConnect, config.appName);
+    initializeWalletConnect(config.walletConnect, conf.appName);
   }
 
   if (config.trezor) {
-    initializeTrezor(config.trezor, config.appName);
+    initializeTrezor(config.trezor, conf.appName);
   }
 
   authenticateAppId(config.appId).then((result) => {

@@ -143,11 +143,11 @@ export type IAppearanceConfig = Partial<IAppearance> & {
 export interface IConfig {
   /** Your Blux app id, from the Blux dashboard. Required for email/SMS/passkey/social login. */
   appId: string;
-  /** Display name of your app, shown in wallet prompts and UI. */
-  appName: string;
-  /** Network passphrases your app supports (e.g. from {@link networks}). */
-  networks: string[];
-  /** Which of `networks` to start on. Defaults to the first entry. */
+  /** Display name of your app, shown in wallet prompts and UI. Defaults to `'App'`. */
+  appName?: string;
+  /** Network passphrases your app supports. Defaults to `defaultNetwork`, or Mainnet when both are omitted. */
+  networks?: string[];
+  /** Which network to start on. Defaults to the first configured network, or Mainnet when no networks are configured. */
   defaultNetwork?: string;
   /** Theme overrides and optional semantic host-theme inheritance for the Blux UI. */
   appearance?: IAppearanceConfig;
@@ -182,6 +182,8 @@ export interface IConfig {
 }
 
 export interface IInternalConfig extends IConfig {
+  appName: string;
+  networks: string[];
   explorer: IExplorer;
   appearance: IAppearance;
   loginMethods: ILoginMethods | string[];

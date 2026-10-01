@@ -2,23 +2,77 @@ import { IWallet } from '../types';
 import { BluxEvent } from './events';
 import { getWalletNetwork } from './helpers';
 import { getState, setState } from '../store';
-import { apiGetUser } from './api';
+import { clearLegacyJwtStorage } from './sessionJwt';
 
 const RECENT_LOGIN_CONFIG = '__BLUX__RECENT_LOGIN_CONFIG';
 const RECENT_LOGIN_WINDOW_MS_WALLETS = 1000 * 60 * 40; // 40 minutes
-const RECENT_LOGIN_WINDOW_MS_WEB2 = 1000 * 60 * 60 * 6; // 6 hours
 
 type StoredRecentLogin = {
   authMethod: string;
   authValue: string;
   timestamp: number;
-  jwt?: string;
+};
+
+const writeRecentLogin = (value: StoredRecentLogin) => {
+  localStorage.setItem(RECENT_LOGIN_CONFIG, JSON.stringify(value));
+};
+
+/**
+ * Drops bearer tokens left in recent-login storage by older SDK versions.
+ * Wallet reconnect records are kept, without the token. Email, social, and
+ * passkey records are removed: they only existed to replay that token.
+ */
+export const scrubStoredBearerTokens = (): void => {
+  clearLegacyJwtStorage();
+
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const rawValue = localStorage.getItem(RECENT_LOGIN_CONFIG);
+
+  if (!rawValue) {
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as Partial<StoredRecentLogin> & {
+      jwt?: unknown;
+    };
+
+    if (parsed.authMethod !== 'wallet') {
+      localStorage.removeItem(RECENT_LOGIN_CONFIG);
+      return;
+    }
+
+    if (!('jwt' in parsed)) {
+      return;
+    }
+
+    if (
+      typeof parsed.authValue !== 'string' ||
+      typeof parsed.timestamp !== 'number'
+    ) {
+      localStorage.removeItem(RECENT_LOGIN_CONFIG);
+      return;
+    }
+
+    writeRecentLogin({
+      authMethod: 'wallet',
+      authValue: parsed.authValue,
+      timestamp: parsed.timestamp,
+    });
+  } catch {
+    localStorage.removeItem(RECENT_LOGIN_CONFIG);
+  }
 };
 
 const getStoredRecentLogin = (): StoredRecentLogin | null => {
   if (typeof window === 'undefined') {
     return null;
   }
+
+  scrubStoredBearerTokens();
 
   const rawValue = localStorage.getItem(RECENT_LOGIN_CONFIG);
 
@@ -30,14 +84,18 @@ const getStoredRecentLogin = (): StoredRecentLogin | null => {
     const parsed = JSON.parse(rawValue) as Partial<StoredRecentLogin>;
 
     if (
-      typeof parsed.authMethod !== 'string' ||
+      parsed.authMethod !== 'wallet' ||
       typeof parsed.authValue !== 'string' ||
       typeof parsed.timestamp !== 'number'
     ) {
       return null;
     }
 
-    return parsed as StoredRecentLogin;
+    return {
+      authMethod: parsed.authMethod,
+      authValue: parsed.authValue,
+      timestamp: parsed.timestamp,
+    };
   } catch {
     return null;
   }
@@ -50,21 +108,16 @@ export const setRecentLoginConfig = (
   authMethod: string,
   authValue: string,
   timestamp = Date.now(),
-  jwt: string,
 ) => {
-  if (typeof window === 'undefined') {
+  if (typeof window === 'undefined' || authMethod !== 'wallet') {
     return;
   }
 
-  localStorage.setItem(
-    RECENT_LOGIN_CONFIG,
-    JSON.stringify({
-      authMethod,
-      authValue,
-      timestamp,
-      jwt,
-    } satisfies StoredRecentLogin),
-  );
+  writeRecentLogin({
+    authMethod,
+    authValue,
+    timestamp,
+  });
 };
 
 export const clearRecentLoginConfig = () => {
@@ -84,58 +137,8 @@ export const checkRecentLogins = async (): Promise<boolean> => {
 
   const recentLogin = getStoredRecentLogin();
 
-  if (
-    !recentLogin ||
-    !isRecentLogin(recentLogin.timestamp, RECENT_LOGIN_WINDOW_MS_WEB2)
-  ) {
-    return false;
-  }
-
-  // Any JWT-backed login (email, social providers, passkey) restores the
-  // same way: the JWT proves the session, the API returns the user.
-  if (recentLogin.authMethod !== 'wallet' && recentLogin.jwt) {
-    try {
-      const user = await apiGetUser(recentLogin.jwt);
-
-      setState((state) => ({
-        ...state,
-        user: {
-          address: user.public_key,
-          walletPassphrase: '',
-          authMethod: user.auth_method || recentLogin.authMethod,
-          authValue: user.auth_value,
-        },
-      }));
-
-      store.connectWalletSuccessful(
-        user.public_key,
-        store.stellar?.activeNetwork || '',
-      );
-      store.setIsAuthenticated(true);
-      store.setAuth({
-        isAuthenticated: true,
-        JWT: recentLogin.jwt,
-      });
-
-      const userStore = getState().user;
-
-      if (userStore) {
-        getState().emitter.emit(BluxEvent.LoggedIn, { user: userStore });
-      }
-
-      setRecentLoginConfig(
-        recentLogin.authMethod,
-        user.auth_value || '',
-        Date.now(),
-        recentLogin.jwt,
-      );
-
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
+  // Only wallet reconnect is restored. Email, social, and passkey sessions
+  // are bearer-token sessions and are not written to storage.
   if (
     !recentLogin ||
     !isRecentLogin(recentLogin.timestamp, RECENT_LOGIN_WINDOW_MS_WALLETS)
@@ -183,7 +186,7 @@ export const checkRecentLogins = async (): Promise<boolean> => {
       getState().emitter.emit(BluxEvent.LoggedIn, { user });
     }
 
-    setRecentLoginConfig('wallet', wallet.name, Date.now(), '');
+    setRecentLoginConfig('wallet', wallet.name, Date.now());
 
     return true;
   } catch (cause) {

@@ -56,7 +56,7 @@ export const getModalContent = (): Record<string, IRoute> => {
       Component: <Failed />,
     },
     [Route.SEND_TRANSACTION]: {
-      title: 'confirmation',
+      title: 'signTransaction',
       Component: <SendTransaction />,
     },
     [Route.SEND]: {

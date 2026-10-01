@@ -2,7 +2,7 @@ import { Route } from '../../enums';
 import { getState } from '../../store';
 import loginResolver from './loginResolver';
 import { BluxEvent } from '../../utils/events';
-import { BLUX_JWT_STORE } from '../../constants/consts';
+import { clearLegacyJwtStorage } from '../../utils/sessionJwt';
 import {
   clearRecentLoginConfig,
   setRecentLoginConfig,
@@ -12,19 +12,22 @@ export const completeLoginProcess = () => {
   const state = getState();
   const jwt = state.auth?.JWT;
 
-  // Persist the session only after terms are accepted (or when the project
-  // has none). Writing the JWT earlier left a rejected user logged in.
+  // Mark the session authenticated only after terms are accepted (or when the
+  // project has none). The bearer token stays in memory. Wallet reconnect can
+  // be remembered without it; email, social, and passkey sessions cannot.
+  clearLegacyJwtStorage();
+
   if (jwt) {
-    localStorage.setItem(BLUX_JWT_STORE, jwt);
     state.setAuth({ isAuthenticated: true, JWT: jwt });
 
-    if (state.user) {
+    if (state.user?.authMethod === 'wallet') {
       setRecentLoginConfig(
         state.user.authMethod,
         state.user.authValue || '',
         Date.now(),
-        jwt,
       );
+    } else {
+      clearRecentLoginConfig();
     }
   }
 
@@ -53,7 +56,7 @@ export const rejectLoginProcess = (
     state.setLogin(undefined);
   }
 
-  localStorage.removeItem(BLUX_JWT_STORE);
+  clearLegacyJwtStorage();
   clearRecentLoginConfig();
   state.logoutAction();
 };

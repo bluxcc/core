@@ -44,6 +44,7 @@ export {
   getInitialState,
   useExportedStore,
 } from './exportedStore';
+export { getJwt, subscribeSession } from '../utils/sessionJwt';
 export const setAppearance = (appearance: IAppearanceConfig) => {
   if (!updateThemeAppearance(appearance)) {
     const { inherit: _inherit, ...overrides } = appearance;

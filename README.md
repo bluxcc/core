@@ -75,6 +75,11 @@ document.getElementById('loginBtn').onclick = async () => {
 };
 ```
 
+`appId` is the only required `createConfig` property. `appName` defaults to
+`'App'`. When neither `networks` nor `defaultNetwork` is provided, Blux uses
+Mainnet as the only configured network; when only `defaultNetwork` is provided,
+that network becomes the sole configured network.
+
 ### Theme inheritance
 
 Choose a framework explicitly to inherit its semantic theme values. Blux
@@ -124,6 +129,12 @@ Blux reads the deployed contract spec to encode each value as the parameter's
 declared Soroban type:
 
 ```ts
+const { value } = await core.readContract<string>({
+  address: 'profile.xlm',
+  fn: 'display_name',
+  args: ['alice.xlm'],
+});
+
 const { values } = await core.readContracts<[string]>([
   {
     address: 'token.xlm',
@@ -143,7 +154,10 @@ const contractResult = await submitted.returnValue(); // bigint
 
 Numbers, decimal strings, `bigint`s, booleans, addresses, byte arrays, vectors,
 maps, and contract-defined types are encoded according to the spec. Existing
-pre-encoded `ScVal` arguments from `core.ToScVal` continue to work.
+pre-encoded `ScVal` arguments from `core.ToScVal` continue to work. `.xlm`
+resolution is strictly type-directed: contract identifiers and arguments whose
+ABI type is `Address` resolve, while a value such as `"alice.xlm"` declared as
+`String`, `Symbol`, or another non-address type is sent exactly as provided.
 
 ### Human-readable Stellar addresses
 

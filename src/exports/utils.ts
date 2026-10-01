@@ -5,8 +5,8 @@ import { BluxEvent } from '../utils/events';
 import { getNetworkRpc } from '../utils/networkRpc';
 
 /**
- * A single Soroban contract invocation, consumed by {@link readContracts} and
- * {@link writeContract}.
+ * A single Soroban contract invocation, consumed by {@link readContract},
+ * {@link readContracts}, and {@link writeContract}.
  */
 export type IContractCall = {
   /** Contract id (`C...`) or `.xlm`/SEP-2 name resolving to a contract. */
@@ -21,7 +21,7 @@ export type IContractCall = {
   args: unknown[];
 };
 
-/** Options for {@link readContracts}. */
+/** Options for {@link readContract} and {@link readContracts}. */
 export type ReadContractsOptions = {
   /** Network passphrase to simulate against. Defaults to the active network. */
   network?: string;

@@ -1,17 +1,49 @@
-export { getAccount } from './getAccount';
-export { getAccounts } from './getAccounts';
-export { getAssets } from './getAssets';
-export { getBalances } from './getBalances';
-export { getClaimableBalances } from './getClaimableBalances';
-export { getEffects } from './getEffects';
+export {
+  getAccount,
+  type GetAccountOptions,
+  type GetAccountResult,
+} from './getAccount';
+export {
+  getAccounts,
+  type GetAccountsOptions,
+  type GetAccountsResult,
+} from './getAccounts';
+export {
+  getAssets,
+  type GetAssetsOptions,
+  type GetAssetsResult,
+} from './getAssets';
+export {
+  getBalances,
+  type GetBalancesOptions,
+  type GetBalancesResult,
+} from './getBalances';
+export {
+  getClaimableBalances,
+  type GetClaimableBalancesOptions,
+  type GetClaimableBalancesResult,
+} from './getClaimableBalances';
+export {
+  getEffects,
+  type GetEffectsOptions,
+  type GetEffectsResult,
+} from './getEffects';
 export {
   fundAccount,
   type FundAccountOptions,
   type FundAccountResult,
   type FundAccountStatus,
 } from './fundAccount';
-export { getLedgers } from './getLedgers';
-export { getLiquidityPools } from './getLiquidityPools';
+export {
+  getLedgers,
+  type GetLedgersOptions,
+  type GetLedgersResult,
+} from './getLedgers';
+export {
+  getLiquidityPools,
+  type GetLiquidityPoolsOptions,
+  type GetLiquidityPoolsResult,
+} from './getLiquidityPools';
 export { getNetwork } from './getNetwork';
 export {
   resolveXlmName,
@@ -21,15 +53,38 @@ export {
   type XlmAccountNameRecord,
   type XlmContractNameRecord,
 } from './resolveXlmName';
-export { getOffers } from './getOffers';
-export { getOperations } from './getOperations';
-export { getOrderbook } from './getOrderbook';
-export { getPayments } from './getPayments';
-export { getStrictReceivePaths } from './getStrictReceivePaths';
+export {
+  getOffers,
+  type GetOffersOptions,
+  type GetOffersResult,
+} from './getOffers';
+export {
+  getOperations,
+  type GetOperationsOptions,
+  type GetOperationsResult,
+} from './getOperations';
+export { getOrderbook, type GetOrderbookResult } from './getOrderbook';
+export { getPayments, type GetPaymentsOptions } from './getPayments';
+export {
+  getStrictReceivePaths,
+  type GetPaymentPathResult,
+} from './getStrictReceivePaths';
 export { getStrictSendPaths } from './getStrictSendPaths';
-export { getTradeAggregation } from './getTradeAggregation';
-export { getTrades } from './getTrades';
-export { getTransactions } from './getTransactions';
+export {
+  getTradeAggregation,
+  type GetTradeAggregationResult,
+} from './getTradeAggregation';
+export {
+  getTrades,
+  type GetTradesOptions,
+  type GetTradesResult,
+} from './getTrades';
+export {
+  getTransactions,
+  type GetTransactionsOptions,
+  type GetTransactionsResult,
+} from './getTransactions';
+export { readContract, type ReadContractResult } from './readContract';
 export { readContracts, type ReadContractsResult } from './readContracts';
 export { writeContract } from './writeContract';
 export { transfer, type TransferOptions } from './transfer';
@@ -60,6 +115,7 @@ export type {
   SendTransactionResult,
 } from '../../types';
 export type {
+  CallBuilderOptions,
   IContractCall,
   ReadContractsOptions,
   WriteContractsOptions,

@@ -1,7 +1,9 @@
 import {
+  readContract,
   readContracts,
   writeContract,
   type IContractCall,
+  type ReadContractResult,
   type ReadContractsResult,
 } from '../dist';
 
@@ -12,6 +14,18 @@ type Equal<A, B> =
 type Expect<T extends true> = T;
 
 declare const calls: IContractCall[];
+declare const call: IContractCall;
+
+const read = readContract<string | null>(call);
+type SingularReadResult = Awaited<typeof read>;
+type SingularReadValue = SingularReadResult['value'];
+
+type SingularReadResultIsGeneric = Expect<
+  Equal<SingularReadResult, ReadContractResult<string | null>>
+>;
+type SingularReadValueIsNotArray = Expect<
+  Equal<SingularReadValue, string | null>
+>;
 
 const reads = readContracts<[string, number | null]>(calls);
 type ReadResult = Awaited<typeof reads>;
@@ -35,6 +49,8 @@ type WriteReturnIsGenericAndNullable = Expect<
 >;
 
 export type ContractReturnTypeAssertions =
+  | SingularReadResultIsGeneric
+  | SingularReadValueIsNotArray
   | ReadResultIsGeneric
   | ReadTupleIsPreserved
   | WriteReturnIsGenericAndNullable;

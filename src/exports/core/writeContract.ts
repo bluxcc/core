@@ -24,6 +24,8 @@ import { resolveAddress } from './helpers';
  * Native `args` are encoded from the deployed contract's spec. Positional
  * values such as `args: ['G...', 1234]` therefore become an address and,
  * for example, an i128 when those are the function's declared parameter types.
+ * `.xlm` names are resolved only for ABI-declared address values; a `.xlm`
+ * value declared as a string or any other non-address type is sent unchanged.
  * Pre-encoded {@link xdr.ScVal} arguments remain supported.
  *
  * @param call - The contract call to make.

@@ -75,7 +75,11 @@ export const Provider = ({
       ? 'info'
       : undefined;
 
-  const modalHeaderTitle = store.modal.dynamicTitle || modalContent.title;
+  const modalHeaderTitle =
+    store.modal.dynamicTitle ||
+    (route === Route.SIGN_MESSAGE && store.waitingStatus === 'signAuthEntry'
+      ? 'signAuthEntry'
+      : modalContent.title);
 
   const handleInfo = () => {
     store.setRoute(Route.ABOUT);

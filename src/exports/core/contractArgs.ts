@@ -126,6 +126,10 @@ const normalizeNativeValue = async (
       if (typeof value !== 'string') {
         return value;
       }
+
+      // This is the only branch allowed to resolve human-readable addresses.
+      // A value such as "alice.xlm" must remain literal when the ABI declares
+      // it as a string, symbol, bytes value, or any other non-address type.
       return (await resolveAddress(value, { expected: 'soroban' })).address;
 
     case 'scSpecTypeOption':

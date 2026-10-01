@@ -145,6 +145,52 @@ test('native Soroban address arguments resolve at every ABI-declared depth', asy
   );
 });
 
+test('.xlm values stay literal when the ABI declares a non-address type', async () => {
+  const resolvedAddress = stellar.Keypair.random().publicKey();
+  const seen = [];
+  const spec = {
+    getFunc: () => ({
+      inputs: [
+        {
+          name: { toString: () => 'owner' },
+          type: addressType,
+        },
+        {
+          name: { toString: () => 'label' },
+          type: stringType,
+        },
+        {
+          name: { toString: () => 'alias' },
+          type: { type: 'scSpecTypeSymbol' },
+        },
+      ],
+    }),
+    nativeToScVal: (value) => value,
+  };
+  const load = createLoader({
+    spec,
+    resolveAddress: async (value, options) => {
+      seen.push({ value, expected: options.expected });
+      return { address: resolvedAddress };
+    },
+  });
+  const { contractArgsToScVals } = load('src/exports/core/contractArgs');
+
+  const result = await contractArgsToScVals(
+    'CFAKE',
+    'set_profile',
+    ['owner.xlm', 'alice.xlm', 'alice.xlm'],
+    { serverURL: new URL('https://rpc.example') },
+    'Test SDF Network ; September 2015',
+    'call',
+  );
+
+  assert.equal(result[0], resolvedAddress);
+  assert.equal(result[1], 'alice.xlm');
+  assert.equal(result[2], 'alice.xlm');
+  assert.deepEqual(seen, [{ value: 'owner.xlm', expected: 'soroban' }]);
+});
+
 test('pre-encoded ScVals still bypass ABI and address resolution', async () => {
   let resolutions = 0;
   const value = stellar.xdr.ScVal.scvBool(true);
