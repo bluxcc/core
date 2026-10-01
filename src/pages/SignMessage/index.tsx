@@ -40,13 +40,18 @@ const SignMessage = () => {
     ? (data as any).message
     : (data as any).authEntry; // adjust according to your actual data structure
 
+  const permissionText = isSignMessage
+    ? t('sign_permission')
+    : t('signAuthEntryPrompt');
+  const actionText = isSignMessage ? t('signMessage') : t('signAuthEntry');
+
   return (
     <div>
       <div className="bluxcc:p-4 bluxcc:text-center bluxcc:text-sm bluxcc:font-medium bluxcc:select-none">
         <span className="bluxcc:font-semibold bluxcc:capitalize">
           {store.config.appName}{' '}
         </span>
-        {t('sign_permission')}
+        {permissionText}
       </div>
       <div
         className="bluxcc:h-24 bluxcc:p-4 bluxcc:font-mono bluxcc:text-xs bluxcc:overflow-auto"
@@ -91,7 +96,7 @@ const SignMessage = () => {
       <Divider />
 
       <Button size="large" state="enabled" variant="fill" onClick={handleSign}>
-        {t('approve')}
+        {actionText}
       </Button>
     </div>
   );

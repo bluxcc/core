@@ -122,7 +122,7 @@ const SendTransaction = () => {
         variant="fill"
         onClick={handleSignTx}
       >
-        {t('approve')}
+        {t('signTransaction')}
       </Button>
     </div>
   );

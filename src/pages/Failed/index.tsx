@@ -19,6 +19,39 @@ const Failed = () => {
   // Retrying the same identity is pointless, so we explain why and send the
   // user back to pick a different account instead of offering "Try again".
   const isAccessDenied = store.waitingStatus === 'login' && !!store.loginError;
+  const walletName = store.user?.authValue ?? 'wallet';
+
+  const getFailureContent = () => {
+    switch (store.waitingStatus) {
+      case 'signMessage':
+        return {
+          title: t('messageSigningFailed', { walletName }),
+          message: t('messageSigningRetryMessage'),
+          action: t('signMessage'),
+        };
+      case 'signAuthEntry':
+        return {
+          title: t('authEntrySigningFailed', { walletName }),
+          message: t('authEntrySigningRetryMessage'),
+          action: t('signAuthEntry'),
+        };
+      case 'sendTransaction':
+        return {
+          title: t('transactionSigningFailed', { walletName }),
+          message: t('transactionSigningRetryMessage'),
+          action: t('signTransaction'),
+        };
+      case 'login':
+      default:
+        return {
+          title: t('loginFailed'),
+          message: t('loginRetryMessage'),
+          action: t('tryAgain'),
+        };
+    }
+  };
+
+  const failureContent = getFailureContent();
 
   const handleRetry = () => {
     if (store.waitingStatus === 'signMessage') {
@@ -76,25 +109,15 @@ const Failed = () => {
       </div>
 
       <div className="bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
-        <p className="bluxcc:text-xl">
-          {store.waitingStatus === 'login'
-            ? t('loginFailed')
-            : t('signingFailed', {
-              walletName: store.user?.authValue ?? 'wallet',
-            })}
-        </p>
+        <p className="bluxcc:text-xl">{failureContent.title}</p>
 
-        <p className="bluxcc:text-sm">
-          {store.waitingStatus === 'login'
-            ? t('loginRetryMessage')
-            : t('signingRetryMessage')}
-        </p>
+        <p className="bluxcc:text-sm">{failureContent.message}</p>
       </div>
 
       <Divider />
 
       <Button onClick={handleRetry} state="enabled" variant="outline">
-        {t('tryAgain')}
+        {failureContent.action}
       </Button>
     </div>
   );

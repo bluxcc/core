@@ -74,12 +74,21 @@ const Successful = () => {
         };
       case 'signAuthEntry':
         return {
-          title: t('authEntrySignedTitle') || 'Authorization Signed',
-          message:
-            t('authEntrySignedMessage') ||
-            'Authorization has been signed successfully.',
+          title: t('authEntrySignedTitle'),
+          message: t('authEntrySignedMessage'),
         };
       case 'sendTransaction':
+        if (!store.sendTransaction?.shouldSubmit) {
+          return {
+            title: t('transactionSignedTitle'),
+            message: t('transactionSignedMessage'),
+          };
+        }
+
+        return {
+          title: t('transactionSuccessfulTitle'),
+          message: t('transactionSuccessfulMessage'),
+        };
       default:
         return {
           title: t('transactionSuccessfulTitle'),

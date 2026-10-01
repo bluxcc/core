@@ -15,6 +15,39 @@ const Waiting = () => {
 
   const waitingStatus = store.waitingStatus;
   const appearance = store.config.appearance;
+  const walletName = user?.authValue ?? 'wallet';
+
+  const getWaitingContent = () => {
+    switch (waitingStatus) {
+      case 'signMessage':
+        return {
+          title: t('signingMessageWith', { walletName }),
+          message: t('signMessageInWallet'),
+          action: t('signingMessage'),
+        };
+      case 'signAuthEntry':
+        return {
+          title: t('signingAuthEntryWith', { walletName }),
+          message: t('signAuthEntryInWallet'),
+          action: t('signingAuthEntry'),
+        };
+      case 'sendTransaction':
+        return {
+          title: t('signingTransactionWith', { walletName }),
+          message: t('signTransactionInWallet'),
+          action: t('signingTransaction'),
+        };
+      case 'login':
+      default:
+        return {
+          title: t('waitingFor', { walletName }),
+          message: t('acceptConnection'),
+          action: t('connecting'),
+        };
+    }
+  };
+
+  const content = getWaitingContent();
 
   return (
     <div className="bluxcc:mt-3 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
@@ -33,18 +66,8 @@ const Waiting = () => {
       </div>
 
       <div className="bluxcc:flex-col bluxcc:space-y-2 bluxcc:text-center bluxcc:font-medium">
-        <p className="bluxcc:text-xl">
-          {waitingStatus === 'login'
-            ? t('waitingFor', { walletName: user?.authValue ?? 'wallet' })
-            : t('signingWith', {
-                walletName: user?.authValue ?? 'wallet',
-              })}
-        </p>
-        <p className="bluxcc:text-sm">
-          {waitingStatus === 'login'
-            ? t('acceptConnection')
-            : t('signRequestInWallet')}
-        </p>
+        <p className="bluxcc:text-xl">{content.title}</p>
+        <p className="bluxcc:text-sm">{content.message}</p>
       </div>
 
       <Divider />
@@ -60,7 +83,7 @@ const Waiting = () => {
           />
         }
       >
-        {waitingStatus === 'login' ? t('connecting') : t('signing')}
+        {content.action}
       </Button>
     </div>
   );
