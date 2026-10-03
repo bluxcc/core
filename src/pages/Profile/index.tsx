@@ -9,7 +9,6 @@ import { BluxEvent } from '../../utils/events';
 import CardItem from '../../components/CardItem';
 import CDNImage from '../../components/CDNImage';
 import CDNFiles from '../../constants/cdnFiles';
-import { clearRecentLoginConfig } from '../../utils/checkRecentLogins';
 import {
   copyText,
   hexToRgba,
@@ -29,8 +28,6 @@ const Profile = () => {
 
   const handleLogout = () => {
     logoutAction();
-
-    clearRecentLoginConfig();
 
     store.emitter.emit(BluxEvent.LoggedOut, undefined);
   };

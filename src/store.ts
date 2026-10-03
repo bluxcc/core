@@ -6,6 +6,7 @@ import { SignClient } from '@walletconnect/sign-client/dist/types/client';
 import { XLM } from './constants/assets';
 import { Route, SupportedWallet } from './enums';
 import { defaultLightTheme } from './constants/themes';
+import { clearStoredSession } from './utils/sessionStorage';
 import type { UseBalancesResult } from './hooks/useBalances';
 import { syncExportedStore } from './exports/exportedStore';
 import Emitter, { BluxEvent, BluxEventMap } from './utils/events';
@@ -511,7 +512,8 @@ export const store = createStore<IStore>((set) => ({
         route: Route.SOCIALS_ONBOARDING,
       },
     })),
-  logoutAction: () =>
+  logoutAction: () => {
+    clearStoredSession();
     set((current) => ({
       ...current,
       user: undefined,
@@ -533,7 +535,8 @@ export const store = createStore<IStore>((set) => ({
         isAuthenticated: false,
       },
       modal: { ...current.modal, isOpen: false },
-    })),
+    }));
+  },
   setBalances: (balances: UseBalancesResult) =>
     set((state) => ({ ...state, balances })),
   setBalanceValues: (balanceValues: Record<string, string>) =>

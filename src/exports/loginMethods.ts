@@ -150,8 +150,12 @@ const createLoginPromise = (): Promise<IUser> => {
 export const _login = (isSilent: boolean) => {
   const store = getState();
 
-  if (store.user && store.user.address) {
+  if (store.authState.isAuthenticated && store.user?.address) {
     return Promise.resolve(store.user);
+  }
+
+  if (isSilent && store.login?.isSilent) {
+    return store.login.promise;
   }
 
   // Interactive login is already in flight. Reuse it so a second login()
@@ -183,15 +187,16 @@ export const _login = (isSilent: boolean) => {
 
   if (isSilent) {
     checkRecentLogins()
-      .then(() => {
-        const { user } = getState();
+      .then((restored) => {
+        const { user, authState } = getState();
 
-        if (user) {
+        if (restored && authState.isAuthenticated && user?.address) {
           resolver(user);
         } else {
+          rejecter(new Error('BLUX: No saved session could be restored.'));
         }
       })
-      .catch(() => {})
+      .catch(rejecter!)
       .finally(() => {
         // A later interactive login() overwrites this slot. Do not clear it.
         if (getState().login?.promise === promise) {
@@ -227,6 +232,18 @@ export const login = async (): Promise<IUser> => {
   assertAppIsValid();
 
   getState().setWalletOnlyOnboarding(false);
+
+  // Startup may still be validating the saved session. Let that finish before
+  // opening onboarding for a user who is already signed in.
+  const pendingRestore = getState().login;
+
+  if (pendingRestore?.isSilent) {
+    try {
+      return await pendingRestore.promise;
+    } catch {
+      // No valid saved session; continue with interactive login.
+    }
+  }
 
   return _login(false);
 };

@@ -2,12 +2,10 @@ import { Route } from '../enums';
 import { getState } from '../store';
 import { BluxEvent } from '../utils/events';
 import { assertAppIsValid } from '../utils/appValidity';
-import { clearLegacyJwtStorage } from '../utils/sessionJwt';
 import { ISendTransaction, ISignAuthEntry, ISignMessage } from '../types';
 import handleSignMessage from '../stellar/handleSignMessage';
 import getTransactionDetails from '../stellar/getTransactionDetails';
 import handleTransactionSigning from '../stellar/handleTransactionSigning';
-import { clearRecentLoginConfig } from '../utils/checkRecentLogins';
 import handleSignAuthEntry from '../stellar/handleSignAuthEntry';
 import { getSigningWallet } from '../wallets';
 import {
@@ -39,9 +37,6 @@ const logout = () => {
   const { logoutAction } = getState();
 
   logoutAction();
-
-  clearLegacyJwtStorage();
-  clearRecentLoginConfig();
 
   getState().emitter.emit(BluxEvent.LoggedOut, undefined);
 };

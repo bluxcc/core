@@ -1,6 +1,6 @@
 {
   "name": "@bluxcc/core",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "homepage": "https://blux.cc",
   "description": "Blux is a wallet infra for the Stellar network",
   "type": "module",
@@ -27,7 +27,10 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.prod.mjs",
-    "dev": "rollup -c rollup.config.dev.mjs -w"
+    "dev": "rollup -c rollup.config.dev.mjs -w",
+    "test:types": "node --test tests/public-config-types.test.cjs tests/public-declaration-types.test.mjs tests/packed-types.test.mjs",
+    "test:session": "node --test tests/session-jwt.test.cjs",
+    "prepack": "npm run build && npm run test:types && npm run test:session"
   },
   "keywords": [
     "stellar",
@@ -42,7 +45,7 @@
     "@ledgerhq/hw-app-str": "^7.2.8",
     "@lobstrco/signer-extension-api": "^1.0.0-beta.0",
     "@stellar/freighter-api": "^5.0.0",
-    "@stellar/stellar-sdk": "^17.0.1",
+    "@stellar/stellar-sdk": "^17.2.1",
     "@walletconnect/core": "^2.21.9",
     "@walletconnect/sign-client": "^2.21.9",
     "qrcode.react": "^4.2.0",

@@ -559,7 +559,11 @@ export const apiGetUser = async (JWT: string) => {
   );
 
   if (res.status === 401) {
-    throw new Error('BLUX: invalid JWT');
+    throw Object.assign(new Error('BLUX: invalid JWT'), { status: 401 });
+  }
+
+  if (res.status === 403) {
+    throw Object.assign(new Error('BLUX: access denied'), { status: 403 });
   }
 
   if (res.status === 500) {
@@ -567,7 +571,7 @@ export const apiGetUser = async (JWT: string) => {
   }
 
   if (res.status === 404) {
-    throw new Error('BLUX: user nout found');
+    throw Object.assign(new Error('BLUX: user not found'), { status: 404 });
   }
 
   if (res.status === 429) {

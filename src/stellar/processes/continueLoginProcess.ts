@@ -2,7 +2,6 @@ import { Route } from '../../enums';
 import { getState } from '../../store';
 import loginResolver from './loginResolver';
 import { BluxEvent } from '../../utils/events';
-import { clearLegacyJwtStorage } from '../../utils/sessionJwt';
 import {
   clearRecentLoginConfig,
   setRecentLoginConfig,
@@ -13,22 +12,24 @@ export const completeLoginProcess = () => {
   const jwt = state.auth?.JWT;
 
   // Mark the session authenticated only after terms are accepted (or when the
-  // project has none). The bearer token stays in memory. Wallet reconnect can
-  // be remembered without it; email, social, and passkey sessions cannot.
-  clearLegacyJwtStorage();
+  // project has none). Pending or rejected logins must never be persisted.
 
   if (jwt) {
-    state.setAuth({ isAuthenticated: true, JWT: jwt });
-
-    if (state.user?.authMethod === 'wallet') {
+    if (state.user) {
       setRecentLoginConfig(
         state.user.authMethod,
         state.user.authValue || '',
         Date.now(),
+        jwt,
       );
     } else {
       clearRecentLoginConfig();
     }
+
+    state.setAuth({ isAuthenticated: true, JWT: jwt });
+
+    // A host listening for auth changes can cancel the login immediately.
+    if (getState().auth?.JWT !== jwt || getState().user !== state.user) return;
   }
 
   state.setIsAuthenticated(true);
@@ -44,8 +45,7 @@ export const completeLoginProcess = () => {
 };
 
 // Tear down a login that reached the terms prompt (or was abandoned there)
-// without accepting. The JWT is only in memory at this point; still wipe
-// storage so a previous write cannot restore the session.
+// without accepting. Clear any older saved session as well.
 export const rejectLoginProcess = (
   reason = 'BLUX: User declined the terms of service.',
 ) => {
@@ -56,8 +56,6 @@ export const rejectLoginProcess = (
     state.setLogin(undefined);
   }
 
-  clearLegacyJwtStorage();
-  clearRecentLoginConfig();
   state.logoutAction();
 };
 

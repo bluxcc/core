@@ -1,7 +1,6 @@
 import { _login } from './exports/blux';
 import { preloadLogos } from './utils/preloadImages';
 import { preloadAssetMeta } from './utils/preloadAssetMeta';
-import { scrubStoredBearerTokens } from './utils/checkRecentLogins';
 import { isAppValid, waitForBluxReady } from './utils/appValidity';
 
 import './tailwind.css';
@@ -11,7 +10,6 @@ export { createConfig } from './exports/createConfig';
 
 preloadLogos();
 preloadAssetMeta();
-scrubStoredBearerTokens();
 
 (async () => {
   await waitForBluxReady();
@@ -21,5 +19,6 @@ scrubStoredBearerTokens();
     return;
   }
 
-  _login(true);
+  // No saved session (or an expired one) is an expected signed-out startup.
+  void _login(true).catch(() => {});
 })();
