@@ -12,7 +12,6 @@ import {
   IExplorer,
   LanguageKey,
   ITransports,
-  IWalletNames,
   ILoginMethods,
 } from '../types';
 import {
@@ -378,13 +377,12 @@ export const getExplorerUrl = (
 };
 
 export const getMappedWallets = async (
-  walletNames: IWalletNames,
+  walletNames: string[],
 ): Promise<IWallet[]> => {
   const checkedWallets = await Promise.all(
     Object.values(walletsConfig).map(async (wallet) => {
       try {
         if (
-          // @ts-ignore
           walletNames.includes(wallet.name.toLowerCase().replace(/\s+/g, ''))
         ) {
           return { wallet, isAvailable: false };
@@ -506,7 +504,7 @@ export const getWalletNetwork = async (wallet: IWallet) => {
 };
 
 export const handleLoadWallets = (
-  walletNames: IWalletNames,
+  walletNames: string[],
   orderWallets: string[] = [],
 ): Promise<IWallet[]> =>
   new Promise((res) => {
@@ -576,7 +574,7 @@ export const initializeRabetMobile = () => {
 };
 
 export const loadWallets = async (
-  excludedWallets: IWalletNames,
+  excludedWallets: string[],
   orderWallets: string[] = [],
 ) => {
   initializeRabetMobile();

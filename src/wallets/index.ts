@@ -14,11 +14,13 @@ import { trezorConfig } from './trezor';
 import { SupportedWallet } from '../enums';
 import { fordefiConfig } from './fordefi';
 import { freighterConfig } from './freighter';
+import { metamaskConfig } from './metamask';
 import { cactusLinkConfig } from './cactuslink';
 import { walletConnectConfig } from './walletConnect';
 
 export const walletsConfig: Record<SupportedWallet, IWallet> = {
   [SupportedWallet.Freighter]: freighterConfig,
+  [SupportedWallet.MetaMask]: metamaskConfig,
   [SupportedWallet.Rabet]: rabetConfig,
   [SupportedWallet.WalletConnect]: walletConnectConfig,
   [SupportedWallet.Hot]: hotConfig,

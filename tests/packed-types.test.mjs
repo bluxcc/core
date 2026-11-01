@@ -82,9 +82,27 @@ const provider = <BluxProvider config={{ appId: 'demo' }}>Hello</BluxProvider>;
 const invalid = <BluxProvider config={{}}>Hello</BluxProvider>;
 `
     : `
-import { createConfig, type IConfig } from '@bluxcc/core';
+import { createConfig, getState, type IConfig, type IWalletNames } from '@bluxcc/core';
 const config: IConfig = { appId: 'demo' };
 createConfig({ appId: 'demo' });
+const walletNames: string[] = ['freighter', 'ledger', 'bitget', 'onekey', 'walletconnect'];
+createConfig({ appId: 'demo', excludeWallets: walletNames, orderWallets: walletNames });
+const inferredConfig = { appId: 'demo', excludeWallets: ['freighter'] };
+createConfig(inferredConfig);
+const namedConfig: IConfig = { appId: 'demo', excludeWallets: walletNames };
+createConfig(namedConfig);
+const canonicalWallets: IWalletNames = ['freighter', 'lobstr', 'trezor', 'metamask'];
+createConfig({ appId: 'demo', excludeWallets: canonicalWallets });
+const storedWallets: IWalletNames = getState().config.excludeWallets;
+createConfig({ appId: 'demo', excludeWallets: ['Freighter', ' Wallet Connect ', 'Cactus Link'] });
+createConfig({ appId: 'demo', excludeWallets: ['ledger', 'bitget', 'onekey', 'walletconnect'] });
+createConfig({ appId: 'demo', excludeWallets: [] });
+// @ts-expect-error excludeWallets must be an array
+createConfig({ appId: 'demo', excludeWallets: 'freighter' });
+// @ts-expect-error wallet names must be strings
+createConfig({ appId: 'demo', excludeWallets: [123] });
+// @ts-expect-error typed configs also reject non-string names
+const invalidWalletConfig: IConfig = { appId: 'demo', excludeWallets: [null] };
 // @ts-expect-error appId is required
 createConfig({});
 `;
@@ -184,4 +202,17 @@ type ${hook}Data = Expect<Equal<ReturnType<typeof ${hook}>['data'], IUser | unde
     ts.displayPartsToString(details?.documentation),
     /Your Blux app id/,
   );
+  if (!react) {
+    const walletMarker = "excludeWallets: ['Freighter";
+    const walletPosition = source.indexOf(walletMarker) + walletMarker.length;
+    const walletCompletions = service.getCompletionsAtPosition(
+      file,
+      walletPosition,
+      {},
+    );
+    assert.ok(
+      walletCompletions?.entries.some((entry) => entry.name === 'freighter'),
+      'excludeWallets retains canonical wallet name suggestions',
+    );
+  }
 });

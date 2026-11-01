@@ -543,6 +543,8 @@ type ApiGetUserResponse = {
   auth_method: string;
   auth_value: string;
   public_key: string;
+  /** Verified external address for wallet logins; public_key is custodial. */
+  wallet?: string;
 };
 
 export const apiGetUser = async (JWT: string) => {

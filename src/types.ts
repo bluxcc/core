@@ -59,6 +59,7 @@ export type IWalletNames = Array<
   | 'rabet'
   | 'albedo'
   | 'freighter'
+  | 'metamask'
   | 'xbull'
   | 'lobstr'
   | 'hana'
@@ -169,8 +170,8 @@ export interface IConfig {
   loginMethods?: Array<ILoginMethods[number] | LooseString>;
   /** Custom Horizon/Soroban endpoints per network; required for custom networks. */
   transports?: ITransports;
-  /** Wallets to hide from the picker. */
-  excludeWallets?: IWalletNames;
+  /** Wallets to hide from the picker. Names are case-insensitive and ignore whitespace. Defaults to `['lobstr']`; pass `[]` to exclude none. */
+  excludeWallets?: Array<IWalletNames[number] | LooseString>;
   /** Wallets to surface first in the picker, in the given order. */
   orderWallets?: Array<IWalletNames[number] | LooseString>;
   /** WalletConnect metadata; required to enable WalletConnect. */

@@ -9,6 +9,7 @@ import { BluxEvent } from '../../utils/events';
 import CardItem from '../../components/CardItem';
 import CDNImage from '../../components/CDNImage';
 import CDNFiles from '../../constants/cdnFiles';
+import { NETWORK_DISPLAY_NAMES } from '../../constants/networkDetails';
 import {
   copyText,
   hexToRgba,
@@ -25,6 +26,9 @@ const Profile = () => {
   const { setRoute, logoutAction, setAlert } = store;
   const appearance = store.config.appearance;
   const address = store.user?.address as string;
+  const activeNetwork =
+    store.stellar?.activeNetwork || store.config.defaultNetwork;
+  const networkName = NETWORK_DISPLAY_NAMES[activeNetwork] || activeNetwork;
 
   const handleLogout = () => {
     logoutAction();
@@ -62,7 +66,7 @@ const Profile = () => {
 
   return (
     <div className="bluxcc:flex bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
-      <div className="bluxcc:mt-4 bluxcc:mb-6 bluxcc:flex bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
+      <div className="bluxcc:mt-4 bluxcc:mb-6 bluxcc:flex bluxcc:max-w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center">
         {/* <div
           className="bluxcc:size-[64px] bluxcc:rounded-full"
           style={{ background: appearance.accentColor }}
@@ -117,23 +121,43 @@ const Profile = () => {
             )}
           </div>
         </div>
-        <button
-          id="bluxcc-button"
-          className="bluxcc:mt-4! bluxcc:leading-4 bluxcc:inline-flex bluxcc:bg-transparent bluxcc:text-sm bluxcc:select-none"
-          onClick={handleCopyAddress}
-          style={{
-            color: hexToRgba(appearance.textColor, 0.7),
-            fontFamily: appearance.fontFamily,
-          }}
-        >
-          <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
-            {address ? shortenAddress(address, 5) : ''}
-            <CDNImage
-              name={CDNFiles.Copy}
-              props={{ fill: hexToRgba(appearance.textColor, 0.7) }}
-            />
-          </span>
-        </button>
+        <div className="bluxcc:mt-4 bluxcc:flex bluxcc:max-w-full bluxcc:items-center bluxcc:justify-center bluxcc:gap-2">
+          <button
+            id="bluxcc-button"
+            className="bluxcc:shrink-0 bluxcc:leading-4 bluxcc:inline-flex bluxcc:bg-transparent bluxcc:text-sm bluxcc:select-none"
+            onClick={handleCopyAddress}
+            style={{
+              color: hexToRgba(appearance.textColor, 0.7),
+              fontFamily: appearance.fontFamily,
+            }}
+          >
+            <span className="bluxcc:flex bluxcc:items-center bluxcc:gap-1">
+              {address ? shortenAddress(address, 5) : ''}
+              <CDNImage
+                name={CDNFiles.Copy}
+                props={{ fill: hexToRgba(appearance.textColor, 0.7) }}
+              />
+            </span>
+          </button>
+          {networkName && (
+            <span
+              role="status"
+              aria-label={`${t('network')}: ${networkName}`}
+              title={`${t('network')}: ${networkName}`}
+              className="bluxcc:min-w-0 bluxcc:max-w-32 bluxcc:truncate bluxcc:px-2 bluxcc:py-0.5 bluxcc:text-xs bluxcc:leading-4 bluxcc:font-medium"
+              style={{
+                color: appearance.textColor,
+                background: appearance.fieldBackground,
+                borderColor: hexToRgba(appearance.accentColor, 0.25),
+                borderWidth: appearance.borderWidth,
+                borderRadius: appearance.borderRadius,
+                fontFamily: appearance.fontFamily,
+              }}
+            >
+              {networkName}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="bluxcc:flex bluxcc:space-x-3">

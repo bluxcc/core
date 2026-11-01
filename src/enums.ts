@@ -5,6 +5,7 @@ export enum SupportedWallet {
   Rabet = 'Rabet',
   Albedo = 'Albedo',
   Freighter = 'Freighter',
+  MetaMask = 'MetaMask',
   Xbull = 'xBull',
   Lobstr = 'LOBSTR',
   Hana = 'Hana',

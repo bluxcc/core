@@ -76,6 +76,7 @@
   "dependencies": {
     "@hot-wallet/sdk": "^1.0.11",
     "@ledgerhq/hw-transport-webusb": "^6.29.12",
+    "@metamask/connect-stellar": "^0.3.0",
     "@trezor/connect-web": "^10.0.0-alpha.1",
     "bignumber.js": "^9.3.1"
   }

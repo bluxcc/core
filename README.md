@@ -276,6 +276,7 @@ These credentials are intended only for the configured testing environment. Refe
 Currently supported connection methods:
 
 - [x] **Freighter**
+- [x] **MetaMask** through its native Stellar multichain session
 - [x] **Rabet**
 - [x] **WalletConnect**
 - [x] **HOT Wallet**
@@ -296,6 +297,8 @@ Currently supported connection methods:
 - [x] **Discord**
 - [x] **Telegram**
 - [x] **Passkey**
+
+MetaMask uses the official [`@metamask/connect-stellar`](https://github.com/MetaMask/connect-stellar) adapter for native Mainnet transaction signing, Soroban auth-entry signing, and SEP-53 message signing. Login uses a signed message. Testnet and Futurenet transactions and auth entries are rejected. Disconnecting revokes the wallet session.
 
 ## Supported Languages
 

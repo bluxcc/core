@@ -153,7 +153,6 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
 
   let excludeWallets = config.excludeWallets || ['lobstr'];
 
-  // @ts-ignore
   excludeWallets = excludeWallets.map((x) =>
     x.toLowerCase().replace(/\s+/g, ''),
   );
@@ -172,7 +171,8 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
     ...config,
     appName: resolvedConfig.appName,
     networks: resolvedConfig.networks,
-    excludeWallets,
+    // Preserve the legacy store return type for existing consumers.
+    excludeWallets: excludeWallets as IInternalConfig['excludeWallets'],
     orderWallets,
     appearance: resolvedAppearance,
     defaultNetwork: resolvedConfig.defaultNetwork,
@@ -219,7 +219,6 @@ export function createConfig(config: IConfig, element?: HTMLElement) {
   handleLoadWallets(excludeWallets, orderWallets).then((wallets) => {
     const includedWallets = wallets.filter(
       (w) =>
-        // @ts-ignore
         !excludeWallets.includes(w.name.toLowerCase().replace(/\s+/g, '')),
     );
 

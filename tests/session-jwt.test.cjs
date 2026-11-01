@@ -26,16 +26,48 @@ function setup({
   method = 'email',
   appId = 'app-one',
   browser = true,
+  walletName = 'Freighter',
 } = {}) {
   const requests = [];
-  let response = async () => ({
-    status: 200,
-    result: {
-      public_key: 'GUSER',
-      auth_method: method,
-      auth_value: `${method}-user`,
+  const walletCalls = { connect: 0, sign: 0 };
+  const wallet = {
+    name: walletName,
+    authenticateWithSignedMessage: true,
+    connect: async () => {
+      walletCalls.connect++;
+      return 'GWALLET';
     },
-  });
+    signMessage: async () => {
+      walletCalls.sign++;
+      return 'signed-proof';
+    },
+  };
+  let response = async ({ url }) =>
+    url.endsWith('/auth/code')
+      ? {
+          status: 200,
+          result: 'session-token',
+        }
+      : url.endsWith('/auth')
+        ? {
+            status: 200,
+            result: {
+              challenge: 'login-challenge',
+              network_passphrase: 'configured-network',
+            },
+          }
+        : {
+            status: 200,
+            result: {
+              public_key: 'GUSER',
+              auth_method: method,
+              auth_value:
+                method === 'wallet'
+                  ? walletName.toLowerCase()
+                  : `${method}-user`,
+              ...(method === 'wallet' ? { wallet: 'GWALLET' } : {}),
+            },
+          };
   const mocks = {
     'src/exports/exportedStore': { syncExportedStore() {} },
     'src/utils/helpers': {
@@ -45,14 +77,13 @@ function setup({
         return response(request);
       },
       timeout: async () => {},
-      canonicalWalletName: (name) => name,
+      canonicalWalletName: (name) => name.toLowerCase().replace(/\s+/g, ''),
       getWalletNetwork: async () => 'wallet-network',
+      setRecentConnectionMethod() {},
     },
     'src/utils/socialLogin': { canonicalSocialName: (name) => name },
     'src/utils/passkey': {},
-    'src/wallets': {},
-    'src/stellar/processes/connectWalletProcess': { default() {} },
-    'src/stellar/handleSignMessage': { default() {} },
+    'src/wallets': { walletsConfig: { [walletName]: wallet } },
     'src/stellar/handleSignAuthEntry': { default() {} },
     'src/stellar/handleTransactionSigning': { default() {} },
     'src/stellar/getTransactionDetails': { default() {} },
@@ -132,10 +163,19 @@ function setup({
     login,
     load,
     requests,
+    wallet,
+    walletCalls,
     respond(fn) {
       response = fn;
     },
     async authenticate(jwt = 'session-token') {
+      if (method === 'wallet') {
+        return load('src/stellar/processes/connectWalletProcess').default(
+          store.getState(),
+          wallet,
+          { headless: true },
+        );
+      }
       await load('src/stellar/processes/hydrateUserFromJwt').hydrateUserFromJwt(
         jwt,
         method,
@@ -329,9 +369,6 @@ test('logout from an auth subscriber does not save the restored session again', 
   const first = setup({ method: 'wallet' });
   await first.authenticate();
   const app = setup({ storage: first.storage, method: 'wallet' });
-  app.store
-    .getState()
-    .setWallets([{ name: 'wallet-user', connect: async () => 'GUSER' }]);
   const unsubscribe = app.session.subscribeSession(() => {
     if (app.session.getJwt()) app.store.getState().logoutAction();
   });
@@ -478,24 +515,120 @@ test('SSR can read hooks and skip restoration without browser storage', async ()
   );
 });
 
-for (const address of ['GUSER', 'GOTHER']) {
-  test(`wallet reload checks the connected address ${address} against the JWT`, async () => {
-    const first = setup({ method: 'wallet' });
+for (const walletName of [
+  'Freighter',
+  'Rabet',
+  'xBull',
+  'Wallet Connect',
+  'Ledger',
+  'Cactus Link',
+]) {
+  test(`${walletName} restores the verified external wallet without reconnecting`, async () => {
+    const first = setup({ method: 'wallet', walletName });
     await first.authenticate();
-    const app = setup({ storage: first.storage, method: 'wallet' });
-    app.store
-      .getState()
-      .setWallets([{ name: 'wallet-user', connect: async () => address }]);
+    assert.equal(first.walletCalls.connect, 1);
+    assert.equal(first.walletCalls.sign, 1);
+    assert.equal(first.storage.getItem(JWT_KEY), 'session-token');
+    const app = setup({ storage: first.storage, method: 'wallet', walletName });
+    // Availability detection may miss a locked or still-loading extension.
+    app.wallet.connect = async () => {
+      throw new Error('Wallet is locked');
+    };
+    app.startup();
+    await nextTurn();
+    assert.equal(app.store.getState().authState.isAuthenticated, true);
+    assert.equal(app.session.getJwt(), 'session-token');
+    assert.equal(app.store.getState().user.address, 'GWALLET');
+    assert.equal(app.store.getState().user.authValue, walletName);
     assert.equal(
-      await app.load('src/utils/checkRecentLogins').checkRecentLogins(),
-      address === 'GUSER',
+      app.store.getState().user.walletPassphrase,
+      'configured-network',
     );
-    assert.equal(
-      app.session.getJwt(),
-      address === 'GUSER' ? 'session-token' : undefined,
-    );
+    assert.equal(app.store.getState().modal.isOpen, false);
+    assert.equal(app.requests.length, 1);
+    assert.ok(app.requests[0].url.endsWith('/users'));
+    assert.equal(app.walletCalls.connect, 0);
+    assert.equal(app.walletCalls.sign, 0);
   });
 }
+
+test('wallet login survives a later browser session using only persisted storage', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const disk = memoryStorage();
+  disk.setItem(JWT_KEY, first.storage.getItem(JWT_KEY));
+  const record = JSON.parse(first.storage.getItem(SESSION_KEY));
+  record.timestamp = Date.now() - 8 * 60 * 60 * 1000;
+  disk.setItem(SESSION_KEY, JSON.stringify(record));
+  const reopened = setup({ storage: disk, method: 'wallet' });
+  reopened.startup();
+  await nextTurn();
+  assert.equal(reopened.store.getState().user?.address, 'GWALLET');
+  assert.equal(reopened.session.getJwt(), 'session-token');
+  reopened.store.getState().logoutAction();
+  const loggedOut = setup({ storage: disk, method: 'wallet' });
+  loggedOut.startup();
+  await nextTurn();
+  assert.equal(loggedOut.store.getState().authState.isAuthenticated, false);
+  assert.equal(loggedOut.requests.length, 0);
+});
+
+test('wallet restore never uses the custodial address when the API omits the external wallet', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const app = setup({ storage: first.storage, method: 'wallet' });
+  app.respond(async () => ({
+    status: 200,
+    result: {
+      public_key: 'GCUSTODIAL',
+      auth_method: 'wallet',
+      auth_value: 'freighter',
+    },
+  }));
+  assert.equal(
+    await app.load('src/utils/checkRecentLogins').checkRecentLogins(),
+    false,
+  );
+  assert.equal(app.store.getState().user, undefined);
+  assert.equal(app.storage.getItem(JWT_KEY), 'session-token');
+});
+
+test('an expired wallet session cannot fall back to connecting the wallet', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const app = setup({ storage: first.storage, method: 'wallet' });
+  app.store.getState().setWallets([app.wallet]);
+  app.respond(async () => ({ status: 401 }));
+  app.startup();
+  await nextTurn();
+  assert.equal(app.store.getState().authState.isAuthenticated, false);
+  assert.equal(app.storage.getItem(JWT_KEY), null);
+  assert.equal(app.storage.getItem(SESSION_KEY), null);
+  assert.equal(app.walletCalls.connect, 0);
+});
+
+test('wallet restoration uses the API identity even if local metadata or the active wallet changes', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const record = JSON.parse(first.storage.getItem(SESSION_KEY));
+  first.storage.setItem(
+    SESSION_KEY,
+    JSON.stringify({
+      ...record,
+      authValue: 'Rabet',
+      address: 'GOTHER',
+    }),
+  );
+  const app = setup({ storage: first.storage, method: 'wallet' });
+  app.wallet.connect = async () => 'GOTHER';
+  app.store.getState().setWallets([app.wallet]);
+  assert.equal(
+    await app.load('src/utils/checkRecentLogins').checkRecentLogins(),
+    true,
+  );
+  assert.equal(app.store.getState().user.address, 'GWALLET');
+  assert.equal(app.store.getState().user.authValue, 'Freighter');
+});
 
 test('legacy wallet reconnect records still work without a stored JWT', async () => {
   const app = setup({ method: 'wallet' });

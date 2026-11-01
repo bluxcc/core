@@ -1,6 +1,8 @@
 import { BluxEvent } from './events';
-import { getWalletNetwork } from './helpers';
+import { canonicalWalletName, getWalletNetwork } from './helpers';
 import { getState, setState } from '../store';
+import { SupportedWallet } from '../enums';
+import { walletsConfig } from '../wallets';
 import { apiGetUser } from './api';
 import loginResolver from '../stellar/processes/loginResolver';
 import {
@@ -82,9 +84,15 @@ const restoreRecentLogin = async (): Promise<boolean> => {
         return false;
       }
 
-      publicKey = result.public_key;
       authMethod = result.auth_method || authMethod;
       authValue = result.auth_value || authValue;
+      // public_key is the separate Blux custodial account, even for wallet
+      // logins. Only the API's verified external wallet identifies this user.
+      publicKey =
+        authMethod === 'wallet' ? result.wallet || '' : result.public_key;
+      // An older API may omit wallet. Keep the saved session for a later retry
+      // rather than signing in with the custodial account or trusting storage.
+      if (!publicKey.trim()) return false;
     } else {
       const age = Date.now() - recentLogin.timestamp;
 
@@ -99,24 +107,31 @@ const restoreRecentLogin = async (): Promise<boolean> => {
     }
 
     if (authMethod === 'wallet') {
-      const wallet = getState().wallets.find((w) => w.name === authValue);
+      const candidates = jwt
+        ? [...getState().wallets, ...Object.values(walletsConfig)]
+        : getState().wallets;
+      const wallet = candidates.find(
+        (w) =>
+          w.name !== SupportedWallet.Api &&
+          canonicalWalletName(w.name) === canonicalWalletName(authValue),
+      );
       if (!wallet) return false;
+      authValue = wallet.name;
 
-      const connectedAddress = await wallet.connect();
-      if (!isCurrentAttempt()) return false;
-      if (!connectedAddress?.trim()) return false;
+      // A validated session already proves the login. Reconnecting here can
+      // open a popup, require an unlock, or wait forever for WalletConnect.
+      // Only legacy records without a JWT need to reconnect.
+      if (!jwt) {
+        const connectedAddress = await wallet.connect();
+        if (!isCurrentAttempt()) return false;
+        if (!connectedAddress?.trim()) return false;
+        publicKey = connectedAddress;
 
-      if (publicKey && connectedAddress !== publicKey) {
-        clearStoredSession();
-        return false;
-      }
-
-      publicKey = connectedAddress;
-
-      try {
-        passphrase = await getWalletNetwork(wallet);
-      } catch {
-        // The configured network remains usable if the wallet cannot report it.
+        try {
+          passphrase = (await getWalletNetwork(wallet)) || passphrase;
+        } catch {
+          // Use the configured network if the wallet cannot report it.
+        }
       }
     }
 

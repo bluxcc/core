@@ -1,3 +1,5 @@
+export { MetaMaskLogo } from './MetaMaskLogo';
+
 export const CurrencyExchange = ({
   fill = '#0C1083',
   size = 40,

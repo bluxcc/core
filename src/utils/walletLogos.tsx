@@ -4,6 +4,7 @@ import {
   CactusLinkLogo,
   FordefiLogo,
   TrezorLogo,
+  MetaMaskLogo,
 } from '../assets';
 import CDNImage from '../components/CDNImage';
 import CDNFiles from '../constants/cdnFiles';
@@ -16,6 +17,8 @@ const handleLogos = (
   const smallStyle =
     'bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:size-10!';
   switch (walletName) {
+    case 'MetaMask':
+      return <MetaMaskLogo />;
     case 'Rabet':
       return (
         <CDNImage
