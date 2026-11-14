@@ -46,12 +46,19 @@ export const assertAppIsValid = (): void => {
  * settled, so the caller can then assert validity. Polls because both happen
  * asynchronously after createConfig. For apps that do not offer wallet login,
  * `isReady` does not wait on wallet availability — only appId validation.
+ * Saved JWT sessions can skip wallet detection, since restoring them never
+ * calls the extension. Config and appId validation must still be complete.
  */
-export const waitForBluxReady = async (): Promise<void> => {
+export const waitForBluxReady = async ({
+  waitForWallets = true,
+}: { waitForWallets?: boolean } = {}): Promise<void> => {
   while (true) {
     const state = getState();
+    const ready = waitForWallets
+      ? state.authState.isReady
+      : !!state.config.appId && !!state.stellar;
 
-    if (state.authState.isReady && isAppValidated()) {
+    if (ready && isAppValidated()) {
       break;
     }
 

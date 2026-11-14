@@ -1,5 +1,6 @@
 import { useLang } from '../../../hooks/useLang';
 import { useAppStore } from '../../../store';
+import PoweredByBlux from '../../../components/PoweredByBlux';
 import {
   getEnabledSocials,
   startSocialLogin,
@@ -43,6 +44,8 @@ const OtherSocials = () => {
           />
         ))}
       </div>
+
+      <PoweredByBlux />
     </div>
   );
 };

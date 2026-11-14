@@ -179,6 +179,20 @@ contract existence rules still apply after resolution.
 
 Create a project through the [Blux Dashboard](https://dashboard.blux.cc/) to obtain your application ID. You can create and manage multiple projects from the same account.
 
+### Persistent sign-in
+
+Accepted sessions are saved in localStorage and restored after a refresh or
+browser restart while the session token remains valid. This applies to wallets,
+email, SMS, passkeys, and every social provider. Restoration validates the token
+with the API without reconnecting the wallet or asking for another signature.
+Wallet detection runs separately and does not block a saved session. Logout
+clears the saved session.
+
+Wallet restoration requires `GET /users` to return the verified external address
+in `result.wallet`. Its `result.public_key` is the separate Blux custodial account.
+Deploy the API change that exposes `wallet` alongside the Core update. Older API
+responses without that field cannot safely restore wallet sessions.
+
 ### Social Login
 
 Add any supported provider to `loginMethods`. The first enabled social is

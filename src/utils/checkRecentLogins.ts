@@ -4,6 +4,7 @@ import { getState, setState } from '../store';
 import { SupportedWallet } from '../enums';
 import { walletsConfig } from '../wallets';
 import { apiGetUser } from './api';
+import { waitForBluxReady } from './appValidity';
 import loginResolver from '../stellar/processes/loginResolver';
 import {
   clearStoredSession,
@@ -79,7 +80,7 @@ const restoreRecentLogin = async (): Promise<boolean> => {
 
       if (!isCurrentAttempt()) return false;
 
-      if (!result?.public_key?.trim()) {
+      if (!result) {
         clearStoredSession();
         return false;
       }
@@ -89,10 +90,13 @@ const restoreRecentLogin = async (): Promise<boolean> => {
       // public_key is the separate Blux custodial account, even for wallet
       // logins. Only the API's verified external wallet identifies this user.
       publicKey =
-        authMethod === 'wallet' ? result.wallet || '' : result.public_key;
+        authMethod === 'wallet' ? result.wallet || '' : result.public_key || '';
       // An older API may omit wallet. Keep the saved session for a later retry
       // rather than signing in with the custodial account or trusting storage.
-      if (!publicKey.trim()) return false;
+      if (!publicKey.trim()) {
+        if (authMethod !== 'wallet') clearStoredSession();
+        return false;
+      }
     } else {
       const age = Date.now() - recentLogin.timestamp;
 
@@ -104,6 +108,11 @@ const restoreRecentLogin = async (): Promise<boolean> => {
         clearStoredSession();
         return false;
       }
+
+      // Legacy records have no verified address, so they still need the
+      // available-wallet scan before attempting a reconnect.
+      await waitForBluxReady();
+      if (!isCurrentAttempt()) return false;
     }
 
     if (authMethod === 'wallet') {

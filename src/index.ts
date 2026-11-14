@@ -12,7 +12,7 @@ preloadLogos();
 preloadAssetMeta();
 
 (async () => {
-  await waitForBluxReady();
+  await waitForBluxReady({ waitForWallets: false });
 
   // Never auto-restore a session when the appId is invalid — Blux is disabled.
   if (!isAppValid()) {

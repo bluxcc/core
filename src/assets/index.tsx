@@ -1,4 +1,5 @@
 export { MetaMaskLogo } from './MetaMaskLogo';
+export { SocialsIcon } from './SocialsIcon';
 
 export const CurrencyExchange = ({
   fill = '#0C1083',

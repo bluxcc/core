@@ -8,9 +8,10 @@ import { useLang } from '../../hooks/useLang';
 import CDNFiles from '../../constants/cdnFiles';
 import CardItem from '../../components/CardItem';
 import CDNImage from '../../components/CDNImage';
+import PoweredByBlux from '../../components/PoweredByBlux';
 import handleLogos from '../../utils/walletLogos';
 import { Route, SupportedWallet } from '../../enums';
-import { PhoneIcon } from '../../assets';
+import { PhoneIcon, SocialsIcon } from '../../assets';
 import { getContrastColor, isBackgroundDark } from '../../utils/helpers';
 import connectWalletProcess from '../../stellar/processes/connectWalletProcess';
 import { generateWalletConnectSession } from '../../utils/initializeWalletConnect';
@@ -347,10 +348,7 @@ const Onboarding = () => {
                         endArrow
                         label={t('otherSocials')}
                         startIcon={
-                          <CDNImage
-                            name={CDNFiles.Globe}
-                            props={{ fill: appearance.textColor }}
-                          />
+                          <SocialsIcon fill={appearance.textColor} />
                         }
                         onClick={() => store.setRoute(Route.OTHER_SOCIALS)}
                       />
@@ -427,21 +425,7 @@ const Onboarding = () => {
         )}
       </div>
 
-      <div className="bluxcc:flex bluxcc:w-full bluxcc:items-center bluxcc:justify-center bluxcc:pt-4.25 bluxcc:text-center bluxcc:text-xs bluxcc:font-medium">
-        <a
-          aria-label="blux website"
-          href="https://blux.cc"
-          target="_blank"
-          rel="noreferrer"
-          className="bluxcc:inline-block bluxcc:text-center bluxcc:no-underline"
-          style={{
-            color: appearance.textColor,
-            fontFamily: appearance.fontFamily,
-          }}
-        >
-          {t('poweredByBlux')}
-        </a>
-      </div>
+      <PoweredByBlux />
     </div>
   );
 };

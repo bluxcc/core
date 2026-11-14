@@ -18,6 +18,19 @@ function memoryStorage() {
   };
 }
 
+function reopenedStorage(storage) {
+  const disk = memoryStorage();
+  disk.setItem(JWT_KEY, storage.getItem(JWT_KEY));
+  disk.setItem(
+    SESSION_KEY,
+    JSON.stringify({
+      ...JSON.parse(storage.getItem(SESSION_KEY)),
+      timestamp: Date.now() - 8 * 60 * 60 * 1000,
+    }),
+  );
+  return disk;
+}
+
 // Run the production store, login drivers, and API client. Only browser storage,
 // HTTP responses, and unrelated wallet/UI services are replaced. A new loader
 // with the same storage models a full page reload, not just a state reset.
@@ -27,12 +40,16 @@ function setup({
   appId = 'app-one',
   browser = true,
   walletName = 'Freighter',
+  signedMessage = true,
+  nativeRabet = false,
+  ready = true,
+  validated = true,
 } = {}) {
   const requests = [];
   const walletCalls = { connect: 0, sign: 0 };
   const wallet = {
     name: walletName,
-    authenticateWithSignedMessage: true,
+    authenticateWithSignedMessage: signedMessage,
     connect: async () => {
       walletCalls.connect++;
       return 'GWALLET';
@@ -41,7 +58,25 @@ function setup({
       walletCalls.sign++;
       return 'signed-proof';
     },
+    signTransaction: async () => {
+      walletCalls.sign++;
+      return 'signed-challenge-xdr';
+    },
   };
+  const browserWindow = nativeRabet
+    ? {
+        rabet: {
+          connect: async () => {
+            walletCalls.connect++;
+            return { publicKey: 'GWALLET' };
+          },
+          signMessage: async () => {
+            walletCalls.sign++;
+            return { message: 'signed-proof' };
+          },
+        },
+      }
+    : {};
   let response = async ({ url }) =>
     url.endsWith('/auth/code')
       ? {
@@ -53,6 +88,7 @@ function setup({
             status: 200,
             result: {
               challenge: 'login-challenge',
+              challenge_xdr: 'login-challenge-xdr',
               network_passphrase: 'configured-network',
             },
           }
@@ -76,7 +112,7 @@ function setup({
         requests.push(request);
         return response(request);
       },
-      timeout: async () => {},
+      timeout: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
       canonicalWalletName: (name) => name.toLowerCase().replace(/\s+/g, ''),
       getWalletNetwork: async () => 'wallet-network',
       setRecentConnectionMethod() {},
@@ -136,11 +172,14 @@ function setup({
         clearTimeout,
         URL,
         URLSearchParams,
-        ...(browser ? { window: {}, localStorage: storage } : {}),
+        ...(browser ? { window: browserWindow, localStorage: storage } : {}),
       },
       { filename: file },
     );
     return module.exports;
+  }
+  if (nativeRabet) {
+    Object.assign(wallet, load('src/wallets/rabet').rabetConfig);
   }
   const store = load('src/store');
   store.setState((state) => ({
@@ -150,8 +189,10 @@ function setup({
       appId,
       loginMethods: ['wallet', 'email', 'sms', 'passkey'],
     },
-    apiResponse: { isValid: true, terms: '', privacyPolicy: '' },
-    authState: { isReady: true, isAuthenticated: false },
+    apiResponse: validated
+      ? { isValid: true, terms: '', privacyPolicy: '' }
+      : undefined,
+    authState: { isReady: ready, isAuthenticated: false },
     stellar: { activeNetwork: 'configured-network' },
   }));
   const session = load('src/utils/sessionJwt');
@@ -206,6 +247,19 @@ for (const method of [
   'twitter',
   'passkey',
   'telegram',
+  'discord',
+  'meta',
+  'github',
+  'farcaster',
+  'tiktok',
+  'linkedin',
+  'twitch',
+  'kick',
+  'spotify',
+  'instagram',
+  'microsoft',
+  'gitlab',
+  'steam',
 ]) {
   test(`${method} login persists and automatically restores after a page reload`, async () => {
     const first = setup({ method });
@@ -228,6 +282,13 @@ for (const method of [
       reloaded.requests[0].options.headers.Authorization,
       'Bearer session-token',
     );
+
+    const reopened = setup({ storage: reopenedStorage(first.storage), method });
+    reopened.startup();
+    await nextTurn();
+    assert.equal(reopened.store.getState().authState.isAuthenticated, true);
+    assert.equal(reopened.store.getState().user.address, 'GUSER');
+    assert.equal(reopened.session.getJwt(), 'session-token');
   });
 }
 
@@ -517,14 +578,29 @@ test('SSR can read hooks and skip restoration without browser storage', async ()
 
 for (const walletName of [
   'Freighter',
+  'MetaMask',
   'Rabet',
   'xBull',
+  'LOBSTR',
+  'Hana',
+  'Albedo',
+  'Hot',
+  'Klever',
+  'Bitget',
+  'Onekey',
+  'Fordefi',
+  'Trezor',
   'Wallet Connect',
   'Ledger',
   'Cactus Link',
 ]) {
   test(`${walletName} restores the verified external wallet without reconnecting`, async () => {
-    const first = setup({ method: 'wallet', walletName });
+    const first = setup({
+      method: 'wallet',
+      walletName,
+      signedMessage: !['Ledger', 'Trezor'].includes(walletName),
+      nativeRabet: walletName === 'Rabet',
+    });
     await first.authenticate();
     assert.equal(first.walletCalls.connect, 1);
     assert.equal(first.walletCalls.sign, 1);
@@ -549,8 +625,102 @@ for (const walletName of [
     assert.ok(app.requests[0].url.endsWith('/users'));
     assert.equal(app.walletCalls.connect, 0);
     assert.equal(app.walletCalls.sign, 0);
+
+    const reopened = setup({
+      storage: reopenedStorage(first.storage),
+      method: 'wallet',
+      walletName,
+    });
+    reopened.startup();
+    await nextTurn();
+    assert.equal(reopened.store.getState().user?.address, 'GWALLET');
+    assert.equal(reopened.session.getJwt(), 'session-token');
+    assert.equal(reopened.walletCalls.connect, 0);
+    assert.equal(reopened.walletCalls.sign, 0);
   });
 }
+
+for (const method of [
+  'wallet',
+  'email',
+  'sms',
+  'passkey',
+  'google',
+  'telegram',
+]) {
+  test(`${method} restores while wallet detection is still pending`, async () => {
+    const first = setup({ method, walletName: 'Rabet' });
+    await first.authenticate();
+    const app = setup({
+      storage: first.storage,
+      method,
+      walletName: 'Rabet',
+      ready: false,
+    });
+    app.startup();
+    await nextTurn();
+    const restoredBeforeDetection =
+      app.store.getState().authState.isAuthenticated;
+    // Let older startup implementations finish too, so this regression fails
+    // on an assertion rather than leaving a readiness poll running forever.
+    app.store.getState().setIsReady(true);
+    await new Promise((resolve) => setTimeout(resolve, 75));
+    assert.equal(restoredBeforeDetection, true);
+    assert.equal(app.session.getJwt(), 'session-token');
+    assert.equal(app.walletCalls.connect, 0);
+    assert.equal(app.walletCalls.sign, 0);
+  });
+}
+
+test('startup still waits for appId validation before restoring a saved wallet', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const app = setup({
+    storage: first.storage,
+    method: 'wallet',
+    validated: false,
+  });
+  app.startup();
+  await nextTurn();
+  assert.equal(app.requests.length, 0);
+  assert.equal(app.store.getState().authState.isAuthenticated, false);
+  app.store.getState().setApiResponse({ isValid: true });
+  await new Promise((resolve) => setTimeout(resolve, 75));
+  assert.equal(app.store.getState().user?.address, 'GWALLET');
+});
+
+test('startup does not restore a saved wallet for an invalid appId', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const app = setup({ storage: first.storage, method: 'wallet', ready: false });
+  app.store.getState().setApiResponse({ isValid: false });
+  app.startup();
+  await nextTurn();
+  app.store.getState().setIsReady(true);
+  await new Promise((resolve) => setTimeout(resolve, 75));
+  assert.equal(app.requests.length, 0);
+  assert.equal(app.store.getState().authState.isAuthenticated, false);
+});
+
+test('wallet restore needs only the verified external address, without a custodial account', async () => {
+  const first = setup({ method: 'wallet' });
+  await first.authenticate();
+  const app = setup({ storage: first.storage, method: 'wallet' });
+  app.respond(async () => ({
+    status: 200,
+    result: {
+      auth_method: 'wallet',
+      auth_value: 'freighter',
+      wallet: 'GWALLET',
+    },
+  }));
+  assert.equal(
+    await app.load('src/utils/checkRecentLogins').checkRecentLogins(),
+    true,
+  );
+  assert.equal(app.store.getState().user.address, 'GWALLET');
+  assert.equal(app.session.getJwt(), 'session-token');
+});
 
 test('wallet login survives a later browser session using only persisted storage', async () => {
   const first = setup({ method: 'wallet' });
@@ -649,4 +819,46 @@ test('legacy wallet reconnect records still work without a stored JWT', async ()
   );
   assert.equal(app.session.getJwt(), undefined);
   assert.equal(app.requests.length, 0);
+});
+
+test('legacy wallet restoration waits for wallet detection before reconnecting', async () => {
+  const app = setup({ method: 'wallet', ready: false });
+  app.storage.setItem(
+    SESSION_KEY,
+    JSON.stringify({
+      authMethod: 'wallet',
+      authValue: 'Freighter',
+      timestamp: Date.now(),
+    }),
+  );
+  const restore = app.load('src/utils/checkRecentLogins').checkRecentLogins();
+  await nextTurn();
+  assert.equal(app.walletCalls.connect, 0);
+  app.store.getState().setWallets([app.wallet]);
+  app.store.getState().setIsReady(true);
+  assert.equal(await restore, true);
+  assert.equal(app.store.getState().user.address, 'GWALLET');
+  assert.equal(app.walletCalls.connect, 1);
+  assert.equal(app.requests.length, 0);
+});
+
+test('logout cancels legacy restoration while wallet detection is pending', async () => {
+  const app = setup({ method: 'wallet', ready: false });
+  app.storage.setItem(
+    SESSION_KEY,
+    JSON.stringify({
+      authMethod: 'wallet',
+      authValue: 'Freighter',
+      timestamp: Date.now(),
+    }),
+  );
+  const restore = app.load('src/utils/checkRecentLogins').checkRecentLogins();
+  await nextTurn();
+  app.store.getState().logoutAction();
+  app.store.getState().setWallets([app.wallet]);
+  app.store.getState().setIsReady(true);
+  assert.equal(await restore, false);
+  assert.equal(app.walletCalls.connect, 0);
+  assert.equal(app.store.getState().user, undefined);
+  assert.equal(app.storage.getItem(SESSION_KEY), null);
 });
