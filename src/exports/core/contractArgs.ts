@@ -212,6 +212,12 @@ const normalizeNativeValue = async (
           await Promise.all(
             fields.map(async (field) => {
               const name = field.name.toString();
+              // A missing field such as `toString` or `constructor` reads as an
+              // inherited function. stellar-sdk 17.3 leaves that unset, and
+              // throws if the function is copied on as an own property.
+              if (!Object.prototype.hasOwnProperty.call(value, name)) {
+                return;
+              }
               normalized[name] = await normalizeNativeValue(
                 value[name],
                 field.type,

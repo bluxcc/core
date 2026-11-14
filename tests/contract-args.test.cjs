@@ -215,3 +215,74 @@ test('pre-encoded ScVals still bypass ABI and address resolution', async () => {
   assert.equal(result[0], value);
   assert.equal(resolutions, 0);
 });
+
+test('omitted struct fields named like Object methods stay unset for the SDK', async () => {
+  const stringType = { type: 'scSpecTypeString' };
+  const methodProfileType = {
+    type: 'scSpecTypeUdt',
+    value: { name: { toString: () => 'Profile' } },
+  };
+  const methodProfileEntry = {
+    type: 'scSpecEntryUdtStructV0',
+    value: {
+      fields: [
+        {
+          name: { toString: () => 'toString' },
+          type: { type: 'scSpecTypeOption', value: { valueType: stringType } },
+        },
+        {
+          name: { toString: () => 'label' },
+          type: stringType,
+        },
+      ],
+    },
+  };
+  const seen = [];
+  const spec = {
+    getFunc: () => ({
+      inputs: [
+        {
+          name: { toString: () => 'profile' },
+          type: methodProfileType,
+        },
+      ],
+    }),
+    findEntry: () => methodProfileEntry,
+    nativeToScVal: (value) => {
+      seen.push(value);
+      if (value && typeof value === 'object') {
+        for (const key of Object.getOwnPropertyNames(value)) {
+          if (typeof value[key] === 'function') {
+            throw new TypeError(`failed to convert typeof function (${value[key]})`);
+          }
+        }
+      }
+      return value;
+    },
+  };
+  const load = createLoader({
+    spec,
+    resolveAddress: async () => {
+      throw new Error('unexpected lookup');
+    },
+  });
+  const { contractArgsToScVals } = load('src/exports/core/contractArgs');
+  const encode = (profile) =>
+    contractArgsToScVals(
+      'CFAKE',
+      'set_profile',
+      [profile],
+      { serverURL: new URL('https://rpc.example') },
+      'Test SDF Network ; September 2015',
+      'call',
+    );
+
+  const [omitted] = await encode({ label: 'ok' });
+  assert.equal(Object.hasOwn(omitted, 'toString'), false);
+  assert.equal(omitted.label, 'ok');
+
+  const [set] = await encode({ label: 'ok', toString: 'custom' });
+  assert.equal(set.toString, 'custom');
+  assert.equal(set.label, 'ok');
+  assert.equal(seen.length, 2);
+});
