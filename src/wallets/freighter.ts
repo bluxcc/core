@@ -18,7 +18,7 @@ export const freighterConfig: IWallet = {
     try {
       if (!(await isConnected())) {
         throw new Error(
-          'BLUX: Freighter Wallet is not installed or connected.',
+          'BLUX: Varial (formerly Freighter) Wallet is not installed or connected.',
         );
       }
 
@@ -28,37 +28,47 @@ export const freighterConfig: IWallet = {
         result.error &&
         result.error.message === 'The user rejected this request.'
       ) {
-        throw new Error('BLUX: Failed to connect to Freighter');
+        throw new Error(
+          'BLUX: Failed to connect to Varial (formerly Freighter)',
+        );
       }
 
       if (result.address.trim() === '') {
-        throw new Error('BLUX: Failed to connect to Freighter.');
+        throw new Error(
+          'BLUX: Failed to connect to Varial (formerly Freighter).',
+        );
       }
 
       return result.address;
     } catch (error: any) {
-      if (error.message === 'Failed to connect to Freighter.') {
+      if (
+        error.message === 'Failed to connect to Varial (formerly Freighter).'
+      ) {
         const res = await freighterConfig.connect();
 
         return res;
       }
 
-      throw new Error('BLUX: Failed to connect to Freighter.');
+      throw new Error(
+        'BLUX: Failed to connect to Varial (formerly Freighter).',
+      );
     }
   },
-  disconnect: async () => { },
+  disconnect: async () => {},
   getNetwork: async () => {
     try {
       if (!(await isConnected())) {
         throw new Error(
-          'BLUX: Freighter Wallet is not installed or connected.',
+          'BLUX: Varial (formerly Freighter) Wallet is not installed or connected.',
         );
       }
 
       const network = await freighterApi.getNetwork();
 
       if (network.error) {
-        throw new Error('BLUX: Failed to get network from Freighter');
+        throw new Error(
+          'BLUX: Failed to get network from Varial (formerly Freighter)',
+        );
       }
 
       return {
@@ -107,7 +117,7 @@ export const freighterConfig: IWallet = {
     try {
       if (!(await isConnected())) {
         throw new Error(
-          'BLUX: Freighter Wallet is not installed or connected.',
+          'BLUX: Varial (formerly Freighter) Wallet is not installed or connected.',
         );
       }
 
@@ -117,12 +127,16 @@ export const freighterConfig: IWallet = {
       });
 
       if (error || !signedAuthEntry) {
-        throw new Error('BLUX: Could not signedAuthEntry using Freighter');
+        throw new Error(
+          'BLUX: Could not signedAuthEntry using Varial (formerly Freighter)',
+        );
       }
 
       return Buffer.from(signedAuthEntry).toString('base64');
     } catch (error) {
-      throw new Error('BLUX: Failed to sign the transaction with Freighter.');
+      throw new Error(
+        'BLUX: Failed to sign the transaction with Varial (formerly Freighter).',
+      );
     }
   },
   signMessage: async (message, options) => {
@@ -133,21 +147,25 @@ export const freighterConfig: IWallet = {
       });
 
       if (error || !signedMessage) {
-        throw new Error('BLUX: Failed to sign message using Freighter');
+        throw new Error(
+          'BLUX: Failed to sign message using Varial (formerly Freighter)',
+        );
       }
 
       return typeof signedMessage === 'string'
         ? signedMessage
         : Buffer.from(signedMessage).toString('base64');
     } catch {
-      throw new Error('BLUX: Failed to sign message using Freighter');
+      throw new Error(
+        'BLUX: Failed to sign message using Varial (formerly Freighter)',
+      );
     }
   },
   signTransaction: async (xdr, options) => {
     try {
       if (!(await isConnected())) {
         throw new Error(
-          'BLUX: Freighter Wallet is not installed or connected.',
+          'BLUX: Varial (formerly Freighter) Wallet is not installed or connected.',
         );
       }
 
@@ -158,7 +176,9 @@ export const freighterConfig: IWallet = {
 
       return result.signedTxXdr;
     } catch (error) {
-      throw new Error('BLUX: Failed to sign the transaction with Freighter.');
+      throw new Error(
+        'BLUX: Failed to sign the transaction with Varial (formerly Freighter).',
+      );
     }
   },
 };

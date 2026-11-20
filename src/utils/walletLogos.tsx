@@ -6,18 +6,20 @@ import {
   TrezorLogo,
   MetaMaskLogo,
 } from '../assets';
+import { VarialLogo } from '../assets/VarialLogo';
 import CDNImage from '../components/CDNImage';
 import CDNFiles from '../constants/cdnFiles';
+import { SupportedWallet } from '../enums';
 
 const handleLogos = (
-  walletName: string,
+  wallet: SupportedWallet,
   isDark: boolean,
   size: 'small' | 'large' = 'small',
 ) => {
   const smallStyle =
     'bluxcc:flex bluxcc:justify-center bluxcc:items-center bluxcc:size-10!';
-  switch (walletName) {
-    case 'MetaMask':
+  switch (wallet) {
+    case SupportedWallet.MetaMask:
       return <MetaMaskLogo />;
     case 'Rabet':
       return (
@@ -27,20 +29,8 @@ const handleLogos = (
           props={{ fill: isDark ? '#ffffff' : '#B8BAC4' }}
         />
       );
-    case 'Freighter':
-      return isDark ? (
-        <CDNImage
-          className={size === 'small' ? smallStyle : ''}
-          name={CDNFiles.DarkFreighter}
-          props={{}}
-        />
-      ) : (
-        <CDNImage
-          className={size === 'small' ? smallStyle : ''}
-          name={CDNFiles.Freighter}
-          props={{ fill: '#310CCC' }}
-        />
-      );
+    case SupportedWallet.Freighter:
+      return <VarialLogo />;
     case 'Albedo':
       return (
         <CDNImage
@@ -49,7 +39,7 @@ const handleLogos = (
           props={{}}
         />
       );
-    case 'LOBSTR':
+    case SupportedWallet.Lobstr:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -57,7 +47,7 @@ const handleLogos = (
           props={{ fill: isDark ? '#ffffff' : '#1a8da0' }}
         />
       );
-    case 'xBull':
+    case SupportedWallet.Xbull:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -65,7 +55,7 @@ const handleLogos = (
           props={{ fill: isDark ? '#ffffff' : '#C19CFC' }}
         />
       );
-    case 'Hana':
+    case SupportedWallet.Hana:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -73,7 +63,7 @@ const handleLogos = (
           props={{ fill: isDark ? '#E6E0F7' : '#221542' }}
         />
       );
-    case 'Hot':
+    case SupportedWallet.Hot:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -81,7 +71,7 @@ const handleLogos = (
           props={{}}
         />
       );
-    case 'Wallet Connect':
+    case SupportedWallet.WalletConnect:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -89,7 +79,7 @@ const handleLogos = (
           props={{ fill: isDark ? '#ffffff' : '#0988f1' }}
         />
       );
-    case 'Klever':
+    case SupportedWallet.Klever:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -98,7 +88,7 @@ const handleLogos = (
         />
       );
     //todo
-    case 'Bitget':
+    case SupportedWallet.Bitget:
       return (
         <BitGetLogo fill={isDark ? '#05C3DD' : '#00F0FF'} />
         // <CDNImage
@@ -108,7 +98,7 @@ const handleLogos = (
         // />
       );
     //todo
-    case 'Onekey':
+    case SupportedWallet.Onekey:
       return (
         <OneKeyLogo />
         // <CDNImage
@@ -117,7 +107,7 @@ const handleLogos = (
         //   props={{}}
         // />
       );
-    case 'Ledger':
+    case SupportedWallet.Ledger:
       return (
         <CDNImage
           className={size === 'small' ? smallStyle : ''}
@@ -126,13 +116,13 @@ const handleLogos = (
         />
       );
     //todo
-    case 'Cactus Link':
+    case SupportedWallet.CactusLink:
       return <CactusLinkLogo />;
     //todo
-    case 'Fordefi':
+    case SupportedWallet.Fordefi:
       return <FordefiLogo />;
     //todo
-    case 'Trezor':
+    case SupportedWallet.Trezor:
       return <TrezorLogo fill={isDark ? '#ffffff' : '#171717'} />;
     default:
       return null;

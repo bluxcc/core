@@ -201,9 +201,9 @@ const Profile = () => {
           onClick={handleOpenSwap}
         />
       </div>
-      <div className="bluxcc:mt-4 bluxcc:flex bluxcc:space-x-3">
+      <div className="bluxcc:mt-4 bluxcc:w-full bluxcc:space-y-2">
         <CardItem
-          size="small"
+          size="medium"
           label={t('balances')}
           startIcon={
             <CDNImage
@@ -217,7 +217,7 @@ const Profile = () => {
         />
 
         <CardItem
-          size="small"
+          size="medium"
           label={t('activity')}
           startIcon={
             <CDNImage
@@ -231,11 +231,9 @@ const Profile = () => {
         />
 
         <CardItem
-          size="small"
+          size="medium"
           label={t('onOffRamp')}
-          startIcon={
-            <CurrencyExchange fill={appearance.textColor} size={24} />
-          }
+          startIcon={<CurrencyExchange fill={appearance.textColor} size={24} />}
           onClick={() => {
             setRoute(Route.FUND_ME);
           }}

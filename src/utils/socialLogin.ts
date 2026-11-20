@@ -21,6 +21,7 @@ import { TelegramLogo } from '../assets/TelegramLogo';
 import CDNFiles from '../constants/cdnFiles';
 import { BLUX_API } from '../constants/consts';
 import { ILoginMethods, AuthenticateApiResponse } from '../types';
+import { GoogleLogo } from '../assets/GoogleLogo';
 
 // Display metadata for each social provider. The whole OAuth dance — building
 // the provider authorization URL, the (fixed) redirect URI, and the
@@ -33,7 +34,7 @@ type SocialProviderMeta = {
 };
 
 export const SOCIAL_PROVIDERS: Record<string, SocialProviderMeta> = {
-  google: { displayName: 'Google', icon: CDNFiles.Google },
+  google: { displayName: 'Google', icon: GoogleLogo },
   apple: { displayName: 'Apple', icon: AppleLogo },
   discord: { displayName: 'Discord', icon: DiscordLogo },
   telegram: { displayName: 'Telegram', icon: TelegramLogo },
@@ -169,7 +170,9 @@ export const isTelegramLogin = (
   const name = canonicalSocialName(provider);
   const entry = apiResponse?.socialsConfig?.find((s) => s.provider === name);
 
-  return (entry?.kind || (name === 'telegram' ? 'telegram' : '')) === 'telegram';
+  return (
+    (entry?.kind || (name === 'telegram' ? 'telegram' : '')) === 'telegram'
+  );
 };
 
 export type ISocialSession = {
