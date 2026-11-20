@@ -14,7 +14,7 @@ Blux Core is a JavaScript/TypeScript SDK for adding authentication, Stellar wall
 ## Features
 
 - **Framework-Agnostic**: Use Blux Core with vanilla JavaScript, TypeScript, or any frontend framework.
-- **Multi-Wallet Support**: Integrate Stellar wallets such as **Rabet, xBull, LOBSTR, Freighter, Albedo, HOT Wallet, Hana, and more**.
+- **Multi-Wallet Support**: Integrate Stellar wallets such as **Rabet, xBull, LOBSTR, Varial (Freighter), Albedo, HOT Wallet, Hana, and more**.
 - **Email, Passkey & Social Authentication**: Onboard users without requiring them to install or manage a traditional wallet.
 - **Transaction Signing**: Connect wallets and request transaction signatures through a consistent interface.
 - **Soroban Support**: Add Stellar smart contract interactions to your application.
@@ -220,7 +220,7 @@ createConfig({
     'instagram',
     'microsoft',
     'gitlab',
-    'twitter',
+    'x',
     'steam',
     'email',
     'passkey',
@@ -289,7 +289,7 @@ These credentials are intended only for the configured testing environment. Refe
 
 Currently supported connection methods:
 
-- [x] **Freighter**
+- [x] **Varial (formerly Freighter)**
 - [x] **MetaMask** through its native Stellar multichain session
 - [x] **Rabet**
 - [x] **WalletConnect**
@@ -306,11 +306,20 @@ Currently supported connection methods:
 - [x] **Fordefi**
 - [x] **Trezor**
 - [x] **Email**
+- [x] **Passkey**
 - [x] **Google**
 - [x] **Apple**
 - [x] **Discord**
 - [x] **Telegram**
-- [x] **Passkey**
+- [x] **Farcaster**
+- [x] **Gitlab**
+- [x] **Github**
+- [x] **Linkedin**
+- [x] **Kick**
+- [x] **TikTok**
+- [x] **Twitch**
+- [x] **Spotify**
+- [x] **Instagram**
 
 MetaMask uses the official [`@metamask/connect-stellar`](https://github.com/MetaMask/connect-stellar) adapter for native Mainnet transaction signing, Soroban auth-entry signing, and SEP-53 message signing. Login uses a signed message. Testnet and Futurenet transactions and auth entries are rejected. Disconnecting revokes the wallet session.
 

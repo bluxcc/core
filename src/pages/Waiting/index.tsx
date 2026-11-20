@@ -52,7 +52,7 @@ const Waiting = () => {
   return (
     <div className="bluxcc:mt-3 bluxcc:flex bluxcc:w-full bluxcc:flex-col bluxcc:items-center bluxcc:justify-center bluxcc:select-none">
       <div
-        className={`bluxcc:mb-6 bluxcc:flex bluxcc:size-20 bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full`}
+        className={`bluxcc:mb-6 bluxcc:flex bluxcc:size-20! bluxcc:items-center bluxcc:justify-center bluxcc:overflow-hidden bluxcc:rounded-full`}
         style={{
           borderColor: appearance.borderColor,
           borderWidth: appearance.borderWidth,

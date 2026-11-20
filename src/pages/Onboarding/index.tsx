@@ -348,7 +348,10 @@ const Onboarding = () => {
                         endArrow
                         label={t('otherSocials')}
                         startIcon={
-                          <SocialsIcon fill={appearance.textColor} />
+                          <SocialsIcon
+                            fill={appearance.textColor}
+                            radius={appearance.borderRadius}
+                          />
                         }
                         onClick={() => store.setRoute(Route.OTHER_SOCIALS)}
                       />

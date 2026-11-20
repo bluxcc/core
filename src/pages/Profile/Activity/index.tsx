@@ -168,7 +168,7 @@ const Activity = () => {
   const isEmpty = !loading && transactionsDetails.length === 0;
 
   return (
-    <div className="bluxcc:flex bluxcc:h-[355px] bluxcc:flex-col">
+    <div className="bluxcc:flex bluxcc:h-88.75 bluxcc:flex-col">
       {loading ? (
         <div
           style={{ color: hexToRgba(appearance.textColor, 0.7) }}
@@ -203,7 +203,7 @@ const Activity = () => {
       )}
 
       {transactionsDetails.length > 0 && explorerUrl && (
-        <div className="bluxcc:absolute bluxcc:bottom-4 bluxcc:left-1/2 bluxcc:!mt-4 bluxcc:w-[calc(100%-3rem)] bluxcc:-translate-x-1/2 bluxcc:transform">
+        <div className="bluxcc:absolute bluxcc:bottom-4 bluxcc:left-1/2 bluxcc:mt-4! bluxcc:w-[calc(100%-3rem)] bluxcc:-translate-x-1/2 bluxcc:transform">
           <Button
             state="enabled"
             variant="outline"

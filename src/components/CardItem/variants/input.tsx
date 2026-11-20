@@ -5,9 +5,7 @@ import { useLang } from '../../../hooks/useLang';
 import { validateInput } from '../../../utils/helpers';
 
 const splitRegionHint = (text: string) => {
-  const match = text.match(
-    /^(.*?)(\s*[\(\uFF08][^)\uFF09]+[\)\uFF09])\s*$/,
-  );
+  const match = text.match(/^(.*?)(\s*[\(\uFF08][^)\uFF09]+[\)\uFF09])\s*$/);
 
   if (!match) {
     return null;
@@ -113,7 +111,7 @@ const InputCard = ({
             id={`bluxcc-input-${inputType}`}
             type={inputType === 'tel' ? 'tel' : inputType}
             value={inputValue}
-            autoComplete={inputType === 'tel' ? 'tel' : 'off'}
+            autoComplete="off"
             inputMode={inputType === 'tel' ? 'tel' : undefined}
             aria-label={regionHint ? defaultPlaceholder : undefined}
             placeholder={regionHint ? undefined : defaultPlaceholder}
