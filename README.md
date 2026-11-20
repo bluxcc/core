@@ -220,7 +220,7 @@ createConfig({
     'instagram',
     'microsoft',
     'gitlab',
-    'x',
+    'twitter',
     'steam',
     'email',
     'passkey',
